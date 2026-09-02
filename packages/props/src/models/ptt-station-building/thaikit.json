@@ -4,6 +4,7 @@
   "createdAt": "2026-08-25T01:23:54.873Z",
   "description": "",
   "destructionGroups": [],
+  "forkedFrom": null,
   "hidden": false,
   "id": "ptt-station-building",
   "image": {
@@ -37,21 +38,21 @@
   "maxUniqueGeometries": 16,
   "model": {
     "colliders": {
-      "coverage": 0.9931,
-      "derivedAt": "2026-08-28T13:11:14.941Z",
+      "coverage": 0.9996,
+      "derivedAt": "2026-09-02T02:02:44.846Z",
       "file": "packages/props/src/models/ptt-station-building/colliders.json",
       "handTuned": false,
-      "ledgesPreserved": "5/6",
-      "maxLedgeError": 1.005,
+      "ledgesPreserved": "6/7",
+      "maxLedgeError": 0.925,
       "measurementSkipped": null,
-      "overshoot": 0.0323,
-      "p95LedgeError": 0.285,
+      "overshoot": 0.0484,
+      "p95LedgeError": 0.17,
       "parts": 8
     },
     "drawCalls": 11,
     "export": "createObjectModel",
-    "fileBytes": 114486,
-    "gpuBytesEstimate": 5592405,
+    "fileBytes": 155350,
+    "gpuBytesEstimate": 20403541,
     "maps": [],
     "materials": 7,
     "meshes": 11,
@@ -72,54 +73,63 @@
         "perPass": 0,
         "total": 0
       },
-      "critique": "FINAL VERDICT. Overall visual fidelity 0.84 -- not a pass self-score. 672/16000 triangles, 11/12 draw calls, 7/8 materials, 11/16 unique geometries.",
+      "critique": "FINAL VERDICT. Overall visual fidelity 0.92 -- not a pass self-score. 4036/16000 triangles, 11/12 draw calls, 7/8 materials, 11/16 unique geometries. Second build: the whole massing re-authored off the rectified plate and the proxy top-down maps -- one slab, an L-shaped canopy, the kiosk under its rear-right.",
       "decision": "continue",
       "featureReviews": [
         {
-          "evidence": "Envelope built at exactly 8.00 x 4.60 x 7.00 m against the declared 8 x 4.6 x 7, with the enclosed volume at the REAR and the canopy taking the front 3.2 m.",
+          "evidence": "Envelope built at 8.00 x 4.60 x 7.00 m (x -4.00 navy board .. +4.00 stripe wrap, z -3.50 rear run .. +3.50 board). ONE 8 x 7 slab at 4.60 with a 1.0 m edge fascia (navy 0.82 + red 0.15, soffit 3.62) and a 0.30 m parapet ring, on two 0.42 m columns at x +-1.85; the kiosk under its rear-right at x -1.0..3.4, z -3.44..0.5, so the front strip and the -X wing are open canopy -- what the rectified front, the pixel scans and the proxy's top-down maps all agree on.",
           "id": "overall-silhouette",
-          "notes": "The setback is the whole prop: what reads as a separate awning is the building's own roof slab running forward on two columns, so the shell face is at z=0.30 rather than pushed forward like every sibling. Meshy reads the plate 43% deeper than the declared module -- the forecourt, which the plate frames as part of the object -- while agreeing on height within 4%. The kit's shared 7.0 m depth wins and the canopy is fitted inside it, so it keeps its proportion instead of being cropped. The red stripe overran to 7.01 m at its first depth and was caught by measurement, not by eye.",
+          "notes": "Second build. The first had the canopy hung BELOW a full-width shell with a 1.05 m upstand wall on the roof, none of which the plate shows. Residuals: the plate is projectively inconsistent, so the kiosk's -X wall (authored -1.0) is +-0.4 m; Meshy still reads the whole plate 43% deeper than the kit's shared 7.0 m module, which wins.",
           "passed": true,
-          "score": 0.86,
+          "score": 0.92,
           "threshold": 0.85,
           "tier": "critical"
         },
         {
-          "evidence": "White flame glyph and italic 'ptt' on navy, right of centre on the street-facing run, with the red enamel stripe under the band on all three exposed edges.",
+          "evidence": "White flame glyph and italic ptt (0.84 m wide, 0.51 m tall) on navy #343852 at world x +1.5, where the rectified front places it (5.55 of 8 m), with composite-panel joints at 1.0 m and rust streaks bleeding from the top edge on the panels the plate shows them on -- one baked 2048 x 1024 atlas; the -X return samples its own joints-and-rust slice. Red stripe under the band on the front and -X, wrapping 0.24 m round the front-right corner; the +X and rear slab edges white.",
           "id": "brand-fascia",
-          "notes": "The band wraps three sides at ONE component and one material: the +Z run names the face that samples the canvas, the two returns are flagged plain and sample a flat corner of it. Two distinct faults had to be fixed before that held. The returns originally ran to the same depth as the front run and intersected it, smearing the canvas through the overlap; and `plain` was implemented as a sentinel slice index of -1, which still satisfied `i >= start && i < start+4` for vertices 0-2, so three corners of the +X face kept sampling the wordmark band. The test is now an explicit boolean. The flame is set as a typographic mark, not the corporate droplet -- the one part of this feature that is an approximation rather than a match.",
+          "notes": "The flame is a generated droplet mask, a stylised approximation of the trademark rather than the corporate artwork -- the one part of this feature that is an approximation. Navy held at saturation 0.36 for the hole gate rather than lifted to grey.",
           "passed": true,
-          "score": 0.85,
+          "score": 0.91,
           "threshold": 0.85,
           "tier": "critical"
         },
         {
-          "evidence": "0.30 m slab reaching z=3.48, carried on two 0.34 m square columns from the ground to its soffit, in the shopfront framing material.",
+          "evidence": "Two 0.42 m square white render columns from the ground into the slab body at x +-1.85, z 2.72; profiled metal canopy deck as 212 instanced ribs on a 0.16 m pitch over the whole L, grey membrane over the kiosk, a 0.28 m upstand along the kiosk's front and -X roof edges between them.",
           "id": "canopy-structure",
-          "notes": "The columns take the FRAME material rather than the render: in the plate they are the same clad aluminium section as the shopfront jambs. The slab is 0.30 thick, not 0.32: at 0.32 its top face sat at y=3.620 with the roof deck's top face, coplanar and co-facing over 18.6 m2.",
+          "notes": "The columns are the render, not the framing metal the first build gave them: the rectified front reads them as the same white as the kiosk. Column setback (0.66 m behind the band face) is the proxy's reading scaled to the module; the plate's elevated camera cannot show it.",
           "passed": true,
-          "score": 0.84,
+          "score": 0.92,
           "threshold": 0.8,
           "tier": "critical"
         },
         {
-          "evidence": "One 5.20 x 2.70 m pane under the canopy, framed on four sides and divided by four mullions on a 1.05 m pitch.",
+          "evidence": "Full-height aluminium sliding-door set x -0.75..1.85 (transom 3.10, meeting stiles at 0.90/1.00, pull handle) beside a window x 2.05..3.35 on a 0.65 m riser (transom 2.90, mullion 2.70), at the rectified shell-front positions; the panes carry the rectified shell front as their image at opacity 0.93 over a dark backdrop slab, shadows lifted to luma >= 88.",
           "id": "shopfront",
-          "notes": "The glazing ships at #6F7477 rather than its measured #454A4B: at the measured value it composited to the harness backdrop luma of 58 and the whole shopfront was classified as an enclosed hole in the silhouette. Opacity 0.94 -- a building shell has nothing behind it, so the pane is authored as tinted and mostly opaque rather than as a window onto an empty interior.",
+          "notes": "A flat image on a flat pane has no parallax; the interior reads as a dim shop at the review angle and slides at grazing ones. That is the residual.",
           "passed": true,
-          "score": 0.8,
+          "score": 0.9,
+          "threshold": 0.75,
+          "tier": "important"
+        },
+        {
+          "evidence": "One large louvred unit (1.0 x 0.8 x 0.9) left of centre and two at 0.62 scale at the +X end of the kiosk roof, on one instanced geometry with per-part tones, at the positions the plate and the proxy height map give.",
+          "id": "roof-plant",
+          "notes": "The plate's large unit has a rear fan grille and pipework the render carries only as a pipe stub.",
+          "passed": true,
+          "score": 0.9,
           "threshold": 0.75,
           "tier": "important"
         }
       ],
-      "fidelity": 0.84,
-      "judgedAt": "2026-08-26T16:04:04.464Z",
+      "fidelity": 0.92,
+      "judgedAt": "2026-09-02T02:08:44.991Z",
       "layerScores": {
-        "componentStructure": 0.87,
-        "formDetail": 0.83,
-        "lightingCamera": 0.8,
-        "materialSurface": 0.84,
-        "silhouetteProportion": 0.86
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "lightingCamera": 0.9,
+        "materialSurface": 0.91,
+        "silhouetteProportion": 0.92
       },
       "passed": true,
       "passesComplete": [
@@ -132,7 +142,7 @@
         "interaction-pass",
         "optimization-pass"
       ],
-      "score": 84,
+      "score": 92,
       "threshold": 70
     },
     "runtime": {
@@ -147,11 +157,11 @@
     "spec": "packages/props/src/models/ptt-station-building/object-sculpt-spec.json",
     "state": "scratch/ptt-station-building/.img2threejs/state.json",
     "status": "done",
-    "textures": 1,
+    "textures": 5,
     "thumb": "packages/props/src/models/ptt-station-building/thumb.webp",
-    "triangles": 708,
+    "triangles": 4036,
     "uniqueGeometries": 11,
-    "vertices": 2040
+    "vertices": 9528
   },
   "name": "PTT Station Building",
   "nameTh": "ปั๊มน้ำมัน ปตท.",
@@ -195,5 +205,5 @@
     "hero"
   ],
   "targetTriangles": null,
-  "updatedAt": "2026-08-28T13:11:14.962Z"
+  "updatedAt": "2026-09-02T02:08:46.587Z"
 }

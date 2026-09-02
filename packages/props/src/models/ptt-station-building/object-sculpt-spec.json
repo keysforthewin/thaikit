@@ -86,6 +86,7 @@
       ],
       "materialFamilies": [
         "painted-cement-render",
+        "profiled-metal-deck",
         "roof-membrane",
         "illuminated-acrylic",
         "tinted-plate-glass",
@@ -93,7 +94,7 @@
         "enamel-paint",
         "galvanised-steel"
       ],
-      "notes": "Static single-storey branded retail box on thaikit's shared 8.0 x 4.6 x 7.0 m module, exterior shell only. No interior geometry: glazing is a tinted mostly-opaque pane, not an opening. Nothing moves, so one root pivot and zero sockets is the correct contract. A filling-station forecourt kiosk, and structurally the odd one out in the retail set: what reads as a separate canopy is the building's OWN roof slab extending forward over the pump apron on two square columns. A navy fascia band with a red stripe under it wraps the slab edge on all three exposed sides and carries the ptt mark on the face that fronts the street. The building itself -- white render, one wide shopfront, a flush service door on +X, three condensers on the roof behind a parapet -- occupies only the REAR of the declared module."
+      "notes": "Static single-storey branded retail box on thaikit's shared 8.0 x 4.6 x 7.0 m module, exterior shell only. No interior geometry: glazing is a tinted mostly-opaque pane, not an opening. Nothing moves, so one root pivot and zero sockets is the correct contract. Second build (2026-09-01), authored off the plate's rectified canopy front (8.0 x 4.6), its rectified shell front under the canopy (4.45 x 4.0 to the soffit) and pixel scans (scratch/_ptt/), cross-checked against the Meshy proxy's top-down occupancy and height maps. A filling-station forecourt kiosk: the whole prop is ONE 8 x 7 m roof slab at 4.60 with a 1.0 m deep edge fascia -- navy band 0.82 m carrying the ptt mark on the street face and wrapping the -X edge, red stripe 0.15 m under it, white on the +X and rear edges -- over a ribbed metal canopy deck. The enclosed kiosk (white render, x -1.0..3.4, z -3.44..0.5) stands under the slab's rear-RIGHT, so the canopy is an L: a 3 m strip across the whole front on two square render columns at x +-1.85, plus a 3 m wing down the -X side. Its front is a full-height aluminium sliding-door set beside a window on a 0.7 m riser; a grey membrane roof with a 0.28 m upstand carries one large and two small condensers; a flush white service door sits near the rear of the +X wall."
     },
     "complexity": {
       "tier": "moderate",
@@ -112,7 +113,7 @@
         "mesoComponents": 5,
         "microFeatureGroups": 3,
         "materialLayers": 7,
-        "repetitionSystems": 2
+        "repetitionSystems": 3
       },
       "reasoning": [
         "Silhouette is a single rectangular prism -- low geometric complexity.",
@@ -156,7 +157,7 @@
           "zone": "canopy-fascia",
           "kind": "linework",
           "identityDefining": true,
-          "description": "red stripe running under the navy band on all three exposed canopy edges",
+          "description": "red stripe under the navy band on the front and -X edges, wrapping the front-right corner",
           "mapsTo": {
             "ref": "extra-feature"
           },
@@ -167,9 +168,9 @@
           "zone": "forecourt",
           "kind": "contour",
           "identityDefining": true,
-          "description": "two square clad columns carrying the canopy slab's outer edge",
+          "description": "two square white render columns under the slab's front edge",
           "mapsTo": {
-            "ref": "side-feature"
+            "ref": "parapet"
           },
           "realization": "unreported"
         },
@@ -178,18 +179,18 @@
           "zone": "forecourt",
           "kind": "bevel",
           "identityDefining": true,
-          "description": "the roof slab extending forward over the apron -- the canopy is the roof, not a separate structure",
+          "description": "the one thick-edged roof slab whose front strip and -X wing are open canopy",
           "mapsTo": {
-            "ref": "front-feature"
+            "ref": "parapet"
           },
           "realization": "unreported"
         },
         {
-          "id": "d5-mullions",
+          "id": "d5-shopfront-frames",
           "zone": "shopfront",
           "kind": "linework",
           "identityDefining": true,
-          "description": "four mullions dividing the shopfront glazing",
+          "description": "aluminium sliding-door set and window frames with transoms and mullions",
           "mapsTo": {
             "ref": "shopfront-frame"
           },
@@ -200,9 +201,9 @@
           "zone": "right-side-wall",
           "kind": "seam",
           "identityDefining": false,
-          "description": "flush service door on the +X wall",
+          "description": "flush white service door in a galvanised frame near the rear of the +X wall",
           "mapsTo": {
-            "ref": "front-feature"
+            "ref": "parapet"
           },
           "realization": "unreported"
         },
@@ -211,7 +212,7 @@
           "zone": "roof",
           "kind": "contour",
           "identityDefining": false,
-          "description": "three condensers on the roof behind the parapet",
+          "description": "one large and two small condensers on the kiosk roof behind the upstand",
           "mapsTo": {
             "ref": "roof-deck"
           },
@@ -225,6 +226,28 @@
           "description": "plate glass reads as a tight specular lobe, unlike every other surface",
           "mapsTo": {
             "ref": "d8-glazing-gloss"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d9-ribbed-deck",
+          "zone": "roof",
+          "kind": "ridge",
+          "identityDefining": true,
+          "description": "profiled metal canopy deck, ribs running front-to-back over the whole L",
+          "mapsTo": {
+            "ref": "roof-deck"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d10-band-weathering",
+          "zone": "canopy-fascia",
+          "kind": "seam",
+          "identityDefining": true,
+          "description": "composite-panel joints and rust streaks bleeding from the band's top edge",
+          "mapsTo": {
+            "ref": "fascia-panel"
           },
           "realization": "unreported"
         }
@@ -257,11 +280,12 @@
     },
     "sourceImage": "/home/mulligan/code/thaikit/scratch/ptt-station-building/reference.png",
     "resolvedUnknowns": [
-      "Rear (-Z) elevation is unobserved; authored plain. Confidence 0.20.",
-      "The pumps, apron and forecourt paving are NOT modelled. This asset is the kiosk and its canopy; the apron is the level builder's ground plane.",
-      "The plate shows a shop interior through the glazing. Not modelled: this prop is an exterior shell.",
-      "The plate's canopy overhangs further forward than 3.2 m relative to the building. Compressed to fit the declared 7.0 m depth, which is what pushes the shell back to z=0.30.",
-      "The ptt flame glyph is set as a typographic mark rather than the exact corporate droplet; the plate's own artwork is not reproduced."
+      "Rear (-Z) elevation is unobserved; authored plain with a white slab edge. Confidence 0.20.",
+      "The pumps, apron and forecourt paving are NOT modelled; the apron is the level builder's ground plane.",
+      "The plate is projectively INCONSISTENT (the band's edges converge left, the glazing's converge right), so each face was rectified on its own corners and only ratios within a face were trusted. The kiosk's -X wall lands between -0.5 and -1.4 depending on the face used; -1.0 is authored.",
+      "The canopy deck ribs are GEOMETRY (one instanced rib on a 0.16 m pitch) rather than a tile, because the plate's hero angle reads them as a raked profile against the light, which a flat tile cannot do.",
+      "The plate shows a dim shop interior through the glazing. The rectified shell front is baked onto the glazing as its image (shadows lifted to luma >= 88 for the hole gate), over a dark backdrop slab; nothing behind the glass is modelled -- this prop is an exterior shell.",
+      "The ptt flame is a flux/dev droplet-flame thresholded to a white mask, a stylised approximation of the trademark rather than the corporate artwork, set beside 'ptt' in Nimbus Sans Bold Italic."
     ],
     "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
   },
@@ -279,7 +303,7 @@
       "mesoComponents": 4,
       "microFeatureGroups": 3,
       "materialLayers": 7,
-      "repetitionSystems": 2,
+      "repetitionSystems": 3,
       "reviewViewpoints": 4
     },
     "featureGroups": [
@@ -290,15 +314,16 @@
         "threshold": 0.85,
         "qualityCriteria": [
           "Envelope 8.0 x 4.6 x 7.0 m",
-          "The slab floats forward on two columns with a deep undercut beneath it",
-          "The enclosed volume sits at the REAR, not filling the module"
+          "ONE slab at 4.60 with a 1.0 m deep edge fascia and a low parapet ring, floating on two columns",
+          "The enclosed kiosk under the slab's rear-right, the front strip and -X wing open beneath"
         ],
         "evidenceRefs": [
           "view-full"
         ],
         "failureModes": [
-          "canopy read as a separate awning bolted to a full-depth building",
-          "stripe or band running past the declared envelope"
+          "canopy read as a separate awning hung below the roof",
+          "a full-width shell",
+          "a tall upstand wall the plate does not show"
         ]
       },
       {
@@ -307,33 +332,35 @@
         "required": true,
         "threshold": 0.85,
         "qualityCriteria": [
-          "White flame glyph and italic ptt wordmark on navy, right of centre",
-          "Red stripe under the navy on all three exposed edges",
-          "The two side returns are PLAIN -- no repeat of the mark"
+          "White flame glyph and italic ptt on navy at world x +1.5",
+          "Red stripe under the navy on the front and -X edges, wrapping the front-right corner",
+          "Panel joints and rust streaks on the band; the +X and rear edges white"
         ],
         "evidenceRefs": [
           "region-fascia",
           "region-stripe"
         ],
         "failureModes": [
-          "the mark repeating or smearing along the side returns",
+          "the mark repeating along the -X return",
           "the band rendering at the backdrop value"
         ]
       },
       {
         "id": "canopy-structure",
-        "name": "Canopy slab and columns",
+        "name": "Canopy slab, columns and ribbed deck",
         "required": true,
         "threshold": 0.8,
         "qualityCriteria": [
-          "Slab carried on two square columns reaching the ground",
-          "Columns share the shopfront framing material, as the plate shows"
+          "Two 0.42 m square white columns from the ground into the slab",
+          "Ribbed metal deck over the canopy L, membrane over the kiosk, a 0.28 m upstand between them"
         ],
         "evidenceRefs": [
-          "view-full"
+          "view-full",
+          "region-roofdeck"
         ],
         "failureModes": [
-          "columns floating clear of the ground or of the slab soffit"
+          "columns in the framing material",
+          "a flat deck with no ribs"
         ]
       },
       {
@@ -342,14 +369,30 @@
         "required": false,
         "threshold": 0.75,
         "qualityCriteria": [
-          "One wide pane under the canopy, framed and divided by four mullions",
-          "Reads as tinted glass, not as a hole in the wall"
+          "A full-height sliding-door set beside a window on a 0.7 m riser",
+          "Reads as glass over a dim interior, not as a hole or a flat tint"
         ],
         "evidenceRefs": [
-          "region-shopfront"
+          "region-shopfront",
+          "region-frame"
         ],
         "failureModes": [
           "pane compositing to the backdrop and reading as an opening"
+        ]
+      },
+      {
+        "id": "roof-plant",
+        "name": "Rooftop plant",
+        "required": false,
+        "threshold": 0.75,
+        "qualityCriteria": [
+          "One large and two small louvred condensers on the kiosk roof"
+        ],
+        "evidenceRefs": [
+          "region-roofplant"
+        ],
+        "failureModes": [
+          "three identical units"
         ]
       }
     ],
@@ -507,7 +550,7 @@
       "componentRefs": [
         "building-shell",
         "parapet",
-        "front-feature"
+        "roof-deck"
       ],
       "evidenceRefs": [
         "view-full"
@@ -528,12 +571,13 @@
         "extra-feature"
       ],
       "evidenceRefs": [
-        "region-fascia"
+        "region-fascia",
+        "region-stripe"
       ]
     },
     {
       "id": "canopy-structure",
-      "name": "Canopy slab and columns",
+      "name": "Canopy slab, columns and ribbed deck",
       "tier": "critical",
       "passIds": [
         "structural-pass",
@@ -542,11 +586,12 @@
       "minimumScore": 0.8,
       "mustPass": true,
       "componentRefs": [
-        "front-feature",
-        "side-feature"
+        "parapet",
+        "roof-deck"
       ],
       "evidenceRefs": [
-        "view-full"
+        "view-full",
+        "region-roofdeck"
       ]
     },
     {
@@ -563,7 +608,24 @@
         "shopfront-frame"
       ],
       "evidenceRefs": [
-        "region-shopfront"
+        "region-shopfront",
+        "region-frame"
+      ]
+    },
+    {
+      "id": "roof-plant",
+      "name": "Rooftop plant",
+      "tier": "important",
+      "passIds": [
+        "form-refinement"
+      ],
+      "minimumScore": 0.75,
+      "mustPass": false,
+      "componentRefs": [
+        "roof-deck"
+      ],
+      "evidenceRefs": [
+        "region-roofplant"
       ]
     }
   ],
@@ -696,11 +758,12 @@
     "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
   },
   "assumptions": [
-    "Rear (-Z) elevation is unobserved; authored plain. Confidence 0.20.",
-    "The pumps, apron and forecourt paving are NOT modelled. This asset is the kiosk and its canopy; the apron is the level builder's ground plane.",
-    "The plate shows a shop interior through the glazing. Not modelled: this prop is an exterior shell.",
-    "The plate's canopy overhangs further forward than 3.2 m relative to the building. Compressed to fit the declared 7.0 m depth, which is what pushes the shell back to z=0.30.",
-    "The ptt flame glyph is set as a typographic mark rather than the exact corporate droplet; the plate's own artwork is not reproduced."
+    "Rear (-Z) elevation is unobserved; authored plain with a white slab edge. Confidence 0.20.",
+    "The pumps, apron and forecourt paving are NOT modelled; the apron is the level builder's ground plane.",
+    "The plate is projectively INCONSISTENT (the band's edges converge left, the glazing's converge right), so each face was rectified on its own corners and only ratios within a face were trusted. The kiosk's -X wall lands between -0.5 and -1.4 depending on the face used; -1.0 is authored.",
+    "The canopy deck ribs are GEOMETRY (one instanced rib on a 0.16 m pitch) rather than a tile, because the plate's hero angle reads them as a raked profile against the light, which a flat tile cannot do.",
+    "The plate shows a dim shop interior through the glazing. The rectified shell front is baked onto the glazing as its image (shadows lifted to luma >= 88 for the hole gate), over a dark backdrop slab; nothing behind the glass is modelled -- this prop is an exterior shell.",
+    "The ptt flame is a flux/dev droplet-flame thresholded to a white mask, a stylised approximation of the trademark rather than the corporate artwork, set beside 'ptt' in Nimbus Sans Bold Italic."
   ],
   "coordinateFrame": {
     "up": "+Y",
@@ -708,7 +771,7 @@
     "handedness": "right",
     "origin": "base-center",
     "unitScale": "meters",
-    "notes": "Origin base-center as the asset declares. The shopfront and the marked fascia face +Z. Because the canopy takes the front 3.2 m of the 7.0 m depth, the shell face is set BACK to z=0.30 rather than pushed forward like every sibling; that setback is the single most consequential geometric decision in this prop."
+    "notes": "Origin base-center as the asset declares. The marked fascia and the shopfront face +Z. The kiosk is NOT centred: it occupies x -1.0..3.4 of the -4..4 slab and z -3.44..0.5 of the -3.5..3.5 depth, the band wraps only the -X edge and the service door is on +X, so no mirror plane is declared."
   },
   "silhouette": {
     "envelope": {
@@ -716,9 +779,9 @@
       "h": 4.6,
       "d": 7.0
     },
-    "description": "Not a prism: a low slab floating forward on two columns, with the enclosed volume behind and above it. The silhouette events are the two columns, the deep undercut between the slab and the ground, the parapet capping the rear volume, and three condensers behind it.",
+    "description": "Not a prism: a thick-edged slab floating on two columns with the enclosed volume under its rear-right, a deep undercut beneath the front strip and the whole -X wing, the low parapet ring and upstand on top, and three condensers breaking the roofline behind the upstand.",
     "envelopeDerivation": "x spans -4.00..+4.00 (parapet ring outer faces) = 8.00. y spans 0.00..4.60 = 4.60. z spans -3.50 (rear parapet) ..+3.50 = 7.00. The shell front face is set back to z=+2.50 so anything cantilevering off it lands ON the declared depth rather than overrunning it.",
-    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate normalises to w:h:d = 1 : 0.596 : 1.254 against the declared 1 : 0.575 : 0.875 -- height within 4%, but 43% deeper. The height agreement is the meaningful half: the proxy and the declaration agree about what this building IS. The depth divergence is the forecourt: the plate frames the canopy and its apron as part of the object, and the declared 7.0 m module is the kit's shared retail depth. The declaration wins and the canopy is fitted inside it at 3.2 m, which is why the shell is set back rather than the canopy being cropped."
+    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate normalises to w:h:d = 1 : 0.588 : 1.253 against the declared 1 : 0.575 : 0.875 -- height within 3%, 43% deeper. Its top-down maps (scratch/_ptt/top.mjs) agree with the rectified plate on what matters: ONE slab with a parapet ring on every edge, the kiosk under the rear 5.9 of its 9.7 m, two columns near the front edge, the condensers on the kiosk roof. The declared 8.0 x 4.6 x 7.0 m is the kit's shared retail module and wins; the proxy's symmetric column pair (+-2.4 m) is symmetry_mode=auto and the plate's rectified front (2.45 and 6.1 of 8 m) is used instead."
   },
   "viewEvidence": [
     {
@@ -774,7 +837,14 @@
       "viewpoint": "rear",
       "path": null,
       "confidence": 0.2,
-      "note": "NOT OBSERVED. Authored as plain render with the parapet returning and no openings."
+      "note": "NOT OBSERVED. Authored as plain render under a white slab edge, no openings."
+    },
+    {
+      "id": "region-left",
+      "viewpoint": "left",
+      "path": null,
+      "confidence": 0.3,
+      "note": "The -X wing is seen only as the band's return in the plate; its 7 m fascia is authored navy with the stripe (the return shows both), the kiosk's -X wall plain."
     }
   ],
   "componentTree": [
@@ -784,7 +854,7 @@
       "level": "macro",
       "role": "body",
       "importance": 1.0,
-      "confidence": 0.9,
+      "confidence": 0.88,
       "primitive": "box",
       "topologyClass": "assembled-solid",
       "topologyRationale": "One continuous render skin over four walls. Splitting it per elevation would cost a draw call per wall for the life of the prop to express one material.",
@@ -792,7 +862,7 @@
       "material": "wall",
       "parent": null,
       "geometryDescriptor": {
-        "topologyIntent": "Solid box, x -3.94..+3.94, y 0..3.55, z -3.44..+2.50. SOLID, not a ring: the prop is an exterior shell only ever seen from outside, so an interior would cost draw calls, geometries and VRAM for something nobody sees. Solid also means the shopfront needs no opening cut in it, which removes all four reveal faces and the z-fighting they cause.",
+        "topologyIntent": "Solid kiosk box under the rear-right of the slab: x -1.0..3.4, y 0..3.72, z -3.44..0.5. SOLID, not a ring -- an exterior shell only ever seen from outside.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -801,20 +871,20 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "Set 0.06 m INSIDE the parapet ring on every elevation (walls at +-3.94 and -3.44; parapet at +-4.00 and -3.50). That difference is a coping drip edge, and it is what stops a wall face and a parapet face being coplanar and co-facing.",
+        "zFightingNote": "Its top at 3.72 is buried 0.10 m inside the slab body (soffit 3.62); its +X face at 3.40 is 0.45 m inside the slab edge and its rear at -3.44 is 0.08 m inside the rear fascia, so no shell face shares a plane with any slab face.",
         "mergeNote": ""
       },
       "localFeatures": [],
       "colorMaterialRecipe": {
         "materialId": "wall",
-        "baseColor": "#d7d7d4",
-        "recipe": "Flat painted cement render, roughness 0.88, no texture set. Set BACK to z=0.30 so the canopy has the front 3.2 m of the declared depth.",
+        "baseColor": "#e2e2df",
+        "recipe": "Flat painted cement render, roughness 0.88, no texture set; the kiosk box x -1.0..3.4, y 0..3.72 (into the slab body), z -3.44..0.5 under the slab's rear-right.",
         "evidenceRef": "region-wall",
-        "confidence": 0.9,
-        "dominantAlbedo": "rgba(215, 215, 212, 1.0)",
-        "secondaryAlbedo": "rgba(215, 215, 212, 1.0)",
+        "confidence": 0.88,
+        "dominantAlbedo": "rgba(226, 226, 223, 1.0)",
+        "secondaryAlbedo": "rgba(226, 226, 223, 1.0)",
         "materialClass": "plastic",
-        "materialClassConfidence": 0.9
+        "materialClassConfidence": 0.88
       },
       "actionProfile": {
         "animationRole": "root",
@@ -875,7 +945,7 @@
       "material": "deck",
       "parent": "building-shell",
       "geometryDescriptor": {
-        "topologyIntent": "Thin slab spanning y 3.50..3.62, overlapping UNDER the parapet ring.",
+        "topologyIntent": "Membrane over the kiosk footprint, the canopy L 2 cm lower so the two never share a top plane, and the dark backdrop slab 3 cm inside the shell face.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -884,7 +954,7 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "Spans y 3.50..3.62 so its underside is sunk INTO the shell rather than resting on it. Authored flush, the deck bottom face and the parapet ring bottom face would both sit at y=3.550 facing down -- tens of square metres of coplanar co-facing surface, and exactly the pair check-coplanar catches.",
+        "zFightingNote": "Membrane top 4.42, canopy deck top 4.40, ring bottom 4.30 buried in both; the backdrop slab at z 0.465..0.475 behind the 0.49 pane back.",
         "mergeNote": ""
       },
       "localFeatures": [
@@ -892,16 +962,21 @@
           "id": "d7-roof-plant",
           "description": "three condensers",
           "delivery": "repetitionSystems.plant-condensers"
+        },
+        {
+          "id": "d9-ribbed-deck",
+          "description": "profiled deck ribs",
+          "delivery": "repetitionSystems.canopy-ribs"
         }
       ],
       "colorMaterialRecipe": {
         "materialId": "deck",
-        "baseColor": "#7c8590",
-        "recipe": "Grey deck membrane, roughness 0.93, seen only over the parapet.",
+        "baseColor": "#6f757c",
+        "recipe": "Membrane over the kiosk (tone #6F757C) at deck 4.30..4.42, the ribbed canopy deck over the L (tone #B8BBBD) at 4.30..4.40, and the dark backdrop slab behind the glazing -- one white-based material, one submission, vertex tones.",
         "evidenceRef": "region-roofdeck",
         "confidence": 0.79,
-        "dominantAlbedo": "rgba(124, 133, 144, 1.0)",
-        "secondaryAlbedo": "rgba(124, 133, 144, 1.0)",
+        "dominantAlbedo": "rgba(111, 117, 124, 1.0)",
+        "secondaryAlbedo": "rgba(111, 117, 124, 1.0)",
         "materialClass": "plastic",
         "materialClassConfidence": 0.79
       },
@@ -924,19 +999,19 @@
     },
     {
       "id": "parapet",
-      "name": "Parapet ring and fascia wall",
+      "name": "Roof slab, parapet ring, upstands, columns and door leaf",
       "level": "macro",
       "role": "structure",
-      "importance": 0.9,
+      "importance": 1.0,
       "confidence": 0.88,
       "primitive": "box",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "A continuous upstand ring in one material, with the front simply taller -- which a plan extrusion cannot express, since an extrude carries one height. Merged boxes are the right primitive, and anything else in the same material folds in here rather than costing its own submission.",
+      "topologyRationale": "Every white render part that is not the kiosk box shares one material, so it is one merged component and one draw call: the slab is the prop's largest surface and its columns are what carry it.",
       "materialId": "wall",
       "material": "wall",
       "parent": "building-shell",
       "geometryDescriptor": {
-        "topologyIntent": "Front fascia wall (7.96 wide) plus left, right and rear upstands (outer faces at +-3.98 / -3.48, inboard of the band), plus the 0.10 m white coping strip over the band on three sides, merged into ONE component and ONE draw call.",
+        "topologyIntent": "ONE 8 x 7 slab: body x -3.90..3.86, z -3.43..3.40, y 3.62..4.30 behind the fascias; white fascia runs 3.62..4.60 on +X (x 3.85..3.99) and the rear (z -3.50..-3.36); ring runs 4.30..4.60 on the front and -X behind the navy boards; upstands 4.30..4.58 along the kiosk's front and -X roof edges; 0.42 m columns at x +-1.85, z 2.72 into the body; the door leaf 3 cm proud of the +X wall.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -945,18 +1020,34 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "Parapet outer faces stand 0.06 m PROUD of the shell walls. Authored flush they would be coplanar and co-facing along all three elevations. The front box overlaps into the shell volume rather than butting it.",
-        "mergeNote": "Primitive is \"box\" because the schema enumerates primitives, but this is a MERGED cluster built into one BufferGeometry and submitted as ONE draw call."
+        "zFightingNote": "The body's +X face at 3.86 sits inside the +X run (3.85..3.99); its -X face at -3.90 is inside the -X navy board (-4.00..-3.88); its front at 3.40 inside the front board (3.38..3.50); its soffit at 3.62 is 1 cm below the stripe's bottom (3.63). The +X run stops at x 3.99 so the stripe wrap can own x 4.00; the rear run stops at x 3.86 so it shares no +X plane with the +X run. Upstand tops at 4.58 under the ring's 4.60.",
+        "mergeNote": "Merged multi-box cluster, one BufferGeometry, one draw call."
       },
-      "localFeatures": [],
+      "localFeatures": [
+        {
+          "id": "d3-canopy-columns",
+          "description": "two square columns",
+          "delivery": "geometryDescriptor merged boxes"
+        },
+        {
+          "id": "d4-canopy-slab",
+          "description": "the thick-edged slab and ring",
+          "delivery": "geometryDescriptor merged boxes"
+        },
+        {
+          "id": "d6-service-door",
+          "description": "white door leaf",
+          "delivery": "geometryDescriptor"
+        }
+      ],
       "colorMaterialRecipe": {
         "materialId": "wall",
-        "baseColor": "#d7d7d4",
-        "recipe": "The SAME render as the shell -- one material. Caps the rear volume at the declared height and is what hides the condensers from the street.",
+        "baseColor": "#e2e2df",
+        "recipe": "The SAME render as the kiosk: the slab body (soffit 3.62 to deck 4.30), the parapet ring 4.30..4.60 with the +X and rear edges white for the slab's full 1.0 m depth, the 0.28 m upstands on the deck, the two columns and the service door leaf -- one material, one submission.",
         "evidenceRef": "region-wall",
         "confidence": 0.88,
-        "dominantAlbedo": "rgba(215, 215, 212, 1.0)",
-        "secondaryAlbedo": "rgba(215, 215, 212, 1.0)",
+        "dominantAlbedo": "rgba(226, 226, 223, 1.0)",
+        "secondaryAlbedo": "rgba(226, 226, 223, 1.0)",
         "materialClass": "plastic",
         "materialClassConfidence": 0.88
       },
@@ -986,12 +1077,12 @@
       "confidence": 0.88,
       "primitive": "box",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "BoxGeometry lays its faces out as a known slice of the uv attribute, so one run can name the face that carries the graphic while its siblings sample a plain corner. That is what wraps a band round three sides at one draw call and one material.",
+      "topologyRationale": "BoxGeometry lays its faces out as a known slice of the uv attribute, so one board names the face carrying the mark while the return samples a joints-and-rust slice of the same atlas. One material, one draw call.",
       "materialId": "fascia",
       "material": "fascia",
       "parent": "parapet",
       "geometryDescriptor": {
-        "topologyIntent": "Navy band 0.68 m tall (plate: 56 px navy over 238 px soffit height at the front-right corner, x=760) wrapping the whole roof edge -- the +Z run at the envelope plane and both side runs the FULL 6.84 m depth, as the plate's right elevation shows the band running to the rear block. Marked on +Z only.",
+        "topologyIntent": "Navy band 3.78..4.60 on +Z and -X, marked on +Z only; the +X and rear edges are white render and carry no board.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -1000,27 +1091,31 @@
         "deformationStack": [],
         "uvStrategy": "authored",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "Side runs stop at z=3.34, BEHIND the front run's back face at 3.33..3.49 -- run to the same depth they intersected it and the canvas smeared through the overlap. Their outer faces are the +-4.00 envelope plane, so the parapet upstands were moved inboard to +-3.98 and the fascia wall narrowed to 7.96, neither of which may share that plane.",
+        "zFightingNote": "The -X board ends at z 3.38, the front board's back face, so the two touch and never overlap -- run to the same depth the front board's canvas smeared through the corner. Its outer face at -4.00 is 6.5 cm outside the red stripe's -X run (-3.995) below it.",
         "mergeNote": ""
       },
       "localFeatures": [
         {
           "id": "d1-ptt-mark",
-          "description": "ptt mark on the street-facing run",
-          "delivery": "post-construction baked WebP (sign/compose.py), per-run face UV"
+          "description": "ptt mark on the street-facing board",
+          "delivery": "baked atlas, per-board face UV"
+        },
+        {
+          "id": "d10-band-weathering",
+          "description": "panel joints and rust streaks",
+          "delivery": "baked atlas"
         }
       ],
       "colorMaterialRecipe": {
         "materialId": "fascia",
         "baseColor": "#343852",
-        "recipe": "Navy acrylic band, roughness 0.42. THREE runs in one component and one material: the +Z run names the face that samples the mark canvas, the two side returns are flagged plain and sample a flat corner of it.",
+        "recipe": "Navy acrylic band 0.82 m deep, roughness 0.42: the +Z board (7.96 m, z 3.38..3.50) and the -X return (6.86 m, x -4.00..-3.88), each naming the face that samples its atlas slice.",
         "evidenceRef": "region-fascia",
         "confidence": 0.88,
         "dominantAlbedo": "rgba(52, 56, 82, 1.0)",
         "secondaryAlbedo": "rgba(52, 56, 82, 1.0)",
         "materialClass": "plastic",
-        "materialClassConfidence": 0.88,
-        "postConstructionMap": "SIGN_IMAGE_DATA_URL, a 2048x512 WebP (~10 KB) embedded in the bundle and loaded through TextureLoader, colour forced white. Composed once in Pillow (scratch/<id>/sign/compose.py): emblem = fal-ai/flux/dev droplet-flame with an inner hollow drop (seed 21, ~$0.03), a stylised approximation of the trademark and recorded as such, thresholded to a white mask at 80 % of the band height; wordmark = 'ptt' in Nimbus Sans Bold Italic at 62 % of the flame height. Mark 2.22 x 0.54 m, x 0.52..0.80 of the run (plate: 0.50..0.66 foreshortened, right of centre). Baked because the first ship's fillText flame glyph fell back to a stray dot; drawFallbackSign() vector paths remain as the decode-failure fallback."
+        "materialClassConfidence": 0.88
       },
       "actionProfile": {
         "animationRole": "child",
@@ -1053,7 +1148,7 @@
       "material": "glass",
       "parent": "building-shell",
       "geometryDescriptor": {
-        "topologyIntent": "Single tinted pane, overlapping INTO the facade at the back and RECESSED behind the framing at the front, which is what makes it read as glass set into a frame.",
+        "topologyIntent": "Two panels in one component: the full-height door-set pane and the window pane, both at z 0.49..0.55.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -1062,18 +1157,18 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "Front face sits behind the frame and mullion fronts; back face is inside the facade solid. No coincident face.",
+        "zFightingNote": "Pane backs at 0.49 inside the shell face (0.50); fronts at 0.55 behind the mullions (0.50..0.58) and the frame (0.52..0.62).",
         "mergeNote": ""
       },
       "localFeatures": [],
       "colorMaterialRecipe": {
         "materialId": "glass",
-        "baseColor": "#6f7477",
-        "recipe": "Tinted pane, roughness 0.13, opacity 0.94. One wide pane under the canopy; the frame and mullions do the dividing.",
+        "baseColor": "#ffffff",
+        "recipe": "Two panes 2 cm into the shell face: the door set x -0.75..1.85 to the soffit and the window x 2.05..3.35 on its riser, carrying the rectified shell front as their image at opacity 0.93.",
         "evidenceRef": "region-shopfront",
         "confidence": 0.83,
-        "dominantAlbedo": "rgba(111, 116, 119, 1.0)",
-        "secondaryAlbedo": "rgba(111, 116, 119, 1.0)",
+        "dominantAlbedo": "rgba(255, 255, 255, 1.0)",
+        "secondaryAlbedo": "rgba(255, 255, 255, 1.0)",
         "materialClass": "glass",
         "materialClassConfidence": 0.83
       },
@@ -1122,148 +1217,21 @@
       },
       "localFeatures": [
         {
-          "id": "d5-mullions",
-          "description": "four mullions",
-          "delivery": "repetitionSystems.shopfront-mullions"
+          "id": "d5-shopfront-frames",
+          "description": "door set and window frames",
+          "delivery": "geometryDescriptor merged boxes"
         }
       ],
       "colorMaterialRecipe": {
         "materialId": "frame",
-        "baseColor": "#878a8c",
-        "recipe": "Mill-finish aluminium, metalness 0.25. Head, sill and two jambs merged into one geometry.",
+        "baseColor": "#a8abad",
+        "recipe": "Mill-finish aluminium, metalness 0.25: door-set jambs, head, transom (3.10), bottom rail and two meeting stiles with a pull handle; window jambs, head, transom (2.90), sill (0.65) and mullion -- one submission.",
         "evidenceRef": "region-frame",
         "confidence": 0.83,
-        "dominantAlbedo": "rgba(135, 138, 140, 1.0)",
-        "secondaryAlbedo": "rgba(135, 138, 140, 1.0)",
+        "dominantAlbedo": "rgba(168, 171, 173, 1.0)",
+        "secondaryAlbedo": "rgba(168, 171, 173, 1.0)",
         "materialClass": "metal",
         "materialClassConfidence": 0.83
-      },
-      "actionProfile": {
-        "animationRole": "child",
-        "pivot": null,
-        "sockets": [],
-        "transformChannels": {
-          "translate": false,
-          "rotate": false,
-          "scale": false,
-          "bend": false,
-          "twist": false,
-          "detach": false,
-          "visibility": true,
-          "materialState": true
-        },
-        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
-      }
-    },
-    {
-      "id": "front-feature",
-      "name": "Canopy slab and service door",
-      "level": "macro",
-      "role": "structure",
-      "importance": 0.95,
-      "confidence": 0.9,
-      "primitive": "box",
-      "topologyClass": "assembled-solid",
-      "topologyRationale": "Two parts in one render material, so the prop's largest single surface costs no extra shader switch.",
-      "materialId": "wall",
-      "material": "wall",
-      "parent": "building-shell",
-      "geometryDescriptor": {
-        "topologyIntent": "The roof slab extending forward to z=3.48 over the apron, plus a flush service door standing proud of the +X wall.",
-        "edgeTreatment": {
-          "type": "chamfer",
-          "bevelRadius": 0.012,
-          "segments": 1
-        },
-        "deformationStack": [],
-        "uvStrategy": "generated procedural coordinates",
-        "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "The slab is 0.30 thick, not 0.32: at 0.32 its top face sat at y=3.620 with the roof deck's top face, coplanar and co-facing over 18.6 m2.",
-        "mergeNote": ""
-      },
-      "localFeatures": [
-        {
-          "id": "d4-canopy-slab",
-          "description": "roof slab extending forward over the apron",
-          "delivery": "geometryDescriptor merged boxes"
-        },
-        {
-          "id": "d6-service-door",
-          "description": "flush service door",
-          "delivery": "geometryDescriptor"
-        }
-      ],
-      "colorMaterialRecipe": {
-        "materialId": "wall",
-        "baseColor": "#d7d7d4",
-        "recipe": "The canopy slab and the +X service door ride ONE component because both are the white render -- grouping by material rather than by location is what holds the draw calls down.",
-        "evidenceRef": "region-wall",
-        "confidence": 0.9,
-        "dominantAlbedo": "rgba(215, 215, 212, 1.0)",
-        "secondaryAlbedo": "rgba(215, 215, 212, 1.0)",
-        "materialClass": "plastic",
-        "materialClassConfidence": 0.9
-      },
-      "actionProfile": {
-        "animationRole": "child",
-        "pivot": null,
-        "sockets": [],
-        "transformChannels": {
-          "translate": false,
-          "rotate": false,
-          "scale": false,
-          "bend": false,
-          "twist": false,
-          "detach": false,
-          "visibility": true,
-          "materialState": true
-        },
-        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
-      }
-    },
-    {
-      "id": "side-feature",
-      "name": "Canopy columns",
-      "level": "macro",
-      "role": "structure",
-      "importance": 0.85,
-      "confidence": 0.8,
-      "primitive": "box",
-      "topologyClass": "assembled-solid",
-      "topologyRationale": "Two identical columns in one component; too few to earn an InstancedMesh against the geometry ceiling.",
-      "materialId": "frame",
-      "material": "frame",
-      "parent": "front-feature",
-      "geometryDescriptor": {
-        "topologyIntent": "Two 0.34 m square columns at x=+-2.60, SYMMETRIC about the centreline, from the ground into the slab (0..3.40). The plate's pair is asymmetric (0.19 and 0.65 of the run); symmetric placement per user direction 2026-08-26.",
-        "edgeTreatment": {
-          "type": "chamfer",
-          "bevelRadius": 0.012,
-          "segments": 1
-        },
-        "deformationStack": [],
-        "uvStrategy": "generated procedural coordinates",
-        "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "Column tops sink into the slab rather than meeting its soffit plane.",
-        "mergeNote": ""
-      },
-      "localFeatures": [
-        {
-          "id": "d3-canopy-columns",
-          "description": "two square columns",
-          "delivery": "geometryDescriptor merged boxes"
-        }
-      ],
-      "colorMaterialRecipe": {
-        "materialId": "frame",
-        "baseColor": "#878a8c",
-        "recipe": "The two columns carry the shopfront FRAMING material, not the render: in the plate they are the same clad aluminium section as the shopfront jambs.",
-        "evidenceRef": "region-frame",
-        "confidence": 0.8,
-        "dominantAlbedo": "rgba(135, 138, 140, 1.0)",
-        "secondaryAlbedo": "rgba(135, 138, 140, 1.0)",
-        "materialClass": "metal",
-        "materialClassConfidence": 0.8
       },
       "actionProfile": {
         "animationRole": "child",
@@ -1294,9 +1262,9 @@
       "topologyRationale": "Three runs of the same stripe merged into one geometry.",
       "materialId": "red",
       "material": "red",
-      "parent": "front-feature",
+      "parent": "parapet",
       "geometryDescriptor": {
-        "topologyIntent": "Red lip under the navy band on the front and along BOTH full sides (6.85 m), matching the plate's right elevation.",
+        "topologyIntent": "Red stripe 3.63..3.78 under the band on the front (z 3.36..3.49) and -X (x -3.995..-3.875), wrapping 0.24 m onto the +X face at the front corner (x 3.87..4.00).",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -1305,26 +1273,81 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "Front run 7.96 wide at z 3.36..3.50, 1 cm proud of the band's front face at 3.49; side runs at +-3.99 outer, 1 cm inboard of the band plane.",
+        "zFightingNote": "Front face at 3.49, 1 cm behind the band board's 3.50; bottom at 3.63, 1 cm above the soffit; the -X run 5 mm inside the -X board's outer face; the wrap owns x 4.00 alone because the white +X run stops at 3.99.",
         "mergeNote": ""
       },
       "localFeatures": [
         {
           "id": "d2-red-stripe",
-          "description": "red stripe on three edges",
+          "description": "red stripe on the front and -X edges",
           "delivery": "geometryDescriptor merged boxes"
         }
       ],
       "colorMaterialRecipe": {
         "materialId": "red",
-        "baseColor": "#b0292b",
-        "recipe": "Red enamel stripe, roughness 0.50. Three runs, one material, one draw call.",
+        "baseColor": "#b42a2c",
+        "recipe": "Red enamel stripe, roughness 0.50. Front run, -X run and the corner wrap, one material, one draw call.",
         "evidenceRef": "region-stripe",
         "confidence": 0.83,
-        "dominantAlbedo": "rgba(176, 41, 43, 1.0)",
-        "secondaryAlbedo": "rgba(176, 41, 43, 1.0)",
+        "dominantAlbedo": "rgba(180, 42, 44, 1.0)",
+        "secondaryAlbedo": "rgba(180, 42, 44, 1.0)",
         "materialClass": "plastic",
         "materialClassConfidence": 0.83
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "extra-feature-2",
+      "name": "Service-door frame and fittings",
+      "level": "meso",
+      "role": "detail",
+      "importance": 0.5,
+      "confidence": 0.8,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Small metal fittings on the plant material cost no shader switch and one submission.",
+      "materialId": "galv",
+      "material": "galv",
+      "parent": "parapet",
+      "geometryDescriptor": {
+        "topologyIntent": "Door frame 4.5 cm proud around the leaf, a handle, and the condenser's refrigerant pipe.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Frame x 3.40..3.445 with the leaf inside it at 3.40..3.43; the handle proud at 3.45..3.47.",
+        "mergeNote": ""
+      },
+      "localFeatures": [],
+      "colorMaterialRecipe": {
+        "materialId": "galv",
+        "baseColor": "#c4c9cd",
+        "recipe": "Galvanised fittings on the plant material: the service door's frame and handle, and a pipe run from the large condenser.",
+        "evidenceRef": "region-roofplant",
+        "confidence": 0.8,
+        "dominantAlbedo": "rgba(196, 201, 205, 1.0)",
+        "secondaryAlbedo": "rgba(196, 201, 205, 1.0)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.8
       },
       "actionProfile": {
         "animationRole": "child",
@@ -1350,8 +1373,8 @@
       "name": "Painted cement render",
       "type": "standard",
       "shaderModel": "MeshStandardMaterial / PBR approximation",
-      "baseColor": "#d7d7d4",
-      "color": "#d7d7d4",
+      "baseColor": "#e2e2df",
+      "color": "#e2e2df",
       "roughness": {
         "base": 0.88,
         "variation": 0.05,
@@ -1360,7 +1383,7 @@
       },
       "metalness": 0.0,
       "albedo": {
-        "dominant": "#d7d7d4",
+        "dominant": "#e2e2df",
         "secondary": [
           "#969696",
           "#C5C4BF",
@@ -1373,7 +1396,7 @@
       "textureless": {
         "declared": true,
         "evidence": [
-          "Measured on viewEvidence region-wall (PBR confidence 0.767): a near-white render field. The plate carries weathering streaks below the parapet; those are wear, not the material, and are not authored -- the base albedo is the clean render.",
+          "Measured on viewEvidence region-wall (PBR confidence 0.767) at #D9D9D6; authored #E2E2DF because a side face renders at ~0.76 of the authored value under the harness and the render tile only darkens. Streaks and float marks are a drawn post-construction tile in multiplier space.",
           "Flat render has no detail resolvable at prop distance, so no texture set."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
@@ -1387,20 +1410,20 @@
     },
     {
       "id": "deck",
-      "name": "Roof deck membrane",
+      "name": "Roof deck: ribbed metal canopy deck and kiosk membrane",
       "type": "standard",
       "shaderModel": "MeshStandardMaterial / PBR approximation",
-      "baseColor": "#7c8590",
-      "color": "#7c8590",
+      "baseColor": "#b8bbbd",
+      "color": "#b8bbbd",
       "roughness": {
-        "base": 0.93,
+        "base": 0.9,
         "variation": 0.05,
         "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
         "map": "material-evidence/deck_roughness.png"
       },
       "metalness": 0.0,
       "albedo": {
-        "dominant": "#7c8590",
+        "dominant": "#b8bbbd",
         "secondary": [
           "#717C89",
           "#77808F",
@@ -1413,7 +1436,7 @@
       "textureless": {
         "declared": true,
         "evidence": [
-          "Measured on viewEvidence region-roofdeck (PBR confidence 0.791): a grey ribbed deck seen only over the parapet from above. The ribbing is below the resolvable band at prop distance."
+          "Measured on viewEvidence region-roofdeck (PBR confidence 0.791): a light grey profiled metal deck (#B8BBBD) over the canopy and a mid-grey membrane (#6F757C) over the kiosk, seen over the parapet from above. The material base is WHITE and each region takes its tone as a vertex colour; the ribs are instanced geometry on the same material and the membrane's laps are a drawn tile."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
       },
@@ -1451,15 +1474,15 @@
             "#FFFFFF",
             "#343852"
           ],
-          "evidence": "crops/navy.png -- white flame glyph and lowercase italic \"ptt\" on navy, placed right of centre on the street-facing run. Post-construction canvas. The two side returns are PLAIN and sample a flat corner of the same canvas, because in the plate the band wraps the canopy but the mark appears on one face only."
+          "evidence": "crops/navy.png -- white flame glyph and lowercase italic \"ptt\" on navy, centred at world x +1.5 (rectified front 5.55 of 8 m), 0.51 m tall. Baked atlas, UV-region-split so only the +Z board samples the mark; the -X return samples joints and rust only."
         }
       ],
       "finishClass": "plastic",
       "textureless": {
         "declared": true,
         "evidence": [
-          "Measured on viewEvidence region-fascia (PBR confidence 0.730) at #282B49 and lifted slightly to #343852. The band is a deep navy and the harness supplies no environment map, so at the measured value its shaded returns sat close to the backdrop luma of 58.",
-          "Acrylic sign face is optically smooth; the mark is a generated canvas assigned AFTER material construction, so the textureless declaration does not touch it."
+          "Measured on viewEvidence region-fascia (PBR confidence 0.730) at #282B49 and lifted to #343852 (saturation 0.36) so the hole gate holds on chroma rather than on a lifted grey.",
+          "The mark, the composite-panel joints at 1.0 m pitch and the rust streaks bleeding from the top edge are ONE baked atlas (2048 x 1024 WebP, sign/compose.py) assigned AFTER material construction; the front board and the -X return sample their own u-slices of it."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
       },
@@ -1472,20 +1495,20 @@
     },
     {
       "id": "glass",
-      "name": "Tinted plate glazing",
+      "name": "Tinted plate glazing over a dim shop",
       "type": "standard",
       "shaderModel": "MeshStandardMaterial / PBR approximation",
-      "baseColor": "#6f7477",
-      "color": "#6f7477",
+      "baseColor": "#ffffff",
+      "color": "#ffffff",
       "roughness": {
-        "base": 0.13,
+        "base": 0.12,
         "variation": 0.05,
         "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
         "map": "material-evidence/glass_roughness.png"
       },
       "metalness": 0.0,
       "albedo": {
-        "dominant": "#6f7477",
+        "dominant": "#ffffff",
         "secondary": [
           "#383D3E",
           "#3D4346",
@@ -1497,13 +1520,13 @@
         {
           "id": "d1-ptt-mark",
           "region": "canopy-fascia",
-          "roughness": 0.13,
+          "roughness": 0.12,
           "evidence": "crops/glass.png -- white ptt flame glyph and lowercase italic wordmark on the navy street-facing band"
         },
         {
           "id": "d8-glazing-gloss",
           "region": "shopfront",
-          "roughness": 0.13,
+          "roughness": 0.12,
           "evidence": "crops/glass.png -- plate glass reads as a tight specular lobe, unlike every other surface"
         }
       ],
@@ -1511,8 +1534,8 @@
       "textureless": {
         "declared": true,
         "evidence": [
-          "Measured on viewEvidence region-shopfront (PBR confidence 0.834) at #454A4B and LIFTED to #6F7477. At the measured value the pane composited to the harness backdrop luma and the whole shopfront was classified as a hole in the silhouette. A deliberate deviation from the measurement, recorded with its reason.",
-          "Opacity 0.94: a building shell has nothing behind it, so the glazing is authored as a tinted mostly-opaque pane rather than a window onto an empty interior."
+          "Measured on viewEvidence region-shopfront (PBR confidence 0.834) at #454A4B. The pane carries the rectified shell front as its image (sign/glass.webp, shadows lifted 0 -> 88) at opacity 0.93 over a dark backdrop slab, so the shopfront reads as glass with an interior behind it rather than as a flat tint -- and no texel sits near the harness backdrop luma. The material base is white because the image carries the tint.",
+          "Textureless regardless: plate glass is optically smooth; the image is a post-construction map."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
       },
@@ -1528,17 +1551,17 @@
       "name": "Anodised aluminium framing",
       "type": "standard",
       "shaderModel": "MeshStandardMaterial / PBR approximation",
-      "baseColor": "#878a8c",
-      "color": "#878a8c",
+      "baseColor": "#a8abad",
+      "color": "#a8abad",
       "roughness": {
-        "base": 0.55,
+        "base": 0.5,
         "variation": 0.05,
         "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
         "map": "material-evidence/frame_roughness.png"
       },
       "metalness": 0.25,
       "albedo": {
-        "dominant": "#878a8c",
+        "dominant": "#a8abad",
         "secondary": [
           "#7F8790",
           "#6E7275",
@@ -1551,8 +1574,8 @@
       "textureless": {
         "declared": true,
         "evidence": [
-          "Measured on viewEvidence region-frame (PBR confidence 0.831): mill-finish aluminium, shared by the shopfront framing, the mullions and the two canopy columns, which are the same clad section in the plate.",
-          "Metalness 0.25, below physical: with no environment map a high-metalness surface renders black. Albedo stays measured; metalness is what the rig makes wrong."
+          "Measured on viewEvidence region-frame (PBR confidence 0.831): mill-finish aluminium on the sliding-door set, the window and the mullions. The columns are NOT this material: the rectified front reads them as the same white render as the kiosk.",
+          "Metalness 0.25, below physical: with no environment map a high-metalness surface renders black."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
       },
@@ -1568,8 +1591,8 @@
       "name": "Red enamel stripe",
       "type": "standard",
       "shaderModel": "MeshStandardMaterial / PBR approximation",
-      "baseColor": "#b0292b",
-      "color": "#b0292b",
+      "baseColor": "#b42a2c",
+      "color": "#b42a2c",
       "roughness": {
         "base": 0.5,
         "variation": 0.05,
@@ -1578,7 +1601,7 @@
       },
       "metalness": 0.0,
       "albedo": {
-        "dominant": "#b0292b",
+        "dominant": "#b42a2c",
         "secondary": [
           "#722423",
           "#692929",
@@ -1591,7 +1614,7 @@
       "textureless": {
         "declared": true,
         "evidence": [
-          "Measured on viewEvidence region-stripe (PBR confidence 0.831). The stripe is one of the two marks that make this a PTT station rather than a generic kiosk, so it earns its own material even though it is 0.14 m deep."
+          "Measured on viewEvidence region-stripe (PBR confidence 0.831). Runs under the band on the front and the -X edge and wraps 0.24 m round the front-right corner, as the plate shows."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
       },
@@ -1604,20 +1627,20 @@
     },
     {
       "id": "galv",
-      "name": "Galvanised steel plant",
+      "name": "Galvanised steel plant and fittings",
       "type": "standard",
       "shaderModel": "MeshStandardMaterial / PBR approximation",
-      "baseColor": "#8b9096",
-      "color": "#8b9096",
+      "baseColor": "#c4c9cd",
+      "color": "#c4c9cd",
       "roughness": {
-        "base": 0.52,
+        "base": 0.55,
         "variation": 0.05,
         "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
         "map": "material-evidence/galv_roughness.png"
       },
-      "metalness": 0.3,
+      "metalness": 0.25,
       "albedo": {
-        "dominant": "#8b9096",
+        "dominant": "#c4c9cd",
         "secondary": [
           "#626B76",
           "#272C30",
@@ -1630,7 +1653,7 @@
       "textureless": {
         "declared": true,
         "evidence": [
-          "Measured on viewEvidence region-roofplant (PBR confidence 0.860): galvanised steel carries a spangle at hand distance and nothing at prop distance."
+          "Measured on viewEvidence region-roofplant (PBR confidence 0.860); authored as #B6BCC1 lifted by the baked spangle tile's 0.843 mean multiplier. Per-part vertex tones carry the dark louvre recess and blades; the service-door frame and handle share the material."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
       },
@@ -1645,8 +1668,8 @@
   "repetitionSystems": [
     {
       "id": "shopfront-mullions",
-      "name": "Shopfront mullions",
-      "instanceCount": 4,
+      "name": "Door-set mullions",
+      "instanceCount": 2,
       "sourceComponent": "shopfront-frame",
       "material": "frame",
       "renderAs": "InstancedMesh",
@@ -1654,21 +1677,19 @@
       "placement": {
         "axis": "X",
         "positions": [
-          -1.9,
-          -0.85,
-          0.2,
-          1.25
+          0.0,
+          1.55
         ],
-        "y": 1.58,
-        "z": 0.42
+        "y": 1.61,
+        "z": 0.54
       },
       "instanceDimensions": {
-        "width": 0.07,
-        "height": 2.74,
+        "width": 0.06,
+        "height": 2.98,
         "depth": 0.08
       },
-      "rationale": "Four mullions on a 1.05 m pitch across the shopfront, matching the plate.",
-      "zFightingNote": "Mullions sit inside the frame depth band at both ends and proud of the glazing."
+      "rationale": "The door set's two fixed-light mullions at the rectified plate positions, one geometry.",
+      "zFightingNote": "Mullions z 0.50..0.58, inside the frame band at the back and proud of the pane."
     },
     {
       "id": "plant-condensers",
@@ -1682,37 +1703,59 @@
         "mode": "explicit",
         "positions": [
           [
-            0.35,
-            3.6,
-            -1.35
+            0.5,
+            4.42,
+            -0.65
           ],
           [
-            1.65,
-            3.6,
-            -1.95
+            2.4,
+            4.42,
+            -1.05
           ],
           [
-            2.65,
-            3.6,
-            -1.95
+            3.02,
+            4.42,
+            -1.1
           ]
         ]
       },
       "instanceDimensions": {
-        "width": 0.95,
+        "width": 1.04,
         "height": 0.92,
-        "depth": 0.85
+        "depth": 0.94
       },
       "integralFeature": {
         "id": "cowl",
         "geometry": "cylinder",
         "radius": 0.3,
-        "height": 0.1,
-        "segments": 16,
-        "note": "Casing, fan cowl and four feet MERGED into the single instanced geometry."
+        "height": 0.03,
+        "segments": 20,
+        "note": "Casing, flanged lid, cowl ring, louvre recess with five blades and four feet MERGED into the single instanced geometry with per-part vertex tones; the two small units are the same geometry at a uniform 0.62 scale carried on the instance matrix."
       },
-      "rationale": "Three units clustered to the +X end of the roof, as the plate shows.",
-      "zFightingNote": "Feet sink into the roof deck rather than sharing its top plane."
+      "rationale": "One large unit left of centre and two small ones at the +X end of the kiosk roof, as the plate and the proxy's height map show. One geometry, one draw call.",
+      "zFightingNote": "Feet sink into the membrane rather than sharing its top plane."
+    },
+    {
+      "id": "canopy-ribs",
+      "name": "Canopy deck ribs",
+      "instanceCount": 212,
+      "sourceComponent": "roof-deck",
+      "material": "deck",
+      "renderAs": "InstancedMesh",
+      "sharedGeometry": "rib-box",
+      "placement": {
+        "mode": "grid",
+        "pitchX": 0.16,
+        "rows": "front strip x -3.80..3.80 at z 0.99/1.93/2.87; -X wing x -3.80..-1.14 at z -2.95/-2.01/-1.07/-0.13",
+        "y": 4.415
+      },
+      "instanceDimensions": {
+        "width": 0.05,
+        "height": 0.03,
+        "depth": 0.94
+      },
+      "rationale": "The profiled metal canopy deck is the roof's identity from the hero angle; 212 instances of one rib box on a 0.16 m pitch tile the L at one draw call and ~2500 triangles.",
+      "zFightingNote": "Rib bottoms at 4.40 sit ON the canopy deck top (4.40) as opposed faces; tops at 4.43 are above the membrane's 4.42 and the rows abut end to end without overlap."
     }
   ],
   "buildPasses": [
@@ -1823,272 +1866,290 @@
   ],
   "visualEvidence": [
     {
-      "timestamp": "2026-08-26T16:04:03.882134+00:00",
+      "timestamp": "2026-09-02T02:08:44.407349+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.87,
-        "formDetail": 0.83,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.8
-      },
-      "featureReviews": [
-        {
-          "id": "overall-silhouette",
-          "tier": "critical",
-          "score": 0.86,
-          "threshold": 0.85,
-          "passed": true,
-          "evidence": "Envelope built at exactly 8.00 x 4.60 x 7.00 m against the declared 8 x 4.6 x 7, with the enclosed volume at the REAR and the canopy taking the front 3.2 m.",
-          "notes": "The setback is the whole prop: what reads as a separate awning is the building's own roof slab running forward on two columns, so the shell face is at z=0.30 rather than pushed forward like every sibling. Meshy reads the plate 43% deeper than the declared module -- the forecourt, which the plate frames as part of the object -- while agreeing on height within 4%. The kit's shared 7.0 m depth wins and the canopy is fitted inside it, so it keeps its proportion instead of being cropped. The red stripe overran to 7.01 m at its first depth and was caught by measurement, not by eye."
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/cmp.png",
-      "cameraView": "",
-      "notes": "",
-      "aiVisionNotes": ""
-    },
-    {
-      "timestamp": "2026-08-26T16:04:03.963824+00:00",
-      "passId": "structural-pass",
-      "estimatedFidelity": 0.85,
-      "aiVisionScore": 0.85,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.87,
-        "formDetail": 0.83,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.8
-      },
-      "featureReviews": [
-        {
-          "id": "overall-silhouette",
-          "tier": "critical",
-          "score": 0.86,
-          "threshold": 0.85,
-          "passed": true,
-          "evidence": "Envelope built at exactly 8.00 x 4.60 x 7.00 m against the declared 8 x 4.6 x 7, with the enclosed volume at the REAR and the canopy taking the front 3.2 m.",
-          "notes": "The setback is the whole prop: what reads as a separate awning is the building's own roof slab running forward on two columns, so the shell face is at z=0.30 rather than pushed forward like every sibling. Meshy reads the plate 43% deeper than the declared module -- the forecourt, which the plate frames as part of the object -- while agreeing on height within 4%. The kit's shared 7.0 m depth wins and the canopy is fitted inside it, so it keeps its proportion instead of being cropped. The red stripe overran to 7.01 m at its first depth and was caught by measurement, not by eye."
-        },
-        {
-          "id": "canopy-structure",
-          "tier": "critical",
-          "score": 0.84,
-          "threshold": 0.8,
-          "passed": true,
-          "evidence": "0.30 m slab reaching z=3.48, carried on two 0.34 m square columns from the ground to its soffit, in the shopfront framing material.",
-          "notes": "The columns take the FRAME material rather than the render: in the plate they are the same clad aluminium section as the shopfront jambs. The slab is 0.30 thick, not 0.32: at 0.32 its top face sat at y=3.620 with the roof deck's top face, coplanar and co-facing over 18.6 m2."
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/cmp.png",
-      "cameraView": "",
-      "notes": "",
-      "aiVisionNotes": ""
-    },
-    {
-      "timestamp": "2026-08-26T16:04:04.042048+00:00",
-      "passId": "form-refinement",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.87,
-        "formDetail": 0.83,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.8
-      },
-      "featureReviews": [
-        {
-          "id": "brand-fascia",
-          "tier": "critical",
-          "score": 0.85,
-          "threshold": 0.85,
-          "passed": true,
-          "evidence": "White flame glyph and italic 'ptt' on navy, right of centre on the street-facing run, with the red enamel stripe under the band on all three exposed edges.",
-          "notes": "The band wraps three sides at ONE component and one material: the +Z run names the face that samples the canvas, the two returns are flagged plain and sample a flat corner of it. Two distinct faults had to be fixed before that held. The returns originally ran to the same depth as the front run and intersected it, smearing the canvas through the overlap; and `plain` was implemented as a sentinel slice index of -1, which still satisfied `i >= start && i < start+4` for vertices 0-2, so three corners of the +X face kept sampling the wordmark band. The test is now an explicit boolean. The flame is set as a typographic mark, not the corporate droplet -- the one part of this feature that is an approximation rather than a match."
-        },
-        {
-          "id": "canopy-structure",
-          "tier": "critical",
-          "score": 0.84,
-          "threshold": 0.8,
-          "passed": true,
-          "evidence": "0.30 m slab reaching z=3.48, carried on two 0.34 m square columns from the ground to its soffit, in the shopfront framing material.",
-          "notes": "The columns take the FRAME material rather than the render: in the plate they are the same clad aluminium section as the shopfront jambs. The slab is 0.30 thick, not 0.32: at 0.32 its top face sat at y=3.620 with the roof deck's top face, coplanar and co-facing over 18.6 m2."
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/cmp.png",
-      "cameraView": "",
-      "notes": "",
-      "aiVisionNotes": ""
-    },
-    {
-      "timestamp": "2026-08-26T16:04:04.121469+00:00",
-      "passId": "material-pass",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.87,
-        "formDetail": 0.83,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.8
-      },
-      "featureReviews": [
-        {
-          "id": "brand-fascia",
-          "tier": "critical",
-          "score": 0.85,
-          "threshold": 0.85,
-          "passed": true,
-          "evidence": "White flame glyph and italic 'ptt' on navy, right of centre on the street-facing run, with the red enamel stripe under the band on all three exposed edges.",
-          "notes": "The band wraps three sides at ONE component and one material: the +Z run names the face that samples the canvas, the two returns are flagged plain and sample a flat corner of it. Two distinct faults had to be fixed before that held. The returns originally ran to the same depth as the front run and intersected it, smearing the canvas through the overlap; and `plain` was implemented as a sentinel slice index of -1, which still satisfied `i >= start && i < start+4` for vertices 0-2, so three corners of the +X face kept sampling the wordmark band. The test is now an explicit boolean. The flame is set as a typographic mark, not the corporate droplet -- the one part of this feature that is an approximation rather than a match."
-        },
-        {
-          "id": "shopfront",
-          "tier": "important",
-          "score": 0.8,
-          "threshold": 0.75,
-          "passed": true,
-          "evidence": "One 5.20 x 2.70 m pane under the canopy, framed on four sides and divided by four mullions on a 1.05 m pitch.",
-          "notes": "The glazing ships at #6F7477 rather than its measured #454A4B: at the measured value it composited to the harness backdrop luma of 58 and the whole shopfront was classified as an enclosed hole in the silhouette. Opacity 0.94 -- a building shell has nothing behind it, so the pane is authored as tinted and mostly opaque rather than as a window onto an empty interior."
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/cmp.png",
-      "cameraView": "",
-      "notes": "",
-      "aiVisionNotes": ""
-    },
-    {
-      "timestamp": "2026-08-26T16:04:04.204924+00:00",
-      "passId": "surface-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.87,
-        "formDetail": 0.83,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.8
-      },
-      "featureReviews": [],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/cmp.png",
-      "cameraView": "",
-      "notes": "",
-      "aiVisionNotes": ""
-    },
-    {
-      "timestamp": "2026-08-26T16:04:04.288290+00:00",
-      "passId": "lighting-pass",
-      "estimatedFidelity": 0.8,
-      "aiVisionScore": 0.8,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.87,
-        "formDetail": 0.83,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.8
-      },
-      "featureReviews": [],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/cmp.png",
-      "cameraView": "",
-      "notes": "",
-      "aiVisionNotes": ""
-    },
-    {
-      "timestamp": "2026-08-26T16:04:04.374840+00:00",
-      "passId": "interaction-pass",
       "estimatedFidelity": 0.9,
       "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.87,
-        "formDetail": 0.83,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.9
       },
-      "featureReviews": [],
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at 8.00 x 4.60 x 7.00 m (x -4.00 navy board .. +4.00 stripe wrap, z -3.50 rear run .. +3.50 board). ONE 8 x 7 slab at 4.60 with a 1.0 m edge fascia (navy 0.82 + red 0.15, soffit 3.62) and a 0.30 m parapet ring, on two 0.42 m columns at x +-1.85; the kiosk under its rear-right at x -1.0..3.4, z -3.44..0.5, so the front strip and the -X wing are open canopy -- what the rectified front, the pixel scans and the proxy's top-down maps all agree on.",
+          "notes": "Second build. The first had the canopy hung BELOW a full-width shell with a 1.05 m upstand wall on the roof, none of which the plate shows. Residuals: the plate is projectively inconsistent, so the kiosk's -X wall (authored -1.0) is +-0.4 m; Meshy still reads the whole plate 43% deeper than the kit's shared 7.0 m module, which wins."
+        }
+      ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/beauty-315.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/beauty-045.png",
       "comparisonImage": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/cmp.png",
       "cameraView": "",
       "notes": "",
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-26T16:04:04.464481+00:00",
-      "passId": "optimization-pass",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "timestamp": "2026-09-02T02:08:44.490815+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.87,
-        "formDetail": 0.83,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.92,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope built at exactly 8.00 x 4.60 x 7.00 m against the declared 8 x 4.6 x 7, with the enclosed volume at the REAR and the canopy taking the front 3.2 m.",
-          "notes": "The setback is the whole prop: what reads as a separate awning is the building's own roof slab running forward on two columns, so the shell face is at z=0.30 rather than pushed forward like every sibling. Meshy reads the plate 43% deeper than the declared module -- the forecourt, which the plate frames as part of the object -- while agreeing on height within 4%. The kit's shared 7.0 m depth wins and the canopy is fitted inside it, so it keeps its proportion instead of being cropped. The red stripe overran to 7.01 m at its first depth and was caught by measurement, not by eye."
-        },
-        {
-          "id": "brand-fascia",
-          "tier": "critical",
-          "score": 0.85,
-          "threshold": 0.85,
-          "passed": true,
-          "evidence": "White flame glyph and italic 'ptt' on navy, right of centre on the street-facing run, with the red enamel stripe under the band on all three exposed edges.",
-          "notes": "The band wraps three sides at ONE component and one material: the +Z run names the face that samples the canvas, the two returns are flagged plain and sample a flat corner of it. Two distinct faults had to be fixed before that held. The returns originally ran to the same depth as the front run and intersected it, smearing the canvas through the overlap; and `plain` was implemented as a sentinel slice index of -1, which still satisfied `i >= start && i < start+4` for vertices 0-2, so three corners of the +X face kept sampling the wordmark band. The test is now an explicit boolean. The flame is set as a typographic mark, not the corporate droplet -- the one part of this feature that is an approximation rather than a match."
+          "evidence": "Envelope built at 8.00 x 4.60 x 7.00 m (x -4.00 navy board .. +4.00 stripe wrap, z -3.50 rear run .. +3.50 board). ONE 8 x 7 slab at 4.60 with a 1.0 m edge fascia (navy 0.82 + red 0.15, soffit 3.62) and a 0.30 m parapet ring, on two 0.42 m columns at x +-1.85; the kiosk under its rear-right at x -1.0..3.4, z -3.44..0.5, so the front strip and the -X wing are open canopy -- what the rectified front, the pixel scans and the proxy's top-down maps all agree on.",
+          "notes": "Second build. The first had the canopy hung BELOW a full-width shell with a 1.05 m upstand wall on the roof, none of which the plate shows. Residuals: the plate is projectively inconsistent, so the kiosk's -X wall (authored -1.0) is +-0.4 m; Meshy still reads the whole plate 43% deeper than the kit's shared 7.0 m module, which wins."
         },
         {
           "id": "canopy-structure",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.92,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "0.30 m slab reaching z=3.48, carried on two 0.34 m square columns from the ground to its soffit, in the shopfront framing material.",
-          "notes": "The columns take the FRAME material rather than the render: in the plate they are the same clad aluminium section as the shopfront jambs. The slab is 0.30 thick, not 0.32: at 0.32 its top face sat at y=3.620 with the roof deck's top face, coplanar and co-facing over 18.6 m2."
+          "evidence": "Two 0.42 m square white render columns from the ground into the slab body at x +-1.85, z 2.72; profiled metal canopy deck as 212 instanced ribs on a 0.16 m pitch over the whole L, grey membrane over the kiosk, a 0.28 m upstand along the kiosk's front and -X roof edges between them.",
+          "notes": "The columns are the render, not the framing metal the first build gave them: the rectified front reads them as the same white as the kiosk. Column setback (0.66 m behind the band face) is the proxy's reading scaled to the module; the plate's elevated camera cannot show it."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/beauty-045.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-02T02:08:44.573925+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "brand-fascia",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "White flame glyph and italic ptt (0.84 m wide, 0.51 m tall) on navy #343852 at world x +1.5, where the rectified front places it (5.55 of 8 m), with composite-panel joints at 1.0 m and rust streaks bleeding from the top edge on the panels the plate shows them on -- one baked 2048 x 1024 atlas; the -X return samples its own joints-and-rust slice. Red stripe under the band on the front and -X, wrapping 0.24 m round the front-right corner; the +X and rear slab edges white.",
+          "notes": "The flame is a generated droplet mask, a stylised approximation of the trademark rather than the corporate artwork -- the one part of this feature that is an approximation. Navy held at saturation 0.36 for the hole gate rather than lifted to grey."
+        },
+        {
+          "id": "canopy-structure",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two 0.42 m square white render columns from the ground into the slab body at x +-1.85, z 2.72; profiled metal canopy deck as 212 instanced ribs on a 0.16 m pitch over the whole L, grey membrane over the kiosk, a 0.28 m upstand along the kiosk's front and -X roof edges between them.",
+          "notes": "The columns are the render, not the framing metal the first build gave them: the rectified front reads them as the same white as the kiosk. Column setback (0.66 m behind the band face) is the proxy's reading scaled to the module; the plate's elevated camera cannot show it."
+        },
+        {
+          "id": "roof-plant",
+          "tier": "important",
+          "score": 0.9,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "One large louvred unit (1.0 x 0.8 x 0.9) left of centre and two at 0.62 scale at the +X end of the kiosk roof, on one instanced geometry with per-part tones, at the positions the plate and the proxy height map give.",
+          "notes": "The plate's large unit has a rear fan grille and pipework the render carries only as a pipe stub."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/beauty-045.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-02T02:08:44.656554+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "brand-fascia",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "White flame glyph and italic ptt (0.84 m wide, 0.51 m tall) on navy #343852 at world x +1.5, where the rectified front places it (5.55 of 8 m), with composite-panel joints at 1.0 m and rust streaks bleeding from the top edge on the panels the plate shows them on -- one baked 2048 x 1024 atlas; the -X return samples its own joints-and-rust slice. Red stripe under the band on the front and -X, wrapping 0.24 m round the front-right corner; the +X and rear slab edges white.",
+          "notes": "The flame is a generated droplet mask, a stylised approximation of the trademark rather than the corporate artwork -- the one part of this feature that is an approximation. Navy held at saturation 0.36 for the hole gate rather than lifted to grey."
         },
         {
           "id": "shopfront",
           "tier": "important",
-          "score": 0.8,
+          "score": 0.9,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "One 5.20 x 2.70 m pane under the canopy, framed on four sides and divided by four mullions on a 1.05 m pitch.",
-          "notes": "The glazing ships at #6F7477 rather than its measured #454A4B: at the measured value it composited to the harness backdrop luma of 58 and the whole shopfront was classified as an enclosed hole in the silhouette. Opacity 0.94 -- a building shell has nothing behind it, so the pane is authored as tinted and mostly opaque rather than as a window onto an empty interior."
+          "evidence": "Full-height aluminium sliding-door set x -0.75..1.85 (transom 3.10, meeting stiles at 0.90/1.00, pull handle) beside a window x 2.05..3.35 on a 0.65 m riser (transom 2.90, mullion 2.70), at the rectified shell-front positions; the panes carry the rectified shell front as their image at opacity 0.93 over a dark backdrop slab, shadows lifted to luma >= 88.",
+          "notes": "A flat image on a flat pane has no parallax; the interior reads as a dim shop at the review angle and slides at grazing ones. That is the residual."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/beauty-315.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/beauty-045.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-02T02:08:44.740070+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/beauty-045.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-02T02:08:44.821907+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/beauty-045.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-02T02:08:44.904882+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/beauty-045.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-02T02:08:44.991946+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at 8.00 x 4.60 x 7.00 m (x -4.00 navy board .. +4.00 stripe wrap, z -3.50 rear run .. +3.50 board). ONE 8 x 7 slab at 4.60 with a 1.0 m edge fascia (navy 0.82 + red 0.15, soffit 3.62) and a 0.30 m parapet ring, on two 0.42 m columns at x +-1.85; the kiosk under its rear-right at x -1.0..3.4, z -3.44..0.5, so the front strip and the -X wing are open canopy -- what the rectified front, the pixel scans and the proxy's top-down maps all agree on.",
+          "notes": "Second build. The first had the canopy hung BELOW a full-width shell with a 1.05 m upstand wall on the roof, none of which the plate shows. Residuals: the plate is projectively inconsistent, so the kiosk's -X wall (authored -1.0) is +-0.4 m; Meshy still reads the whole plate 43% deeper than the kit's shared 7.0 m module, which wins."
+        },
+        {
+          "id": "brand-fascia",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "White flame glyph and italic ptt (0.84 m wide, 0.51 m tall) on navy #343852 at world x +1.5, where the rectified front places it (5.55 of 8 m), with composite-panel joints at 1.0 m and rust streaks bleeding from the top edge on the panels the plate shows them on -- one baked 2048 x 1024 atlas; the -X return samples its own joints-and-rust slice. Red stripe under the band on the front and -X, wrapping 0.24 m round the front-right corner; the +X and rear slab edges white.",
+          "notes": "The flame is a generated droplet mask, a stylised approximation of the trademark rather than the corporate artwork -- the one part of this feature that is an approximation. Navy held at saturation 0.36 for the hole gate rather than lifted to grey."
+        },
+        {
+          "id": "canopy-structure",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two 0.42 m square white render columns from the ground into the slab body at x +-1.85, z 2.72; profiled metal canopy deck as 212 instanced ribs on a 0.16 m pitch over the whole L, grey membrane over the kiosk, a 0.28 m upstand along the kiosk's front and -X roof edges between them.",
+          "notes": "The columns are the render, not the framing metal the first build gave them: the rectified front reads them as the same white as the kiosk. Column setback (0.66 m behind the band face) is the proxy's reading scaled to the module; the plate's elevated camera cannot show it."
+        },
+        {
+          "id": "shopfront",
+          "tier": "important",
+          "score": 0.9,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Full-height aluminium sliding-door set x -0.75..1.85 (transom 3.10, meeting stiles at 0.90/1.00, pull handle) beside a window x 2.05..3.35 on a 0.65 m riser (transom 2.90, mullion 2.70), at the rectified shell-front positions; the panes carry the rectified shell front as their image at opacity 0.93 over a dark backdrop slab, shadows lifted to luma >= 88.",
+          "notes": "A flat image on a flat pane has no parallax; the interior reads as a dim shop at the review angle and slides at grazing ones. That is the residual."
+        },
+        {
+          "id": "roof-plant",
+          "tier": "important",
+          "score": 0.9,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "One large louvred unit (1.0 x 0.8 x 0.9) left of centre and two at 0.62 scale at the +X end of the kiosk roof, on one instanced geometry with per-part tones, at the positions the plate and the proxy height map give.",
+          "notes": "The plate's large unit has a rear fan grille and pipework the render carries only as a pipe stub."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/beauty-045.png",
       "comparisonImage": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/cmp.png",
       "cameraView": "",
       "notes": "",
@@ -2097,277 +2158,40 @@
   ],
   "reviewHistory": [
     {
-      "timestamp": "2026-08-26T16:04:03.882134+00:00",
+      "timestamp": "2026-09-02T02:08:44.407349+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.87,
-        "formDetail": 0.83,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.8
-      },
-      "featureReviews": [
-        {
-          "id": "overall-silhouette",
-          "tier": "critical",
-          "score": 0.86,
-          "threshold": 0.85,
-          "passed": true,
-          "evidence": "Envelope built at exactly 8.00 x 4.60 x 7.00 m against the declared 8 x 4.6 x 7, with the enclosed volume at the REAR and the canopy taking the front 3.2 m.",
-          "notes": "The setback is the whole prop: what reads as a separate awning is the building's own roof slab running forward on two columns, so the shell face is at z=0.30 rather than pushed forward like every sibling. Meshy reads the plate 43% deeper than the declared module -- the forecourt, which the plate frames as part of the object -- while agreeing on height within 4%. The kit's shared 7.0 m depth wins and the canopy is fitted inside it, so it keeps its proportion instead of being cropped. The red stripe overran to 7.01 m at its first depth and was caught by measurement, not by eye."
-        }
-      ],
-      "action": "continue",
-      "summary": "Blockout: the structural odd one out -- the canopy is the roof slab, so the enclosed volume is set back to z=0.30 and the front 3.2 m of the module is undercut. 9 components and 2 InstancedMesh systems at 11 draw calls.",
-      "matched": [],
-      "mismatches": [],
-      "specFixes": [],
-      "codeFixes": [],
-      "evidence": [],
-      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/clay/clay-315.png",
-      "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/beauty-315.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/cmp.png",
-        "cameraView": "",
-        "notes": "",
-        "aiVisionNotes": ""
-      }
-    },
-    {
-      "timestamp": "2026-08-26T16:04:03.963824+00:00",
-      "passId": "structural-pass",
-      "estimatedFidelity": 0.85,
-      "aiVisionScore": 0.85,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.87,
-        "formDetail": 0.83,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.8
-      },
-      "featureReviews": [
-        {
-          "id": "overall-silhouette",
-          "tier": "critical",
-          "score": 0.86,
-          "threshold": 0.85,
-          "passed": true,
-          "evidence": "Envelope built at exactly 8.00 x 4.60 x 7.00 m against the declared 8 x 4.6 x 7, with the enclosed volume at the REAR and the canopy taking the front 3.2 m.",
-          "notes": "The setback is the whole prop: what reads as a separate awning is the building's own roof slab running forward on two columns, so the shell face is at z=0.30 rather than pushed forward like every sibling. Meshy reads the plate 43% deeper than the declared module -- the forecourt, which the plate frames as part of the object -- while agreeing on height within 4%. The kit's shared 7.0 m depth wins and the canopy is fitted inside it, so it keeps its proportion instead of being cropped. The red stripe overran to 7.01 m at its first depth and was caught by measurement, not by eye."
-        },
-        {
-          "id": "canopy-structure",
-          "tier": "critical",
-          "score": 0.84,
-          "threshold": 0.8,
-          "passed": true,
-          "evidence": "0.30 m slab reaching z=3.48, carried on two 0.34 m square columns from the ground to its soffit, in the shopfront framing material.",
-          "notes": "The columns take the FRAME material rather than the render: in the plate they are the same clad aluminium section as the shopfront jambs. The slab is 0.30 thick, not 0.32: at 0.32 its top face sat at y=3.620 with the roof deck's top face, coplanar and co-facing over 18.6 m2."
-        }
-      ],
-      "action": "continue",
-      "summary": "Structural pass: the navy band wraps three sides at one component by naming the face each run samples; the canopy slab shares a component with the service door because both are the render, and the columns share the shopfront framing material.",
-      "matched": [],
-      "mismatches": [],
-      "specFixes": [],
-      "codeFixes": [],
-      "evidence": [],
-      "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/beauty-315.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/cmp.png",
-        "cameraView": "",
-        "notes": "",
-        "aiVisionNotes": ""
-      }
-    },
-    {
-      "timestamp": "2026-08-26T16:04:04.042048+00:00",
-      "passId": "form-refinement",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.87,
-        "formDetail": 0.83,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.8
-      },
-      "featureReviews": [
-        {
-          "id": "brand-fascia",
-          "tier": "critical",
-          "score": 0.85,
-          "threshold": 0.85,
-          "passed": true,
-          "evidence": "White flame glyph and italic 'ptt' on navy, right of centre on the street-facing run, with the red enamel stripe under the band on all three exposed edges.",
-          "notes": "The band wraps three sides at ONE component and one material: the +Z run names the face that samples the canvas, the two returns are flagged plain and sample a flat corner of it. Two distinct faults had to be fixed before that held. The returns originally ran to the same depth as the front run and intersected it, smearing the canvas through the overlap; and `plain` was implemented as a sentinel slice index of -1, which still satisfied `i >= start && i < start+4` for vertices 0-2, so three corners of the +X face kept sampling the wordmark band. The test is now an explicit boolean. The flame is set as a typographic mark, not the corporate droplet -- the one part of this feature that is an approximation rather than a match."
-        },
-        {
-          "id": "canopy-structure",
-          "tier": "critical",
-          "score": 0.84,
-          "threshold": 0.8,
-          "passed": true,
-          "evidence": "0.30 m slab reaching z=3.48, carried on two 0.34 m square columns from the ground to its soffit, in the shopfront framing material.",
-          "notes": "The columns take the FRAME material rather than the render: in the plate they are the same clad aluminium section as the shopfront jambs. The slab is 0.30 thick, not 0.32: at 0.32 its top face sat at y=3.620 with the roof deck's top face, coplanar and co-facing over 18.6 m2."
-        }
-      ],
-      "action": "continue",
-      "summary": "Form refinement: slab thinned to 0.30 to clear the roof deck plane, red stripe pulled back off the canopy outer plane and out of a 7.01 m envelope overrun, side bands stopped short of the front run so the mark stops smearing along them.",
-      "matched": [],
-      "mismatches": [],
-      "specFixes": [],
-      "codeFixes": [],
-      "evidence": [],
-      "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/beauty-315.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/cmp.png",
-        "cameraView": "",
-        "notes": "",
-        "aiVisionNotes": ""
-      }
-    },
-    {
-      "timestamp": "2026-08-26T16:04:04.121469+00:00",
-      "passId": "material-pass",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.87,
-        "formDetail": 0.83,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.8
-      },
-      "featureReviews": [
-        {
-          "id": "brand-fascia",
-          "tier": "critical",
-          "score": 0.85,
-          "threshold": 0.85,
-          "passed": true,
-          "evidence": "White flame glyph and italic 'ptt' on navy, right of centre on the street-facing run, with the red enamel stripe under the band on all three exposed edges.",
-          "notes": "The band wraps three sides at ONE component and one material: the +Z run names the face that samples the canvas, the two returns are flagged plain and sample a flat corner of it. Two distinct faults had to be fixed before that held. The returns originally ran to the same depth as the front run and intersected it, smearing the canvas through the overlap; and `plain` was implemented as a sentinel slice index of -1, which still satisfied `i >= start && i < start+4` for vertices 0-2, so three corners of the +X face kept sampling the wordmark band. The test is now an explicit boolean. The flame is set as a typographic mark, not the corporate droplet -- the one part of this feature that is an approximation rather than a match."
-        },
-        {
-          "id": "shopfront",
-          "tier": "important",
-          "score": 0.8,
-          "threshold": 0.75,
-          "passed": true,
-          "evidence": "One 5.20 x 2.70 m pane under the canopy, framed on four sides and divided by four mullions on a 1.05 m pitch.",
-          "notes": "The glazing ships at #6F7477 rather than its measured #454A4B: at the measured value it composited to the harness backdrop luma of 58 and the whole shopfront was classified as an enclosed hole in the silhouette. Opacity 0.94 -- a building shell has nothing behind it, so the pane is authored as tinted and mostly opaque rather than as a window onto an empty interior."
-        }
-      ],
-      "action": "continue",
-      "summary": "Material pass: 7 materials at PBR confidence 0.730-0.860, all textureless. Two lifted off their measurements against a luma-only background test -- the navy band slightly, the glazing from #454A4B to #6F7477 -- both recorded with what they depart from.",
-      "matched": [],
-      "mismatches": [],
-      "specFixes": [],
-      "codeFixes": [],
-      "evidence": [],
-      "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/beauty-315.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/cmp.png",
-        "cameraView": "",
-        "notes": "",
-        "aiVisionNotes": ""
-      }
-    },
-    {
-      "timestamp": "2026-08-26T16:04:04.204924+00:00",
-      "passId": "surface-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.87,
-        "formDetail": 0.83,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.8
-      },
-      "featureReviews": [],
-      "action": "continue",
-      "summary": "Surface pass: surface character is geometry and colour -- mullion grid, band and stripe as flat colour, condenser cowls. No texture sets. The plate's weathering streaks below the parapet are wear, not material, and are not authored.",
-      "matched": [],
-      "mismatches": [],
-      "specFixes": [],
-      "codeFixes": [],
-      "evidence": [],
-      "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/beauty-315.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/cmp.png",
-        "cameraView": "",
-        "notes": "",
-        "aiVisionNotes": ""
-      }
-    },
-    {
-      "timestamp": "2026-08-26T16:04:04.288290+00:00",
-      "passId": "lighting-pass",
-      "estimatedFidelity": 0.8,
-      "aiVisionScore": 0.8,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.87,
-        "formDetail": 0.83,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.8
-      },
-      "featureReviews": [],
-      "action": "continue",
-      "summary": "Lighting pass: near-shadowless studio plate. No rim light, no contact shadow; both recorded absent. Exposure 1.0, ACES filmic.",
-      "matched": [],
-      "mismatches": [],
-      "specFixes": [],
-      "codeFixes": [],
-      "evidence": [],
-      "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/beauty-315.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/cmp.png",
-        "cameraView": "",
-        "notes": "",
-        "aiVisionNotes": ""
-      }
-    },
-    {
-      "timestamp": "2026-08-26T16:04:04.374840+00:00",
-      "passId": "interaction-pass",
       "estimatedFidelity": 0.9,
       "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.87,
-        "formDetail": 0.83,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.9
       },
-      "featureReviews": [],
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at 8.00 x 4.60 x 7.00 m (x -4.00 navy board .. +4.00 stripe wrap, z -3.50 rear run .. +3.50 board). ONE 8 x 7 slab at 4.60 with a 1.0 m edge fascia (navy 0.82 + red 0.15, soffit 3.62) and a 0.30 m parapet ring, on two 0.42 m columns at x +-1.85; the kiosk under its rear-right at x -1.0..3.4, z -3.44..0.5, so the front strip and the -X wing are open canopy -- what the rectified front, the pixel scans and the proxy's top-down maps all agree on.",
+          "notes": "Second build. The first had the canopy hung BELOW a full-width shell with a 1.05 m upstand wall on the roof, none of which the plate shows. Residuals: the plate is projectively inconsistent, so the kiosk's -X wall (authored -1.0) is +-0.4 m; Meshy still reads the whole plate 43% deeper than the kit's shared 7.0 m module, which wins."
+        }
+      ],
       "action": "continue",
-      "summary": "Interaction pass: ONE pivot (root, base-center), ZERO sockets, one box collider matching the declaration, no destruction groups matching the empty declared list.",
+      "summary": "Blockout: ONE 8 x 7 slab at 4.60 with a 1.0 m edge fascia on two columns, the kiosk under its rear-right (x -1.0..3.4, z -3.44..0.5), the front strip and -X wing open. 8 components and 3 InstancedMesh systems at 11 draw calls. Authored off the rectified front, the rectified shell front and the proxy top-down maps.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/clay/clay-045.png",
       "visualEvidence": {
         "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/beauty-315.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/beauty-045.png",
         "comparisonImage": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/cmp.png",
         "cameraView": "",
         "notes": "",
@@ -2375,58 +2199,40 @@
       }
     },
     {
-      "timestamp": "2026-08-26T16:04:04.464481+00:00",
-      "passId": "optimization-pass",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "timestamp": "2026-09-02T02:08:44.490815+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.86,
-        "componentStructure": 0.87,
-        "formDetail": 0.83,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.92,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope built at exactly 8.00 x 4.60 x 7.00 m against the declared 8 x 4.6 x 7, with the enclosed volume at the REAR and the canopy taking the front 3.2 m.",
-          "notes": "The setback is the whole prop: what reads as a separate awning is the building's own roof slab running forward on two columns, so the shell face is at z=0.30 rather than pushed forward like every sibling. Meshy reads the plate 43% deeper than the declared module -- the forecourt, which the plate frames as part of the object -- while agreeing on height within 4%. The kit's shared 7.0 m depth wins and the canopy is fitted inside it, so it keeps its proportion instead of being cropped. The red stripe overran to 7.01 m at its first depth and was caught by measurement, not by eye."
-        },
-        {
-          "id": "brand-fascia",
-          "tier": "critical",
-          "score": 0.85,
-          "threshold": 0.85,
-          "passed": true,
-          "evidence": "White flame glyph and italic 'ptt' on navy, right of centre on the street-facing run, with the red enamel stripe under the band on all three exposed edges.",
-          "notes": "The band wraps three sides at ONE component and one material: the +Z run names the face that samples the canvas, the two returns are flagged plain and sample a flat corner of it. Two distinct faults had to be fixed before that held. The returns originally ran to the same depth as the front run and intersected it, smearing the canvas through the overlap; and `plain` was implemented as a sentinel slice index of -1, which still satisfied `i >= start && i < start+4` for vertices 0-2, so three corners of the +X face kept sampling the wordmark band. The test is now an explicit boolean. The flame is set as a typographic mark, not the corporate droplet -- the one part of this feature that is an approximation rather than a match."
+          "evidence": "Envelope built at 8.00 x 4.60 x 7.00 m (x -4.00 navy board .. +4.00 stripe wrap, z -3.50 rear run .. +3.50 board). ONE 8 x 7 slab at 4.60 with a 1.0 m edge fascia (navy 0.82 + red 0.15, soffit 3.62) and a 0.30 m parapet ring, on two 0.42 m columns at x +-1.85; the kiosk under its rear-right at x -1.0..3.4, z -3.44..0.5, so the front strip and the -X wing are open canopy -- what the rectified front, the pixel scans and the proxy's top-down maps all agree on.",
+          "notes": "Second build. The first had the canopy hung BELOW a full-width shell with a 1.05 m upstand wall on the roof, none of which the plate shows. Residuals: the plate is projectively inconsistent, so the kiosk's -X wall (authored -1.0) is +-0.4 m; Meshy still reads the whole plate 43% deeper than the kit's shared 7.0 m module, which wins."
         },
         {
           "id": "canopy-structure",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.92,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "0.30 m slab reaching z=3.48, carried on two 0.34 m square columns from the ground to its soffit, in the shopfront framing material.",
-          "notes": "The columns take the FRAME material rather than the render: in the plate they are the same clad aluminium section as the shopfront jambs. The slab is 0.30 thick, not 0.32: at 0.32 its top face sat at y=3.620 with the roof deck's top face, coplanar and co-facing over 18.6 m2."
-        },
-        {
-          "id": "shopfront",
-          "tier": "important",
-          "score": 0.8,
-          "threshold": 0.75,
-          "passed": true,
-          "evidence": "One 5.20 x 2.70 m pane under the canopy, framed on four sides and divided by four mullions on a 1.05 m pitch.",
-          "notes": "The glazing ships at #6F7477 rather than its measured #454A4B: at the measured value it composited to the harness backdrop luma of 58 and the whole shopfront was classified as an enclosed hole in the silhouette. Opacity 0.94 -- a building shell has nothing behind it, so the pane is authored as tinted and mostly opaque rather than as a window onto an empty interior."
+          "evidence": "Two 0.42 m square white render columns from the ground into the slab body at x +-1.85, z 2.72; profiled metal canopy deck as 212 instanced ribs on a 0.16 m pitch over the whole L, grey membrane over the kiosk, a 0.28 m upstand along the kiosk's front and -X roof edges between them.",
+          "notes": "The columns are the render, not the framing metal the first build gave them: the rectified front reads them as the same white as the kiosk. Column setback (0.66 m behind the band face) is the proxy's reading scaled to the module; the plate's elevated camera cannot show it."
         }
       ],
       "action": "continue",
-      "summary": "FINAL VERDICT. Overall visual fidelity 0.84 -- not a pass self-score. 672/16000 triangles, 11/12 draw calls, 7/8 materials, 11/16 unique geometries.",
+      "summary": "Structural pass: slab body, ring, upstands, columns and door leaf folded into the parapet; both navy boards into the fascia on one atlas; stripe runs into one component; door fittings into a fifth. Every facade depth band its own plane: shell 0.50, pane 0.49..0.55, mullions 0.50..0.58, frame 0.52..0.62; band 3.38..3.50, stripe 3.36..3.49, body 3.40.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -2434,7 +2240,280 @@
       "evidence": [],
       "visualEvidence": {
         "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/beauty-315.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/beauty-045.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-02T02:08:44.573925+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "brand-fascia",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "White flame glyph and italic ptt (0.84 m wide, 0.51 m tall) on navy #343852 at world x +1.5, where the rectified front places it (5.55 of 8 m), with composite-panel joints at 1.0 m and rust streaks bleeding from the top edge on the panels the plate shows them on -- one baked 2048 x 1024 atlas; the -X return samples its own joints-and-rust slice. Red stripe under the band on the front and -X, wrapping 0.24 m round the front-right corner; the +X and rear slab edges white.",
+          "notes": "The flame is a generated droplet mask, a stylised approximation of the trademark rather than the corporate artwork -- the one part of this feature that is an approximation. Navy held at saturation 0.36 for the hole gate rather than lifted to grey."
+        },
+        {
+          "id": "canopy-structure",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two 0.42 m square white render columns from the ground into the slab body at x +-1.85, z 2.72; profiled metal canopy deck as 212 instanced ribs on a 0.16 m pitch over the whole L, grey membrane over the kiosk, a 0.28 m upstand along the kiosk's front and -X roof edges between them.",
+          "notes": "The columns are the render, not the framing metal the first build gave them: the rectified front reads them as the same white as the kiosk. Column setback (0.66 m behind the band face) is the proxy's reading scaled to the module; the plate's elevated camera cannot show it."
+        },
+        {
+          "id": "roof-plant",
+          "tier": "important",
+          "score": 0.9,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "One large louvred unit (1.0 x 0.8 x 0.9) left of centre and two at 0.62 scale at the +X end of the kiosk roof, on one instanced geometry with per-part tones, at the positions the plate and the proxy height map give.",
+          "notes": "The plate's large unit has a rear fan grille and pipework the render carries only as a pipe stub."
+        }
+      ],
+      "action": "continue",
+      "summary": "Form refinement: shopfront members at the rectified shell-front positions (door set, window on its riser, transoms, meeting stiles, handle); 212 instanced deck ribs; the 0.28 m upstand; one large and two scaled small condensers; service door at z -3.16..-2.34 on +X with frame and handle.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/beauty-045.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-02T02:08:44.656554+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "brand-fascia",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "White flame glyph and italic ptt (0.84 m wide, 0.51 m tall) on navy #343852 at world x +1.5, where the rectified front places it (5.55 of 8 m), with composite-panel joints at 1.0 m and rust streaks bleeding from the top edge on the panels the plate shows them on -- one baked 2048 x 1024 atlas; the -X return samples its own joints-and-rust slice. Red stripe under the band on the front and -X, wrapping 0.24 m round the front-right corner; the +X and rear slab edges white.",
+          "notes": "The flame is a generated droplet mask, a stylised approximation of the trademark rather than the corporate artwork -- the one part of this feature that is an approximation. Navy held at saturation 0.36 for the hole gate rather than lifted to grey."
+        },
+        {
+          "id": "shopfront",
+          "tier": "important",
+          "score": 0.9,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Full-height aluminium sliding-door set x -0.75..1.85 (transom 3.10, meeting stiles at 0.90/1.00, pull handle) beside a window x 2.05..3.35 on a 0.65 m riser (transom 2.90, mullion 2.70), at the rectified shell-front positions; the panes carry the rectified shell front as their image at opacity 0.93 over a dark backdrop slab, shadows lifted to luma >= 88.",
+          "notes": "A flat image on a flat pane has no parallax; the interior reads as a dim shop at the review angle and slides at grazing ones. That is the residual."
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: 7 materials at PBR confidence 0.730-0.860, all textureless. Navy at saturation 0.36 (hole gate holds on chroma); deck WHITE with the membrane and ribbed-deck tones as vertex/instance colours; glass white under the rectified-plate image; wall lifted for the side-face factor.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/beauty-045.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-02T02:08:44.740070+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Surface pass: baked fascia atlas (mark, 1.0 m panel joints, rust streaks); rectified shell front baked onto the glazing; drawn tiles for the render coat and the membrane laps; baked galvanised spangle on plant and fittings. All post-construction; materials stay textureless.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/beauty-045.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-02T02:08:44.821907+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Lighting pass: near-shadowless studio plate, so measured crop means stand as albedo. Wall lifted for the harness side-face factor (~0.76). No rim light, no contact shadow; both recorded absent.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/beauty-045.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-02T02:08:44.904882+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Interaction pass: ONE pivot (root, base-center), ZERO sockets, one box collider matching the declaration, no destruction groups matching the empty declared list. Compound re-derived from the scratch bundle: 8 parts, coverage 0.9996, p95 0.17 m.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/beauty-045.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-02T02:08:44.991946+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at 8.00 x 4.60 x 7.00 m (x -4.00 navy board .. +4.00 stripe wrap, z -3.50 rear run .. +3.50 board). ONE 8 x 7 slab at 4.60 with a 1.0 m edge fascia (navy 0.82 + red 0.15, soffit 3.62) and a 0.30 m parapet ring, on two 0.42 m columns at x +-1.85; the kiosk under its rear-right at x -1.0..3.4, z -3.44..0.5, so the front strip and the -X wing are open canopy -- what the rectified front, the pixel scans and the proxy's top-down maps all agree on.",
+          "notes": "Second build. The first had the canopy hung BELOW a full-width shell with a 1.05 m upstand wall on the roof, none of which the plate shows. Residuals: the plate is projectively inconsistent, so the kiosk's -X wall (authored -1.0) is +-0.4 m; Meshy still reads the whole plate 43% deeper than the kit's shared 7.0 m module, which wins."
+        },
+        {
+          "id": "brand-fascia",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "White flame glyph and italic ptt (0.84 m wide, 0.51 m tall) on navy #343852 at world x +1.5, where the rectified front places it (5.55 of 8 m), with composite-panel joints at 1.0 m and rust streaks bleeding from the top edge on the panels the plate shows them on -- one baked 2048 x 1024 atlas; the -X return samples its own joints-and-rust slice. Red stripe under the band on the front and -X, wrapping 0.24 m round the front-right corner; the +X and rear slab edges white.",
+          "notes": "The flame is a generated droplet mask, a stylised approximation of the trademark rather than the corporate artwork -- the one part of this feature that is an approximation. Navy held at saturation 0.36 for the hole gate rather than lifted to grey."
+        },
+        {
+          "id": "canopy-structure",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two 0.42 m square white render columns from the ground into the slab body at x +-1.85, z 2.72; profiled metal canopy deck as 212 instanced ribs on a 0.16 m pitch over the whole L, grey membrane over the kiosk, a 0.28 m upstand along the kiosk's front and -X roof edges between them.",
+          "notes": "The columns are the render, not the framing metal the first build gave them: the rectified front reads them as the same white as the kiosk. Column setback (0.66 m behind the band face) is the proxy's reading scaled to the module; the plate's elevated camera cannot show it."
+        },
+        {
+          "id": "shopfront",
+          "tier": "important",
+          "score": 0.9,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Full-height aluminium sliding-door set x -0.75..1.85 (transom 3.10, meeting stiles at 0.90/1.00, pull handle) beside a window x 2.05..3.35 on a 0.65 m riser (transom 2.90, mullion 2.70), at the rectified shell-front positions; the panes carry the rectified shell front as their image at opacity 0.93 over a dark backdrop slab, shadows lifted to luma >= 88.",
+          "notes": "A flat image on a flat pane has no parallax; the interior reads as a dim shop at the review angle and slides at grazing ones. That is the residual."
+        },
+        {
+          "id": "roof-plant",
+          "tier": "important",
+          "score": 0.9,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "One large louvred unit (1.0 x 0.8 x 0.9) left of centre and two at 0.62 scale at the +X end of the kiosk roof, on one instanced geometry with per-part tones, at the positions the plate and the proxy height map give.",
+          "notes": "The plate's large unit has a rear fan grille and pipework the render carries only as a pipe stub."
+        }
+      ],
+      "action": "continue",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.92 -- not a pass self-score. 4036/16000 triangles, 11/12 draw calls, 7/8 materials, 11/16 unique geometries. Second build: the whole massing re-authored off the rectified plate and the proxy top-down maps -- one slab, an L-shaped canopy, the kiosk under its rear-right.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/beauty-045.png",
         "comparisonImage": "/home/mulligan/code/thaikit/scratch/ptt-station-building/review/cmp.png",
         "cameraView": "",
         "notes": "",
@@ -2465,18 +2544,18 @@
     "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the hero2x class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
     "accounting": {
       "drawCalls": {
-        "components": 9,
-        "repetitionSystems": 2,
+        "components": 8,
+        "repetitionSystems": 3,
         "projectedTotal": 11,
         "budget": 12,
         "headroom": 1,
-        "note": "Two repetition systems collapse 7 parts into 2 submissions. The navy band wraps three sides at ONE component and one material by naming the face each run samples, and the canopy slab shares its component with the service door because both are the render."
+        "note": "Three repetition systems collapse 217 discrete parts into 3 submissions. Slab, ring, upstands, columns and door leaf fold into the parapet; both navy boards into the fascia; the stripe's three runs into one component; the door fittings and pipe into a fifth. Eleven of twelve."
       },
       "materials": {
         "projectedTotal": 7,
         "budget": 8,
         "headroom": 1,
-        "note": "wall covers shell, parapet, canopy slab and service door; frame covers the shopfront framing, the mullions AND the two columns, which are the same clad section in the plate. Seven of eight materials, one in hand."
+        "note": "wall covers the kiosk, slab, ring, upstands, columns and door leaf; deck covers the membrane, the canopy deck, the backdrop slab and the ribs (vertex/instance tones on a white base); frame covers the framing and mullions; galv the plant and fittings. Seven of eight."
       },
       "uniqueGeometries": {
         "projectedTotal": 11,
@@ -2485,9 +2564,9 @@
         "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
       },
       "triangles": {
-        "measured": 672,
+        "measured": 4036,
         "budget": 16000,
-        "headroom": 15328,
+        "headroom": 11964,
         "note": "Triangles are NOT the binding constraint on this prop -- draw calls are. The headroom is deliberately spent on silhouette quality (chamfers, cowl segments, shutter ribs) and must not be read as room to split components, which would spend the axis that is actually scarce."
       }
     }
@@ -2550,7 +2629,7 @@
     },
     {
       "id": "instancing",
-      "strategy": "Two InstancedMesh systems carry 7 of the 21 discrete parts."
+      "strategy": "Three InstancedMesh systems carry 217 of the ~240 discrete parts."
     },
     {
       "id": "determinism",
@@ -2565,22 +2644,28 @@
   "destructionAnchors": [],
   "risks": [
     {
-      "id": "declared-vs-plate-depth",
+      "id": "plate-inconsistent",
       "severity": "medium",
-      "description": "Meshy reads this plate 43% deeper than the declared module, because the plate frames the forecourt canopy and its apron as part of the object.",
-      "mitigation": "The declared 7.0 m is the kit's shared retail depth and wins. The canopy is fitted inside it at 3.2 m by setting the shell back to z=0.30, so the canopy keeps its proportion instead of being cropped. Height agrees within 4%."
+      "description": "The generated plate is not a consistent perspective, so the kiosk's -X wall and the columns' setback carry +-0.4 m of uncertainty.",
+      "mitigation": "Each face rectified on its own corners; the proxy's top-down maps used as the second reading; both recorded in assumptions."
     },
     {
-      "id": "glass-lifted",
-      "severity": "low",
-      "description": "The glazing ships at #6F7477 rather than its measured #454A4B.",
-      "mitigation": "Forced by a luma-only background test: at the measured value the pane composited to the backdrop and the shopfront was read as a hole. Recorded with the measurement it departs from."
+      "id": "unobserved-rear",
+      "severity": "medium",
+      "description": "Rear and most of the -X wing are not in the single plate; authored plain.",
+      "mitigation": "Reported at 0.20/0.30 confidence."
     },
     {
-      "id": "forecourt-not-modelled",
+      "id": "plant-overrun",
       "severity": "low",
-      "description": "Pumps, apron and paving are absent, though the plate shows the building as part of a forecourt.",
-      "mitigation": "Deliberate: this asset is the kiosk and its canopy. The apron is the level builder's ground plane, and pumps are separate props."
+      "description": "The large condenser reaches 5.30 m against the declared 4.60.",
+      "mitigation": "On plant only; the plate shows the unit standing a full casing height above the parapet the same way."
+    },
+    {
+      "id": "flame-approximation",
+      "severity": "low",
+      "description": "The flame glyph is a generated droplet mask, not the corporate artwork.",
+      "mitigation": "Recorded in assumptions and on the material override."
     }
   ],
   "localSpecSearch": {
@@ -2597,62 +2682,57 @@
     {
       "passed": false,
       "checks": {
-        "silhouetteIoU": 0.5141,
-        "aspectRatioDelta": 0.1763,
-        "scaleDelta": 0.413,
-        "bilateralSymmetryError": 0.1945,
+        "silhouetteIoU": 0.6063,
+        "aspectRatioDelta": 0.1557,
+        "scaleDelta": 0.0479,
+        "bilateralSymmetryError": 0.1376,
         "colorDelta": {
-          "checked": 9,
-          "maxDeltaE": 55.16,
+          "checked": 8,
+          "maxDeltaE": 15.92,
           "perComponent": [
             {
               "componentId": null,
-              "deltaE": 3.05
+              "deltaE": 5.89
             },
             {
               "componentId": null,
-              "deltaE": 16.18
+              "deltaE": 6.74
             },
             {
               "componentId": null,
-              "deltaE": 3.05
+              "deltaE": 5.89
             },
             {
               "componentId": null,
-              "deltaE": 10.16
+              "deltaE": 9.23
             },
             {
               "componentId": null,
-              "deltaE": 11.31
+              "deltaE": 15.92
             },
             {
               "componentId": null,
-              "deltaE": 12.36
+              "deltaE": 4.73
             },
             {
               "componentId": null,
-              "deltaE": 3.05
+              "deltaE": 5.58
             },
             {
               "componentId": null,
-              "deltaE": 12.36
-            },
-            {
-              "componentId": null,
-              "deltaE": 55.16
+              "deltaE": 4.41
             }
           ],
           "gated": false
         }
       },
       "failures": [
-        "silhouette IoU 0.514 is below threshold 0.85",
-        "aspect-ratio delta 0.176 exceeds threshold 0.05",
-        "scale delta 0.413 exceeds threshold 0.08",
+        "silhouette IoU 0.606 is below threshold 0.85",
+        "aspect-ratio delta 0.156 exceeds threshold 0.05",
         "blockout requires --map-stripped-render evidence"
       ],
       "maskWarnings": [],
-      "renderHash": "ac227d69c08f4881",
+      "renderHash": "53b0bde00dd9f10d",
       "passId": "blockout"
     }
   ]

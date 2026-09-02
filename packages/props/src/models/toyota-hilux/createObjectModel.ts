@@ -21,14 +21,6 @@ import * as THREE from 'three';
  */
 
 export type ProceduralModelOptions = {
-  /**
-   * Where this prop's shipped files live, with a trailing slash.
-   *
-   * The maps are recorded as bare filenames because the bundle is EVALUATED
-   * rather than imported: it has no import.meta and no currentScript, so it
-   * cannot see its own URL. Every host derives this from the module URL.
-   */
-  baseUrl?: string;
   wireframe?: boolean;
   castShadow?: boolean;
   receiveShadow?: boolean;
@@ -53,8 +45,8 @@ const CONFIG = {
     "materials": [
       {
         "id": "paint",
-        "color": 9142389,
-        "roughness": 0.42,
+        "color": 9865078,
+        "roughness": 0.45,
         "metalness": 0,
         "vertexColors": true
       },
@@ -78,22 +70,65 @@ const CONFIG = {
         "material": "paint",
         "kind": "mud",
         "base": [
-          0.42777323966672104,
-          0.6508713254708676,
+          0.3825331504343849,
+          0.6106357993625228,
           0.9999999999999999
         ],
         "seed": 11,
-        "coverage": 0.36,
+        "coverage": 0.4,
         "size": 512,
-        "bump": 0
+        "bump": 0,
+        "opts": {
+          "tone": [
+            0.9999999999999999,
+            0.9999999999999999,
+            0.9680363567506153
+          ],
+          "floor": 0.3,
+          "streaks": 240,
+          "cloud": 0.08,
+          "speckle": 4000,
+          "zones": [
+            [
+              0.04,
+              0.24,
+              4
+            ],
+            [
+              0.51,
+              0.68,
+              3
+            ],
+            [
+              0.81,
+              0.87,
+              1.5
+            ],
+            [
+              0,
+              0.04,
+              0.3
+            ],
+            [
+              0.87,
+              1,
+              0.3
+            ],
+            [
+              0.24,
+              0.4,
+              0.3
+            ]
+          ]
+        }
       }
     ],
     "pivots": [
       {
         "name": "wheel-front-l",
         "position": [
-          0.79,
-          0.375,
+          0.8,
+          0.39,
           1.715
         ],
         "axis": [
@@ -108,8 +143,8 @@ const CONFIG = {
       {
         "name": "wheel-front-r",
         "position": [
-          -0.79,
-          0.375,
+          -0.8,
+          0.39,
           1.715
         ],
         "axis": [
@@ -124,8 +159,8 @@ const CONFIG = {
       {
         "name": "wheel-rear-l",
         "position": [
-          0.79,
-          0.375,
+          0.8,
+          0.39,
           -1.3699999999999999
         ],
         "axis": [
@@ -140,8 +175,8 @@ const CONFIG = {
       {
         "name": "wheel-rear-r",
         "position": [
-          -0.79,
-          0.375,
+          -0.8,
+          0.39,
           -1.3699999999999999
         ],
         "axis": [
@@ -159,6 +194,8 @@ const CONFIG = {
       "sill": 0.42,
       "paintHex": 16777215,
       "mudScale": 2,
+      "mudUScale": 5.33,
+      "mudTopClean": true,
       "collider": {
         "shape": "convex",
         "localCenter": [
@@ -355,33 +392,6 @@ const CONFIG = {
           1.74,
           0.4,
           0.06
-        ],
-        [
-          16777215,
-          0.9,
-          1.205,
-          -1.66,
-          0.07,
-          0.03,
-          1.94
-        ],
-        [
-          16777215,
-          -0.9,
-          1.205,
-          -1.66,
-          0.07,
-          0.03,
-          1.94
-        ],
-        [
-          16777215,
-          0,
-          1.205,
-          -2.63,
-          1.86,
-          0.03,
-          0.08
         ]
       ],
       "glass": {
@@ -444,14 +454,15 @@ const CONFIG = {
             ],
             [
               0.24,
-              1.68
+              1.66
             ],
             [
               0.14,
-              1.68
+              1.66
             ]
           ],
-          "strip": 0.1
+          "strip": 0.1,
+          "hex": 1184272
         },
         {
           "poly": [
@@ -486,57 +497,114 @@ const CONFIG = {
             ],
             [
               -0.24,
-              1.68
+              1.66
             ],
             [
               -0.3,
-              1.68
+              1.66
             ]
           ],
-          "strip": 0.1
+          "strip": 0.1,
+          "hex": 1184272
+        },
+        {
+          "poly": [
+            [
+              1.4,
+              1.125
+            ],
+            [
+              1.4,
+              1.155
+            ],
+            [
+              -0.735,
+              1.155
+            ],
+            [
+              -0.735,
+              1.125
+            ]
+          ],
+          "strip": 0.1,
+          "hex": 1184272
+        },
+        {
+          "poly": [
+            [
+              1.13,
+              1.64
+            ],
+            [
+              1.11,
+              1.665
+            ],
+            [
+              -0.62,
+              1.665
+            ],
+            [
+              -0.62,
+              1.64
+            ]
+          ],
+          "strip": 0.1,
+          "hex": 1184272
         }
       ],
       "wheels": {
         "r": 0.375,
-        "rim": 0.215,
-        "halfW": 0.125,
-        "track": 0.79,
+        "rim": 0.2,
+        "halfW": 0.15,
+        "track": 0.8,
         "zF": 1.715,
         "zR": -1.3699999999999999,
-        "seg": 20,
-        "arch": 0.44,
+        "seg": 24,
+        "arch": 0.475,
+        "style": "steel",
         "tyreHex": 6182736,
+        "lugHex": 4867133,
         "rimHex": 9077370,
-        "flare": 0.06,
-        "flareOut": 0.035,
-        "flareHex": 2763304,
+        "ventHex": 4868162,
+        "dish": 0.5,
+        "lugs": {
+          "n": 20,
+          "h": 0.035,
+          "w": 0.88,
+          "d": 0.055,
+          "skew": 0.35,
+          "hex": 5656650
+        },
+        "flare": 0.1,
+        "flareOut": 0.05,
+        "flareHex": 1447444,
         "wellHex": 4867906,
         "positions": [
           [
-            0.79,
-            0.375,
+            0.8,
+            0.39,
             1.715
           ],
           [
-            -0.79,
-            0.375,
+            -0.8,
+            0.39,
             1.715
           ],
           [
-            0.79,
-            0.375,
+            0.8,
+            0.39,
             -1.3699999999999999
           ],
           [
-            -0.79,
-            0.375,
+            -0.8,
+            0.39,
             -1.3699999999999999
           ]
         ]
       },
       "trim": [
         [
-          4539455,
+          1710616,
           0,
           0.52,
           2.6,
@@ -545,43 +613,187 @@ const CONFIG = {
           0.14
         ],
         [
-          5920850,
+          1447444,
           0,
-          0.78,
+          0.395,
+          2.56,
+          1.5,
+          0.07,
+          0.12
+        ],
+        [
+          3160650,
+          0,
+          0.8,
           2.61,
-          1.14,
-          0.14,
+          1.16,
+          0.22,
           0.02
         ],
         [
-          12567752,
+          12896460,
           0,
-          0.745,
+          0.725,
           2.625,
           1.1,
-          0.025,
+          0.022,
           0.015
         ],
         [
-          12567752,
+          12896460,
           0,
-          0.8,
+          0.765,
           2.625,
           1.1,
-          0.025,
+          0.022,
           0.015
         ],
         [
-          12567752,
+          12896460,
           0,
-          0.855,
+          0.805,
           2.625,
           1.1,
-          0.025,
+          0.022,
           0.015
         ],
         [
-          4539455,
+          12896460,
+          0,
+          0.845,
+          2.625,
+          1.1,
+          0.022,
+          0.015
+        ],
+        [
+          12896460,
+          0,
+          0.885,
+          2.625,
+          1.1,
+          0.022,
+          0.015
+        ],
+        [
+          12896460,
+          0,
+          0.915,
+          2.622,
+          1.18,
+          0.03,
+          0.02
+        ],
+        [
+          12896460,
+          0,
+          0.695,
+          2.622,
+          1.18,
+          0.03,
+          0.02
+        ],
+        [
+          1315858,
+          0.9,
+          1.205,
+          -1.66,
+          0.07,
+          0.03,
+          1.94
+        ],
+        [
+          1315858,
+          -0.9,
+          1.205,
+          -1.66,
+          0.07,
+          0.03,
+          1.94
+        ],
+        [
+          1315858,
+          0,
+          1.205,
+          -2.63,
+          1.86,
+          0.03,
+          0.08
+        ],
+        [
+          7235676,
+          -0.6,
+          0.834,
+          -1.66,
+          0.07,
+          0.008,
+          1.76
+        ],
+        [
+          7235676,
+          -0.36,
+          0.834,
+          -1.66,
+          0.07,
+          0.008,
+          1.76
+        ],
+        [
+          7235676,
+          -0.12,
+          0.834,
+          -1.66,
+          0.07,
+          0.008,
+          1.76
+        ],
+        [
+          7235676,
+          0.12,
+          0.834,
+          -1.66,
+          0.07,
+          0.008,
+          1.76
+        ],
+        [
+          7235676,
+          0.36,
+          0.834,
+          -1.66,
+          0.07,
+          0.008,
+          1.76
+        ],
+        [
+          7235676,
+          0.6,
+          0.834,
+          -1.66,
+          0.07,
+          0.008,
+          1.76
+        ],
+        [
+          3815477,
+          0,
+          0.93,
+          -2.672,
+          1.16,
+          0.012,
+          0.005
+        ],
+        [
+          3815477,
+          0,
+          1.07,
+          -2.672,
+          1.16,
+          0.012,
+          0.005
+        ],
+        [
+          1710616,
           0,
           0.52,
           -2.595,
@@ -599,7 +811,7 @@ const CONFIG = {
           1.8
         ],
         [
-          6051920,
+          7762015,
           0.862,
           1,
           -1.66,
@@ -608,7 +820,7 @@ const CONFIG = {
           1.8
         ],
         [
-          6051920,
+          7762015,
           -0.862,
           1,
           -1.66,
@@ -617,7 +829,7 @@ const CONFIG = {
           1.8
         ],
         [
-          6051920,
+          7762015,
           0,
           1,
           -0.802,
@@ -626,7 +838,7 @@ const CONFIG = {
           0.012
         ],
         [
-          6051920,
+          7762015,
           0,
           1,
           -2.594,
@@ -664,7 +876,7 @@ const CONFIG = {
       ],
       "trimMirrored": [
         [
-          4539455,
+          1710616,
           0.72,
           0.52,
           2.53,
@@ -695,7 +907,7 @@ const CONFIG = {
           0.07
         ],
         [
-          2763304,
+          1710616,
           0.98,
           1.27,
           1,
@@ -704,7 +916,7 @@ const CONFIG = {
           0.03
         ],
         [
-          2763304,
+          3559546,
           1,
           1.3,
           0.98,
@@ -713,7 +925,7 @@ const CONFIG = {
           0.2
         ],
         [
-          2763304,
+          1710616,
           0.936,
           1.05,
           0.62,
@@ -722,7 +934,7 @@ const CONFIG = {
           0.15
         ],
         [
-          2763304,
+          1710616,
           0.936,
           1.05,
           -0.36,
@@ -731,7 +943,7 @@ const CONFIG = {
           0.15
         ],
         [
-          4539455,
+          1710616,
           0.88,
           0.4,
           0.3,
@@ -740,24 +952,51 @@ const CONFIG = {
           2.2
         ],
         [
-          2763304,
-          0.936,
-          0.92,
-          0.19,
-          0.004,
-          0.48,
+          12896460,
+          0.57,
+          0.805,
+          2.622,
+          0.03,
+          0.25,
           0.02
         ],
         [
           12089914,
-          0.88,
-          0.64,
-          2.46,
-          0.08,
-          0.05,
-          0.02,
+          0.7,
+          0.685,
+          2.575,
+          0.28,
+          0.045,
+          0.03,
           0,
-          0.7
+          0.45
+        ],
+        [
+          1184272,
+          0.936,
+          0.78,
+          0.19,
+          0.004,
+          0.66,
+          0.02
+        ],
+        [
+          1184272,
+          0.936,
+          0.78,
+          1.3,
+          0.004,
+          0.66,
+          0.02
+        ],
+        [
+          1184272,
+          0.936,
+          0.78,
+          -0.735,
+          0.004,
+          0.66,
+          0.02
         ]
       ],
       "cyls": [
@@ -1506,14 +1745,20 @@ function archNotch(zc: number, ySill: number, r: number, n = 7): number[][] {
  * per-profile-point colour be written without a second geometry.
  */
 function wheelGeo(rTyre: number, rRim: number, halfW: number, seg: number,
-                  tyreHex: number, rimHex: number, dish = 0.55): THREE.BufferGeometry {
+                  tyreHex: number, rimHex: number, dish = 0.55, rimBand = 4): THREE.BufferGeometry {
   const hw = halfW;
   const pts: number[][] = [
     [0, -hw * dish], [rRim * 0.30, -hw * dish], [rRim * 0.62, -hw * 0.80], [rRim, -hw * 0.86], [rRim, -hw * 0.98],
     [rTyre * 0.93, -hw], [rTyre, -hw * 0.72], [rTyre, hw * 0.72], [rTyre * 0.93, hw],
     [rRim, hw * 0.98], [rRim, hw * 0.86], [rRim * 0.62, hw * 0.80], [rRim * 0.30, hw * dish], [0, hw * dish],
   ];
-  const rimPoint = (j: number) => j <= 4 || j >= 9;
+  // `rimBand` is the LAST profile point that carries the rim colour. Vertex colours interpolate,
+  // so with the default 4 the whole sidewall from rRim out to rTyre * 0.93 is a gradient from the
+  // rim tone to the tyre tone -- on a wheel whose rim is a small hub that paints most of the visible
+  // disc pale, and the tuk-tuk's wheels read as grey plates rather than black tyres. Passing 2
+  // stops the chrome at the hub cap and makes the sidewall tyre all the way in. The default is
+  // unchanged, so every existing prop is byte-identical.
+  const rimPoint = (j: number) => j <= rimBand || j >= pts.length - 1 - rimBand;
   const g = new THREE.LatheGeometry(pts.map((p) => new THREE.Vector2(p[0], p[1])), seg);
   const n = g.getAttribute('position').count;
   const col = new Float32Array(n * 3);
@@ -1571,13 +1816,16 @@ function steelWheelGeo(rTyre: number, rRim: number, halfW: number, seg: number,
 /** Wire-spoked wheel dressing: `n` thin boxes radiating from the hub, laced alternately to each
  *  side of the rim so they cross the way real spokes do. Merged into the wheel geometry so the
  *  wheel stays ONE instanced geometry. */
-function spokes(rHub: number, rRim: number, halfW: number, n: number, hex: number, t = 0.006): THREE.BufferGeometry {
+function spokes(rHub: number, rRim: number, halfW: number, n: number, hex: number, t = 0.006, prism = false): THREE.BufferGeometry {
   const segs: THREE.BufferGeometry[] = [];
   for (let i = 0; i < n; i++) {
     const a = i * Math.PI * 2 / n;
     const side = (i % 2 === 0 ? 1 : -1) * halfW * 0.35;
     const len = rRim - rHub;
-    const g = new THREE.BoxGeometry(t, len, t);
+    // `prism`: an open three-sided prism at six triangles where the box costs twelve -- a wire
+    // spoke has no resolvable section at prop distance, and sixty of them on three wheels is the
+    // difference between a large prop inside its triangle ceiling and one over it
+    const g = prism ? new THREE.CylinderGeometry(t * 0.62, t * 0.62, len, 3, 1, true) : new THREE.BoxGeometry(t, len, t);
     g.translate(0, rHub + len / 2, 0);
     g.rotateX(Math.atan2(side, len) * 0.6);
     g.rotateX(0); g.translate(0, 0, side * 0.5);
@@ -1589,14 +1837,16 @@ function spokes(rHub: number, rRim: number, halfW: number, n: number, hex: numbe
 
 /** A polyline TUBE: one cylinder per segment, each rotated onto its chord, with a small sphere-less
  *  overlap so the joints close. Handlebars, canopy rails, roll cages and frame tubes. */
-function tube(pts: number[][], r: number, seg = 8, hex?: number): THREE.BufferGeometry {
+function tube(pts: number[][], r: number, seg = 8, hex?: number, open = false): THREE.BufferGeometry {
   const parts: THREE.BufferGeometry[] = [];
   for (let i = 0; i < pts.length - 1; i++) {
     const a = new THREE.Vector3(pts[i][0], pts[i][1], pts[i][2]);
     const b = new THREE.Vector3(pts[i + 1][0], pts[i + 1][1], pts[i + 1][2]);
     const d = b.clone().sub(a); const len = d.length();
     if (len < 1e-6) continue;
-    const g = new THREE.CylinderGeometry(r, r, len + r * 1.2, seg, 1, false);
+    // `open`: no end discs -- for a run whose every end is buried in a joint, a ring or a hub, the
+    // two caps are half the segment's triangles spent on faces nothing can see
+    const g = new THREE.CylinderGeometry(r, r, len + r * 1.2, seg, 1, open);
     const q = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.normalize());
     g.applyQuaternion(q);
     const m = a.clone().add(b).multiplyScalar(0.5);
@@ -1909,9 +2159,184 @@ function flare(zc: number, yc: number, rIn: number, rOut: number, x0: number, x1
   return mergeGeos([l, r]);
 }
 
+/** Seamless around-by-profile UVs for a LatheGeometry revolved about Y: u from the SEGMENT index
+ *  (the lathe orders its vertices segment-major, index = seg * pointCount + point) so the duplicated
+ *  seam column reads u = repeats exactly and RepeatWrapping closes it; v per PROFILE POINT from
+ *  `vs` (one value per profile point), so the caller decides which tile rows land on the tread and
+ *  which on the sidewalls. `pitch` is the tile size in metres around the widest radius. */
+function latheUV(g: THREE.BufferGeometry, pointCount: number, seg: number, pitch: number, vs: number[]): void {
+  const p = g.getAttribute('position');
+  let rMax = 0;
+  for (let i = 0; i < p.count; i++) rMax = Math.max(rMax, Math.hypot(p.getX(i), p.getZ(i)));
+  const rep = Math.max(1, Math.round(2 * Math.PI * rMax / pitch));
+  const uv = new Float32Array(p.count * 2);
+  for (let i = 0; i < p.count; i++) {
+    const s = Math.floor(i / pointCount), j = i % pointCount;
+    uv[i * 2] = (s / seg) * rep; uv[i * 2 + 1] = vs[Math.min(j, vs.length - 1)];
+  }
+  g.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+}
+
+/** Pin every UV of a geometry to one texel -- the WHITE band a tyre tile keeps at its top -- so a
+ *  rim, hub or spoke sharing the tyre's material renders its vertex colour unmultiplied. */
+function pinUV(g: THREE.BufferGeometry, u: number, v: number): THREE.BufferGeometry {
+  const uv = g.getAttribute('uv');
+  for (let i = 0; i < uv.count; i++) uv.setXY(i, u, v);
+  return g;
+}
+
+/**
+ * An OPEN spoked wheel about the X axle: a tyre RING lathe (bead, sidewall, shoulder, tread and back
+ * down the far side -- a closed torus-like profile, so nothing is open to the gate), a rim ring, a
+ * brake-drum hub, and wire spokes as three-sided prisms. The closed dish `wheelGeo` fills the wheel
+ * with a solid disc that HIDES the spokes it carries; a motorcycle's wire wheel reads by the daylight
+ * through it, so the dish is gone. Tyre UVs are around-by-profile for a tread tile (`o.pitch` metres
+ * per repeat around; v 0.5..0.96 is the treaded strip of `tyreTile`), rim, hub and spokes are pinned
+ * to the tile's white band. Revolved about Y, then laid onto X.
+ */
+function openWheelGeo(rTyre: number, rRim: number, halfW: number, seg: number, o: any): THREE.BufferGeometry {
+  const hw = halfW, rr = rRim * 1.02;
+  const prof: number[][] = [
+    [rr, -hw * 0.72], [rTyre * 0.90, -hw * 0.98], [rTyre * 0.985, -hw * 0.66], [rTyre, -hw * 0.30],
+    [rTyre, hw * 0.30], [rTyre * 0.985, hw * 0.66], [rTyre * 0.90, hw * 0.98], [rr, hw * 0.72], [rr, -hw * 0.72],
+  ];
+  // v per profile point: sidewall 0.50..0.66, tread 0.66..0.80, sidewall 0.80..0.96 (0.96..1 is white)
+  const vs = [0.50, 0.56, 0.64, 0.68, 0.78, 0.82, 0.90, 0.96, 0.96];
+  const tyre = new THREE.LatheGeometry(prof.map((p) => new THREE.Vector2(p[0], p[1])), seg);
+  latheUV(tyre, prof.length, seg, o.pitch ?? 0.05, vs);
+  tyre.computeVertexNormals();
+  const rimProf = [[rRim * 0.90, -hw * 0.50], [rRim, -hw * 0.62], [rRim, hw * 0.62], [rRim * 0.90, hw * 0.50], [rRim * 0.90, -hw * 0.50]];
+  const rim = new THREE.LatheGeometry(rimProf.map((p) => new THREE.Vector2(p[0], p[1])), seg);
+  rim.computeVertexNormals();
+  const hubR = o.hubR ?? rRim * 0.32, hubW = o.hubW ?? hw * 2.6;
+  const hub = new THREE.CylinderGeometry(hubR, hubR, hubW, o.hubSeg ?? 12);
+  const hubCap = new THREE.CylinderGeometry(hubR * 0.55, hubR * 0.55, hubW * 1.25, o.hubSeg ?? 12);
+  const parts = [tintGeo(tyre, o.tyreHex), pinUV(tintGeo(rim, o.rimHex), 0.5, 0.985),
+                 pinUV(tintGeo(hub, o.hubHex ?? o.rimHex), 0.5, 0.985), pinUV(tintGeo(hubCap, o.capHex ?? o.rimHex), 0.5, 0.985)];
+  const g = mergeGeos(parts);
+  g.rotateZ(Math.PI / 2);                     // lathe axis Y -> the axle on X
+  const sp = pinUV(spokes(hubR * 0.9, rRim * 0.95, hw, o.spokes ?? 20, o.spokeHex ?? 0xb0aea9, o.spokeT ?? 0.006, true), 0.5, 0.985);
+  return mergeGeos([g, sp]);
+}
+
+/** TYRE tile, ported from the prop template: `o.pitch` metres around (via latheUV), the strip at
+ *  v 0.5..0.96 a treaded tyre (circumferential grooves cut by staggered sipes, bead rings, mould
+ *  lines, road dust on the lower shoulder, grey scuffs, grain), v 0..0.5 a worn slick, and the top
+ *  4% pure WHITE so pinned parts render their vertex colour. Drawn as RATIOS against the
+ *  vertex-coloured rubber at `base` (200/255 -> the tyre tone is authored 1.275x its albedo so dust
+ *  and scuffs can go BRIGHTER than the rubber under a multiply canvas). `o.band` is the tread's
+ *  share of the strip, top to bottom, and must agree with openWheelGeo's tread rows. */
+function tyreTile(size: number, seed: number, o: any): THREE.CanvasTexture | null {
+  return canvasTile(size, (ctx, s) => {
+    const rnd = lcg(seed);
+    const base = o.base ?? 200, band = o.band ?? [0.35, 0.65], groove = o.groove ?? 0.45;
+    const gv = Math.round(base * groove), rv = Math.round(base * 0.7), mv = Math.round(base * 0.9);
+    const dust = o.dust ?? [232, 214, 190];
+    const white = Math.round(s * 0.04);
+    ctx.fillStyle = `rgb(${base},${base},${base})`; ctx.fillRect(0, 0, s, s);
+    for (let i = 0; i < s * s / 6; i++) { const v = base + Math.round((rnd() - 0.5) * 22); ctx.fillStyle = `rgb(${v},${v},${v})`; ctx.fillRect(rnd() * s, rnd() * s, 2, 2); }
+    const strip = (ya: number, yb: number, treaded: boolean) => {
+      const h = yb - ya, b0 = ya + h * (1 - band[1]), b1 = ya + h * (1 - band[0]);
+      const ng = o.grooves ?? 3, gw = h * 0.024;
+      ctx.fillStyle = `rgb(${gv},${gv},${gv})`;
+      for (let i = 0; i < ng; i++) { const y = b0 + (b1 - b0) * (i + 1) / (ng + 1); ctx.fillRect(0, y - gw / 2, s, gw); }
+      const ns = o.sipes ?? 2, w = s * (o.sipeWidth ?? 0.05);
+      for (let k = 0; k <= ng; k++) {
+        const y0 = k === 0 ? b0 : b0 + (b1 - b0) * k / (ng + 1) + gw / 2, y1 = k === ng ? b1 : b0 + (b1 - b0) * (k + 1) / (ng + 1) - gw / 2;
+        const outer = k === 0 || k === ng;
+        if (!treaded && !outer) continue;
+        const ys0 = treaded ? y0 : (k === 0 ? y0 : y1 - (y1 - y0) * 0.45), ys1 = treaded ? y1 : (k === 0 ? y0 + (y1 - y0) * 0.45 : y1);
+        for (let i = 0; i < ns; i++) {
+          const x = ((i + 0.5) / ns + (k % 2) * 0.5 / ns) * s + (rnd() - 0.5) * s * 0.06, sl = (rnd() - 0.5) * s * 0.08;
+          for (const dx of [-s, 0, s]) { ctx.beginPath(); ctx.moveTo(x + dx, ys0); ctx.lineTo(x + dx + w, ys0); ctx.lineTo(x + dx + w + sl, ys1); ctx.lineTo(x + dx + sl, ys1); ctx.closePath(); ctx.fill(); }
+        }
+      }
+      const sh = ctx.createLinearGradient(0, b0 - h * 0.03, 0, b0 + h * 0.02); sh.addColorStop(0, `rgba(${gv},${gv},${gv},0)`); sh.addColorStop(1, `rgba(${gv},${gv},${gv},0.45)`);
+      ctx.fillStyle = sh; ctx.fillRect(0, b0 - h * 0.03, s, h * 0.05);
+      ctx.fillStyle = `rgb(${rv},${rv},${rv})`; ctx.fillRect(0, ya + h * 0.045, s, h * 0.012); ctx.fillRect(0, ya + h * 0.94, s, h * 0.012);
+      ctx.fillStyle = `rgb(${mv},${mv},${mv})`; ctx.fillRect(0, ya + h * 0.11, s, 2); ctx.fillRect(0, ya + h * 0.88, s, 2);
+      const dg = ctx.createLinearGradient(0, yb, 0, ya + h * 0.6); dg.addColorStop(0, `rgba(${dust[0]},${dust[1]},${dust[2]},${o.dustAlpha ?? 0.35})`); dg.addColorStop(1, `rgba(${dust[0]},${dust[1]},${dust[2]},0)`);
+      ctx.fillStyle = dg; ctx.fillRect(0, ya + h * 0.6, s, h * 0.4);
+      for (let i = 0; i < (o.scuffs ?? 14); i++) {
+        const x = rnd() * s, y = rnd() < 0.5 ? b0 + (rnd() - 0.3) * h * 0.08 : b1 + (rnd() - 0.7) * h * 0.08, r = s * (0.02 + rnd() * 0.05), v = 225 + Math.round(rnd() * 25);
+        const g2 = ctx.createRadialGradient(x, y, 0, x, y, r); g2.addColorStop(0, `rgba(${v},${v},${v},0.5)`); g2.addColorStop(1, `rgba(${v},${v},${v},0)`);
+        ctx.fillStyle = g2; for (const dx of [-s, 0, s]) { ctx.beginPath(); ctx.ellipse(x + dx, y, r * 2.2, r * 0.6, 0, 0, Math.PI * 2); ctx.fill(); }
+      }
+      ctx.globalCompositeOperation = 'lighter';
+      for (let i = 0; i < 60; i++) { const x = rnd() * s, y = b0 + rnd() * (b1 - b0), v = 6 + Math.round(rnd() * 14); ctx.fillStyle = `rgb(${v},${Math.round(v * 0.9)},${Math.round(v * 0.75)})`; ctx.fillRect(x, y, 2 + rnd() * 6, 2 + rnd() * 3); }
+      ctx.globalCompositeOperation = 'source-over';
+    };
+    strip(white, s / 2, true);   // v 0.5..0.96: treaded
+    strip(s / 2, s, false);      // v 0..0.5: slick
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, s, white);   // v 0.96..1: white, for pinned parts
+  });
+}
+
+/**
+ * A DRAPED SHEET (ported from the prop template): `heights[j][i]` is the top surface at x = x0..x1
+ * (i over nx) and z = z0..z1 (j over nz); the sheet is `t` thick. Top and underside are smooth-shaded
+ * grids, the four edges are flat strips wound outward. A canvas canopy is a ridge line minus the sag
+ * between its posts minus the droop of its free edges -- cloth, where a slab reads as a painted box.
+ */
+function sheet(s: any): THREE.BufferGeometry {
+  const nx: number = s.nx, nz: number = s.nz, Hh: number[][] = s.heights, t: number = s.t ?? 0.012;
+  const X = (i: number) => s.x0 + (s.x1 - s.x0) * i / nx;
+  const Z = (j: number) => s.z0 + (s.z1 - s.z0) * j / nz;
+  const grid = (yOff: number, flip: boolean) => {
+    const pos: number[] = [], uv: number[] = [], idx: number[] = [];
+    for (let j = 0; j <= nz; j++) for (let i = 0; i <= nx; i++) { pos.push(X(i), Hh[j][i] + yOff, Z(j)); uv.push(i / nx, j / nz); }
+    for (let j = 0; j < nz; j++) for (let i = 0; i < nx; i++) {
+      const a = j * (nx + 1) + i, b = a + 1, c = a + nx + 1, d = c + 1;
+      if (flip) idx.push(a, b, c, b, d, c); else idx.push(a, c, b, b, c, d);
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+    g.setIndex(idx); g.computeVertexNormals(); return g;
+  };
+  const parts = [grid(0, false), grid(-t, true)];
+  const strip = (pts: number[][][], out: number[]) => {
+    const pos: number[] = [], uv: number[] = [];
+    for (const [p0, p1] of pts) {
+      const q0 = p0, q1 = p1, q2 = [p1[0], p1[1] - t, p1[2]], q3 = [p0[0], p0[1] - t, p0[2]];
+      const e1 = [q1[0] - q0[0], q1[1] - q0[1], q1[2] - q0[2]], e2 = [q2[0] - q0[0], q2[1] - q0[1], q2[2] - q0[2]];
+      const n = [e1[1] * e2[2] - e1[2] * e2[1], e1[2] * e2[0] - e1[0] * e2[2], e1[0] * e2[1] - e1[1] * e2[0]];
+      const tri = n[0] * out[0] + n[1] * out[1] + n[2] * out[2] >= 0 ? [q0, q1, q2, q0, q2, q3] : [q0, q2, q1, q0, q3, q2];
+      for (const q of tri) { pos.push(q[0], q[1], q[2]); uv.push(0, 0); }
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+    g.computeVertexNormals(); return g;
+  };
+  const top = (i: number, j: number) => [X(i), Hh[j][i], Z(j)];
+  const e0: number[][][] = [], e1: number[][][] = [], e2: number[][][] = [], e3: number[][][] = [];
+  for (let i = 0; i < nx; i++) { e0.push([top(i, 0), top(i + 1, 0)]); e1.push([top(i, nz), top(i + 1, nz)]); }
+  for (let j = 0; j < nz; j++) { e2.push([top(0, j), top(0, j + 1)]); e3.push([top(nx, j), top(nx, j + 1)]); }
+  parts.push(strip(e0, [0, 0, -1]), strip(e1, [0, 0, 1]), strip(e2, [-1, 0, 0]), strip(e3, [1, 0, 0]));
+  return mergeGeos(parts);
+}
+
 /** Bind a post-construction canvas tile to a material as map (and bump), leaving the textureless
  *  declaration intact: no procedural texture set is synthesised, the measured colour stays the
  *  multiplicand, and the whole thing costs one canvas. */
+/** Tractor-tyre LUGS: `n` bars laid across the tread, each yawed alternately +-`skew` rad about
+ *  its own radial so consecutive bars read as the chevron of an agricultural tyre, standing `h`
+ *  proud of the tread ring. Built about the X axle like wheelGeo and merged INTO the wheel
+ *  geometry, so the wheel stays ONE instanced geometry and the lugs cost nothing per instance.
+ *  Default-off: only a cfg that sets `bike.lugs` gets them. */
+function lugs(rTyre: number, halfW: number, o: any): THREE.BufferGeometry {
+  const n = o.n ?? 16, h = o.h ?? 0.04, parts: THREE.BufferGeometry[] = [];
+  for (let i = 0; i < n; i++) {
+    const g = new THREE.BoxGeometry(halfW * 2 * (o.w ?? 0.85), h, o.d ?? 0.06);
+    g.rotateY((i % 2 === 0 ? 1 : -1) * (o.skew ?? 0.4));
+    g.translate(0, rTyre - h * 0.35, 0);
+    g.rotateX((i / n) * Math.PI * 2 + (o.phase ?? 0));
+    parts.push(g);
+  }
+  return tintGeo(mergeGeos(parts), o.hex ?? 0x555555);
+}
+
 function bindTile(mat: THREE.MeshStandardMaterial, tex: THREE.CanvasTexture | null, bump = 0): void {
   if (!tex) return;
   mat.map = tex;
@@ -2084,7 +2509,8 @@ export function createToyotaHiluxModel(options: ProceduralModelOptions = {}): TH
     // a plain polygon sweeps the full width (the old behaviour); { poly, strip } sweeps only a
     // strip that deep at each side, which is what a pillar beside a pane is
     if (Array.isArray(pl)) pillarGeos.push(tintGeo(sideExtrude(pl, W + 2 * 0.013, shapeOpts), G.paintHex));
-    else pillarGeos.push(tintGeo(sideStrip(pl.poly, W + 2 * (pl.proud ?? 0.013), pl.strip ?? 0.10, shapeOpts), G.paintHex));
+    // `hex` tints one strip away from the paint (a black window gasket or drip rail); default the paint
+    else pillarGeos.push(tintGeo(sideStrip(pl.poly, W + 2 * (pl.proud ?? 0.013), pl.strip ?? 0.10, shapeOpts), pl.hex ?? G.paintHex));
   }
   if (pillarGeos.length) {
     const pg = heightUV(mergeGeos(pillarGeos), G.mudScale ?? 1.2, uvOpts);
@@ -2117,12 +2543,15 @@ export function createToyotaHiluxModel(options: ProceduralModelOptions = {}): TH
   const wheelG = wh.style === 'steel'
     ? steelWheelGeo(wh.r, wh.rim, wh.halfW, wh.seg ?? 24, wh.tyreHex, wh.rimHex, wh.ventHex ?? 0x4a4842, wh.lugHex ?? wh.tyreHex, wh.dish ?? 0.50)
     : wheelGeo(wh.r, wh.rim, wh.halfW, wh.seg ?? 20, wh.tyreHex, wh.rimHex, wh.dish ?? 0.55);
+  // `lugs` merges a ring of tread blocks into the SAME wheel geometry (one unique geometry, one
+  // instanced submission): mud-terrain tyres whose lugs stand off the tread read at prop distance.
+  const wheelG2 = wh.lugs ? mergeGeos([wheelG, lugs(wh.r, wh.halfW, wh.lugs)]) : wheelG;
   const wheelMats: THREE.Matrix4[] = [];
   for (const p of wh.positions as number[][]) {
     wheelMats.push(new THREE.Matrix4().compose(new THREE.Vector3(p[0], p[1], p[2]),
       new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), p[0] < 0 ? Math.PI : 0), new THREE.Vector3(1, 1, 1)));
   }
-  addInst('wheels', 'Wheels', wheelG, 'trim', wheelMats);
+  addInst('wheels', 'Wheels', wheelG2, 'trim', wheelMats);
 
   // 6. EXTRA components declared by the cfg (a corrugated roof, a bed floor, a canopy) -- each
   //    its own material and submission, costed in the blockout.

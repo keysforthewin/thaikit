@@ -38,7 +38,7 @@
     ],
     "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
   },
-  "sourceImage": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/reference.png",
+  "sourceImage": "/repo/scratch/bamboo-half-pipe-canopy-module/reference.png",
   "referenceCamera": {
     "solved": false,
     "fovDegrees": 40.0,
@@ -73,6 +73,7 @@
         "whole-bamboo-poles",
         "lashed-joints",
         "double-head-rail",
+        "overhanging-eave",
         "low-gable",
         "split-culm-half-pipes",
         "scalloped-eave",
@@ -87,7 +88,8 @@
       ],
       "materialFamilies": [
         "whole-bamboo-culm",
-        "split-bamboo-tile"
+        "split-bamboo-tile",
+        "natural-fibre-rope"
       ],
       "notes": "ONE BAY of a modular outdoor roof kit, and the only one of the five whose ROOF SURFACE is real geometry: a 4 x 4 m cell on a 4 m grid, four whole-bamboo corner posts, and a roof of split culms laid alternately hollow-up and hollow-down as interlocking tiles. Nothing opens, turns or swings and nothing attaches -- a neighbouring bay is PLACED at 4 m, not socketed -- so one root pivot at base-center and zero sockets. Open on all four sides. Garden shelters, farm sheds, beach bars and temple fair stalls; the cheapest roof in the kit and the one a village builds itself. Culms weather from green through cream to grey and are tied, never nailed."
     },
@@ -107,14 +109,14 @@
         "macroComponents": 3,
         "mesoComponents": 5,
         "microFeatureGroups": 3,
-        "materialLayers": 2,
-        "repetitionSystems": 1
+        "materialLayers": 3,
+        "repetitionSystems": 2
       },
       "reasoning": [
-        "ONE bamboo merge -- four posts, eight head rails on two levels, two king culms, the ridge pole, six rafters, the capping culm and sixteen lashing collars -- and ONE InstancedMesh of 33 four-culm PAIRS: TWO draw calls of 4, the cheapest submission count in the set.",
-        "The pair geometry carries FOUR culms -- channel and cap on the +Z slope and on the -Z slope -- so the instanced set varies in x alone and both slopes come off one geometry. Two sets, one per slope, would have been two draw calls and two geometries for the same triangles.",
-        "Two materials of three: bamboo (vertex colours -- two culm tones, rafter, rope, black cord) and split bamboo (WHITE, because setColorAt multiplies, with six tones carried per instance). Both textureless, each with one culm canvas.",
-        "The roof is 1,584 of the 2,552 triangles, which is the registry notes' own prediction that this module would sit nearest its ceiling. It is still 64% of the budget.",
+        "ONE bamboo merge -- four posts, eight head rails on two levels, two king culms, the ridge pole, five rafters and the capping culm -- ONE rope merge of forty lashing collars, and TWO InstancedMeshes for the roof (17 channels, 16 caps): FOUR draw calls of 4.",
+        "Each roof geometry carries BOTH slopes (a culm on +Z and one on -Z) so each set varies in x alone. Channels and caps are SEPARATE sets because the plate's green, cream and grey strips are independent of their neighbours: one pair geometry (the first build) forced every cap to share its channel's tone.",
+        "Three materials of three: bamboo (vertex colours -- two culm tones and the rafters), split bamboo (WHITE, because setColorAt multiplies, with eight channel and eight cap tones carried per instance) and rope (vertex colours -- two rope tones and black cord). All textureless, each with one canvas after construction.",
+        "The roof is 1,320 of the 3,480 triangles and the lashings 1,280; 87% of the budget, which is the registry notes' own prediction that this module would sit nearest its ceiling.",
         "Action readiness: one root pivot, zero sockets, no declared collider shape, no destruction groups."
       ]
     },
@@ -142,7 +144,7 @@
           "zone": "frame",
           "kind": "contour",
           "identityDefining": true,
-          "description": "four 100 mm whole-bamboo posts at the module corners",
+          "description": "four 160 mm whole-bamboo posts at +-1.68, 0.23 m inside the eave",
           "mapsTo": {
             "ref": "frame"
           },
@@ -153,7 +155,7 @@
           "zone": "frame",
           "kind": "contour",
           "identityDefining": true,
-          "description": "a DOUBLE head rail on all four sides, at 2.02 and 2.24 m",
+          "description": "a DOUBLE head rail on all four sides at 2.03 and 2.27 m, its ends running past the posts",
           "mapsTo": {
             "ref": "frame"
           },
@@ -164,7 +166,7 @@
           "zone": "frame",
           "kind": "contour",
           "identityDefining": true,
-          "description": "two king culms, a ridge pole and six rafters under the roof",
+          "description": "two king culms, a ridge pole and five rafters under the roof",
           "mapsTo": {
             "ref": "frame"
           },
@@ -187,7 +189,7 @@
           "zone": "roof",
           "kind": "contour",
           "identityDefining": true,
-          "description": "the eave as 33 open culm mouths -- a scalloped edge, not a line",
+          "description": "the eave as 17 open channel mouths with 16 caps riding their rims -- a scalloped edge, not a line",
           "mapsTo": {
             "ref": "d5-scallop"
           },
@@ -198,11 +200,11 @@
           "zone": "frame",
           "kind": "contour",
           "identityDefining": true,
-          "description": "rope and black cord collars at every post head and rafter foot",
+          "description": "rope lashings at every post head, rail end, rafter foot and ridge joint, black cord below",
           "mapsTo": {
             "ref": "d6-lashing"
           },
-          "onMaterial": "bamboo",
+          "onMaterial": "rope",
           "realization": "unreported"
         },
         {
@@ -222,10 +224,22 @@
           "zone": "roof",
           "kind": "contour",
           "identityDefining": true,
-          "description": "a 140 mm capping culm along the ridge, its crown the declared 3.10 m",
+          "description": "a 220 mm capping culm along the ridge, its crown the declared 3.10 m",
           "mapsTo": {
             "ref": "frame"
           },
+          "realization": "unreported"
+        },
+        {
+          "id": "d9-rot",
+          "zone": "roof",
+          "kind": "stain",
+          "identityDefining": true,
+          "description": "rot holes, stained halos and insect pinholes scattered on the roofing culms",
+          "mapsTo": {
+            "ref": "d9-rot"
+          },
+          "onMaterial": "split",
           "realization": "unreported"
         }
       ]
@@ -255,12 +269,13 @@
       "confidence": 0.0,
       "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
     },
-    "sourceImage": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/reference.png",
+    "sourceImage": "/repo/scratch/bamboo-half-pipe-canopy-module/reference.png",
     "resolvedUnknowns": [
-      "The roof stops ON the module edge rather than overhanging it: a 4 m grid bay that overhangs collides with its neighbour.",
+      "The roof stops ON the module edge (1.990 / 1.970) and the FRAME is inset 0.23 m under it: a bay that overhangs the cell collides with its neighbour, and a roof flush with its posts is not what the plate shows.",
       "The half-pipes are single-thickness SHELLS on a double-sided material, not walled tubes. A hollow-up channel is seen from the inside at every azimuth, and a real wall would triple the roof's triangles for 8 mm nobody resolves at prop distance; the scallop at the eave, which is what the notes actually ask for, is the shell's own open mouth.",
-      "Six segments per half culm. At a 118 mm pitch a culm is about 25 px across at prop distance, and the roof is 1,584 triangles at six; at twelve it would be 3,168 and over the ceiling with the frame.",
-      "The cap culm rides 62 mm above the channel plane and half a pitch across, which is how the two courses interlock; it is 55 mm radius against the channel's 50 so it bridges the gap."
+      "Ten segments per half culm on a 233 mm pitch, 40 triangles per culm; 66 culms are 1,320 triangles. The plate's eave shows 13-15 scallops across the bay, not 33.",
+      "The cap culm (r 0.12) sits half a pitch across with its axis 80 mm BELOW the channel axes, so its arc passes 36 mm over the two rims it bridges and its own rims hang 5 mm above the channel walls -- a real cap rests on the rims, and at this pitch the geometry that does so is one whose axis is lower, not higher.",
+      "Rope lashings are short thick collars concentric with the poles they bind, on a laid-strand tile; the X of a real square lashing is under a centimetre of relief at prop distance and the collar mass is what the plate shows."
     ],
     "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
   },
@@ -275,10 +290,10 @@
     ],
     "minimumSpecDepth": {
       "macroComponents": 1,
-      "mesoComponents": 0,
+      "mesoComponents": 1,
       "microFeatureGroups": 3,
-      "materialLayers": 2,
-      "repetitionSystems": 1,
+      "materialLayers": 3,
+      "repetitionSystems": 2,
       "reviewViewpoints": 4
     },
     "featureGroups": [
@@ -289,7 +304,7 @@
         "threshold": 0.85,
         "qualityCriteria": [
           "Envelope 4.00 x 3.10 x 4.00 m with nothing crossing the cell edge",
-          "Four bamboo corner posts at the cell corners under a double head rail",
+          "Four heavy bamboo posts inset under an overhanging eave, a double head rail whose ends run past them",
           "Low gable, ridge along X, eave 2.40 and capping culm crown 3.10",
           "Open on all four sides"
         ],
@@ -298,6 +313,7 @@
         ],
         "failureModes": [
           "a roof overhanging the cell",
+          "posts flush with the eave",
           "the plate's squat table proportions",
           "a single head rail",
           "walls"
@@ -311,8 +327,8 @@
         "qualityCriteria": [
           "Real half-cylinders, alternating hollow-up and hollow-down and interlocking",
           "A scalloped eave of open culm mouths",
-          "Mixed green, cream and grey tones with no pattern",
-          "Node rings along each split culm"
+          "Mixed green, cream and grey tones with no pattern, caps independent of channels",
+          "Node rings, splits and rot holes along each split culm"
         ],
         "evidenceRefs": [
           "region-roofgreen",
@@ -322,7 +338,8 @@
         "failureModes": [
           "a flat deck with a ripple texture",
           "a straight cut eave",
-          "one flat tone across 33 pairs",
+          "one flat tone across the course",
+          "a pitch so fine the course reads as a mat",
           "culms too coarse to read as round"
         ]
       },
@@ -333,7 +350,7 @@
         "threshold": 0.75,
         "qualityCriteria": [
           "Node rings at real spacing on every pole regardless of its rotation",
-          "Rope and black cord collars at the joints",
+          "A rope mass at every joint -- post heads, rail ends, rafter feet, ridge -- with strand relief, black cord below",
           "Culm tone at the plate's grey-green with no face rendering near the backdrop"
         ],
         "evidenceRefs": [
@@ -345,6 +362,7 @@
         "failureModes": [
           "node rings every 4 cm from panel UVs",
           "nailed-looking butt joints",
+          "thin collars that read as tape",
           "black cord inside the gate band"
         ]
       }
@@ -536,7 +554,8 @@
       "minimumScore": 0.75,
       "mustPass": true,
       "componentRefs": [
-        "frame"
+        "frame",
+        "lashings"
       ],
       "evidenceRefs": [
         "region-culm",
@@ -642,7 +661,7 @@
   "actionReadiness": {
     "explodable": true,
     "clickable": true,
-    "partCount": 2,
+    "partCount": 4,
     "pivotInventory": [
       {
         "name": "root",
@@ -668,10 +687,11 @@
     "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
   },
   "assumptions": [
-    "The roof stops ON the module edge rather than overhanging it: a 4 m grid bay that overhangs collides with its neighbour.",
+    "The roof stops ON the module edge (1.990 / 1.970) and the FRAME is inset 0.23 m under it: a bay that overhangs the cell collides with its neighbour, and a roof flush with its posts is not what the plate shows.",
     "The half-pipes are single-thickness SHELLS on a double-sided material, not walled tubes. A hollow-up channel is seen from the inside at every azimuth, and a real wall would triple the roof's triangles for 8 mm nobody resolves at prop distance; the scallop at the eave, which is what the notes actually ask for, is the shell's own open mouth.",
-    "Six segments per half culm. At a 118 mm pitch a culm is about 25 px across at prop distance, and the roof is 1,584 triangles at six; at twelve it would be 3,168 and over the ceiling with the frame.",
-    "The cap culm rides 62 mm above the channel plane and half a pitch across, which is how the two courses interlock; it is 55 mm radius against the channel's 50 so it bridges the gap."
+    "Ten segments per half culm on a 233 mm pitch, 40 triangles per culm; 66 culms are 1,320 triangles. The plate's eave shows 13-15 scallops across the bay, not 33.",
+    "The cap culm (r 0.12) sits half a pitch across with its axis 80 mm BELOW the channel axes, so its arc passes 36 mm over the two rims it bridges and its own rims hang 5 mm above the channel walls -- a real cap rests on the rims, and at this pitch the geometry that does so is one whose axis is lower, not higher.",
+    "Rope lashings are short thick collars concentric with the poles they bind, on a laid-strand tile; the X of a real square lashing is under a centimetre of relief at prop distance and the collar mass is what the plate shows."
   ],
   "coordinateFrame": {
     "up": "+Y",
@@ -687,7 +707,7 @@
       "h": 3.1,
       "d": 4.0
     },
-    "description": "A 4.00 x 4.00 m bay: four 100 mm bamboo posts at the corners under a DOUBLE head rail at 2.02 and 2.24 m, a ridge pole on two king culms, six rafters, and a low gable of 33 pairs of split culms -- a hollow-up channel with a hollow-down cap riding on the two beside it -- from a 2.40 m eave to a 3.10 m capping culm. The eave is 33 open culm mouths, not a line. Open on all four sides.",
+    "description": "A 4.00 x 4.00 m bay: four 160 mm bamboo posts at +-1.68 under a DOUBLE head rail at 2.03 and 2.27 m whose ends run 0.19 m past the posts, a ridge pole on two king culms, five rafters, and a low gable of 17 hollow-up split channels (r 0.085) on a 233 mm pitch with 16 hollow-down caps (r 0.12) bridging their rims, from a 2.40 m eave overhanging the frame by 0.23 m to a 3.10 m capping culm. Rope lashings at every joint. The eave is 17 open culm mouths, not a line. Open on all four sides.",
     "envelopeDerivation": "x and z span -1.998..+1.998, set by the rope collars at the post heads: the post surface is already at 1.988 and a 66 mm collar radius crossed the cell edge at 2.004 on the first build, so the collars are 60 mm. y 0.000 to 3.100 at the crown of the capping culm -- which is r cos(PI/10) above its centre, not r, because a 10-segment cylinder has a flat there; centring it at H - r left the declared height 3.4 mm short. The roof culms were shortened 60 mm from the true rake: a cylinder rotated onto the slope has a z extent of half-L cos(s) + r sin(s), and at 40 mm short the cap culms reached 1.9974 against the frame collars' 1.9980 -- inside check-coplanar's 1 mm tolerance, and it reported all 66 pairs. On this bay the FRAME owns the z plane; on the two thatched ones the roof does. Proxy (Meshy v7): w:h:d 1 : 0.760 : 1.119, post grid 1.182 x 1.360 H, roof reaching 1.450 H at an eave sitting at 0.42 of the height -- a squat table of a shelter, which is what the plate shows. The notes fix a 2.40 eave under a 3.10 ridge, so the built bay is far taller in proportion and the roof is 23% of its height against the proxy's 58%. The proxy IS used for the culm diameter and for confirming the ridge runs across the narrow axis.",
     "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate: w:h:d 1 : 0.760 : 1.119, post grid 1.182 x 1.360 H, roof 1.450 H, eave at 0.42 H, 39-degree pitch. Used for the culm diameter and for confirming the ridge axis. NOT used for the proportions: the plate is a squat stand-in and the notes fix a 4 x 4 m bay at 2.40/3.10."
   },
@@ -764,12 +784,12 @@
       "confidence": 0.9,
       "primitive": "cylinder",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "Four posts, eight rails, two king culms, a ridge pole, six rafters, a capping culm and sixteen collars are one merge and one draw call, and the root the roof instances hang off.",
+      "topologyRationale": "Four posts, eight rails, two king culms, a ridge pole, five rafters and a capping culm are one merge and one draw call, and the root the lashings and the roof instances hang off.",
       "materialId": "bamboo",
       "material": "bamboo",
       "parent": null,
       "geometryDescriptor": {
-        "topologyIntent": "Posts r 0.050 at x,z +-1.938, y 0-2.02; head rails r 0.050 on all four sides at 2.24 and 2.02, the two Z-axis rails dropped 0.10 so they cross under the X-axis pair rather than through them; king culms r 0.045 from 2.24 to 2.86; ridge pole r 0.055 at 2.86; six rafters r 0.045 on a 17.5 degree rake, 110 mm under the roof plane; capping culm r 0.070 along the ridge; collars r 0.060 rope at 2.24 and r 0.058 black cord at 1.92 on every post.",
+        "topologyIntent": "Posts r 0.080 at x,z +-1.68, y 0-2.37; head rails r 0.080, 3.90 m long (ends at +-1.95) on all four sides at 2.27 and 2.03, the two Z-axis rails dropped 0.16 so they cross under the X-axis pair; king culms r 0.064 from 2.27 to the ridge pole r 0.070 at 2.80; five rafters r 0.045 at x -1.86, -0.93, 0, 0.93, 1.86 on a 15.6 degree rake 135 mm under the channel axes; capping culm r 0.110 along the ridge, crown at 3.100.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -778,7 +798,7 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "The rails on the two axes are offset 100 mm in y so no two poles are coincident; the rafters run under the roof plane by more than a culm radius; the collars are concentric with the poles they wrap and stand 10 mm proud. check-coplanar clean at 0.001 m.",
+        "zFightingNote": "The rails on the two axes are offset 160 mm in y so no two poles are coincident; the rafters run under the roof plane by more than a culm radius; the frame stops at x,z +-1.95 while the roof owns +-1.97 / +-1.99 and the caps end at +-1.887 / +-1.975. check-coplanar clean at 0.001 m.",
         "mergeNote": "One merged BufferGeometry; culm UVs are written PER CYLINDER before its rotations, at 0.60 m."
       },
       "localFeatures": [
@@ -794,18 +814,13 @@
         },
         {
           "id": "d3-truss",
-          "description": "king culms, ridge pole, rafters",
+          "description": "king culms, ridge pole, five rafters",
           "delivery": "cylinders, the rafters rotated onto the rake"
         },
         {
           "id": "d8-capculm",
           "description": "capping culm",
           "delivery": "one 10-segment cylinder along X"
-        },
-        {
-          "id": "d6-lashing",
-          "description": "rope and cord collars",
-          "delivery": "sixteen short cylinders concentric with the poles"
         },
         {
           "id": "d7-nodes",
@@ -815,17 +830,17 @@
         {
           "id": "d5-scallop",
           "description": "scalloped eave",
-          "delivery": "the open mouths of the roof InstancedMesh hung off this root"
+          "delivery": "the open mouths of the channel InstancedMesh hung off this root"
         }
       ],
       "colorMaterialRecipe": {
         "materialId": "bamboo",
-        "baseColor": "#c6c2b4",
-        "recipe": "Weathered grey-green culm as vertex colours on a white material -- two culm tones, rafter, natural rope and black cord -- with a culm multiply canvas on culm UVs.",
+        "baseColor": "#a39e90",
+        "recipe": "Weathered grey-green culm as vertex colours on a white material -- two culm tones and the rafters -- with a culm multiply canvas on culm UVs.",
         "evidenceRef": "region-culm",
         "confidence": 0.9,
-        "dominantAlbedo": "rgba(198, 194, 180, 1.0)",
-        "secondaryAlbedo": "rgba(198, 194, 180, 1.0)",
+        "dominantAlbedo": "rgba(163, 158, 144, 1.0)",
+        "secondaryAlbedo": "rgba(163, 158, 144, 1.0)",
         "materialClass": "wood",
         "materialClassConfidence": 0.9
       },
@@ -859,6 +874,83 @@
         },
         "sockets": []
       }
+    },
+    {
+      "id": "lashings",
+      "name": "Rope and cord lashings",
+      "level": "meso",
+      "role": "detail",
+      "importance": 0.8,
+      "confidence": 0.84,
+      "primitive": "cylinder",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Forty collars on one material are one merge and one draw call; the rope is a separate material because its roughness and strand tile are not bamboo, and the plate's joints are the second most visible feature after the roof.",
+      "materialId": "rope",
+      "material": "rope",
+      "parent": "frame",
+      "geometryDescriptor": {
+        "topologyIntent": "Post heads: a 0.46 m wrap r 0.104 spanning both rail levels at each post, and a 0.06 m black cord r 0.092 at 1.57. Rail ends: a 0.13 m whipping r 0.100 on every rail 0.15 m outboard of the post, sixteen in all. Rafter feet: a 0.11 m collar r 0.065 where each of the ten rafter ends meets the top rail. Ridge: a collar on the ridge pole and one on each king culm foot.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Every collar is concentric with the pole it wraps and stands 20-24 mm proud of it; none reaches a cell-edge plane (max x 1.87).",
+        "mergeNote": "One merged BufferGeometry of forty closed 8-segment cylinders; culm UVs written per cylinder before its rotations."
+      },
+      "localFeatures": [
+        {
+          "id": "d6-lashing",
+          "description": "rope and cord collars",
+          "delivery": "forty short cylinders concentric with the poles"
+        }
+      ],
+      "attachment": {
+        "parentSocket": "post-head",
+        "localStart": [
+          1.68,
+          1.87,
+          1.68
+        ],
+        "localEnd": [
+          1.68,
+          2.37,
+          1.68
+        ],
+        "contactType": "lashed",
+        "embedDepth": 0.024,
+        "gapTolerance": 0.003
+      },
+      "colorMaterialRecipe": {
+        "materialId": "rope",
+        "baseColor": "#b09f7c",
+        "recipe": "Natural fibre rope as vertex colours on a white material -- two turn tones and black cord -- with a laid-strand multiply canvas on culm UVs at 0.12 m.",
+        "evidenceRef": "region-rope",
+        "confidence": 0.84,
+        "dominantAlbedo": "rgba(176, 159, 124, 1.0)",
+        "secondaryAlbedo": "rgba(176, 159, 124, 1.0)",
+        "materialClass": "fabric",
+        "materialClassConfidence": 0.84
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
     }
   ],
   "materials": [
@@ -867,8 +959,8 @@
       "name": "Whole bamboo culm",
       "type": "standard",
       "shaderModel": "MeshStandardMaterial / PBR approximation",
-      "baseColor": "#c6c2b4",
-      "color": "#c6c2b4",
+      "baseColor": "#a39e90",
+      "color": "#a39e90",
       "roughness": {
         "base": 0.62,
         "variation": 0.05,
@@ -877,32 +969,24 @@
       },
       "metalness": 0.0,
       "albedo": {
-        "dominant": "#c6c2b4",
+        "dominant": "#a39e90",
         "secondary": [
-          "#c6c2b4",
-          "#b8b5a6",
-          "#bcb8a8",
-          "#d0bd94",
-          "#6e6a60"
+          "#a39e90",
+          "#97927f",
+          "#9d9888"
         ],
         "samplingNotes": "Measured as the mean of crops/culm.png. extract_pbr_evidence confidence 0.900. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
       },
       "localOverrides": [
         {
-          "id": "d6-lashing",
-          "region": "the sixteen collars at the post heads and rafter feet",
-          "roughness": 0.8,
-          "palette": [
-            "#D0BD94",
-            "#6E6A60"
-          ],
-          "evidence": "crops/rope.png #95866e and crops/ropeblk.png #4d4942 -- natural fibre rope and black cord, both used on the plate; the black is authored lifted to #6e6a60 so a 5 cm collar clears the gate band."
-        },
-        {
           "id": "d7-nodes",
-          "region": "frame",
-          "roughness": 0.62,
-          "evidence": "crops/culm.png -- node rings crossing every pole at real spacing, whichever way it is turned"
+          "region": "every pole",
+          "roughness": 0.66,
+          "palette": [
+            "#A39E90",
+            "#6E6052"
+          ],
+          "evidence": "crops/culm.png -- node rings as a dark groove under a pale sheath ridge, with fibre grain breaking at each and mould gathered below; the culm canvas on culm UVs at 0.60 m."
         }
       ],
       "finishClass": "wood",
@@ -910,7 +994,7 @@
         "declared": true,
         "evidence": [
           "Measured on viewEvidence region-culm (0.90) at #807a6c sd 30 and region-culmlit (0.86) at #878176 sd 37 -- grey-green weathered culm, mean luma ~120; region-rope (0.84) at #95866e and region-ropeblk (0.80) at #4d4942 sd 60 for the two lashings.",
-          "AUTHORED AS THE INVERSE OF THE HARNESS TRANSFER using the two-point solve probed on the nipa module (authored luma 147.5 rendered 66 on a vertical face, 220.5 rendered 180). Carried at #c6c2b4 with a second culm tone #b8b5a6, rafter #bcb8a8, rope #d0bd94 and black cord #6e6a60 as vertex colours. Measured back at 94 / 77 / 94 / 95 across the four azimuths against a backdrop of 58 -- the black cord is the one tone lifted well off its measured value, because a 5 cm collar at the plate's #4d4942 sits inside the gate band.",
+          "AUTHORED AS THE INVERSE OF THE HARNESS TRANSFER, PROBED ON THIS BUILD: a frame authored at #d4d0c0 (luma 212) rendered 154-162 on the hero's post and rail faces (k ~0.76) against the plate's 107-120, so it is carried at #a39e90 with a second culm tone #97927f and rafter #9d9888 -- measured back at 118 (post) / 127 (rail) on the hero and 122 on the back-lit 180 frame, against a backdrop of 58.",
           "Textureless as DECLARED: one 512 px CULM multiply canvas after construction with CULM UVs -- u around the circumference and v along the length, both in metres over 0.60, written per cylinder BEFORE its rotations. That is what puts two node rings on every pole at real spacing however the pole is turned; panel UVs would ring a post every 4 cm."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
@@ -930,7 +1014,7 @@
       "baseColor": "#ffffff",
       "color": "#ffffff",
       "roughness": {
-        "base": 0.58,
+        "base": 0.6,
         "variation": 0.05,
         "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
         "map": "material-evidence/split_roughness.png"
@@ -939,12 +1023,12 @@
       "albedo": {
         "dominant": "#ffffff",
         "secondary": [
-          "#B8BD9A",
-          "#CDC39C",
-          "#C3BDA8",
-          "#C6C69E",
-          "#D2C8A2",
-          "#BAB7A2"
+          "#8FA06A",
+          "#A3AA86",
+          "#DCC9A0",
+          "#B5B096",
+          "#D4C39A",
+          "#9EA884"
         ],
         "samplingNotes": "Measured as the mean of crops/roofgreen.png. extract_pbr_evidence confidence 0.880. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
       },
@@ -957,7 +1041,17 @@
             "#B0A78D",
             "#B9AB8F"
           ],
-          "evidence": "crops/roofgreen.png and crops/roofcream.png, sd 38 and 41 -- the spread inside one crop IS the alternation; carried as six per-instance tones rather than as a texture."
+          "evidence": "crops/roofgreen.png and crops/roofcream.png, sd 38 and 41 -- the spread inside one crop IS the alternation; carried as sixteen per-instance tones over two sets rather than as a texture."
+        },
+        {
+          "id": "d9-rot",
+          "region": "scattered on the roofing culms",
+          "roughness": 0.7,
+          "palette": [
+            "#241C12",
+            "#604A28"
+          ],
+          "evidence": "crops/roofcream.png -- dark rot holes with a brown stained halo and pinholes, on the split tile as a multiplier."
         }
       ],
       "finishClass": "wood",
@@ -965,10 +1059,10 @@
         "declared": true,
         "evidence": [
           "Measured on viewEvidence region-roofgreen (0.88) at #b0a78d sd 38 and region-roofcream (0.88) at #b9ab8f sd 41. The two means are close and the STANDARD DEVIATION is the finding: 38 to 41 inside a crop of one course means the roof is a mix of green, cream and weathered grey culms with no pattern, not two zones.",
-          "The material colour is WHITE, deliberately: InstancedMesh.setColorAt MULTIPLIES with material.color, so six tones ride on the instance colour attribute and a tinted base would ship all 33 pairs darkened by it. The tones are #b8bd9a, #cdc39c, #c3bda8, #c6c69e, #d2c8a2 and #bab7a2, assigned by k*5 mod 6 -- 5 and 6 are coprime, so it walks all six and never repeats within a cycle. The first build used (k*5 + k%3) % 6, which collapses to three clustered values and shipped 33 pairs of nearly one colour.",
-          "Authored a first time at a mean luma of 200 and MEASURED BACK at 188 on the up-facing slope against the plate's 163-169; pulled 7.5% and re-measured at 180 / 141 / 124 across the azimuths.",
+          "The material colour is WHITE, deliberately: InstancedMesh.setColorAt MULTIPLIES with material.color, so the tones ride on the instance colour attribute. Channels carry #8fa06a #a3aa86 #7f9264 #b0b39a #98a578 #d4c39a #8a9a70 #b7b39e by k*3 mod 8 and caps #dcc9a0 #b5b096 #cfc09a #9ea884 #e0d2ab #c9b98f #a4ab86 #bdb59a by (k*5+2) mod 8 -- both strides coprime with 8, so each walks all eight -- and each list carries a couple of the other course's family so the alternation never becomes a rule.",
+          "Probed on this build: caps authored at luma 202 rendered 185 on the hero slope (k ~0.92) against the plate's cream at 197, so the roof tones sit at the plate's own values (green #8fa06a luma 149 against the plate's 150-160); the back-lit 180 slope renders 140.",
           "DOUBLE-SIDED, because a hollow-up channel is a single-thickness shell seen from the inside at every azimuth; without it half the roof is invisible.",
-          "Textureless as DECLARED: one 512 px culm canvas with CULM UVs at 0.55 m, so the node rings cross each split culm at real spacing along its own length."
+          "Textureless as DECLARED: one 512 px SPLIT canvas with CULM UVs at 0.70 m -- one node ring per tile, dense fibre grain, a drying split, bleached faces, and ROT: four dark cores with a stained halo and insect pinholes per tile, as the plate's roof crops show on every third culm."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
       },
@@ -978,20 +1072,84 @@
         "confidence": 0.88,
         "verdict": "pass"
       }
+    },
+    {
+      "id": "rope",
+      "name": "Natural fibre rope lashing",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#b09f7c",
+      "color": "#b09f7c",
+      "roughness": {
+        "base": 0.85,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/rope_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#b09f7c",
+        "secondary": [
+          "#b09f7c",
+          "#a5946f",
+          "#66543a"
+        ],
+        "samplingNotes": "Measured as the mean of crops/rope.png. extract_pbr_evidence confidence 0.840. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d6-lashing",
+          "region": "the forty collars at every joint",
+          "roughness": 0.85,
+          "palette": [
+            "#B09F7C",
+            "#66543A"
+          ],
+          "evidence": "crops/rope.png and crops/ropeblk.png -- rope and black cord; the strand relief is the rope tile."
+        }
+      ],
+      "finishClass": "fabric",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-rope (0.84) at #95866e / #98805a luma 130 shading to #6f5c44 94, and region-ropeblk (0.80) at #4d4942 / #332d25 luma 46 for the black cord.",
+          "AUTHORED AS THE INVERSE OF THE HARNESS TRANSFER, probed on this build: rope authored at luma 200 rendered 168 on the post-head collar, so it is carried at #b09f7c with a second turn tone #a5946f (measured back 134). The black cord is HELD ON CHROMA at #66543a (sat 0.43, rendering #53412b at luma 67, sat 0.49) rather than lifted to grey: the silhouette gate classifies backdrop at sat <= 0.16, so a saturated dark collar is never read as a hole.",
+          "Textureless as DECLARED: one 256 px ROPE canvas with CULM UVs at 0.12 m -- diagonal laid strands at a 12 mm pitch, groove and lit crown per turn, twist marks, fuzz and soiled turns."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/rope.png",
+        "pbrReport": "material-evidence/rope.pbr.json",
+        "confidence": 0.84,
+        "verdict": "pass"
+      }
     }
   ],
   "repetitionSystems": [
     {
-      "id": "tiles",
-      "name": "Split bamboo half-pipe tiles",
+      "id": "channels",
+      "name": "Split bamboo channels, hollow up",
       "componentRef": "frame",
-      "count": 33,
+      "count": 17,
       "primitive": "cylinder",
       "materialId": "split",
-      "placement": "33 instances at a 118 mm pitch across x from -1.94 to 1.94. Each instance is FOUR half culms: on each slope a hollow-up channel (r 0.050) and a hollow-down cap (r 0.055) half a pitch across and 62 mm above it, both 2.057 m long on a 17.5 degree rake, six segments, open-ended, theta length PI. Six tones ride on the instance colour attribute.",
+      "placement": "17 instances on a 233 mm pitch across x from -1.885 to 1.885. Each instance is TWO half culms, one per slope: a hollow-up channel r 0.085, open-ended, theta length PI, ten segments, from z 0.06 under the capping culm to the eave tip at 1.990 on a 15.6 degree rake. Eight tones ride on the instance colour attribute.",
       "instanced": true,
       "pivotPerInstance": false,
-      "notes": "Both slopes are baked into the pair geometry so the set varies in x alone -- one draw call and one unique geometry for the whole roof. Which half of each shell is material follows from the rotation: rotateX(PI/2 + s) sends local +Z downward on the +Z slope, so a channel is theta start -PI/2 and a cap +PI/2, and the two swap on the -Z slope."
+      "notes": "Both slopes are baked into the geometry so the set varies in x alone. Which half of each shell is material follows from the rotation: rotateX(PI/2 + s) sends local +Z downward on the +Z slope, so a channel is theta start -PI/2, and it flips on the -Z slope."
+    },
+    {
+      "id": "caps",
+      "name": "Split bamboo caps, hollow down",
+      "componentRef": "frame",
+      "count": 16,
+      "primitive": "cylinder",
+      "materialId": "split",
+      "placement": "16 instances half a pitch across from the channels. Each is TWO hollow-down half culms r 0.120 with their axes 80 mm below the channel axes, from z 0.13 to 1.975, theta start +PI/2 on the +Z slope. Eight tones on the instance colour attribute, independent of the channels.",
+      "instanced": true,
+      "pivotPerInstance": false,
+      "notes": "A separate set so a cap's tone is independent of the channel under it, which is what the plate's unordered green / cream / grey strips need; two draw calls for the roof against one is the whole cost."
     }
   ],
   "buildPasses": [
@@ -1102,30 +1260,30 @@
   ],
   "visualEvidence": [
     {
-      "timestamp": "2026-08-31T11:56:46.186122+00:00",
+      "timestamp": "2026-09-02T00:21:29.077294+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.88,
-        "formDetail": 0.88,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope measured 3.996 x 3.100 x 3.996 m off the built module, bounded by the rope collars at the post heads; four 100 mm posts at +-1.938 under a double head rail at 2.02 and 2.24; eave 2.40, capping culm crown exactly 3.100. Open on all four sides.",
-          "notes": "The proxy is a squat table with the eave at 0.42 H; the notes fix 2.40/3.10 and are the module contract."
+          "evidence": "Envelope measured 3.940 x 3.100 x 3.980 m off the built module: the roof owns +-1.970 / +-1.990, the frame stops at +-1.95, and the four 160 mm posts at +-1.68 sit 0.23 m inside the eave -- the plate's overhang of about one post diameter. Double head rail at 2.03 and 2.27 with its ends running 0.19 m past the posts, as the plate shows at every corner. Capping culm crown exactly 3.100. Open on all four sides.",
+          "notes": "The plate's pitch is nearer 25 degrees; the notes' 2.40 / 3.10 with the overhang gives 15.6 and is the module contract. Posts flush with the eave were the first build's largest departure from the plate."
         }
       ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/reference.png",
+      "referenceScreenshot": "/repo/scratch/bamboo-half-pipe-canopy-module/reference.png",
       "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/beauty-315.png",
       "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/cmp.png",
       "cameraView": "",
@@ -1133,14 +1291,14 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-31T11:56:46.261573+00:00",
+      "timestamp": "2026-09-02T00:21:29.170278+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.87,
+      "estimatedFidelity": 0.93,
       "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {},
       "featureReviews": [],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/reference.png",
+      "referenceScreenshot": "/repo/scratch/bamboo-half-pipe-canopy-module/reference.png",
       "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/beauty-315.png",
       "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/cmp.png",
       "cameraView": "",
@@ -1148,30 +1306,30 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-31T11:56:46.338573+00:00",
+      "timestamp": "2026-09-02T00:21:29.266484+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.87,
-      "aiVisionScore": 0.87,
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.88,
-        "formDetail": 0.88,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope measured 3.996 x 3.100 x 3.996 m off the built module, bounded by the rope collars at the post heads; four 100 mm posts at +-1.938 under a double head rail at 2.02 and 2.24; eave 2.40, capping culm crown exactly 3.100. Open on all four sides.",
-          "notes": "The proxy is a squat table with the eave at 0.42 H; the notes fix 2.40/3.10 and are the module contract."
+          "evidence": "Envelope measured 3.940 x 3.100 x 3.980 m off the built module: the roof owns +-1.970 / +-1.990, the frame stops at +-1.95, and the four 160 mm posts at +-1.68 sit 0.23 m inside the eave -- the plate's overhang of about one post diameter. Double head rail at 2.03 and 2.27 with its ends running 0.19 m past the posts, as the plate shows at every corner. Capping culm crown exactly 3.100. Open on all four sides.",
+          "notes": "The plate's pitch is nearer 25 degrees; the notes' 2.40 / 3.10 with the overhang gives 15.6 and is the module contract. Posts flush with the eave were the first build's largest departure from the plate."
         }
       ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/reference.png",
+      "referenceScreenshot": "/repo/scratch/bamboo-half-pipe-canopy-module/reference.png",
       "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/beauty-315.png",
       "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/cmp.png",
       "cameraView": "",
@@ -1179,30 +1337,14 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-31T11:56:46.421542+00:00",
+      "timestamp": "2026-09-02T00:21:29.354846+00:00",
       "passId": "form-refinement",
-      "estimatedFidelity": 0.88,
-      "aiVisionScore": 0.88,
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.88,
-        "formDetail": 0.88,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.84
-      },
-      "featureReviews": [
-        {
-          "id": "roof-halfpipes",
-          "tier": "critical",
-          "score": 0.88,
-          "threshold": 0.8,
-          "passed": true,
-          "evidence": "33 instances of a four-culm pair -- a hollow-up channel and a hollow-down cap on each slope, interlocking at a 118 mm pitch -- 1,584 of the 2,552 triangles. The eave is 33 open culm mouths and reads as a scalloped edge at azimuth 0 and 180, which is exactly what the registry notes say a half-pipe roof needs real geometry for. Six tones assigned by k*5 mod 6, measured back at 180 / 141 / 124 across the azimuths against the plate's 163-169.",
-          "notes": "The first colour index collapsed to three clustered values and shipped 33 pairs of nearly one colour; 5 and 6 being coprime is what fixed it."
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/reference.png",
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/repo/scratch/bamboo-half-pipe-canopy-module/reference.png",
       "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/beauty-315.png",
       "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/cmp.png",
       "cameraView": "",
@@ -1210,30 +1352,45 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-31T11:56:46.500686+00:00",
+      "timestamp": "2026-09-02T00:21:29.447436+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "roof-halfpipes",
+          "tier": "critical",
+          "score": 0.93,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "17 hollow-up channels (r 0.085) on a 233 mm pitch and 16 hollow-down caps (r 0.120) bridging their rims, ten segments each, as TWO instanced sets so every culm carries its own tone: green / cream / grey strips in no order, caps independent of channels, measured back at 185 (cream) and ~150 (green) on the hero slope against the plate's 197 / 150-160. The eave is 17 open mouths and reads as the plate's scallop at 0 and 180; the split tile puts a node ring, fibre grain, a drying split and rot holes with stained halos on every culm.",
+          "notes": "The first build's 33 pairs at 118 mm read as a stripey mat; the plate's eave shows 13-15 scallops across the bay. One pair geometry also forced each cap to share its channel's tone."
+        }
+      ],
+      "referenceScreenshot": "/repo/scratch/bamboo-half-pipe-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-02T00:21:29.545780+00:00",
       "passId": "material-pass",
-      "estimatedFidelity": 0.85,
-      "aiVisionScore": 0.85,
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.88,
-        "formDetail": 0.88,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.84
-      },
-      "featureReviews": [
-        {
-          "id": "roof-halfpipes",
-          "tier": "critical",
-          "score": 0.88,
-          "threshold": 0.8,
-          "passed": true,
-          "evidence": "33 instances of a four-culm pair -- a hollow-up channel and a hollow-down cap on each slope, interlocking at a 118 mm pitch -- 1,584 of the 2,552 triangles. The eave is 33 open culm mouths and reads as a scalloped edge at azimuth 0 and 180, which is exactly what the registry notes say a half-pipe roof needs real geometry for. Six tones assigned by k*5 mod 6, measured back at 180 / 141 / 124 across the azimuths against the plate's 163-169.",
-          "notes": "The first colour index collapsed to three clustered values and shipped 33 pairs of nearly one colour; 5 and 6 being coprime is what fixed it."
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/reference.png",
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/repo/scratch/bamboo-half-pipe-canopy-module/reference.png",
       "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/beauty-315.png",
       "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/cmp.png",
       "cameraView": "",
@@ -1241,30 +1398,76 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-31T11:56:46.578508+00:00",
-      "passId": "surface-pass",
-      "estimatedFidelity": 0.85,
-      "aiVisionScore": 0.85,
+      "timestamp": "2026-09-02T00:21:29.641152+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.88,
-        "formDetail": 0.88,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "roof-halfpipes",
+          "tier": "critical",
+          "score": 0.93,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "17 hollow-up channels (r 0.085) on a 233 mm pitch and 16 hollow-down caps (r 0.120) bridging their rims, ten segments each, as TWO instanced sets so every culm carries its own tone: green / cream / grey strips in no order, caps independent of channels, measured back at 185 (cream) and ~150 (green) on the hero slope against the plate's 197 / 150-160. The eave is 17 open mouths and reads as the plate's scallop at 0 and 180; the split tile puts a node ring, fibre grain, a drying split and rot holes with stained halos on every culm.",
+          "notes": "The first build's 33 pairs at 118 mm read as a stripey mat; the plate's eave shows 13-15 scallops across the bay. One pair geometry also forced each cap to share its channel's tone."
+        }
+      ],
+      "referenceScreenshot": "/repo/scratch/bamboo-half-pipe-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-02T00:21:29.731690+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/repo/scratch/bamboo-half-pipe-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-02T00:21:29.821881+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "frame-and-lashings",
           "tier": "critical",
-          "score": 0.85,
+          "score": 0.91,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "CULM UVs written per cylinder before its rotations, so two node rings cross every pole at 0.60 m spacing whichever way it is turned -- posts, rails on two axes, rafters on the rake and the capping culm all ring correctly. Sixteen rope and black cord collars at the post heads and rafter feet. Culm measured back at 94 / 77 / 94 / 95 against a backdrop of 58.",
-          "notes": "The black cord is authored at #6e6a60 against the plate's #4d4942: a 5 cm collar at the measured value sits inside the gate band."
+          "evidence": "Culm tones probed and re-authored on this build: posts measured back at 118 and rails at 127 on the hero, 122 on the back-lit 180 frame, against the plate's 107-120 (the first build rendered 161 at the same pixels). Forty rope collars on a third material with a laid-strand tile: post-head wraps spanning both rails, whippings on all sixteen rail ends, ten rafter feet, the ridge and king culms, black cord below -- rope measured 134 against the plate's 130, cord held on chroma at luma 67 / sat 0.49. Node rings at 0.60 m on every pole whichever way it is turned.",
+          "notes": "The lashings are collars with strand relief in the tile, not modelled X-wraps; the X of a square lashing is under a centimetre of relief at prop distance."
         }
       ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/reference.png",
+      "referenceScreenshot": "/repo/scratch/bamboo-half-pipe-canopy-module/reference.png",
       "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/beauty-315.png",
       "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/cmp.png",
       "cameraView": "",
@@ -1272,20 +1475,20 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-31T11:56:46.658515+00:00",
+      "timestamp": "2026-09-02T00:21:29.913106+00:00",
       "passId": "lighting-pass",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.88,
-        "formDetail": 0.88,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.9
       },
       "featureReviews": [],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/reference.png",
+      "referenceScreenshot": "/repo/scratch/bamboo-half-pipe-canopy-module/reference.png",
       "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/beauty-315.png",
       "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/cmp.png",
       "cameraView": "",
@@ -1293,14 +1496,14 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-31T11:56:46.736430+00:00",
+      "timestamp": "2026-09-02T00:21:30.005107+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.94,
       "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {},
       "featureReviews": [],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/reference.png",
+      "referenceScreenshot": "/repo/scratch/bamboo-half-pipe-canopy-module/reference.png",
       "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/beauty-315.png",
       "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/cmp.png",
       "cameraView": "",
@@ -1308,20 +1511,20 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-31T11:56:46.817012+00:00",
+      "timestamp": "2026-09-02T00:21:30.100827+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.94,
       "aiVisionScore": 0.94,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.88,
-        "formDetail": 0.88,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.9
       },
       "featureReviews": [],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/reference.png",
+      "referenceScreenshot": "/repo/scratch/bamboo-half-pipe-canopy-module/reference.png",
       "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/beauty-315.png",
       "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/cmp.png",
       "cameraView": "",
@@ -1329,48 +1532,48 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-31T11:56:46.894632+00:00",
+      "timestamp": "2026-09-02T00:21:30.199713+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.87,
-      "aiVisionScore": 0.87,
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.88,
-        "formDetail": 0.88,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope measured 3.996 x 3.100 x 3.996 m off the built module, bounded by the rope collars at the post heads; four 100 mm posts at +-1.938 under a double head rail at 2.02 and 2.24; eave 2.40, capping culm crown exactly 3.100. Open on all four sides.",
-          "notes": "The proxy is a squat table with the eave at 0.42 H; the notes fix 2.40/3.10 and are the module contract."
+          "evidence": "Envelope measured 3.940 x 3.100 x 3.980 m off the built module: the roof owns +-1.970 / +-1.990, the frame stops at +-1.95, and the four 160 mm posts at +-1.68 sit 0.23 m inside the eave -- the plate's overhang of about one post diameter. Double head rail at 2.03 and 2.27 with its ends running 0.19 m past the posts, as the plate shows at every corner. Capping culm crown exactly 3.100. Open on all four sides.",
+          "notes": "The plate's pitch is nearer 25 degrees; the notes' 2.40 / 3.10 with the overhang gives 15.6 and is the module contract. Posts flush with the eave were the first build's largest departure from the plate."
         },
         {
           "id": "roof-halfpipes",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.93,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "33 instances of a four-culm pair -- a hollow-up channel and a hollow-down cap on each slope, interlocking at a 118 mm pitch -- 1,584 of the 2,552 triangles. The eave is 33 open culm mouths and reads as a scalloped edge at azimuth 0 and 180, which is exactly what the registry notes say a half-pipe roof needs real geometry for. Six tones assigned by k*5 mod 6, measured back at 180 / 141 / 124 across the azimuths against the plate's 163-169.",
-          "notes": "The first colour index collapsed to three clustered values and shipped 33 pairs of nearly one colour; 5 and 6 being coprime is what fixed it."
+          "evidence": "17 hollow-up channels (r 0.085) on a 233 mm pitch and 16 hollow-down caps (r 0.120) bridging their rims, ten segments each, as TWO instanced sets so every culm carries its own tone: green / cream / grey strips in no order, caps independent of channels, measured back at 185 (cream) and ~150 (green) on the hero slope against the plate's 197 / 150-160. The eave is 17 open mouths and reads as the plate's scallop at 0 and 180; the split tile puts a node ring, fibre grain, a drying split and rot holes with stained halos on every culm.",
+          "notes": "The first build's 33 pairs at 118 mm read as a stripey mat; the plate's eave shows 13-15 scallops across the bay. One pair geometry also forced each cap to share its channel's tone."
         },
         {
           "id": "frame-and-lashings",
           "tier": "critical",
-          "score": 0.85,
+          "score": 0.91,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "CULM UVs written per cylinder before its rotations, so two node rings cross every pole at 0.60 m spacing whichever way it is turned -- posts, rails on two axes, rafters on the rake and the capping culm all ring correctly. Sixteen rope and black cord collars at the post heads and rafter feet. Culm measured back at 94 / 77 / 94 / 95 against a backdrop of 58.",
-          "notes": "The black cord is authored at #6e6a60 against the plate's #4d4942: a 5 cm collar at the measured value sits inside the gate band."
+          "evidence": "Culm tones probed and re-authored on this build: posts measured back at 118 and rails at 127 on the hero, 122 on the back-lit 180 frame, against the plate's 107-120 (the first build rendered 161 at the same pixels). Forty rope collars on a third material with a laid-strand tile: post-head wraps spanning both rails, whippings on all sixteen rail ends, ten rafter feet, the ridge and king culms, black cord below -- rope measured 134 against the plate's 130, cord held on chroma at luma 67 / sat 0.49. Node rings at 0.60 m on every pole whichever way it is turned.",
+          "notes": "The lashings are collars with strand relief in the tile, not modelled X-wraps; the X of a square lashing is under a centimetre of relief at prop distance."
         }
       ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/reference.png",
+      "referenceScreenshot": "/repo/scratch/bamboo-half-pipe-canopy-module/reference.png",
       "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/beauty-315.png",
       "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/cmp.png",
       "cameraView": "",
@@ -1380,31 +1583,31 @@
   ],
   "reviewHistory": [
     {
-      "timestamp": "2026-08-31T11:56:46.186122+00:00",
+      "timestamp": "2026-09-02T00:21:29.077294+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.88,
-        "formDetail": 0.88,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope measured 3.996 x 3.100 x 3.996 m off the built module, bounded by the rope collars at the post heads; four 100 mm posts at +-1.938 under a double head rail at 2.02 and 2.24; eave 2.40, capping culm crown exactly 3.100. Open on all four sides.",
-          "notes": "The proxy is a squat table with the eave at 0.42 H; the notes fix 2.40/3.10 and are the module contract."
+          "evidence": "Envelope measured 3.940 x 3.100 x 3.980 m off the built module: the roof owns +-1.970 / +-1.990, the frame stops at +-1.95, and the four 160 mm posts at +-1.68 sit 0.23 m inside the eave -- the plate's overhang of about one post diameter. Double head rail at 2.03 and 2.27 with its ends running 0.19 m past the posts, as the plate shows at every corner. Capping culm crown exactly 3.100. Open on all four sides.",
+          "notes": "The plate's pitch is nearer 25 degrees; the notes' 2.40 / 3.10 with the overhang gives 15.6 and is the module contract. Posts flush with the eave were the first build's largest departure from the plate."
         }
       ],
       "action": "continue",
-      "summary": "Blockout: one component plus one repetition system at 2 draw calls of 4 -- the cheapest submission count in the set.",
+      "summary": "Blockout: two merged components plus two repetition systems, 4 draw calls of 4.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1412,7 +1615,7 @@
       "evidence": [],
       "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/clay/clay-315.png",
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/reference.png",
+        "referenceScreenshot": "/repo/scratch/bamboo-half-pipe-canopy-module/reference.png",
         "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/beauty-315.png",
         "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/cmp.png",
         "cameraView": "",
@@ -1421,22 +1624,22 @@
       }
     },
     {
-      "timestamp": "2026-08-31T11:56:46.261573+00:00",
+      "timestamp": "2026-09-02T00:21:29.170278+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.87,
+      "estimatedFidelity": 0.93,
       "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {},
       "featureReviews": [],
       "action": "refine-code",
-      "summary": "Roof culms shortened from 40 mm to 60 mm under the true rake: at 40 the cap culms reached 1.9974 in z against the frame collars' 1.9980, inside check-coplanar's 1 mm tolerance, and it reported all 66 pairs. Clean at 0.001 m.",
+      "summary": "Second build (2026-09-01, from 0.87): posts 100 -> 160 mm and moved from the cell edge to +-1.68 so the ROOF owns the +-2.00 planes and overhangs the frame by 0.23 m, as the plate and the proxy (eave 1.011 H over a 0.769 H post grid) both show; rail ends run 0.19 m past the posts; rafters 6 -> 5 with two at the gable edges. Frame stops at +-1.95, check-coplanar clean.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/reference.png",
+        "referenceScreenshot": "/repo/scratch/bamboo-half-pipe-canopy-module/reference.png",
         "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/beauty-315.png",
         "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/cmp.png",
         "cameraView": "",
@@ -1445,38 +1648,38 @@
       }
     },
     {
-      "timestamp": "2026-08-31T11:56:46.338573+00:00",
+      "timestamp": "2026-09-02T00:21:29.266484+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.87,
-      "aiVisionScore": 0.87,
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.88,
-        "formDetail": 0.88,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope measured 3.996 x 3.100 x 3.996 m off the built module, bounded by the rope collars at the post heads; four 100 mm posts at +-1.938 under a double head rail at 2.02 and 2.24; eave 2.40, capping culm crown exactly 3.100. Open on all four sides.",
-          "notes": "The proxy is a squat table with the eave at 0.42 H; the notes fix 2.40/3.10 and are the module contract."
+          "evidence": "Envelope measured 3.940 x 3.100 x 3.980 m off the built module: the roof owns +-1.970 / +-1.990, the frame stops at +-1.95, and the four 160 mm posts at +-1.68 sit 0.23 m inside the eave -- the plate's overhang of about one post diameter. Double head rail at 2.03 and 2.27 with its ends running 0.19 m past the posts, as the plate shows at every corner. Capping culm crown exactly 3.100. Open on all four sides.",
+          "notes": "The plate's pitch is nearer 25 degrees; the notes' 2.40 / 3.10 with the overhang gives 15.6 and is the module contract. Posts flush with the eave were the first build's largest departure from the plate."
         }
       ],
       "action": "continue",
-      "summary": "Structural pass: four posts, a DOUBLE head rail with the two axes offset 100 mm in y so no two poles are coincident, king culms, ridge pole and six rafters on a 17.5 degree rake.",
+      "summary": "Structural pass: four 160 mm posts inset 0.23 m under the eave, a DOUBLE head rail with the two axes offset 160 mm in y and its ends running past the posts, king culms, ridge pole and five rafters on a 15.6 degree rake.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/reference.png",
+        "referenceScreenshot": "/repo/scratch/bamboo-half-pipe-canopy-module/reference.png",
         "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/beauty-315.png",
         "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/cmp.png",
         "cameraView": "",
@@ -1485,38 +1688,22 @@
       }
     },
     {
-      "timestamp": "2026-08-31T11:56:46.421542+00:00",
+      "timestamp": "2026-09-02T00:21:29.354846+00:00",
       "passId": "form-refinement",
-      "estimatedFidelity": 0.88,
-      "aiVisionScore": 0.88,
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.88,
-        "formDetail": 0.88,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.84
-      },
-      "featureReviews": [
-        {
-          "id": "roof-halfpipes",
-          "tier": "critical",
-          "score": 0.88,
-          "threshold": 0.8,
-          "passed": true,
-          "evidence": "33 instances of a four-culm pair -- a hollow-up channel and a hollow-down cap on each slope, interlocking at a 118 mm pitch -- 1,584 of the 2,552 triangles. The eave is 33 open culm mouths and reads as a scalloped edge at azimuth 0 and 180, which is exactly what the registry notes say a half-pipe roof needs real geometry for. Six tones assigned by k*5 mod 6, measured back at 180 / 141 / 124 across the azimuths against the plate's 163-169.",
-          "notes": "The first colour index collapsed to three clustered values and shipped 33 pairs of nearly one colour; 5 and 6 being coprime is what fixed it."
-        }
-      ],
-      "action": "continue",
-      "summary": "Form refinement: both slopes baked into ONE pair geometry so the roof varies in x alone; the theta start of each shell derived from the rotation rather than guessed, which is what puts the material on the right half of every culm.",
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Roof re-pitched to the plate's scallop count: 33 pairs at 118 mm -> 17 channels (r 0.085) and 16 caps (r 0.120) on a 233 mm pitch, ten segments; the pair geometry split into TWO instanced sets so a cap's tone is independent of its channel; the cap axis put 80 mm below the channel axes so its arc bridges the rims instead of floating over them.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/reference.png",
+        "referenceScreenshot": "/repo/scratch/bamboo-half-pipe-canopy-module/reference.png",
         "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/beauty-315.png",
         "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/cmp.png",
         "cameraView": "",
@@ -1525,38 +1712,62 @@
       }
     },
     {
-      "timestamp": "2026-08-31T11:56:46.500686+00:00",
+      "timestamp": "2026-09-02T00:21:29.447436+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "roof-halfpipes",
+          "tier": "critical",
+          "score": 0.93,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "17 hollow-up channels (r 0.085) on a 233 mm pitch and 16 hollow-down caps (r 0.120) bridging their rims, ten segments each, as TWO instanced sets so every culm carries its own tone: green / cream / grey strips in no order, caps independent of channels, measured back at 185 (cream) and ~150 (green) on the hero slope against the plate's 197 / 150-160. The eave is 17 open mouths and reads as the plate's scallop at 0 and 180; the split tile puts a node ring, fibre grain, a drying split and rot holes with stained halos on every culm.",
+          "notes": "The first build's 33 pairs at 118 mm read as a stripey mat; the plate's eave shows 13-15 scallops across the bay. One pair geometry also forced each cap to share its channel's tone."
+        }
+      ],
+      "action": "continue",
+      "summary": "Form refinement: the roof re-pitched at the plate's scallop count -- 17 channels and 16 caps on a 233 mm pitch, ten segments, the cap axis 80 mm BELOW the channel axes so its arc bridges the rims -- and split into two instanced sets so each culm tones independently.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/repo/scratch/bamboo-half-pipe-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-02T00:21:29.545780+00:00",
       "passId": "material-pass",
-      "estimatedFidelity": 0.85,
-      "aiVisionScore": 0.85,
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.88,
-        "formDetail": 0.88,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.84
-      },
-      "featureReviews": [
-        {
-          "id": "roof-halfpipes",
-          "tier": "critical",
-          "score": 0.88,
-          "threshold": 0.8,
-          "passed": true,
-          "evidence": "33 instances of a four-culm pair -- a hollow-up channel and a hollow-down cap on each slope, interlocking at a 118 mm pitch -- 1,584 of the 2,552 triangles. The eave is 33 open culm mouths and reads as a scalloped edge at azimuth 0 and 180, which is exactly what the registry notes say a half-pipe roof needs real geometry for. Six tones assigned by k*5 mod 6, measured back at 180 / 141 / 124 across the azimuths against the plate's 163-169.",
-          "notes": "The first colour index collapsed to three clustered values and shipped 33 pairs of nearly one colour; 5 and 6 being coprime is what fixed it."
-        }
-      ],
-      "action": "continue",
-      "summary": "Material pass: bamboo 0.90 and split bamboo 0.88, both textureless; the split material is WHITE because setColorAt multiplies, and six tones ride per instance.",
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Every albedo re-authored against a transfer PROBED on this build: the frame at #d4d0c0 rendered 161 against the plate's 107-120 and is #a39e90 / #97927f now (renders 118 / 127); a third ROPE material (#b09f7c, renders 134 against 130) replaces the rope-as-vertex-colour; the roof tones set at the plate's own values with eight channel and eight cap tones.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/reference.png",
+        "referenceScreenshot": "/repo/scratch/bamboo-half-pipe-canopy-module/reference.png",
         "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/beauty-315.png",
         "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/cmp.png",
         "cameraView": "",
@@ -1565,38 +1776,102 @@
       }
     },
     {
-      "timestamp": "2026-08-31T11:56:46.578508+00:00",
-      "passId": "surface-pass",
-      "estimatedFidelity": 0.85,
-      "aiVisionScore": 0.85,
+      "timestamp": "2026-09-02T00:21:29.641152+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.88,
-        "formDetail": 0.88,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "roof-halfpipes",
+          "tier": "critical",
+          "score": 0.93,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "17 hollow-up channels (r 0.085) on a 233 mm pitch and 16 hollow-down caps (r 0.120) bridging their rims, ten segments each, as TWO instanced sets so every culm carries its own tone: green / cream / grey strips in no order, caps independent of channels, measured back at 185 (cream) and ~150 (green) on the hero slope against the plate's 197 / 150-160. The eave is 17 open mouths and reads as the plate's scallop at 0 and 180; the split tile puts a node ring, fibre grain, a drying split and rot holes with stained halos on every culm.",
+          "notes": "The first build's 33 pairs at 118 mm read as a stripey mat; the plate's eave shows 13-15 scallops across the bay. One pair geometry also forced each cap to share its channel's tone."
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: bamboo, split bamboo and a third ROPE material, all textureless; every tone authored as the inverse of a transfer PROBED on this build rather than carried over from another prop.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/repo/scratch/bamboo-half-pipe-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-02T00:21:29.731690+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "A `split` tile (node ring per 0.70 m, fibre grain, drying split, rot holes with stained halos, insect pinholes) for the roofing culms and a `rope` tile (laid strands, groove and lit crown per turn, twist marks, soiling) for the forty lashing collars.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/repo/scratch/bamboo-half-pipe-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-02T00:21:29.821881+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "frame-and-lashings",
           "tier": "critical",
-          "score": 0.85,
+          "score": 0.91,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "CULM UVs written per cylinder before its rotations, so two node rings cross every pole at 0.60 m spacing whichever way it is turned -- posts, rails on two axes, rafters on the rake and the capping culm all ring correctly. Sixteen rope and black cord collars at the post heads and rafter feet. Culm measured back at 94 / 77 / 94 / 95 against a backdrop of 58.",
-          "notes": "The black cord is authored at #6e6a60 against the plate's #4d4942: a 5 cm collar at the measured value sits inside the gate band."
+          "evidence": "Culm tones probed and re-authored on this build: posts measured back at 118 and rails at 127 on the hero, 122 on the back-lit 180 frame, against the plate's 107-120 (the first build rendered 161 at the same pixels). Forty rope collars on a third material with a laid-strand tile: post-head wraps spanning both rails, whippings on all sixteen rail ends, ten rafter feet, the ridge and king culms, black cord below -- rope measured 134 against the plate's 130, cord held on chroma at luma 67 / sat 0.49. Node rings at 0.60 m on every pole whichever way it is turned.",
+          "notes": "The lashings are collars with strand relief in the tile, not modelled X-wraps; the X of a square lashing is under a centimetre of relief at prop distance."
         }
       ],
       "action": "continue",
-      "summary": "Surface pass: culm canvases on CULM UVs -- u around the circumference, v along the length, written per cylinder before its rotations. Roof tones pulled 7.5% after the first build measured 188 against the plate's 163-169.",
+      "summary": "Surface pass: a SPLIT tile for the roofing culms (one node per 0.70 m, fibre grain, drying split, rot holes with stained halos and pinholes) and a ROPE tile for the lashings (laid strands at a 12 mm pitch); the culm canvas kept on the frame.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/reference.png",
+        "referenceScreenshot": "/repo/scratch/bamboo-half-pipe-canopy-module/reference.png",
         "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/beauty-315.png",
         "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/cmp.png",
         "cameraView": "",
@@ -1605,28 +1880,28 @@
       }
     },
     {
-      "timestamp": "2026-08-31T11:56:46.658515+00:00",
+      "timestamp": "2026-09-02T00:21:29.913106+00:00",
       "passId": "lighting-pass",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.88,
-        "formDetail": 0.88,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.9
       },
       "featureReviews": [],
       "action": "continue",
-      "summary": "Lighting pass: no rim and no contact shadow in the plate; recorded absent. Darkest frame face 77 against a backdrop of 58.",
+      "summary": "Lighting pass: no rim and no contact shadow in the plate; recorded absent. Darkest solid face the black cord at 67 with sat 0.49, held on chroma; the back-lit 180 frame renders the culm at 122.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/reference.png",
+        "referenceScreenshot": "/repo/scratch/bamboo-half-pipe-canopy-module/reference.png",
         "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/beauty-315.png",
         "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/cmp.png",
         "cameraView": "",
@@ -1635,7 +1910,7 @@
       }
     },
     {
-      "timestamp": "2026-08-31T11:56:46.736430+00:00",
+      "timestamp": "2026-09-02T00:21:30.005107+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.94,
       "aiVisionScore": null,
@@ -1643,14 +1918,14 @@
       "layerScores": {},
       "featureReviews": [],
       "action": "refine-code",
-      "summary": "Collider derivation fixed in scripts/lib/colliders.mjs. A 100 mm bamboo post is under the cover's 0.15 m minimum rectangle, so the post layer fell back to its bounding box -- the whole 4 x 4 m bay -- and shipped a solid block a player would stand on at waist height under the roof. The fallback now splits into connected components when the box is under 35% full and at least a square metre; volumeRatio 9.95 -> 4.52 here and no coverage change anywhere in the kit.",
+      "summary": "Collider derivation fixed in scripts/lib/colliders.mjs on the first build: the post layer fell back to a bounding-box block over the whole bay; the fallback now splits into connected components when the box is under 35% full and at least a square metre. Posts are 160 mm now, above the 0.15 m minimum rectangle, so the cover takes them directly.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/reference.png",
+        "referenceScreenshot": "/repo/scratch/bamboo-half-pipe-canopy-module/reference.png",
         "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/beauty-315.png",
         "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/cmp.png",
         "cameraView": "",
@@ -1659,17 +1934,17 @@
       }
     },
     {
-      "timestamp": "2026-08-31T11:56:46.817012+00:00",
+      "timestamp": "2026-09-02T00:21:30.100827+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.94,
       "aiVisionScore": 0.94,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.88,
-        "formDetail": 0.88,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.9
       },
       "featureReviews": [],
       "action": "continue",
@@ -1680,7 +1955,7 @@
       "codeFixes": [],
       "evidence": [],
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/reference.png",
+        "referenceScreenshot": "/repo/scratch/bamboo-half-pipe-canopy-module/reference.png",
         "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/beauty-315.png",
         "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/cmp.png",
         "cameraView": "",
@@ -1689,56 +1964,56 @@
       }
     },
     {
-      "timestamp": "2026-08-31T11:56:46.894632+00:00",
+      "timestamp": "2026-09-02T00:21:30.199713+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.87,
-      "aiVisionScore": 0.87,
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.88,
-        "formDetail": 0.88,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.93,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope measured 3.996 x 3.100 x 3.996 m off the built module, bounded by the rope collars at the post heads; four 100 mm posts at +-1.938 under a double head rail at 2.02 and 2.24; eave 2.40, capping culm crown exactly 3.100. Open on all four sides.",
-          "notes": "The proxy is a squat table with the eave at 0.42 H; the notes fix 2.40/3.10 and are the module contract."
+          "evidence": "Envelope measured 3.940 x 3.100 x 3.980 m off the built module: the roof owns +-1.970 / +-1.990, the frame stops at +-1.95, and the four 160 mm posts at +-1.68 sit 0.23 m inside the eave -- the plate's overhang of about one post diameter. Double head rail at 2.03 and 2.27 with its ends running 0.19 m past the posts, as the plate shows at every corner. Capping culm crown exactly 3.100. Open on all four sides.",
+          "notes": "The plate's pitch is nearer 25 degrees; the notes' 2.40 / 3.10 with the overhang gives 15.6 and is the module contract. Posts flush with the eave were the first build's largest departure from the plate."
         },
         {
           "id": "roof-halfpipes",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.93,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "33 instances of a four-culm pair -- a hollow-up channel and a hollow-down cap on each slope, interlocking at a 118 mm pitch -- 1,584 of the 2,552 triangles. The eave is 33 open culm mouths and reads as a scalloped edge at azimuth 0 and 180, which is exactly what the registry notes say a half-pipe roof needs real geometry for. Six tones assigned by k*5 mod 6, measured back at 180 / 141 / 124 across the azimuths against the plate's 163-169.",
-          "notes": "The first colour index collapsed to three clustered values and shipped 33 pairs of nearly one colour; 5 and 6 being coprime is what fixed it."
+          "evidence": "17 hollow-up channels (r 0.085) on a 233 mm pitch and 16 hollow-down caps (r 0.120) bridging their rims, ten segments each, as TWO instanced sets so every culm carries its own tone: green / cream / grey strips in no order, caps independent of channels, measured back at 185 (cream) and ~150 (green) on the hero slope against the plate's 197 / 150-160. The eave is 17 open mouths and reads as the plate's scallop at 0 and 180; the split tile puts a node ring, fibre grain, a drying split and rot holes with stained halos on every culm.",
+          "notes": "The first build's 33 pairs at 118 mm read as a stripey mat; the plate's eave shows 13-15 scallops across the bay. One pair geometry also forced each cap to share its channel's tone."
         },
         {
           "id": "frame-and-lashings",
           "tier": "critical",
-          "score": 0.85,
+          "score": 0.91,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "CULM UVs written per cylinder before its rotations, so two node rings cross every pole at 0.60 m spacing whichever way it is turned -- posts, rails on two axes, rafters on the rake and the capping culm all ring correctly. Sixteen rope and black cord collars at the post heads and rafter feet. Culm measured back at 94 / 77 / 94 / 95 against a backdrop of 58.",
-          "notes": "The black cord is authored at #6e6a60 against the plate's #4d4942: a 5 cm collar at the measured value sits inside the gate band."
+          "evidence": "Culm tones probed and re-authored on this build: posts measured back at 118 and rails at 127 on the hero, 122 on the back-lit 180 frame, against the plate's 107-120 (the first build rendered 161 at the same pixels). Forty rope collars on a third material with a laid-strand tile: post-head wraps spanning both rails, whippings on all sixteen rail ends, ten rafter feet, the ridge and king culms, black cord below -- rope measured 134 against the plate's 130, cord held on chroma at luma 67 / sat 0.49. Node rings at 0.60 m on every pole whichever way it is turned.",
+          "notes": "The lashings are collars with strand relief in the tile, not modelled X-wraps; the X of a square lashing is under a centimetre of relief at prop distance."
         }
       ],
       "action": "continue",
-      "summary": "FINAL VERDICT. Overall visual fidelity 0.87. 2,552/4,000 triangles, 2/4 draw calls, 2/3 materials, 2/6 unique geometries, two 512 px canvases. The roof is 62% of the triangles, which is what the registry notes predicted for this module. Open on all four sides and the eave is 33 open culm mouths: turntable with --allow-holes on the _holecc measurement and a holeviz read per azimuth.",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.93. 3,480/4,000 triangles, 4/4 draw calls, 3/3 materials, 4/6 unique geometries, two 512 px and one 256 px canvas. Open on all four sides and the eave is 17 open culm mouths: turntable with --allow-holes, holeviz read per azimuth showing the red over the gable voids and the volume between posts and rails only.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/reference.png",
+        "referenceScreenshot": "/repo/scratch/bamboo-half-pipe-canopy-module/reference.png",
         "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/beauty-315.png",
         "comparisonImage": "/home/mulligan/code/thaikit/scratch/bamboo-half-pipe-canopy-module/review/cmp.png",
         "cameraView": "",
@@ -1770,30 +2045,30 @@
     "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the large class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
     "accounting": {
       "drawCalls": {
-        "components": 1,
-        "repetitionSystems": 1,
-        "projectedTotal": 2,
+        "components": 2,
+        "repetitionSystems": 2,
+        "projectedTotal": 4,
         "budget": 4,
-        "headroom": 2,
-        "note": "One component plus one repetition system: 2 of 4, the cheapest submission count in the set."
+        "headroom": 0,
+        "note": "Two components plus two repetition systems: 4 of 4. The second roof set buys independent cap tones and the rope merge buys a real lashing; both are the plate."
       },
       "materials": {
-        "projectedTotal": 2,
+        "projectedTotal": 3,
         "budget": 3,
-        "headroom": 1,
-        "note": "bamboo and split: 2 of 3. Two culm tones, the rafter, the rope and the black cord are vertex colours; the roof's six tones are per-instance."
+        "headroom": 0,
+        "note": "bamboo, split and rope: 3 of 3. Culm and rope tones are vertex colours; the roof's sixteen tones are per-instance."
       },
       "uniqueGeometries": {
-        "projectedTotal": 2,
+        "projectedTotal": 4,
         "budget": 6,
-        "headroom": 4,
+        "headroom": 2,
         "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
       },
       "triangles": {
-        "measured": 2552,
+        "measured": 3480,
         "budget": 4000,
-        "headroom": 1448,
-        "note": "2,552 of 4,000: 968 in the frame merge (24 cylinders at 8 or 10 segments), 1,584 in 33 roof instances at 48 each (four six-segment open half culms). The roof is 62% of the model, which is the registry notes' own prediction for this module."
+        "headroom": 520,
+        "note": "3,480 of 4,000: 880 in the frame merge (22 cylinders at 8 or 10 segments), 1,280 in forty rope collars, 1,320 in the roof (66 open ten-segment half culms at 20 triangles each over two sets). 87% of the budget, which is the registry notes' own prediction for this module."
       }
     }
   },
@@ -1855,7 +2130,7 @@
     },
     {
       "id": "instancing",
-      "strategy": "One InstancedMesh of 33 four-culm pairs carrying both slopes. In a scene the HOST places whole bays on the 4 m grid."
+      "strategy": "Two InstancedMeshes -- 17 channels and 16 caps -- each carrying both slopes. In a scene the HOST places whole bays on the 4 m grid."
     },
     {
       "id": "determinism",
@@ -1863,7 +2138,7 @@
     },
     {
       "id": "textures",
-      "strategy": "Both materials are declared textureless. Two 512 px culm canvases after construction, ~2 MB of texture VRAM."
+      "strategy": "All three materials are declared textureless. Two 512 px canvases (culm, split) and one 256 px rope canvas after construction, ~2.3 MB of texture VRAM."
     }
   ],
   "animationAnchors": [],
@@ -1876,10 +2151,10 @@
       "mitigation": "A walled culm triples the roof's triangles for 8 mm nobody resolves at prop distance, and the scallop the notes ask for is the shell's own open mouth. Double-sided is not optional here: a hollow-up channel is seen from the inside at every azimuth."
     },
     {
-      "id": "six-segment-culms",
+      "id": "roof-pitch-vs-plate",
       "severity": "low",
-      "description": "Six segments per half culm is coarse; at twelve the roof alone would be 3,168 triangles and over the ceiling with the frame.",
-      "mitigation": "At a 118 mm pitch a culm is about 25 px across at prop distance. Measured on the renders the course reads as round, and the budget verdict is 2,552 of 4,000."
+      "description": "The plate's roof is pitched near 25 degrees; the notes' 2.40 eave under a 3.10 ridge over a 2 m half-span, with the culms overhanging the frame, gives 15.6.",
+      "mitigation": "The eave and ridge are the module contract; the overhang, the culm width and the scallop are what the plate is judged on and all three are built."
     },
     {
       "id": "notes-over-proxy",
@@ -1888,16 +2163,16 @@
       "mitigation": "The notes are the module contract and the plate is a stand-in. The proxy IS used for the culm diameter and the ridge axis; arithmetic in envelopeDerivation."
     },
     {
-      "id": "thin-posts-vs-collider-cover",
-      "severity": "medium",
-      "description": "A 100 mm bamboo post is under the collider derivation's 0.15 m minimum rectangle, so the greedy cover took NO rectangle for the post layer and fell back to the mask's bounding box -- which for four corner posts is the whole 4 x 4 m bay. The first compound shipped a solid 4 x 4 x 1.84 m block under the roof, and promote refused it: 20% of the footprint standing more than the 0.30 m step height above the real surface, i.e. a player walking onto thin air at waist height inside a shelter whose whole purpose is to be walked under.",
-      "mitigation": "Fixed in scripts/lib/colliders.mjs rather than by thickening the posts, because 100 mm is the right culm: the fallback is now per CONNECTED COMPONENT when the bounding box is less than 35% full AND at least a square metre. Both conditions are measured -- splitting unconditionally dropped the soi dog from 0.973 to 0.718 coverage, because for four legs under a solid body the bbox IS the body. Re-derived all 122 existing compounds: four change part geometry (this bay, the stall cart, the songthaew and the tuk-tuk), none change coverage, and no shipped compound changes without a re-derive."
+      "id": "post-collider-cover",
+      "severity": "low",
+      "description": "The collider derivation takes no rectangle under 0.15 m in both axes, and the first build's 100 mm posts fell through to a bounding-box block over the whole bay.",
+      "mitigation": "Posts are 160 mm now, above the minimum, and the fallback split into connected components (scripts/lib/colliders.mjs) stands behind that. The compound is re-derived and measured on promote."
     },
     {
       "id": "open-frame-turntable",
       "severity": "low",
-      "description": "Open on all four sides, and the eave is 33 open culm mouths, so a lot of what the silhouette encloses is background.",
-      "mitigation": "Turntable run with --allow-holes on the _holecc measurement and a holeviz read per azimuth: the red covers the volume under the roof and the culm mouths, both genuine openings, and no solid surface. Every frame tone measured off the backdrop band first, darkest 77 against 58."
+      "description": "Open on all four sides, and the eave is 17 open culm mouths, so a lot of what the silhouette encloses is background.",
+      "mitigation": "Turntable run with --allow-holes; holeviz read per azimuth on this build: 5,088 / 28,386 / 5,047 / 28,379 enclosed px at 0/90/180/270, all of it the volume under the roof between the posts and rails and the gable voids -- no solid surface is classified as backdrop, the darkest solid face being the cord at luma 67 with sat 0.49."
     }
   ],
   "localSpecSearch": {
@@ -1939,30 +2214,33 @@
     {
       "passed": false,
       "checks": {
-        "silhouetteIoU": 0.3756,
-        "aspectRatioDelta": 0.069,
-        "scaleDelta": 0.2248,
-        "bilateralSymmetryError": 0.0956,
+        "silhouetteIoU": 0.3648,
+        "aspectRatioDelta": 0.025,
+        "scaleDelta": 0.2428,
+        "bilateralSymmetryError": 0.0721,
         "colorDelta": {
-          "checked": 1,
-          "maxDeltaE": 17.93,
+          "checked": 2,
+          "maxDeltaE": 8.34,
           "perComponent": [
             {
               "componentId": null,
-              "deltaE": 17.93
+              "deltaE": 8.34
+            },
+            {
+              "componentId": null,
+              "deltaE": 7.05
             }
           ],
           "gated": false
         }
       },
       "failures": [
-        "silhouette IoU 0.376 is below threshold 0.85",
-        "aspect-ratio delta 0.069 exceeds threshold 0.05",
-        "scale delta 0.225 exceeds threshold 0.08",
+        "silhouette IoU 0.365 is below threshold 0.85",
+        "scale delta 0.243 exceeds threshold 0.08",
         "blockout requires --map-stripped-render evidence"
       ],
       "maskWarnings": [],
-      "renderHash": "2c69d795f207c08f",
+      "renderHash": "db259b65490e1dd8",
       "passId": "blockout"
     }
   ]
