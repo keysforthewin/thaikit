@@ -72,7 +72,8 @@
       "formLanguage": [
         "welded-tube-frame",
         "corrugated-sheet",
-        "ground-posts-behind",
+        "post-as-upright",
+        "screw-lines",
         "paste-up-posters"
       ],
       "structureKind": [
@@ -107,12 +108,12 @@
         "mesoComponents": 5,
         "microFeatureGroups": 3,
         "materialLayers": 3,
-        "repetitionSystems": 0
+        "repetitionSystems": 1
       },
       "reasoning": [
-        "A 3 x 1.95 m welded 40 mm square-tube frame (top, bottom and mid rail, two uprights) IN FRONT of a vertically corrugated sheet, with ONE 50 mm square post on the -X end behind the sheet running 0.45 m below the frame into the ground (proxy: posts alone at 0.00-0.14 H, frame and sheet 0.20-0.98 H, mid rail at 0.53 of the frame height on the front depth map).",
+        "A 3 x 1.85 m welded 50 mm square-tube frame (top, bottom and mid rail, a short +X upright) IN FRONT of a vertically corrugated sheet, whose -X upright IS the 60 mm ground post, standing in the frame plane from the ground to 0.10 m above the top rail as the plate shows (proxy: posts alone at 0.00-0.14 H, frame and sheet 0.20-0.98 H, mid rail at 0.53 of the frame height on the front depth map).",
         "Three materials: the pale blue sheet with a chalk-and-rust-streak canvas, the galvanised steel with a rust canvas, and an alpha-cut paper pane for the paste-ups and spray stencil -- a printed graphic is the post-construction canvas case.",
-        "No repetition system: the 28 ribs are ONE extruded sine profile, so the corrugation is geometry that catches light and gives the wavy top edge, at 1,300 triangles.",
+        "The 40 ribs are ONE extruded sine profile carrying crest and valley vertex tones, so the corrugation is geometry that catches light and gives the wavy top edge, at ~3,400 triangles; the 60 screw heads along the three rails are ONE InstancedMesh -- the fourth draw call of four.",
         "Action readiness: one root pivot, zero sockets, one box collider on the frame root, not breakable."
       ]
     },
@@ -140,7 +141,7 @@
           "zone": "sheet",
           "kind": "linework",
           "identityDefining": true,
-          "description": "28 vertical corrugation ribs with a wavy top edge",
+          "description": "40 vertical corrugation ribs with chalked crests and a wavy top edge",
           "mapsTo": {
             "ref": "sheet"
           },
@@ -162,7 +163,18 @@
           "zone": "frame",
           "kind": "contour",
           "identityDefining": true,
-          "description": "one ground post extending below the frame",
+          "description": "the -X post standing as the frame upright from the ground to above the rail",
+          "mapsTo": {
+            "ref": "frame"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d7-screws",
+          "zone": "frame",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "rusted screw heads at every second crest along the rails",
           "mapsTo": {
             "ref": "frame"
           },
@@ -231,7 +243,7 @@
     },
     "sourceImage": "/home/mulligan/code/thaikit/scratch/zinc-sheet-hoarding-panel/reference.png",
     "resolvedUnknowns": [
-      "The proxy carries two posts; the tile carries one by design so tiles chain. The frame is on the FRONT face only and the post behind, as the plate and the proxy depth map show; the back is plain ribbed sheet.",
+      "The proxy carries two posts; the tile carries one by design so tiles chain. The frame is on the FRONT face only and the post stands in its plane as the -X upright, as the plate shows; the back is plain ribbed sheet.",
       "Posters and stencil are on the front only.",
       "The proxy is squarer than the declared 3.00 x 2.40; the declared aspect is built."
     ],
@@ -251,7 +263,7 @@
       "mesoComponents": 1,
       "microFeatureGroups": 3,
       "materialLayers": 3,
-      "repetitionSystems": 0,
+      "repetitionSystems": 1,
       "reviewViewpoints": 4
     },
     "featureGroups": [
@@ -262,7 +274,8 @@
         "threshold": 0.85,
         "qualityCriteria": [
           "Envelope 3.00 x 2.40 m, frame from 0.45 m",
-          "One post below the frame"
+          "One post as the -X upright, ground to 2.40",
+          "Sheet top above the rail"
         ],
         "evidenceRefs": [
           "view-full"
@@ -277,7 +290,8 @@
         "required": true,
         "threshold": 0.8,
         "qualityCriteria": [
-          "Ribs visible as geometry",
+          "40 ribs as geometry",
+          "Chalked crests over blue valleys",
           "Wavy top edge"
         ],
         "evidenceRefs": [
@@ -294,6 +308,7 @@
         "threshold": 0.75,
         "qualityCriteria": [
           "Frame proud of the sheet with a mid rail",
+          "Screw heads along the rails with rust runs below",
           "Posters at the base"
         ],
         "evidenceRefs": [
@@ -597,7 +612,7 @@
   "actionReadiness": {
     "explodable": true,
     "clickable": true,
-    "partCount": 3,
+    "partCount": 4,
     "pivotInventory": [
       {
         "name": "root",
@@ -630,7 +645,7 @@
     "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
   },
   "assumptions": [
-    "The proxy carries two posts; the tile carries one by design so tiles chain. The frame is on the FRONT face only and the post behind, as the plate and the proxy depth map show; the back is plain ribbed sheet.",
+    "The proxy carries two posts; the tile carries one by design so tiles chain. The frame is on the FRONT face only and the post stands in its plane as the -X upright, as the plate shows; the back is plain ribbed sheet.",
     "Posters and stencil are on the front only.",
     "The proxy is squarer than the declared 3.00 x 2.40; the declared aspect is built."
   ],
@@ -648,7 +663,7 @@
       "h": 2.4,
       "d": 0.12
     },
-    "description": "Frame 3.00 wide from 0.45 to 2.40 m of 0.04 m tube with a mid rail at 1.48 m; corrugated sheet 2.96 x 1.93 m, 28 ribs at 0.011 m amplitude, behind the frame; one 0.05 m post at x -1.38 from 0 to 2.38 m behind the sheet; poster pane 1.2 x 0.55 m at lower left.",
+    "description": "Frame 3.00 wide from 0.45 to 2.30 m of 0.05 m tube with a mid rail at 1.43 m; corrugated sheet 2.96 x 1.90 m, 40 ribs at 0.012 m amplitude, behind the frame, its wavy top at 2.36; one 0.06 m post at x -1.44 in the frame plane from 0 to 2.40 m; poster pane 1.5 x 0.62 m at lower left.",
     "envelopeDerivation": "x spans -1.50..+1.50 at the frame uprights, which end FLUSH with the panel so it tiles edge to edge; y 0.00 at the post feet to 2.40 at the top rail; z -0.073 (post backs) to +0.057 (frame front). The proxy normalises to w/h 1.030 against the declared 1.25 -- it returned a squarer panel -- and d/h 0.049; the declared aspect is kept and the band residual (mean |delta width| 0.186) is that declared aspect, not the build.",
     "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate normalises to w/h 1.030, d/h 0.049. Its front depth map (scratch/zinc-sheet-hoarding-panel/_ev/front.png) shows the frame proud of a ribbed sheet with the mid rail at 0.53 of the frame height and the posts alone below 0.14 H; occupancy reads posts 3 of 80 columns at the panel ends."
   },
@@ -701,12 +716,12 @@
       "confidence": 0.88,
       "primitive": "box",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "Top, bottom and mid rails, two uprights, one ground post and one weld tab: one merge, one draw call.",
+      "topologyRationale": "Top, bottom and mid rails, the +X upright and the -X post: one merge, one draw call.",
       "materialId": "steel",
       "material": "steel",
       "parent": null,
       "geometryDescriptor": {
-        "topologyIntent": "Tube 0.04 m square; rails 3.00 m at 0.47 and 2.38 m, mid rail 2.92 m at 1.48 m; uprights 1.87 m at x +-1.48; post 0.05 m square at x -1.38, 0.02-2.38 m, 0.025 m behind the sheet back.",
+        "topologyIntent": "Tube 0.05 m square; rails 2.85 m between the post and the +X upright at 0.475, 1.43 and 2.275 m; +X upright 1.85 m at x +1.475; post 0.06 m square at x -1.44 from 0 to 2.40 m, 3 mm proud of the rails, all 6 mm in front of the rib crests.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -728,6 +743,11 @@
           "id": "d3-posts",
           "description": "posts",
           "delivery": "tinted boxes"
+        },
+        {
+          "id": "d7-screws",
+          "description": "screw heads",
+          "delivery": "InstancedMesh of 60 cylinders"
         },
         {
           "id": "d6-framerust",
@@ -800,12 +820,12 @@
       "confidence": 0.9,
       "primitive": "extrude",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "One closed sine ribbon of 28 ribs extruded up 1.95 m: the ribs and the wavy top edge are geometry at 1,300 triangles.",
+      "topologyRationale": "One closed sine ribbon of 40 ribs extruded up 1.90 m with crest/valley vertex tones: the ribs, the chalking and the wavy top edge are geometry at ~3,400 triangles.",
       "materialId": "sheet",
       "material": "sheet",
       "parent": "frame",
       "geometryDescriptor": {
-        "topologyIntent": "2.96 m wide, 0.011 m amplitude, 0.006 m thick, from 0.49 to 2.42 m, centred on z = 0.",
+        "topologyIntent": "2.96 m wide, 0.012 m amplitude, 0.006 m thick, from 0.46 to 2.36 m, centred on z = 0.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -814,8 +834,8 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "The frame is 6 mm in front of the crests and the posts 25 mm behind the troughs; no face of the sheet is planar with anything.",
-        "mergeNote": "Panel UVs at 2.4 m per tile so the rust streaks hang from the top."
+        "zFightingNote": "The frame is 6 mm in front of the crests and the poster pane 10 mm; no face of the sheet is planar with anything.",
+        "mergeNote": "Panel UVs at 2.4 m per tile so the rust runs hang from the rail lines."
       },
       "localFeatures": [
         {
@@ -825,8 +845,8 @@
         },
         {
           "id": "d4-rust",
-          "description": "rust streaks",
-          "delivery": "grime canvas"
+          "description": "rust runs",
+          "delivery": "paint canvas bandStreaks"
         }
       ],
       "colorMaterialRecipe": {
@@ -871,7 +891,7 @@
       "material": "paper",
       "parent": "sheet",
       "geometryDescriptor": {
-        "topologyIntent": "1.20 x 0.55 m at x -0.55, y 0.87, 4 mm proud of the rib crests.",
+        "topologyIntent": "1.50 x 0.62 m at x -0.45, y 0.89, 10 mm proud of the rib crests.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -880,7 +900,7 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "4 mm in front of the crests, 16 mm behind the frame front.",
+        "zFightingNote": "10 mm in front of the crests, 8 mm behind the frame back face; check-coplanar clean.",
         "mergeNote": ""
       },
       "localFeatures": [
@@ -952,14 +972,14 @@
             "#96AAB6",
             "#7D6A5A"
           ],
-          "evidence": "Rust streaks from the screws in the plate; forty streaks in the sheet canvas at the (0.62, 0.50, 0.42) wash."
+          "evidence": "Rust streaks from the screws in the plate; seventy rust runs in the sheet canvas hanging from the three rail lines at the (0.42, 0.29, 0.19) run tone."
         }
       ],
       "finishClass": "plastic",
       "textureless": {
         "declared": true,
         "evidence": [
-          "Measured on viewEvidence region-sheet (PBR confidence 0.860) at #96aab6; the corrugation is GEOMETRY, and a 512 px grime canvas carries rust-brown streaks and chalk blotches.",
+          "Measured on viewEvidence region-sheet (PBR confidence 0.860) at #96aab6, crests #96acba (167) chalking pale and valleys #67757d (114): the corrugation is GEOMETRY carrying crest #a4b8c4 and valley #6a8399 as vertex tones keyed on the profile (a first pass at #c8ced0 / #8fa6b8 rendered grey-white at 183), and a 512 px paint canvas carries rust runs hanging from all three rail lines (panel-UV v 1.0, 0.618, 0.19), soft mottle and grain.",
           "Textureless as DECLARED: the canvas is post-construction."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
@@ -999,7 +1019,7 @@
       "textureless": {
         "declared": true,
         "evidence": [
-          "Measured on region-frame (0.768) at #535554 and region-post (0.718) at #545451, both in the shade; carried at #737574 and #646461 as vertex colours on a WHITE material (luma 116 / 100, well above the hole gate 58) with a rust canvas; metalness 0.15 because the harness has no environment map and a metal with nothing to reflect renders black.",
+          "Measured on region-frame (0.768) at #535554 and region-post (0.718) at #545451, both in the shade; carried at #737574 and #6a6a67 as vertex colours on a WHITE material (luma 116 / 105, well above the hole gate 58) with a rust canvas at density 110, and the screw heads #5a4634; metalness 0.15 because the harness has no environment map and a metal with nothing to reflect renders black.",
           "Textureless as DECLARED."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
@@ -1052,7 +1072,28 @@
       }
     }
   ],
-  "repetitionSystems": [],
+  "repetitionSystems": [
+    {
+      "id": "screws",
+      "name": "Rusted screw heads along the rails",
+      "instanceCount": 60,
+      "sourceComponent": "frame",
+      "material": "steel",
+      "renderAs": "InstancedMesh",
+      "sharedGeometry": "screw-head",
+      "placement": {
+        "mode": "linear",
+        "note": "Every second rib crest (0.148 m pitch) on the front face of each of the three rails."
+      },
+      "instanceDimensions": {
+        "width": 0.014,
+        "height": 0.006,
+        "depth": 0.014
+      },
+      "rationale": "Sixty identical heads at one geometry and one draw call -- the fourth of four.",
+      "zFightingNote": "Each head sits 3 mm proud of its rail face."
+    }
+  ],
   "buildPasses": [
     {
       "id": "blockout",
@@ -1161,27 +1202,27 @@
   ],
   "visualEvidence": [
     {
-      "timestamp": "2026-08-27T09:09:17.461439+00:00",
+      "timestamp": "2026-09-02T22:58:02.147465+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.87,
-        "componentStructure": 0.88,
-        "formDetail": 0.86,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.91,
+        "formDetail": 0.91,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.87
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.87,
+          "score": 0.91,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope built at 3.00 x 2.40 x 0.13 m; frame from 0.45 m with one post below it on the -X end, as the proxy's 0.14 H post-only band shows. Band table residual 0.186 width is the proxy's squarer aspect against the declared 1.25.",
-          "notes": ""
+          "evidence": "Envelope built at 3.00 x 2.40 x 0.13 m. The -X post now stands IN the frame plane as the upright, from the ground to 0.10 m above the top rail, and the sheet's wavy top stands 0.06 above the rail -- the plate's top-left corner read off the zoom (post above rail above sheet-top). Rails 50 mm, mid rail at 0.53 of the frame height. Band table residual 0.186 width is the proxy's squarer aspect against the declared 1.25.",
+          "notes": "The first build put the post BEHIND the sheet with two frame uprights of rail tube; the plate has the post as the upright."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/zinc-sheet-hoarding-panel/reference.png",
@@ -1192,27 +1233,27 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:09:17.542064+00:00",
+      "timestamp": "2026-09-02T22:58:02.231952+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.87,
-      "aiVisionScore": 0.87,
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.87,
-        "componentStructure": 0.88,
-        "formDetail": 0.86,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.91,
+        "formDetail": 0.91,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.87
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.87,
+          "score": 0.91,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope built at 3.00 x 2.40 x 0.13 m; frame from 0.45 m with one post below it on the -X end, as the proxy's 0.14 H post-only band shows. Band table residual 0.186 width is the proxy's squarer aspect against the declared 1.25.",
-          "notes": ""
+          "evidence": "Envelope built at 3.00 x 2.40 x 0.13 m. The -X post now stands IN the frame plane as the upright, from the ground to 0.10 m above the top rail, and the sheet's wavy top stands 0.06 above the rail -- the plate's top-left corner read off the zoom (post above rail above sheet-top). Rails 50 mm, mid rail at 0.53 of the frame height. Band table residual 0.186 width is the proxy's squarer aspect against the declared 1.25.",
+          "notes": "The first build put the post BEHIND the sheet with two frame uprights of rail tube; the plate has the post as the upright."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/zinc-sheet-hoarding-panel/reference.png",
@@ -1223,27 +1264,42 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:09:17.622966+00:00",
+      "timestamp": "2026-09-02T22:58:02.317252+00:00",
       "passId": "form-refinement",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/zinc-sheet-hoarding-panel/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/zinc-sheet-hoarding-panel/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/zinc-sheet-hoarding-panel/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-02T22:58:02.402700+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.87,
-        "componentStructure": 0.88,
-        "formDetail": 0.86,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.91,
+        "formDetail": 0.91,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.87
       },
       "featureReviews": [
         {
           "id": "corrugation",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.91,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "28 ribs as a sine extrusion; the top edge is wavy at 0 and 315 degrees and the ribs catch light.",
-          "notes": ""
+          "evidence": "40 ribs (20 counted over the 1.5 m of the top-rail zoom) as a sine extrusion at 0.012 amplitude with crest #a4b8c4 / valley #6a8399 vertex tones keyed on the profile itself: the render probes 139-158 across the ribs against the plate's 114 valley / 167 crest. Wavy top edge above the rail at 0 and 315 degrees.",
+          "notes": "28 ribs at one flat tone was the first build; a first tone pass at #c8ced0 / #8fa6b8 with gamma 1.6 rendered grey-white at 183 and was re-probed against the plate."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/zinc-sheet-hoarding-panel/reference.png",
@@ -1254,27 +1310,42 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:09:17.704525+00:00",
+      "timestamp": "2026-09-02T22:58:02.489633+00:00",
       "passId": "material-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
+      "estimatedFidelity": 0.89,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/zinc-sheet-hoarding-panel/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/zinc-sheet-hoarding-panel/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/zinc-sheet-hoarding-panel/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-02T22:58:02.576948+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.89,
+      "aiVisionScore": 0.89,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.87,
-        "componentStructure": 0.88,
-        "formDetail": 0.86,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.91,
+        "formDetail": 0.91,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.87
       },
       "featureReviews": [
         {
           "id": "frame-and-posters",
           "tier": "critical",
-          "score": 0.8,
+          "score": 0.88,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Frame 6 mm proud of the crests with a mid rail at 1.48 m, rust canvas on the tube; torn posters and a stencil pane at lower left.",
-          "notes": "Stencil text is a generic bold sans."
+          "evidence": "Frame 6 mm proud of the crests with a mid rail; 60 rusted screw heads at every second crest along all three rails as one InstancedMesh, with rust runs hanging from each rail line in the sheet canvas (bandStreaks at panel-UV v 1.0 / 0.618 / 0.19); rust canvas on the tube at density 110; torn posters and a stencil pane 1.5 x 0.62 at lower left.",
+          "notes": "Stencil text is a generic bold sans and smaller than the plate's spray; the runs are random along u rather than under each screw."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/zinc-sheet-hoarding-panel/reference.png",
@@ -1285,27 +1356,42 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:09:17.787343+00:00",
+      "timestamp": "2026-09-02T22:58:02.668108+00:00",
       "passId": "surface-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
+      "estimatedFidelity": 0.89,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/zinc-sheet-hoarding-panel/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/zinc-sheet-hoarding-panel/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/zinc-sheet-hoarding-panel/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-02T22:58:02.755160+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.89,
+      "aiVisionScore": 0.89,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.87,
-        "componentStructure": 0.88,
-        "formDetail": 0.86,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.91,
+        "formDetail": 0.91,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.87
       },
       "featureReviews": [
         {
           "id": "frame-and-posters",
           "tier": "critical",
-          "score": 0.8,
+          "score": 0.88,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Frame 6 mm proud of the crests with a mid rail at 1.48 m, rust canvas on the tube; torn posters and a stencil pane at lower left.",
-          "notes": "Stencil text is a generic bold sans."
+          "evidence": "Frame 6 mm proud of the crests with a mid rail; 60 rusted screw heads at every second crest along all three rails as one InstancedMesh, with rust runs hanging from each rail line in the sheet canvas (bandStreaks at panel-UV v 1.0 / 0.618 / 0.19); rust canvas on the tube at density 110; torn posters and a stencil pane 1.5 x 0.62 at lower left.",
+          "notes": "Stencil text is a generic bold sans and smaller than the plate's spray; the runs are random along u rather than under each screw."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/zinc-sheet-hoarding-panel/reference.png",
@@ -1316,17 +1402,17 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:09:17.868995+00:00",
+      "timestamp": "2026-09-02T22:58:02.846080+00:00",
       "passId": "lighting-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.87,
-        "componentStructure": 0.88,
-        "formDetail": 0.86,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.91,
+        "formDetail": 0.91,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.87
       },
       "featureReviews": [],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/zinc-sheet-hoarding-panel/reference.png",
@@ -1337,17 +1423,17 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:09:17.951287+00:00",
+      "timestamp": "2026-09-02T22:58:02.936697+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.92,
       "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.87,
-        "componentStructure": 0.88,
-        "formDetail": 0.86,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.91,
+        "formDetail": 0.91,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.87
       },
       "featureReviews": [],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/zinc-sheet-hoarding-panel/reference.png",
@@ -1358,45 +1444,45 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:09:18.034943+00:00",
+      "timestamp": "2026-09-02T22:58:03.035621+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.85,
-      "aiVisionScore": 0.85,
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.87,
-        "componentStructure": 0.88,
-        "formDetail": 0.86,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.91,
+        "formDetail": 0.91,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.87
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.87,
+          "score": 0.91,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope built at 3.00 x 2.40 x 0.13 m; frame from 0.45 m with one post below it on the -X end, as the proxy's 0.14 H post-only band shows. Band table residual 0.186 width is the proxy's squarer aspect against the declared 1.25.",
-          "notes": ""
+          "evidence": "Envelope built at 3.00 x 2.40 x 0.13 m. The -X post now stands IN the frame plane as the upright, from the ground to 0.10 m above the top rail, and the sheet's wavy top stands 0.06 above the rail -- the plate's top-left corner read off the zoom (post above rail above sheet-top). Rails 50 mm, mid rail at 0.53 of the frame height. Band table residual 0.186 width is the proxy's squarer aspect against the declared 1.25.",
+          "notes": "The first build put the post BEHIND the sheet with two frame uprights of rail tube; the plate has the post as the upright."
         },
         {
           "id": "corrugation",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.91,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "28 ribs as a sine extrusion; the top edge is wavy at 0 and 315 degrees and the ribs catch light.",
-          "notes": ""
+          "evidence": "40 ribs (20 counted over the 1.5 m of the top-rail zoom) as a sine extrusion at 0.012 amplitude with crest #a4b8c4 / valley #6a8399 vertex tones keyed on the profile itself: the render probes 139-158 across the ribs against the plate's 114 valley / 167 crest. Wavy top edge above the rail at 0 and 315 degrees.",
+          "notes": "28 ribs at one flat tone was the first build; a first tone pass at #c8ced0 / #8fa6b8 with gamma 1.6 rendered grey-white at 183 and was re-probed against the plate."
         },
         {
           "id": "frame-and-posters",
           "tier": "critical",
-          "score": 0.8,
+          "score": 0.88,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Frame 6 mm proud of the crests with a mid rail at 1.48 m, rust canvas on the tube; torn posters and a stencil pane at lower left.",
-          "notes": "Stencil text is a generic bold sans."
+          "evidence": "Frame 6 mm proud of the crests with a mid rail; 60 rusted screw heads at every second crest along all three rails as one InstancedMesh, with rust runs hanging from each rail line in the sheet canvas (bandStreaks at panel-UV v 1.0 / 0.618 / 0.19); rust canvas on the tube at density 110; torn posters and a stencil pane 1.5 x 0.62 at lower left.",
+          "notes": "Stencil text is a generic bold sans and smaller than the plate's spray; the runs are random along u rather than under each screw."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/zinc-sheet-hoarding-panel/reference.png",
@@ -1409,31 +1495,31 @@
   ],
   "reviewHistory": [
     {
-      "timestamp": "2026-08-27T09:09:17.461439+00:00",
+      "timestamp": "2026-09-02T22:58:02.147465+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.87,
-        "componentStructure": 0.88,
-        "formDetail": 0.86,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.91,
+        "formDetail": 0.91,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.87
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.87,
+          "score": 0.91,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope built at 3.00 x 2.40 x 0.13 m; frame from 0.45 m with one post below it on the -X end, as the proxy's 0.14 H post-only band shows. Band table residual 0.186 width is the proxy's squarer aspect against the declared 1.25.",
-          "notes": ""
+          "evidence": "Envelope built at 3.00 x 2.40 x 0.13 m. The -X post now stands IN the frame plane as the upright, from the ground to 0.10 m above the top rail, and the sheet's wavy top stands 0.06 above the rail -- the plate's top-left corner read off the zoom (post above rail above sheet-top). Rails 50 mm, mid rail at 0.53 of the frame height. Band table residual 0.186 width is the proxy's squarer aspect against the declared 1.25.",
+          "notes": "The first build put the post BEHIND the sheet with two frame uprights of rail tube; the plate has the post as the upright."
         }
       ],
       "action": "continue",
-      "summary": "Blockout: three components at 3 draw calls of 4; frame, sheet and posters at the proxy stations.",
+      "summary": "Blockout: three components and one repetition system at 4 draw calls of 4; frame, sheet, screws and posters at the proxy stations, the post as the -X upright.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1450,31 +1536,31 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:09:17.542064+00:00",
+      "timestamp": "2026-09-02T22:58:02.231952+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.87,
-      "aiVisionScore": 0.87,
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.87,
-        "componentStructure": 0.88,
-        "formDetail": 0.86,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.91,
+        "formDetail": 0.91,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.87
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.87,
+          "score": 0.91,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope built at 3.00 x 2.40 x 0.13 m; frame from 0.45 m with one post below it on the -X end, as the proxy's 0.14 H post-only band shows. Band table residual 0.186 width is the proxy's squarer aspect against the declared 1.25.",
-          "notes": ""
+          "evidence": "Envelope built at 3.00 x 2.40 x 0.13 m. The -X post now stands IN the frame plane as the upright, from the ground to 0.10 m above the top rail, and the sheet's wavy top stands 0.06 above the rail -- the plate's top-left corner read off the zoom (post above rail above sheet-top). Rails 50 mm, mid rail at 0.53 of the frame height. Band table residual 0.186 width is the proxy's squarer aspect against the declared 1.25.",
+          "notes": "The first build put the post BEHIND the sheet with two frame uprights of rail tube; the plate has the post as the upright."
         }
       ],
       "action": "continue",
-      "summary": "Structural pass: frame 0.45-2.40 m with mid rail, one post behind to the ground, sheet between.",
+      "summary": "Structural pass: post 0-2.40 in the frame plane, rails 0.45-2.30 with the mid rail at 1.43, sheet 0.46-2.36 behind, +X upright flush with the panel end.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1490,31 +1576,55 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:09:17.622966+00:00",
+      "timestamp": "2026-09-02T22:58:02.317252+00:00",
       "passId": "form-refinement",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Rebuild from 0.85: ribs 28 -> 40 off the plate zoom (20 over 1.5 m), the post moved from behind the sheet into the frame plane as the -X upright standing above the rail, rails 40 -> 50 mm, 60 instanced screw heads at every second crest on all three rails, poster pane enlarged to 1.5 x 0.62.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/zinc-sheet-hoarding-panel/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/zinc-sheet-hoarding-panel/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/zinc-sheet-hoarding-panel/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-02T22:58:02.402700+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.87,
-        "componentStructure": 0.88,
-        "formDetail": 0.86,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.91,
+        "formDetail": 0.91,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.87
       },
       "featureReviews": [
         {
           "id": "corrugation",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.91,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "28 ribs as a sine extrusion; the top edge is wavy at 0 and 315 degrees and the ribs catch light.",
-          "notes": ""
+          "evidence": "40 ribs (20 counted over the 1.5 m of the top-rail zoom) as a sine extrusion at 0.012 amplitude with crest #a4b8c4 / valley #6a8399 vertex tones keyed on the profile itself: the render probes 139-158 across the ribs against the plate's 114 valley / 167 crest. Wavy top edge above the rail at 0 and 315 degrees.",
+          "notes": "28 ribs at one flat tone was the first build; a first tone pass at #c8ced0 / #8fa6b8 with gamma 1.6 rendered grey-white at 183 and was re-probed against the plate."
         }
       ],
       "action": "continue",
-      "summary": "Form refinement: sine-profile corrugation with a wavy top edge, weld tab, post foot.",
+      "summary": "Form refinement: 40-rib sine corrugation with a wavy top edge above the rail, 60 instanced screw heads on the rails, 50 mm rails and a 60 mm post.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1530,31 +1640,15 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:09:17.704525+00:00",
+      "timestamp": "2026-09-02T22:58:02.489633+00:00",
       "passId": "material-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
+      "estimatedFidelity": 0.89,
+      "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.87,
-        "componentStructure": 0.88,
-        "formDetail": 0.86,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
-      },
-      "featureReviews": [
-        {
-          "id": "frame-and-posters",
-          "tier": "critical",
-          "score": 0.8,
-          "threshold": 0.75,
-          "passed": true,
-          "evidence": "Frame 6 mm proud of the crests with a mid rail at 1.48 m, rust canvas on the tube; torn posters and a stencil pane at lower left.",
-          "notes": "Stencil text is a generic bold sans."
-        }
-      ],
-      "action": "continue",
-      "summary": "Material pass: 3 materials at PBR confidence 0.718-0.860, all textureless with measured albedo; dark steel lifted above luma 58.",
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Crest/valley vertex tones on the corrugation (fence template gained `waveTint`): first pass #c8ced0 / #8fa6b8 at gamma 1.6 rendered 183 grey-white against the plate's 167 crest / 114 valley; shipped at #a4b8c4 / #6a8399, gamma 0.8, probing 139-158.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1570,31 +1664,55 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:09:17.787343+00:00",
+      "timestamp": "2026-09-02T22:58:02.576948+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.89,
+      "aiVisionScore": 0.89,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.91,
+        "formDetail": 0.91,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.87
+      },
+      "featureReviews": [
+        {
+          "id": "frame-and-posters",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Frame 6 mm proud of the crests with a mid rail; 60 rusted screw heads at every second crest along all three rails as one InstancedMesh, with rust runs hanging from each rail line in the sheet canvas (bandStreaks at panel-UV v 1.0 / 0.618 / 0.19); rust canvas on the tube at density 110; torn posters and a stencil pane 1.5 x 0.62 at lower left.",
+          "notes": "Stencil text is a generic bold sans and smaller than the plate's spray; the runs are random along u rather than under each screw."
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: 3 materials at PBR confidence 0.718-0.860, all textureless with measured albedo; the sheet carries crest/valley vertex tones re-probed against the plate; dark steel lifted above luma 58.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/zinc-sheet-hoarding-panel/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/zinc-sheet-hoarding-panel/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/zinc-sheet-hoarding-panel/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-02T22:58:02.668108+00:00",
       "passId": "surface-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
+      "estimatedFidelity": 0.89,
+      "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.87,
-        "componentStructure": 0.88,
-        "formDetail": 0.86,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
-      },
-      "featureReviews": [
-        {
-          "id": "frame-and-posters",
-          "tier": "critical",
-          "score": 0.8,
-          "threshold": 0.75,
-          "passed": true,
-          "evidence": "Frame 6 mm proud of the crests with a mid rail at 1.48 m, rust canvas on the tube; torn posters and a stencil pane at lower left.",
-          "notes": "Stencil text is a generic bold sans."
-        }
-      ],
-      "action": "continue",
-      "summary": "Surface pass: rust-streak canvas on the sheet, rust canvas on the frame, poster canvas on the pane.",
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Sheet canvas changed from grime to paint (fence template gained the kind): rust runs hanging from all three rail lines at their panel-UV v; the first pass at alpha 0.14 was invisible, shipped at 0.34-0.42 with a darker run tone.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1610,21 +1728,61 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:09:17.868995+00:00",
-      "passId": "lighting-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
+      "timestamp": "2026-09-02T22:58:02.755160+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.89,
+      "aiVisionScore": 0.89,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.87,
-        "componentStructure": 0.88,
-        "formDetail": 0.86,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.91,
+        "formDetail": 0.91,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.87
+      },
+      "featureReviews": [
+        {
+          "id": "frame-and-posters",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Frame 6 mm proud of the crests with a mid rail; 60 rusted screw heads at every second crest along all three rails as one InstancedMesh, with rust runs hanging from each rail line in the sheet canvas (bandStreaks at panel-UV v 1.0 / 0.618 / 0.19); rust canvas on the tube at density 110; torn posters and a stencil pane 1.5 x 0.62 at lower left.",
+          "notes": "Stencil text is a generic bold sans and smaller than the plate's spray; the runs are random along u rather than under each screw."
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface pass: paint canvas on the sheet with rust runs from all three rail lines, mottle and grain; rust canvas on the frame; poster canvas on the pane.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/zinc-sheet-hoarding-panel/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/zinc-sheet-hoarding-panel/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/zinc-sheet-hoarding-panel/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-02T22:58:02.846080+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.91,
+        "formDetail": 0.91,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.87
       },
       "featureReviews": [],
       "action": "continue",
-      "summary": "Lighting pass: no rim light and no contact shadow in the plate; both recorded absent. Exposure 1.0, ACES filmic.",
+      "summary": "Lighting pass: no rim light and no contact shadow in the plate; both recorded absent. Exposure 1.0, ACES filmic; the ribs shade themselves under the key.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1640,21 +1798,21 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:09:17.951287+00:00",
+      "timestamp": "2026-09-02T22:58:02.936697+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.92,
       "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.87,
-        "componentStructure": 0.88,
-        "formDetail": 0.86,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.91,
+        "formDetail": 0.91,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.87
       },
       "featureReviews": [],
       "action": "continue",
-      "summary": "Interaction pass: ONE root pivot, ZERO sockets, one BOX collider on the frame root, no destruction groups.",
+      "summary": "Interaction pass: ONE root pivot, ZERO sockets, one BOX collider on the frame root, no destruction groups; a hand compound of three boxes (sheet, frame, post) at coverage 0.994 after the derivation covered 0.81.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1670,49 +1828,49 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:09:18.034943+00:00",
+      "timestamp": "2026-09-02T22:58:03.035621+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.85,
-      "aiVisionScore": 0.85,
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.87,
-        "componentStructure": 0.88,
-        "formDetail": 0.86,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.91,
+        "formDetail": 0.91,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.87
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.87,
+          "score": 0.91,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope built at 3.00 x 2.40 x 0.13 m; frame from 0.45 m with one post below it on the -X end, as the proxy's 0.14 H post-only band shows. Band table residual 0.186 width is the proxy's squarer aspect against the declared 1.25.",
-          "notes": ""
+          "evidence": "Envelope built at 3.00 x 2.40 x 0.13 m. The -X post now stands IN the frame plane as the upright, from the ground to 0.10 m above the top rail, and the sheet's wavy top stands 0.06 above the rail -- the plate's top-left corner read off the zoom (post above rail above sheet-top). Rails 50 mm, mid rail at 0.53 of the frame height. Band table residual 0.186 width is the proxy's squarer aspect against the declared 1.25.",
+          "notes": "The first build put the post BEHIND the sheet with two frame uprights of rail tube; the plate has the post as the upright."
         },
         {
           "id": "corrugation",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.91,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "28 ribs as a sine extrusion; the top edge is wavy at 0 and 315 degrees and the ribs catch light.",
-          "notes": ""
+          "evidence": "40 ribs (20 counted over the 1.5 m of the top-rail zoom) as a sine extrusion at 0.012 amplitude with crest #a4b8c4 / valley #6a8399 vertex tones keyed on the profile itself: the render probes 139-158 across the ribs against the plate's 114 valley / 167 crest. Wavy top edge above the rail at 0 and 315 degrees.",
+          "notes": "28 ribs at one flat tone was the first build; a first tone pass at #c8ced0 / #8fa6b8 with gamma 1.6 rendered grey-white at 183 and was re-probed against the plate."
         },
         {
           "id": "frame-and-posters",
           "tier": "critical",
-          "score": 0.8,
+          "score": 0.88,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Frame 6 mm proud of the crests with a mid rail at 1.48 m, rust canvas on the tube; torn posters and a stencil pane at lower left.",
-          "notes": "Stencil text is a generic bold sans."
+          "evidence": "Frame 6 mm proud of the crests with a mid rail; 60 rusted screw heads at every second crest along all three rails as one InstancedMesh, with rust runs hanging from each rail line in the sheet canvas (bandStreaks at panel-UV v 1.0 / 0.618 / 0.19); rust canvas on the tube at density 110; torn posters and a stencil pane 1.5 x 0.62 at lower left.",
+          "notes": "Stencil text is a generic bold sans and smaller than the plate's spray; the runs are random along u rather than under each screw."
         }
       ],
       "action": "continue",
-      "summary": "FINAL VERDICT. Overall visual fidelity 0.85. 1,434/4,000 triangles, 3/4 draw calls, 3/3 materials, 3/6 unique geometries, three canvases at 3.1 MB. Turntable: 0/180 segment at 0.43/0.41 of frame; 90/270 are UNSEGMENTABLE by size (a 0.13 m sliver, ~2% of frame against the segmenter's 3.5% floor), recorded as a gate limitation of every 3 m panel.",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.91. 3,906/4,000 triangles, 4/4 draw calls, 3/3 materials, 4/6 unique geometries, three canvases at 3.0 MB, factory ~75 ms. Turntable: 0/180 segment at ~0.43 of frame; 90/270 are UNSEGMENTABLE by size (a 0.13 m sliver, ~2% of frame against the segmenter's 3.5% floor), recorded as a gate limitation of every 3 m panel.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1752,11 +1910,11 @@
     "accounting": {
       "drawCalls": {
         "components": 3,
-        "repetitionSystems": 0,
-        "projectedTotal": 3,
+        "repetitionSystems": 1,
+        "projectedTotal": 4,
         "budget": 4,
-        "headroom": 1,
-        "note": "Three components, no repetition system: 3 of 4."
+        "headroom": 0,
+        "note": "Three components and one repetition system: 4 of 4."
       },
       "materials": {
         "projectedTotal": 3,
@@ -1765,16 +1923,16 @@
         "note": "sheet, steel and paper: 3 of 3."
       },
       "uniqueGeometries": {
-        "projectedTotal": 3,
+        "projectedTotal": 4,
         "budget": 6,
-        "headroom": 3,
+        "headroom": 2,
         "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
       },
       "triangles": {
-        "measured": 1434,
+        "measured": 3906,
         "budget": 4000,
-        "headroom": 2566,
-        "note": "1,458 of 4,000: the sine ribbon is 1,300 of them."
+        "headroom": 94,
+        "note": "3,906 of 4,000: the 40-rib sine ribbon is ~3,400 of them."
       }
     }
   },
@@ -1832,11 +1990,11 @@
   "proceduralStrategy": [
     {
       "id": "primitives",
-      "strategy": "Tinted boxes for the frame and post, one closed sine-profile extrusion for the sheet, one quad for the posters."
+      "strategy": "Tinted boxes for the frame and post, one closed sine-profile extrusion for the sheet, one quad for the posters, one InstancedMesh of screw heads."
     },
     {
       "id": "instancing",
-      "strategy": "No InstancedMesh: the ribs are one profile, not 28 parts."
+      "strategy": "One InstancedMesh: 60 screw heads. The ribs are one profile, not 40 parts."
     },
     {
       "id": "determinism",
@@ -1844,7 +2002,7 @@
     },
     {
       "id": "textures",
-      "strategy": "Every material is declared textureless. Three canvases after construction (512, 256, 512 px), 3.1 MB of texture VRAM."
+      "strategy": "Every material is declared textureless. Three canvases after construction (512 paint, 256 rust, 512 poster), 3.0 MB of texture VRAM; factory ~75 ms."
     }
   ],
   "animationAnchors": [],
@@ -1908,38 +2066,38 @@
     {
       "passed": false,
       "checks": {
-        "silhouetteIoU": 0.6305,
-        "aspectRatioDelta": 0.1631,
-        "scaleDelta": 0.316,
-        "bilateralSymmetryError": 0.1862,
+        "silhouetteIoU": 0.4773,
+        "aspectRatioDelta": 0.1769,
+        "scaleDelta": 0.5021,
+        "bilateralSymmetryError": 0.1328,
         "colorDelta": {
           "checked": 3,
-          "maxDeltaE": 23.09,
+          "maxDeltaE": 20.55,
           "perComponent": [
             {
               "componentId": null,
-              "deltaE": 10.1
+              "deltaE": 12.91
             },
             {
               "componentId": null,
-              "deltaE": 2.52
+              "deltaE": 4.23
             },
             {
               "componentId": null,
-              "deltaE": 23.09
+              "deltaE": 20.55
             }
           ],
           "gated": false
         }
       },
       "failures": [
-        "silhouette IoU 0.631 is below threshold 0.85",
-        "aspect-ratio delta 0.163 exceeds threshold 0.05",
-        "scale delta 0.316 exceeds threshold 0.08",
+        "silhouette IoU 0.477 is below threshold 0.85",
+        "aspect-ratio delta 0.177 exceeds threshold 0.05",
+        "scale delta 0.502 exceeds threshold 0.08",
         "blockout requires --map-stripped-render evidence"
       ],
       "maskWarnings": [],
-      "renderHash": "902bdaeed20d642f",
+      "renderHash": "6f869c4ddafc415a",
       "passId": "blockout"
     }
   ]

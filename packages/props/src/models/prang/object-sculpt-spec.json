@@ -38,7 +38,7 @@
     ],
     "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
   },
-  "sourceImage": "/home/mulligan/code/thaikit/scratch/prang/reference.png",
+  "sourceImage": "/repo/scratch/prang/reference.png",
   "referenceCamera": {
     "solved": false,
     "fovDegrees": 40.0,
@@ -73,6 +73,7 @@
         "redented-plan",
         "tapering-tiers",
         "convex-profile",
+        "interleaved-arch-rings",
         "four-fold-symmetric"
       ],
       "structureKind": [
@@ -90,7 +91,7 @@
         "red-mineral-paint",
         "worn-gilding"
       ],
-      "notes": "Static monumental landmark building, exterior shell only. No interior geometry: a prop kit is only ever looked at from outside, so an interior costs draw calls, geometries and VRAM for something nobody sees. Nothing moves, so one root pivot and zero sockets is the correct contract. The tall slender Thai prang of the Wat Arun type. Deliberately a separate asset from the Khmer stone sanctuary even though both descend from the same Khmer tower form, and the registry notes say why: this one is tall, slim, pale and encrusted, where the Khmer original is squat, dark sandstone and ruined. A lichened stone terrace with a balustrade and one steep stair; a redented tower body with red pilaster strips in its re-entrant corners, a blind arched door and a raised arched pediment on each face; eight receding redented tiers in a convex corn-cob taper; a domed cap and a gilt trident."
+      "notes": "Static monumental landmark building, exterior shell only. No interior geometry: a prop kit is only ever looked at from outside, so an interior costs draw calls, geometries and VRAM for something nobody sees. Nothing moves, so one root pivot and zero sockets is the correct contract. The tall slender Thai prang of the Wat Arun type. Deliberately a separate asset from the Khmer stone sanctuary even though both descend from the same Khmer tower form, and the registry notes say why: this one is tall, slim, pale and encrusted, where the Khmer original is squat, dark sandstone and ruined. A lichened stone terrace with a balustrade and one steep stair; a redented tower body with paired red pilaster strips in its re-entrant corners, a blind arched door under a pointed pediment on each face and a row of large arches at its top; seven receding tiers, each a ring of eight overlapping encrusted arches with plain rims, in a convex corn-cob taper; a domed cap and a tall gilt finial with a ball under the trident."
     },
     "complexity": {
       "tier": "complex",
@@ -108,11 +109,11 @@
         "macroComponents": 3,
         "mesoComponents": 5,
         "microFeatureGroups": 3,
-        "materialLayers": 5,
+        "materialLayers": 6,
         "repetitionSystems": 3
       },
       "reasoning": [
-        "Silhouette is the subject and it is complex: a CONVEX corn-cob taper of eight receding redented tiers over a redented tower over a stepped terrace, with a stair breaking the symmetry.",
+        "Silhouette is the subject and it is complex: a CONVEX corn-cob taper of seven receding octagonal tiers, each wearing a ring of eight interleaved arches, over a redented tower over a stepped terrace, with a stair breaking the symmetry.",
         "The redented plan is the reason a box decomposition is wrong here twice over -- it is a twenty-point polygon, and two crossed boxes would also z-fight along their whole intersection.",
         "Repetition is four-fold and real: pilasters, false doors and pediments all repeat on the four faces and all three are InstancedMesh systems.",
         "Action readiness is minimal: static landmark geometry, box collider, not breakable."
@@ -142,18 +143,18 @@
           "zone": "tiers",
           "kind": "contour",
           "identityDefining": true,
-          "description": "the CONVEX corn-cob taper -- eight tiers bulging outward before closing, not a straight cone",
+          "description": "the CONVEX corn-cob taper -- seven tiers stepping in from the body and bulging before closing, not a straight cone",
           "mapsTo": {
             "ref": "tiers"
           },
           "realization": "unreported"
         },
         {
-          "id": "d2-tier-lips",
+          "id": "d2-tier-arches",
           "zone": "tiers",
           "kind": "ridge",
           "identityDefining": true,
-          "description": "a projecting ring band at the foot of every tier",
+          "description": "a ring of eight overlapping encrusted arches with plain rims on every tier, each reaching into the tier above, and a row of four over the body top",
           "mapsTo": {
             "ref": "tiers"
           },
@@ -164,7 +165,7 @@
           "zone": "tower",
           "kind": "linework",
           "identityDefining": true,
-          "description": "eight red strips standing in the re-entrant faces of the four redented corners",
+          "description": "sixteen red strips, two on each re-entrant face of the four redented corners",
           "mapsTo": {
             "ref": "tower"
           },
@@ -186,7 +187,7 @@
           "zone": "tower",
           "kind": "seam",
           "identityDefining": true,
-          "description": "a raised arched pediment field above each door",
+          "description": "a raised POINTED pediment frame rising from each door head",
           "mapsTo": {
             "ref": "tower"
           },
@@ -219,7 +220,7 @@
           "zone": "apex",
           "kind": "contour",
           "identityDefining": true,
-          "description": "gilt trident with two CURLING outer prongs and a tapered centre spike",
+          "description": "a 2.25 m gilt finial: stem, ball, and a trident with two CURLING outer prongs and a tapered centre spike",
           "mapsTo": {
             "ref": "finial"
           },
@@ -264,11 +265,11 @@
       "confidence": 0.0,
       "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
     },
-    "sourceImage": "/home/mulligan/code/thaikit/scratch/prang/reference.png",
+    "sourceImage": "/repo/scratch/prang/reference.png",
     "resolvedUnknowns": [
       "ONE stair, on the +X face. The plate shows one and the far side is unseen; real prangs often have four. Authored as one because that is what the evidence shows.",
-      "The porcelain encrustation -- thousands of coloured ceramic chips over the whole tower -- is NOT authored as texture. At prop distance on a low-end GPU it integrates to the flat cream the material carries, and the only route to it is the procedural texture set, which would cost five canvases per material and discard every measured albedo on the prop. It is the largest single departure from the plate and is reported as a risk rather than buried.",
-      "The tiers carry no scalloped arch motifs. The plate shows a small arch band on each tier; at eight tiers times four faces that is thirty-two more features, and they are below the resolvable band at the distance this 18 m tower is read from.",
+      "The porcelain encrustation is carried by a post-construction canvas tile of 1,400 chips per 3.2 m, not by the procedural texture set (which would discard every measured albedo). The chips are random within the tile; the plate composes them around each arch.",
+      "Each tier is a ring of EIGHT arches on an octagonal core -- one per face and one per corner at the same radius -- rather than the redented plan of the body. The plate shows the tiers as interleaved arches with no visible corner step, and an octagon puts every arch at one radius; a redented core would leave a 45-degree corner arch with 0.2 m of plan behind it and the rest floating.",
       "The blind doors are authored identical on all four faces. A prang has one real cell and three blind doors; which face carries the real one is not observable here, so all four are blind.",
       "Rear (-Z) elevation is unobserved. Authored as the symmetric repeat of the observed faces."
     ],
@@ -287,7 +288,7 @@
       "macroComponents": 3,
       "mesoComponents": 2,
       "microFeatureGroups": 3,
-      "materialLayers": 5,
+      "materialLayers": 6,
       "repetitionSystems": 3,
       "reviewViewpoints": 4
     },
@@ -316,14 +317,16 @@
         "required": true,
         "threshold": 0.85,
         "qualityCriteria": [
-          "Eight receding redented tiers with a convex profile",
-          "A projecting ring band at the foot of each tier"
+          "Seven receding tiers with a convex profile, stepping in from the body",
+          "A ring of interleaved arches on each tier, overlapping the tier above, with plain rims around encrusted fields"
         ],
         "evidenceRefs": [
-          "view-full"
+          "view-full",
+          "region-arches"
         ],
         "failureModes": [
-          "tiers reading as plain flat slabs with no band"
+          "tiers reading as plain stepped slabs",
+          "arches too deep, reading as cornices"
         ]
       },
       {
@@ -333,8 +336,8 @@
         "threshold": 0.8,
         "qualityCriteria": [
           "Blind ARCHED door on each face, a real concavity behind a proud frame",
-          "Raised arched pediment above each door",
-          "Red pilaster strips in the re-entrant corner faces"
+          "Pointed pediment frame rising from each door head",
+          "Paired red pilaster strips in the re-entrant corner faces"
         ],
         "evidenceRefs": [
           "region-pilaster",
@@ -671,7 +674,7 @@
   "actionReadiness": {
     "explodable": true,
     "clickable": true,
-    "partCount": 8,
+    "partCount": 9,
     "pivotInventory": [
       {
         "name": "root",
@@ -705,8 +708,8 @@
   },
   "assumptions": [
     "ONE stair, on the +X face. The plate shows one and the far side is unseen; real prangs often have four. Authored as one because that is what the evidence shows.",
-    "The porcelain encrustation -- thousands of coloured ceramic chips over the whole tower -- is NOT authored as texture. At prop distance on a low-end GPU it integrates to the flat cream the material carries, and the only route to it is the procedural texture set, which would cost five canvases per material and discard every measured albedo on the prop. It is the largest single departure from the plate and is reported as a risk rather than buried.",
-    "The tiers carry no scalloped arch motifs. The plate shows a small arch band on each tier; at eight tiers times four faces that is thirty-two more features, and they are below the resolvable band at the distance this 18 m tower is read from.",
+    "The porcelain encrustation is carried by a post-construction canvas tile of 1,400 chips per 3.2 m, not by the procedural texture set (which would discard every measured albedo). The chips are random within the tile; the plate composes them around each arch.",
+    "Each tier is a ring of EIGHT arches on an octagonal core -- one per face and one per corner at the same radius -- rather than the redented plan of the body. The plate shows the tiers as interleaved arches with no visible corner step, and an octagon puts every arch at one radius; a redented core would leave a 45-degree corner arch with 0.2 m of plan behind it and the rest floating.",
     "The blind doors are authored identical on all four faces. A prang has one real cell and three blind doors; which face carries the real one is not observable here, so all four are blind.",
     "Rear (-Z) elevation is unobserved. Authored as the symmetric repeat of the observed faces."
   ],
@@ -724,9 +727,9 @@
       "h": 18.0,
       "d": 9.0
     },
-    "description": "A stepped stone platform to 3.15 m with a balustrade, a redented tower body to 10.20 m, eight receding redented tiers bulging outward before closing to 16.20 m, a domed cap to 17.10 m and a trident to 18.00 m. The silhouette events are the terrace steps, the stair breaking one side, the tower's redented corners, the convex swell of the tier stack and the trident.",
+    "description": "A stepped stone platform to 3.15 m with a balustrade, a redented tower body to 10.20 m, seven receding arch-ringed tiers stepping IN from the body and bulging before closing to 15.20 m, a domed cap to 15.90 m and a 2.25 m finial to 18.00 m. The silhouette events are the terrace steps, the stair breaking one side, the tower's redented corners, the convex swell of the tier stack and the trident.",
     "envelopeDerivation": "x and z both span -4.50..+4.50 = 9.00, set by the bottom terrace slab. y spans 0.00 to 18.00, the tip of the trident. The stair is the only asymmetric thing on the prop and it is cut INTO the terrace plan as a notch rather than hung off the outside: a flight projecting past a 9.00 m terrace would push the bounding box off-centre and over the declared width on one side, which is a real failure and not a rounding one. Cut in, the asymmetry costs nothing.",
-    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate normalises to w:h:d = 1 : 2.201 : 1.243 against the declared 1 : 2.000 : 1.000. Area-weighted band comparison gives mean |delta width| 0.013 and |delta depth| 0.013 of height with every band inside 0.06 -- the closest proportional agreement of the whole batch. It was NOT close at first: built to the plate's apparent proportions, band 2 came out 0.170 of height too wide, the only band past the 0.12 flag in this batch. The plate is a three-quarter view from above and its foreshortening makes the platform look about a third of the prop's height; measured band by band, the reference puts the terrace top at 0.18 and shows nothing but tower across bands 2 to 5. The band table won and the terrace was rebuilt lower."
+    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate normalises to w:h:d = 1 : 2.201 : 1.243 against the declared 1 : 2.000 : 1.000. Area-weighted band comparison on this build gives mean |delta width| 0.008 and |delta depth| 0.013 of height with every band inside 0.03; three things it settled on the rebuild: the tier stack steps IN from the body (band 6 reference 0.193 against the body's 0.229, so the first tier ring is 1.55 + 0.30 of arch against a 2.10 body), the body-top arch row must be SHALLOW (a 0.30 m deep row read as a cornice at +0.030 in band 5), and the top tenth is finial alone (band 9 reference 0.017 wide -- the cap ends at 0.88 H and a 2.25 m finial carries the rest; the first build's 1.1 m finial also overshot 18.00 by 0.21). It was NOT close at first: built to the plate's apparent proportions, band 2 came out 0.170 of height too wide, the only band past the 0.12 flag in this batch. The plate is a three-quarter view from above and its foreshortening makes the platform look about a third of the prop's height; measured band by band, the reference puts the terrace top at 0.18 and shows nothing but tower across bands 2 to 5. The band table won and the terrace was rebuilt lower."
   },
   "viewEvidence": [
     {
@@ -764,6 +767,12 @@
       "viewpoint": "front",
       "path": "crops/gold.png",
       "confidence": 0.86
+    },
+    {
+      "id": "region-arches",
+      "viewpoint": "front-three-quarter-high",
+      "path": "crops/arches.png",
+      "confidence": 0.9
     },
     {
       "id": "region-rear",
@@ -882,7 +891,7 @@
       "material": "porcelain",
       "parent": "terrace",
       "geometryDescriptor": {
-        "topologyIntent": "Redented square from y=2.45 to 10.20, half-width 2.20, redent 0.30.",
+        "topologyIntent": "Redented square from y=2.45 to 10.20, half-width 2.10, redent 0.30.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -941,19 +950,19 @@
     },
     {
       "id": "tiers",
-      "name": "Corn-cob tiers",
+      "name": "Corn-cob tiers and arch fields",
       "level": "macro",
       "role": "structure",
       "importance": 1.0,
-      "confidence": 0.88,
+      "confidence": 0.9,
       "primitive": "extrude",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "Sixteen extruded plans -- eight tiers and eight projecting lips -- merged into one component and one draw call. The half-width follows a cosine raised to 1.5, which is what makes the taper CONVEX; a linear interpolation gives a straight cone, and a straight cone is a different building.",
+      "topologyRationale": "Seven octagonal cores and sixty arch FIELDS (eight per tier, four over the body top) merged into one component and one draw call. They are merged rather than instanced because an instanced unit would stretch one tile's chips across arches of very different sizes. The apothem follows a cosine raised to 1.3, which keeps the taper CONVEX.",
       "materialId": "porcelain",
       "material": "porcelain",
       "parent": "tower",
       "geometryDescriptor": {
-        "topologyIntent": "Eight receding redented tiers from y=10.20 to 16.20, half-width 2.05 down to 0.50, each with a 0.10 m projecting ring band at its foot.",
+        "topologyIntent": "Seven octagonal tiers from y=10.20 to 15.20, apothem 1.55 down to 0.62, each carrying eight round-headed arch plates 1.05 of the octagon side wide, 1.38 of the tier tall and 0.22 m deep, sunk 0.05 into the core; four shallow (0.08 m) arches 3.30 wide over the body top from 9.55.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -962,31 +971,86 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "Each lip starts 0.02 m ABOVE its tier's own base rather than level with it. Level, the lip's underside and the tier's underside would be the same plane facing the same way, eight times over.",
+        "zFightingNote": "Each arch is sunk 50 mm into its core so back and core face are an opposed butt, not a shared plane; neighbouring arches meet at 45 degrees; the rim component's backs sit 20 mm further in than the fields' so no two backs share a plane. check-coplanar clean at 0.001 m.",
         "mergeNote": ""
       },
       "localFeatures": [
         {
           "id": "d1-corncob-taper",
           "description": "convex taper",
-          "delivery": "cosine-to-a-power half-width schedule"
+          "delivery": "cosine-to-a-power apothem schedule"
         },
         {
-          "id": "d2-tier-lips",
-          "description": "projecting ring band at each tier foot",
-          "delivery": "geometryDescriptor merged extrusions"
+          "id": "d2-tier-arches",
+          "description": "ring of interleaved arches on each tier",
+          "delivery": "archedPlate extrusions rotated to the eight octagon faces, merged"
         }
       ],
       "colorMaterialRecipe": {
         "materialId": "porcelain",
         "baseColor": "#d7cdbb",
         "recipe": "The SAME porcelain as the tower body -- one material, two components, because they are one surface treatment over two masses.",
-        "evidenceRef": "region-tower",
-        "confidence": 0.88,
+        "evidenceRef": "region-arches",
+        "confidence": 0.9,
         "dominantAlbedo": "rgba(215, 205, 187, 1.0)",
         "secondaryAlbedo": "rgba(215, 205, 187, 1.0)",
         "materialClass": "plastic",
-        "materialClassConfidence": 0.88
+        "materialClassConfidence": 0.9
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "arch-rims",
+      "name": "Arch rims",
+      "level": "meso",
+      "role": "surface",
+      "importance": 0.9,
+      "confidence": 0.9,
+      "primitive": "extrude",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "The sixty rims are one merged geometry in their own plain material: the border is what separates one arch from the next at distance, and it must NOT carry the chip tile.",
+      "materialId": "stucco",
+      "material": "stucco",
+      "parent": "tiers",
+      "geometryDescriptor": {
+        "topologyIntent": "A 0.13 m border around every arch field, standing 0.08 m proud of it (0.06 on the body row).",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Back plane 20 mm inside the field's back; front plane 80 mm outside the field's front; the field's front face lies inside the rim's opening.",
+        "mergeNote": ""
+      },
+      "localFeatures": [],
+      "colorMaterialRecipe": {
+        "materialId": "stucco",
+        "baseColor": "#cfc6b6",
+        "recipe": "Plain stucco, roughness 0.80, no tile.",
+        "evidenceRef": "region-arches",
+        "confidence": 0.9,
+        "dominantAlbedo": "rgba(207, 198, 182, 1.0)",
+        "secondaryAlbedo": "rgba(207, 198, 182, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.9
       },
       "actionProfile": {
         "animationRole": "child",
@@ -1019,7 +1083,7 @@
       "material": "porcelain",
       "parent": "tiers",
       "geometryDescriptor": {
-        "topologyIntent": "Closed lathe from y=16.00 to 17.10, radius 0.60 at the base to 0 on the axis.",
+        "topologyIntent": "Closed lathe from y=15.00 to 15.90, radius 0.55 at the base to 0 on the axis.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -1028,7 +1092,7 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "Its base is sunk to 16.00, INSIDE the top tier, rather than resting on that tier's 16.20 top face. LatheGeometry is open at the bottom and an open rim sitting exactly on a surface is a seam the turntable gate can read through.",
+        "zFightingNote": "Its base is sunk to 15.00, INSIDE the top tier, rather than resting on that tier's 15.20 top face. LatheGeometry is open at the bottom and an open rim sitting exactly on a surface is a seam the turntable gate can read through.",
         "mergeNote": ""
       },
       "localFeatures": [],
@@ -1074,7 +1138,7 @@
       "material": "gold",
       "parent": "cap",
       "geometryDescriptor": {
-        "topologyIntent": "Collar, stem, cross bar, tapered centre spike and two CURLING outer prongs, from y=16.90 to 18.00.",
+        "topologyIntent": "Collar, 0.84 m stem, ball, cross bar, 1.0 m tapered centre spike and two CURLING outer prongs, from y=15.75 to exactly 18.00.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -1203,9 +1267,9 @@
       "textureless": {
         "declared": true,
         "evidence": [
-          "Measured on viewEvidence region-tower (PBR confidence 0.860). The CLEAN stucco between the chips on the lit face at (400..470, 470..620) is #E9DFCF (low-saturation p60-100), held 1% under so the tile's white chips stay <= 1; the earlier #D7CDBB was the chips-and-grime INTEGRATED mean of the same face, which the tile now reproduces by painting them. The shaded return of the same surface measures #8A8579 -- illumination, not material.",
+          "Measured on viewEvidence region-tower (PBR confidence 0.860). The CLEAN stucco between the chips on the lit face at (400..470, 470..620) is #E9DFCF (low-saturation p60-100), held 1% under so the tile's white chips stay <= 1; the earlier #D7CDBB was the chips-and-grime INTEGRATED mean of the same face, which the tile now reproduces by painting them. The shaded return of the same surface measures #8A8579 -- illumination, not material. Rendered body face 160 against the plate's 199 on the same lit face, tier fields 190 against the plate's 152 before the chips were densified -- the tier probe is chip-dominated on the plate and was not on the tile.",
           "Roughness 0.70 rather than the 0.88 the stone carries: glazed porcelain chips set in lime give this surface a visibly tighter response than plain render, which is the one way the encrustation survives into a textureless material.",
-          "Textureless as DECLARED, carrying one post-construction Canvas 2D tile shared with the door recess material: white ground, blurred tonal drift at 0.91, grey weathering washes fading down the face at (0.74, 0.75, 0.76) -- measured (0.71, 0.73, 0.72) at #A6A296, lifted 0.03 for the hole gate -- and the porcelain chips as 680 hard-edged 4-7 sided polygons of 2-6 cm per 3.2 m tile (~20% cover; the lit face measures 13% saturated, the tier faces 39%), three quarters of them in loose rosettes the way the plate clusters them. Chip tones are ratios of the clean stucco: white 0.99, blue (0.42, 0.50, 0.66), green (0.46, 0.60, 0.50), yellow (0.88, 0.76, 0.40), ochre (0.80, 0.56, 0.42); the plate's blue (46,55,72) and green (75,99,75) are LIFTED from (0.20, 0.25, 0.35) and (0.32, 0.44, 0.36) so that a 6 cm chip on the shaded flank does not print as a near-backdrop pixel. The tile is also the bumpMap at 0.05, so a chip stands proud of the lime it is set in."
+          "Textureless as DECLARED, carrying one post-construction Canvas 2D tile shared with the door recess material: white ground, blurred tonal drift at 0.91, grey weathering washes fading down the face at (0.74, 0.75, 0.76) -- measured (0.71, 0.73, 0.72) at #A6A296, lifted 0.03 for the hole gate -- and the porcelain chips as 1,400 hard-edged 4-7 sided polygons of 2.5-8 cm radius per 3.2 m tile (~40% cover, the tier faces' 39%), three quarters of them in loose rosettes the way the plate clusters them. Chip tones are ratios of the clean stucco: white 0.99, blue (0.40, 0.48, 0.72), green (0.44, 0.62, 0.48), yellow (0.88, 0.76, 0.40), ochre (0.80, 0.56, 0.42); the plate's blue (46,55,72) and green (75,99,75) are LIFTED from (0.20, 0.25, 0.35) and (0.32, 0.44, 0.36) so that a 6 cm chip on the shaded flank does not print as a near-backdrop pixel. The tile is also the bumpMap at 0.05, so a chip stands proud of the lime it is set in."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
       },
@@ -1297,6 +1361,42 @@
       }
     },
     {
+      "id": "stucco",
+      "name": "Plain stucco arch rims",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#cfc6b6",
+      "color": "#cfc6b6",
+      "roughness": {
+        "base": 0.8,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/stucco_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#cfc6b6",
+        "secondary": [],
+        "samplingNotes": "Measured as the mean of crops/arches.png. extract_pbr_evidence confidence 0.900. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-arches: the border of every tier arch is unencrusted pale render, #DDD4C4 on the lit rim against the chip-mottled field inside it, and that border is what separates one arch from the next at distance. Authored at #CFC6B6, 6% under the lit measurement, because the harness key light on a surface tilted toward the camera rendered a first rim at 192 against the plate's 152.",
+          "Textureless as DECLARED and carrying no tile: a plain render band 13 cm wide has nothing a tile could add at this scale, and the mottle it would inherit from the porcelain canvas would blur the edge that gives the arches their reading."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/arches.png",
+        "pbrReport": "material-evidence/stucco.pbr.json",
+        "confidence": 0.9,
+        "verdict": "pass"
+      }
+    },
+    {
       "id": "gold",
       "name": "Worn gilding",
       "type": "standard",
@@ -1356,11 +1456,11 @@
         "stepDegrees": 90
       },
       "instanceDimensions": {
-        "width": 0.18,
-        "height": 7.35,
+        "width": 0.52,
+        "height": 6.9,
         "depth": 0.07
       },
-      "rationale": "EIGHT strips at four instances. The unit geometry holds BOTH strips of a single redented corner and is placed at radius zero, so the four 90-degree rotations supply the four corners and the offsets are baked into the geometry -- which is how an eight-part system costs one geometry and one draw call.",
+      "rationale": "SIXTEEN strips at four instances, two per re-entrant face. The unit geometry holds all four strips of a single redented corner and is placed at radius zero, so the four 90-degree rotations supply the four corners and the offsets are baked into the geometry -- which is how an eight-part system costs one geometry and one draw call.",
       "zFightingNote": "Each strip stands 0.07 m proud of the re-entrant face it sits on, so it overlaps that face rather than lying in it."
     },
     {
@@ -1381,7 +1481,7 @@
         "stepDegrees": 90
       },
       "instanceDimensions": {
-        "width": 3.0,
+        "width": 2.4,
         "height": 5.85,
         "depth": 0.34
       },
@@ -1522,289 +1622,334 @@
   ],
   "visualEvidence": [
     {
-      "timestamp": "2026-08-27T02:52:11.810150+00:00",
+      "timestamp": "2026-09-02T15:17:25.105651+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.89,
-        "componentStructure": 0.87,
-        "formDetail": 0.84,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.92,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.89,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope built at exactly 9.00 x 18.00 x 9.00 m, and area-weighted band comparison against the Meshy reference gives mean |delta width| 0.013 and |delta depth| 0.013 of height with every band inside 0.06 -- the closest proportional agreement of the whole batch.",
-          "notes": "It was not close at first. Built to the plate's apparent proportions, band 2 came out 0.170 of height too wide -- the only band past the 0.12 flag anywhere in this batch. The plate is a three-quarter view from above and its foreshortening makes the platform look about a third of the prop's height; measured band by band, the reference puts the terrace top at 0.18 and shows nothing but tower across bands 2 to 5. The band table won and the terrace was rebuilt lower. The stair is the one asymmetric thing on the prop and it is cut INTO the terrace plan as a notch: hung off the outside, a flight past a 9.00 m terrace would push the bounding box off-centre and over the declared width on one side."
+          "evidence": "Envelope built at exactly 9.00 x 18.00 x 9.00 m (the first build's finial overshot to 18.21), and area-weighted band comparison against the Meshy reference gives mean |delta width| 0.008 and |delta depth| 0.013 of height with every band inside 0.03. The rebuild settled three bands: the tier stack now steps IN from the body (band 6 -0.006 against the first build's +0.037), the body-top arch row is shallow (band 5 +0.005 against +0.030), and the top tenth is finial alone (band 9 +0.019 against +0.068).",
+          "notes": "The stair is the one asymmetric thing on the prop and it is cut INTO the terrace plan as a notch."
         }
       ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/prang/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/prang/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/prang/review/cmp.png",
+      "referenceScreenshot": "/repo/scratch/prang/reference.png",
+      "renderScreenshot": "/repo/scratch/prang/review/beauty-315.png",
+      "comparisonImage": "/repo/scratch/prang/review/cmp.png",
       "cameraView": "",
       "notes": "",
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T02:52:11.895962+00:00",
+      "timestamp": "2026-09-02T15:17:25.182650+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.87,
-      "aiVisionScore": 0.87,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.89,
-        "componentStructure": 0.87,
-        "formDetail": 0.84,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.92,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.89,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope built at exactly 9.00 x 18.00 x 9.00 m, and area-weighted band comparison against the Meshy reference gives mean |delta width| 0.013 and |delta depth| 0.013 of height with every band inside 0.06 -- the closest proportional agreement of the whole batch.",
-          "notes": "It was not close at first. Built to the plate's apparent proportions, band 2 came out 0.170 of height too wide -- the only band past the 0.12 flag anywhere in this batch. The plate is a three-quarter view from above and its foreshortening makes the platform look about a third of the prop's height; measured band by band, the reference puts the terrace top at 0.18 and shows nothing but tower across bands 2 to 5. The band table won and the terrace was rebuilt lower. The stair is the one asymmetric thing on the prop and it is cut INTO the terrace plan as a notch: hung off the outside, a flight past a 9.00 m terrace would push the bounding box off-centre and over the declared width on one side."
+          "evidence": "Envelope built at exactly 9.00 x 18.00 x 9.00 m (the first build's finial overshot to 18.21), and area-weighted band comparison against the Meshy reference gives mean |delta width| 0.008 and |delta depth| 0.013 of height with every band inside 0.03. The rebuild settled three bands: the tier stack now steps IN from the body (band 6 -0.006 against the first build's +0.037), the body-top arch row is shallow (band 5 +0.005 against +0.030), and the top tenth is finial alone (band 9 +0.019 against +0.068).",
+          "notes": "The stair is the one asymmetric thing on the prop and it is cut INTO the terrace plan as a notch."
         },
         {
           "id": "tower-face",
           "tier": "critical",
-          "score": 0.83,
+          "score": 0.89,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Blind arched door and raised arched pediment on each of four faces from ONE instanced unit, with eight red pilaster strips from a four-instance unit placed at radius zero.",
-          "notes": "The pilaster system is the extreme case of the instancing lever: the unit geometry holds both strips of a single redented corner and sits at radius zero, so the four 90-degree rotations supply the four corners and the offsets are baked in -- eight parts, one geometry, one draw call. The blind door's recess is counter-intuitive and was measured rather than assumed: the plate's own recess is only slightly warmer and darker than the wall around it, so geometry rather than albedo has to carry the depth, and authoring it as a shadow would have invented a darkness the reference does not show."
+          "evidence": "Blind arched door under a POINTED pediment frame rising from its head, on each of four faces from ONE instanced unit; sixteen red pilaster strips, two per re-entrant face, from a four-instance unit at radius zero; a row of four large arches at the body top over the pediments.",
+          "notes": "The plate's redent corners carry groups of red strips edged with a white chevron; the chevron is not authored. The dark grey water streaks in the re-entrants are carried only by the tile's washes."
         },
         {
           "id": "terrace-and-stair",
           "tier": "important",
-          "score": 0.8,
+          "score": 0.86,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Three notched slabs, a balustrade broken at the stair head, and a twelve-tread flight with raking cheeks -- twenty-two parts in ONE component and ONE draw call.",
-          "notes": "Three separate z-fighting fixes here. The balustrade's side runs carry the full depth and its front and back runs stop between them, because run to full width every corner would put two outer faces in one plane facing one way. Each tread occupies only its own going rather than running back to the outer edge, so neighbours meet as opposed faces instead of twelve outer faces sharing a plane. And the slabs meet top-to-bottom, which is an opposed butt. check-coplanar reports the prop clean at 0.001 m."
+          "evidence": "Three notched slabs (upper two narrowed to 4.05 and 3.55 on band 1), a balustrade broken at the stair head, and a twelve-tread flight with raking cheeks -- twenty-two parts in ONE component and ONE draw call. Stone re-authored whiter (#CDBDAD envelope) with lichen coverage halved and joints deepened to 0.50 after the first build read as a flat ochre block against the plate's pale coursed limestone.",
+          "notes": "check-coplanar reports the prop clean at 0.001 m."
         }
       ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/prang/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/prang/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/prang/review/cmp.png",
+      "referenceScreenshot": "/repo/scratch/prang/reference.png",
+      "renderScreenshot": "/repo/scratch/prang/review/beauty-315.png",
+      "comparisonImage": "/repo/scratch/prang/review/cmp.png",
       "cameraView": "",
       "notes": "",
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T02:52:11.982423+00:00",
+      "timestamp": "2026-09-02T15:17:25.259970+00:00",
       "passId": "form-refinement",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/repo/scratch/prang/reference.png",
+      "renderScreenshot": "/repo/scratch/prang/review/beauty-315.png",
+      "comparisonImage": "/repo/scratch/prang/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-02T15:17:25.335918+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/repo/scratch/prang/reference.png",
+      "renderScreenshot": "/repo/scratch/prang/review/beauty-315.png",
+      "comparisonImage": "/repo/scratch/prang/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-02T15:17:25.413931+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.89,
-        "componentStructure": 0.87,
-        "formDetail": 0.84,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.92,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "corncob-taper",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.92,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Eight receding redented tiers from 10.20 to 16.20 m, half-width 2.05 down to 0.50, each with a 0.10 m projecting ring band, closed by a lathed cap.",
-          "notes": "The half-width follows a cosine raised to 1.5, which is what makes the taper CONVEX. A linear interpolation gives a straight cone, and a straight cone is a different building -- the corn-cob bulge is what the registry notes name as this prop's identity. Each lip starts 0.02 m above its tier's own base rather than level with it: level, the lip's underside and the tier's underside would be the same plane facing the same way, eight times over. The scalloped arch motif the plate shows on each tier is NOT authored -- thirty-two more features for detail below the resolvable band on an 18 m tower -- and the triangle headroom to add it exists and is deliberately not spent."
+          "evidence": "Seven octagonal tiers from 10.20 to 15.20 m, apothem 1.55 down to 0.62 on a cosine raised to 1.3, each wearing a ring of EIGHT round-headed arches 1.05 of the octagon side wide and 1.38 of the tier tall -- so neighbours interleave and every ring reaches into the tier above -- with a 0.13 m plain stucco rim standing 0.08 m proud of the encrusted field, and a row of four shallow arches over the body top. Closed by a domed cap to 15.90 and a 2.25 m finial.",
+          "notes": "The first build shipped plain stepped slabs with a lip and recorded the arches as 'below the resolvable band'; they are the tier stack's whole identity at any distance the silhouette can be read from, and the plate at zoom shows nothing else on the tiers. Corner arches at the same radius as face arches are why the cores are octagons rather than the body's redented plan."
         }
       ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/prang/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/prang/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/prang/review/cmp.png",
+      "referenceScreenshot": "/repo/scratch/prang/reference.png",
+      "renderScreenshot": "/repo/scratch/prang/review/beauty-315.png",
+      "comparisonImage": "/repo/scratch/prang/review/cmp.png",
       "cameraView": "",
       "notes": "",
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T02:52:12.067044+00:00",
+      "timestamp": "2026-09-02T15:17:25.495025+00:00",
       "passId": "material-pass",
-      "estimatedFidelity": 0.85,
-      "aiVisionScore": 0.85,
+      "estimatedFidelity": 0.89,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/repo/scratch/prang/reference.png",
+      "renderScreenshot": "/repo/scratch/prang/review/beauty-315.png",
+      "comparisonImage": "/repo/scratch/prang/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-02T15:17:25.576631+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.89,
+      "aiVisionScore": 0.89,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.89,
-        "componentStructure": 0.87,
-        "formDetail": 0.84,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.92,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "tower-face",
           "tier": "critical",
-          "score": 0.83,
+          "score": 0.89,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Blind arched door and raised arched pediment on each of four faces from ONE instanced unit, with eight red pilaster strips from a four-instance unit placed at radius zero.",
-          "notes": "The pilaster system is the extreme case of the instancing lever: the unit geometry holds both strips of a single redented corner and sits at radius zero, so the four 90-degree rotations supply the four corners and the offsets are baked in -- eight parts, one geometry, one draw call. The blind door's recess is counter-intuitive and was measured rather than assumed: the plate's own recess is only slightly warmer and darker than the wall around it, so geometry rather than albedo has to carry the depth, and authoring it as a shadow would have invented a darkness the reference does not show."
+          "evidence": "Blind arched door under a POINTED pediment frame rising from its head, on each of four faces from ONE instanced unit; sixteen red pilaster strips, two per re-entrant face, from a four-instance unit at radius zero; a row of four large arches at the body top over the pediments.",
+          "notes": "The plate's redent corners carry groups of red strips edged with a white chevron; the chevron is not authored. The dark grey water streaks in the re-entrants are carried only by the tile's washes."
         }
       ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/prang/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/prang/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/prang/review/cmp.png",
+      "referenceScreenshot": "/repo/scratch/prang/reference.png",
+      "renderScreenshot": "/repo/scratch/prang/review/beauty-315.png",
+      "comparisonImage": "/repo/scratch/prang/review/cmp.png",
       "cameraView": "",
       "notes": "",
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T02:52:12.152545+00:00",
+      "timestamp": "2026-09-02T15:17:25.658532+00:00",
       "passId": "surface-pass",
-      "estimatedFidelity": 0.85,
+      "estimatedFidelity": 0.89,
       "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {},
       "featureReviews": [],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/prang/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/prang/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/prang/review/cmp.png",
+      "referenceScreenshot": "/repo/scratch/prang/reference.png",
+      "renderScreenshot": "/repo/scratch/prang/review/beauty-315.png",
+      "comparisonImage": "/repo/scratch/prang/review/cmp.png",
       "cameraView": "",
       "notes": "",
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T02:52:12.242531+00:00",
+      "timestamp": "2026-09-02T15:17:25.738145+00:00",
       "passId": "surface-pass",
-      "estimatedFidelity": 0.85,
-      "aiVisionScore": 0.85,
+      "estimatedFidelity": 0.89,
+      "aiVisionScore": 0.89,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.89,
-        "componentStructure": 0.87,
-        "formDetail": 0.84,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.92,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "corncob-taper",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.92,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Eight receding redented tiers from 10.20 to 16.20 m, half-width 2.05 down to 0.50, each with a 0.10 m projecting ring band, closed by a lathed cap.",
-          "notes": "The half-width follows a cosine raised to 1.5, which is what makes the taper CONVEX. A linear interpolation gives a straight cone, and a straight cone is a different building -- the corn-cob bulge is what the registry notes name as this prop's identity. Each lip starts 0.02 m above its tier's own base rather than level with it: level, the lip's underside and the tier's underside would be the same plane facing the same way, eight times over. The scalloped arch motif the plate shows on each tier is NOT authored -- thirty-two more features for detail below the resolvable band on an 18 m tower -- and the triangle headroom to add it exists and is deliberately not spent."
+          "evidence": "Seven octagonal tiers from 10.20 to 15.20 m, apothem 1.55 down to 0.62 on a cosine raised to 1.3, each wearing a ring of EIGHT round-headed arches 1.05 of the octagon side wide and 1.38 of the tier tall -- so neighbours interleave and every ring reaches into the tier above -- with a 0.13 m plain stucco rim standing 0.08 m proud of the encrusted field, and a row of four shallow arches over the body top. Closed by a domed cap to 15.90 and a 2.25 m finial.",
+          "notes": "The first build shipped plain stepped slabs with a lip and recorded the arches as 'below the resolvable band'; they are the tier stack's whole identity at any distance the silhouette can be read from, and the plate at zoom shows nothing else on the tiers. Corner arches at the same radius as face arches are why the cores are octagons rather than the body's redented plan."
         }
       ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/prang/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/prang/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/prang/review/cmp.png",
+      "referenceScreenshot": "/repo/scratch/prang/reference.png",
+      "renderScreenshot": "/repo/scratch/prang/review/beauty-315.png",
+      "comparisonImage": "/repo/scratch/prang/review/cmp.png",
       "cameraView": "",
       "notes": "",
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T02:52:12.333242+00:00",
+      "timestamp": "2026-09-02T15:17:25.815554+00:00",
       "passId": "lighting-pass",
-      "estimatedFidelity": 0.8,
-      "aiVisionScore": 0.8,
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.89,
-        "componentStructure": 0.87,
-        "formDetail": 0.84,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.92,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.86
       },
       "featureReviews": [],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/prang/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/prang/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/prang/review/cmp.png",
+      "referenceScreenshot": "/repo/scratch/prang/reference.png",
+      "renderScreenshot": "/repo/scratch/prang/review/beauty-315.png",
+      "comparisonImage": "/repo/scratch/prang/review/cmp.png",
       "cameraView": "",
       "notes": "",
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T02:52:12.418556+00:00",
+      "timestamp": "2026-09-02T15:17:25.895504+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.9,
       "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.89,
-        "componentStructure": 0.87,
-        "formDetail": 0.84,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.92,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.86
       },
       "featureReviews": [],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/prang/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/prang/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/prang/review/cmp.png",
+      "referenceScreenshot": "/repo/scratch/prang/reference.png",
+      "renderScreenshot": "/repo/scratch/prang/review/beauty-315.png",
+      "comparisonImage": "/repo/scratch/prang/review/cmp.png",
       "cameraView": "",
       "notes": "",
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T02:52:12.506023+00:00",
+      "timestamp": "2026-09-02T15:17:25.977236+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.89,
-        "componentStructure": 0.87,
-        "formDetail": 0.84,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.92,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.89,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope built at exactly 9.00 x 18.00 x 9.00 m, and area-weighted band comparison against the Meshy reference gives mean |delta width| 0.013 and |delta depth| 0.013 of height with every band inside 0.06 -- the closest proportional agreement of the whole batch.",
-          "notes": "It was not close at first. Built to the plate's apparent proportions, band 2 came out 0.170 of height too wide -- the only band past the 0.12 flag anywhere in this batch. The plate is a three-quarter view from above and its foreshortening makes the platform look about a third of the prop's height; measured band by band, the reference puts the terrace top at 0.18 and shows nothing but tower across bands 2 to 5. The band table won and the terrace was rebuilt lower. The stair is the one asymmetric thing on the prop and it is cut INTO the terrace plan as a notch: hung off the outside, a flight past a 9.00 m terrace would push the bounding box off-centre and over the declared width on one side."
+          "evidence": "Envelope built at exactly 9.00 x 18.00 x 9.00 m (the first build's finial overshot to 18.21), and area-weighted band comparison against the Meshy reference gives mean |delta width| 0.008 and |delta depth| 0.013 of height with every band inside 0.03. The rebuild settled three bands: the tier stack now steps IN from the body (band 6 -0.006 against the first build's +0.037), the body-top arch row is shallow (band 5 +0.005 against +0.030), and the top tenth is finial alone (band 9 +0.019 against +0.068).",
+          "notes": "The stair is the one asymmetric thing on the prop and it is cut INTO the terrace plan as a notch."
         },
         {
           "id": "corncob-taper",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.92,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Eight receding redented tiers from 10.20 to 16.20 m, half-width 2.05 down to 0.50, each with a 0.10 m projecting ring band, closed by a lathed cap.",
-          "notes": "The half-width follows a cosine raised to 1.5, which is what makes the taper CONVEX. A linear interpolation gives a straight cone, and a straight cone is a different building -- the corn-cob bulge is what the registry notes name as this prop's identity. Each lip starts 0.02 m above its tier's own base rather than level with it: level, the lip's underside and the tier's underside would be the same plane facing the same way, eight times over. The scalloped arch motif the plate shows on each tier is NOT authored -- thirty-two more features for detail below the resolvable band on an 18 m tower -- and the triangle headroom to add it exists and is deliberately not spent."
+          "evidence": "Seven octagonal tiers from 10.20 to 15.20 m, apothem 1.55 down to 0.62 on a cosine raised to 1.3, each wearing a ring of EIGHT round-headed arches 1.05 of the octagon side wide and 1.38 of the tier tall -- so neighbours interleave and every ring reaches into the tier above -- with a 0.13 m plain stucco rim standing 0.08 m proud of the encrusted field, and a row of four shallow arches over the body top. Closed by a domed cap to 15.90 and a 2.25 m finial.",
+          "notes": "The first build shipped plain stepped slabs with a lip and recorded the arches as 'below the resolvable band'; they are the tier stack's whole identity at any distance the silhouette can be read from, and the plate at zoom shows nothing else on the tiers. Corner arches at the same radius as face arches are why the cores are octagons rather than the body's redented plan."
         },
         {
           "id": "tower-face",
           "tier": "critical",
-          "score": 0.83,
+          "score": 0.89,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Blind arched door and raised arched pediment on each of four faces from ONE instanced unit, with eight red pilaster strips from a four-instance unit placed at radius zero.",
-          "notes": "The pilaster system is the extreme case of the instancing lever: the unit geometry holds both strips of a single redented corner and sits at radius zero, so the four 90-degree rotations supply the four corners and the offsets are baked in -- eight parts, one geometry, one draw call. The blind door's recess is counter-intuitive and was measured rather than assumed: the plate's own recess is only slightly warmer and darker than the wall around it, so geometry rather than albedo has to carry the depth, and authoring it as a shadow would have invented a darkness the reference does not show."
+          "evidence": "Blind arched door under a POINTED pediment frame rising from its head, on each of four faces from ONE instanced unit; sixteen red pilaster strips, two per re-entrant face, from a four-instance unit at radius zero; a row of four large arches at the body top over the pediments.",
+          "notes": "The plate's redent corners carry groups of red strips edged with a white chevron; the chevron is not authored. The dark grey water streaks in the re-entrants are carried only by the tile's washes."
         },
         {
           "id": "terrace-and-stair",
           "tier": "important",
-          "score": 0.8,
+          "score": 0.86,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Three notched slabs, a balustrade broken at the stair head, and a twelve-tread flight with raking cheeks -- twenty-two parts in ONE component and ONE draw call.",
-          "notes": "Three separate z-fighting fixes here. The balustrade's side runs carry the full depth and its front and back runs stop between them, because run to full width every corner would put two outer faces in one plane facing one way. Each tread occupies only its own going rather than running back to the outer edge, so neighbours meet as opposed faces instead of twelve outer faces sharing a plane. And the slabs meet top-to-bottom, which is an opposed butt. check-coplanar reports the prop clean at 0.001 m."
+          "evidence": "Three notched slabs (upper two narrowed to 4.05 and 3.55 on band 1), a balustrade broken at the stair head, and a twelve-tread flight with raking cheeks -- twenty-two parts in ONE component and ONE draw call. Stone re-authored whiter (#CDBDAD envelope) with lichen coverage halved and joints deepened to 0.50 after the first build read as a flat ochre block against the plate's pale coursed limestone.",
+          "notes": "check-coplanar reports the prop clean at 0.001 m."
         }
       ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/prang/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/prang/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/prang/review/cmp.png",
+      "referenceScreenshot": "/repo/scratch/prang/reference.png",
+      "renderScreenshot": "/repo/scratch/prang/review/beauty-315.png",
+      "comparisonImage": "/repo/scratch/prang/review/cmp.png",
       "cameraView": "",
       "notes": "",
       "aiVisionNotes": ""
@@ -1812,370 +1957,442 @@
   ],
   "reviewHistory": [
     {
-      "timestamp": "2026-08-27T02:52:11.810150+00:00",
+      "timestamp": "2026-09-02T15:17:25.105651+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.89,
-        "componentStructure": 0.87,
-        "formDetail": 0.84,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.92,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.89,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope built at exactly 9.00 x 18.00 x 9.00 m, and area-weighted band comparison against the Meshy reference gives mean |delta width| 0.013 and |delta depth| 0.013 of height with every band inside 0.06 -- the closest proportional agreement of the whole batch.",
-          "notes": "It was not close at first. Built to the plate's apparent proportions, band 2 came out 0.170 of height too wide -- the only band past the 0.12 flag anywhere in this batch. The plate is a three-quarter view from above and its foreshortening makes the platform look about a third of the prop's height; measured band by band, the reference puts the terrace top at 0.18 and shows nothing but tower across bands 2 to 5. The band table won and the terrace was rebuilt lower. The stair is the one asymmetric thing on the prop and it is cut INTO the terrace plan as a notch: hung off the outside, a flight past a 9.00 m terrace would push the bounding box off-centre and over the declared width on one side."
+          "evidence": "Envelope built at exactly 9.00 x 18.00 x 9.00 m (the first build's finial overshot to 18.21), and area-weighted band comparison against the Meshy reference gives mean |delta width| 0.008 and |delta depth| 0.013 of height with every band inside 0.03. The rebuild settled three bands: the tier stack now steps IN from the body (band 6 -0.006 against the first build's +0.037), the body-top arch row is shallow (band 5 +0.005 against +0.030), and the top tenth is finial alone (band 9 +0.019 against +0.068).",
+          "notes": "The stair is the one asymmetric thing on the prop and it is cut INTO the terrace plan as a notch."
         }
       ],
       "action": "continue",
-      "summary": "Blockout: five components and 3 InstancedMesh systems at 8 draw calls of 24. Plan complexity rather than tessellation carries this prop -- a twenty-point redented polygon extruded sixteen times.",
+      "summary": "Blockout: six components and 3 InstancedMesh systems at 9 draw calls of 24. Plan complexity carries the body; sixty merged arch plates carry the tier stack.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
-      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/prang/review/clay/clay-315.png",
+      "mapStrippedRender": "/repo/scratch/prang/review/clay/clay-315.png",
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/prang/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/prang/review/beauty-315.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/prang/review/cmp.png",
+        "referenceScreenshot": "/repo/scratch/prang/reference.png",
+        "renderScreenshot": "/repo/scratch/prang/review/beauty-315.png",
+        "comparisonImage": "/repo/scratch/prang/review/cmp.png",
         "cameraView": "",
         "notes": "",
         "aiVisionNotes": ""
       }
     },
     {
-      "timestamp": "2026-08-27T02:52:11.895962+00:00",
+      "timestamp": "2026-09-02T15:17:25.182650+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.87,
-      "aiVisionScore": 0.87,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.89,
-        "componentStructure": 0.87,
-        "formDetail": 0.84,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.92,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.89,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope built at exactly 9.00 x 18.00 x 9.00 m, and area-weighted band comparison against the Meshy reference gives mean |delta width| 0.013 and |delta depth| 0.013 of height with every band inside 0.06 -- the closest proportional agreement of the whole batch.",
-          "notes": "It was not close at first. Built to the plate's apparent proportions, band 2 came out 0.170 of height too wide -- the only band past the 0.12 flag anywhere in this batch. The plate is a three-quarter view from above and its foreshortening makes the platform look about a third of the prop's height; measured band by band, the reference puts the terrace top at 0.18 and shows nothing but tower across bands 2 to 5. The band table won and the terrace was rebuilt lower. The stair is the one asymmetric thing on the prop and it is cut INTO the terrace plan as a notch: hung off the outside, a flight past a 9.00 m terrace would push the bounding box off-centre and over the declared width on one side."
+          "evidence": "Envelope built at exactly 9.00 x 18.00 x 9.00 m (the first build's finial overshot to 18.21), and area-weighted band comparison against the Meshy reference gives mean |delta width| 0.008 and |delta depth| 0.013 of height with every band inside 0.03. The rebuild settled three bands: the tier stack now steps IN from the body (band 6 -0.006 against the first build's +0.037), the body-top arch row is shallow (band 5 +0.005 against +0.030), and the top tenth is finial alone (band 9 +0.019 against +0.068).",
+          "notes": "The stair is the one asymmetric thing on the prop and it is cut INTO the terrace plan as a notch."
         },
         {
           "id": "tower-face",
           "tier": "critical",
-          "score": 0.83,
+          "score": 0.89,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Blind arched door and raised arched pediment on each of four faces from ONE instanced unit, with eight red pilaster strips from a four-instance unit placed at radius zero.",
-          "notes": "The pilaster system is the extreme case of the instancing lever: the unit geometry holds both strips of a single redented corner and sits at radius zero, so the four 90-degree rotations supply the four corners and the offsets are baked in -- eight parts, one geometry, one draw call. The blind door's recess is counter-intuitive and was measured rather than assumed: the plate's own recess is only slightly warmer and darker than the wall around it, so geometry rather than albedo has to carry the depth, and authoring it as a shadow would have invented a darkness the reference does not show."
+          "evidence": "Blind arched door under a POINTED pediment frame rising from its head, on each of four faces from ONE instanced unit; sixteen red pilaster strips, two per re-entrant face, from a four-instance unit at radius zero; a row of four large arches at the body top over the pediments.",
+          "notes": "The plate's redent corners carry groups of red strips edged with a white chevron; the chevron is not authored. The dark grey water streaks in the re-entrants are carried only by the tile's washes."
         },
         {
           "id": "terrace-and-stair",
           "tier": "important",
-          "score": 0.8,
+          "score": 0.86,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Three notched slabs, a balustrade broken at the stair head, and a twelve-tread flight with raking cheeks -- twenty-two parts in ONE component and ONE draw call.",
-          "notes": "Three separate z-fighting fixes here. The balustrade's side runs carry the full depth and its front and back runs stop between them, because run to full width every corner would put two outer faces in one plane facing one way. Each tread occupies only its own going rather than running back to the outer edge, so neighbours meet as opposed faces instead of twelve outer faces sharing a plane. And the slabs meet top-to-bottom, which is an opposed butt. check-coplanar reports the prop clean at 0.001 m."
+          "evidence": "Three notched slabs (upper two narrowed to 4.05 and 3.55 on band 1), a balustrade broken at the stair head, and a twelve-tread flight with raking cheeks -- twenty-two parts in ONE component and ONE draw call. Stone re-authored whiter (#CDBDAD envelope) with lichen coverage halved and joints deepened to 0.50 after the first build read as a flat ochre block against the plate's pale coursed limestone.",
+          "notes": "check-coplanar reports the prop clean at 0.001 m."
         }
       ],
       "action": "continue",
-      "summary": "Structural pass: the terrace folds twenty-two parts into one submission by grouping on MATERIAL, and the door system folds two different features into one instanced unit because they share a material and a placement schedule.",
+      "summary": "Structural pass: the terrace folds twenty-two parts into one submission by grouping on MATERIAL; the tier stack folds seven cores and sixty arch fields into one, and sixty rims into another, because the rims must not carry the chip tile.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/prang/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/prang/review/beauty-315.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/prang/review/cmp.png",
+        "referenceScreenshot": "/repo/scratch/prang/reference.png",
+        "renderScreenshot": "/repo/scratch/prang/review/beauty-315.png",
+        "comparisonImage": "/repo/scratch/prang/review/cmp.png",
         "cameraView": "",
         "notes": "",
         "aiVisionNotes": ""
       }
     },
     {
-      "timestamp": "2026-08-27T02:52:11.982423+00:00",
+      "timestamp": "2026-09-02T15:17:25.259970+00:00",
       "passId": "form-refinement",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.89,
-        "componentStructure": 0.87,
-        "formDetail": 0.84,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.8
-      },
-      "featureReviews": [
-        {
-          "id": "corncob-taper",
-          "tier": "critical",
-          "score": 0.86,
-          "threshold": 0.85,
-          "passed": true,
-          "evidence": "Eight receding redented tiers from 10.20 to 16.20 m, half-width 2.05 down to 0.50, each with a 0.10 m projecting ring band, closed by a lathed cap.",
-          "notes": "The half-width follows a cosine raised to 1.5, which is what makes the taper CONVEX. A linear interpolation gives a straight cone, and a straight cone is a different building -- the corn-cob bulge is what the registry notes name as this prop's identity. Each lip starts 0.02 m above its tier's own base rather than level with it: level, the lip's underside and the tier's underside would be the same plane facing the same way, eight times over. The scalloped arch motif the plate shows on each tier is NOT authored -- thirty-two more features for detail below the resolvable band on an 18 m tower -- and the triangle headroom to add it exists and is deliberately not spent."
-        }
-      ],
-      "action": "continue",
-      "summary": "Form refinement: the terrace rebuilt lower on the band table rather than on the plate's foreshortened pixels, tier lips lifted 0.02 m off their own tier bases, and the trident's outer prongs rebuilt as five-segment CURLS -- two straight sticks either side of a spike read as a candelabrum, not a trident.",
-      "matched": [],
-      "mismatches": [],
-      "specFixes": [],
-      "codeFixes": [],
-      "evidence": [],
-      "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/prang/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/prang/review/beauty-315.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/prang/review/cmp.png",
-        "cameraView": "",
-        "notes": "",
-        "aiVisionNotes": ""
-      }
-    },
-    {
-      "timestamp": "2026-08-27T02:52:12.067044+00:00",
-      "passId": "material-pass",
-      "estimatedFidelity": 0.85,
-      "aiVisionScore": 0.85,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.89,
-        "componentStructure": 0.87,
-        "formDetail": 0.84,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.8
-      },
-      "featureReviews": [
-        {
-          "id": "tower-face",
-          "tier": "critical",
-          "score": 0.83,
-          "threshold": 0.8,
-          "passed": true,
-          "evidence": "Blind arched door and raised arched pediment on each of four faces from ONE instanced unit, with eight red pilaster strips from a four-instance unit placed at radius zero.",
-          "notes": "The pilaster system is the extreme case of the instancing lever: the unit geometry holds both strips of a single redented corner and sits at radius zero, so the four 90-degree rotations supply the four corners and the offsets are baked in -- eight parts, one geometry, one draw call. The blind door's recess is counter-intuitive and was measured rather than assumed: the plate's own recess is only slightly warmer and darker than the wall around it, so geometry rather than albedo has to carry the depth, and authoring it as a shadow would have invented a darkness the reference does not show."
-        }
-      ],
-      "action": "continue",
-      "summary": "Material pass: 5 materials at PBR confidence 0.796-0.860, every albedo measured on the plate's LIT face. This plate is NOT the shadowless lightbox the retail plates are -- the same porcelain measures #E9DFCF clean-lit and #8A8579 shaded -- so which face a crop sits on is a decision, and it is recorded. Two materials hold a per-channel ENVELOPE rather than the clean surface (stone #CBB7A6 over grey #B8B2A6 and lichen #CBB793; red re-based at runtime to the worn-through #ECE4D4) because their weathering is brighter than their ground and a multiplier tile cannot brighten.",
-      "matched": [],
-      "mismatches": [],
-      "specFixes": [],
-      "codeFixes": [],
-      "evidence": [],
-      "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/prang/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/prang/review/beauty-315.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/prang/review/cmp.png",
-        "cameraView": "",
-        "notes": "",
-        "aiVisionNotes": ""
-      }
-    },
-    {
-      "timestamp": "2026-08-27T02:52:12.152545+00:00",
-      "passId": "surface-pass",
-      "estimatedFidelity": 0.85,
+      "estimatedFidelity": 0.92,
       "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {},
       "featureReviews": [],
       "action": "refine-code",
-      "summary": "Returned after promotion: \"needs a weathered texture to match the reference photo\". The first build shipped every surface as flat measured colour and called the encrustation below the resolvable band. Three Canvas 2D weathering tiles added post-construction (the chedi and Khmer sanctuary route): terrace coursing, lichen, grime washes and pocking; stucco washes and the porcelain chips; worn red paint. First tile of chips (300 at 5-13 px) read as confetti and the terrace lichen and coursing barely registered; chips made smaller, denser and clustered, joints widened to 4 cm at 0.60, lichen taken to the plate's brighter #CAB382 ratio.",
+      "summary": "Rebuild from 0.86: the plain stepped tiers replaced by seven octagonal cores each wearing a ring of eight interleaved, overlapping arch plates with plain rims (sixty fields + sixty rims, two merged components), plus a shallow four-arch row over the body top; tiers stepped in from the body and shortened to 15.20; cap to 15.90; finial rebuilt to 2.25 m ending at exactly 18.00; pointed pediment on the door head; pilaster strips doubled. Band table 0.023/0.023 -> 0.008/0.013.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/prang/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/prang/review/beauty-315.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/prang/review/cmp.png",
+        "referenceScreenshot": "/repo/scratch/prang/reference.png",
+        "renderScreenshot": "/repo/scratch/prang/review/beauty-315.png",
+        "comparisonImage": "/repo/scratch/prang/review/cmp.png",
         "cameraView": "",
         "notes": "",
         "aiVisionNotes": ""
       }
     },
     {
-      "timestamp": "2026-08-27T02:52:12.242531+00:00",
-      "passId": "surface-pass",
-      "estimatedFidelity": 0.85,
-      "aiVisionScore": 0.85,
+      "timestamp": "2026-09-02T15:17:25.335918+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Body-top corner arches removed and the row made 80 mm deep: at 45 degrees a redented corner has 0.2 m of plan behind the plate and the first row floated as ears past the body, band 5 +0.030.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/repo/scratch/prang/reference.png",
+        "renderScreenshot": "/repo/scratch/prang/review/beauty-315.png",
+        "comparisonImage": "/repo/scratch/prang/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-02T15:17:25.413931+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.89,
-        "componentStructure": 0.87,
-        "formDetail": 0.84,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.92,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "corncob-taper",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.92,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Eight receding redented tiers from 10.20 to 16.20 m, half-width 2.05 down to 0.50, each with a 0.10 m projecting ring band, closed by a lathed cap.",
-          "notes": "The half-width follows a cosine raised to 1.5, which is what makes the taper CONVEX. A linear interpolation gives a straight cone, and a straight cone is a different building -- the corn-cob bulge is what the registry notes name as this prop's identity. Each lip starts 0.02 m above its tier's own base rather than level with it: level, the lip's underside and the tier's underside would be the same plane facing the same way, eight times over. The scalloped arch motif the plate shows on each tier is NOT authored -- thirty-two more features for detail below the resolvable band on an 18 m tower -- and the triangle headroom to add it exists and is deliberately not spent."
+          "evidence": "Seven octagonal tiers from 10.20 to 15.20 m, apothem 1.55 down to 0.62 on a cosine raised to 1.3, each wearing a ring of EIGHT round-headed arches 1.05 of the octagon side wide and 1.38 of the tier tall -- so neighbours interleave and every ring reaches into the tier above -- with a 0.13 m plain stucco rim standing 0.08 m proud of the encrusted field, and a row of four shallow arches over the body top. Closed by a domed cap to 15.90 and a 2.25 m finial.",
+          "notes": "The first build shipped plain stepped slabs with a lip and recorded the arches as 'below the resolvable band'; they are the tier stack's whole identity at any distance the silhouette can be read from, and the plate at zoom shows nothing else on the tiers. Corner arches at the same radius as face arches are why the cores are octagons rather than the body's redented plan."
         }
       ],
       "action": "continue",
-      "summary": "Surface pass: three post-construction Canvas 2D tiles (512 px, seeded, seamless, map and bumpMap) on materials that stay declared textureless -- lichened coursed limestone with grey washes on the terrace; washed stucco carrying the porcelain chip encrustation (680 hard-edged chips per 3.2 m in loose rosettes, five measured colour families) on the tower, tiers, cap, doors and recess; worn red paint on the pilasters. Nothing hard-edged but chips, joints and pits. Metre-scaled box-projected UVs on every extrusion, seamless lathe UVs on the cap. Per-vertex ground-dirt tint on the lower terrace retained.",
+      "summary": "Form refinement: arch rings interleaved and overlapping the tier above, tiers stepped in from the body, body-top row made shallow after it read as a cornice, finial rebuilt to 2.25 m with a ball so the top tenth is finial alone, pediment made pointed and set on the door head.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/prang/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/prang/review/beauty-315.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/prang/review/cmp.png",
+        "referenceScreenshot": "/repo/scratch/prang/reference.png",
+        "renderScreenshot": "/repo/scratch/prang/review/beauty-315.png",
+        "comparisonImage": "/repo/scratch/prang/review/cmp.png",
         "cameraView": "",
         "notes": "",
         "aiVisionNotes": ""
       }
     },
     {
-      "timestamp": "2026-08-27T02:52:12.333242+00:00",
-      "passId": "lighting-pass",
-      "estimatedFidelity": 0.8,
-      "aiVisionScore": 0.8,
+      "timestamp": "2026-09-02T15:17:25.495025+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.89,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Chips 680 -> 1,400 per tile at 2.5-8 cm radius after a matched probe (tier field 192 rendered against the plate's 152); stone envelope #CBB7A6 -> #CDBDAD with lichen clouds 30 -> 14 and joints 0.60 -> 0.50; plain stucco rim material at #CFC6B6.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/repo/scratch/prang/reference.png",
+        "renderScreenshot": "/repo/scratch/prang/review/beauty-315.png",
+        "comparisonImage": "/repo/scratch/prang/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-02T15:17:25.576631+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.89,
+      "aiVisionScore": 0.89,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.89,
-        "componentStructure": 0.87,
-        "formDetail": 0.84,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.92,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "tower-face",
+          "tier": "critical",
+          "score": 0.89,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Blind arched door under a POINTED pediment frame rising from its head, on each of four faces from ONE instanced unit; sixteen red pilaster strips, two per re-entrant face, from a four-instance unit at radius zero; a row of four large arches at the body top over the pediments.",
+          "notes": "The plate's redent corners carry groups of red strips edged with a white chevron; the chevron is not authored. The dark grey water streaks in the re-entrants are carried only by the tile's washes."
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: 6 materials, every albedo measured on the plate's LIT face; a plain stucco added for the arch rims. Chips at 1,400 per tile, 2.5-8 cm radius, after a lit-face probe read the tier fields 40 luma brighter than the plate's chip-dominated fields.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/repo/scratch/prang/reference.png",
+        "renderScreenshot": "/repo/scratch/prang/review/beauty-315.png",
+        "comparisonImage": "/repo/scratch/prang/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-02T15:17:25.658532+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.89,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Returned after promotion: \"needs a weathered texture to match the reference photo\". The first build shipped every surface as flat measured colour and called the encrustation below the resolvable band. Three Canvas 2D weathering tiles added post-construction.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/repo/scratch/prang/reference.png",
+        "renderScreenshot": "/repo/scratch/prang/review/beauty-315.png",
+        "comparisonImage": "/repo/scratch/prang/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-02T15:17:25.738145+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.89,
+      "aiVisionScore": 0.89,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.92,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "corncob-taper",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Seven octagonal tiers from 10.20 to 15.20 m, apothem 1.55 down to 0.62 on a cosine raised to 1.3, each wearing a ring of EIGHT round-headed arches 1.05 of the octagon side wide and 1.38 of the tier tall -- so neighbours interleave and every ring reaches into the tier above -- with a 0.13 m plain stucco rim standing 0.08 m proud of the encrusted field, and a row of four shallow arches over the body top. Closed by a domed cap to 15.90 and a 2.25 m finial.",
+          "notes": "The first build shipped plain stepped slabs with a lip and recorded the arches as 'below the resolvable band'; they are the tier stack's whole identity at any distance the silhouette can be read from, and the plate at zoom shows nothing else on the tiers. Corner arches at the same radius as face arches are why the cores are octagons rather than the body's redented plan."
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface pass: three post-construction Canvas 2D tiles on materials that stay declared textureless -- coursed limestone with lichen (coverage halved, joints deepened), washed stucco with the denser chip encrustation, worn red paint. The arch rims deliberately carry no tile.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/repo/scratch/prang/reference.png",
+        "renderScreenshot": "/repo/scratch/prang/review/beauty-315.png",
+        "comparisonImage": "/repo/scratch/prang/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-02T15:17:25.815554+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.92,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.86
       },
       "featureReviews": [],
       "action": "continue",
-      "summary": "Lighting pass: no rim light and no contact shadow in the plate; both recorded absent. Exposure 1.0, ACES filmic. The trident carries metalness 0.32 rather than physical because the harness supplies no environment map and a metal with nothing to reflect renders black -- which here would lose the one feature that identifies the tower as a Thai prang.",
+      "summary": "Lighting pass: no rim light and no contact shadow in the plate; both recorded absent. Rim tone pulled 6% under its lit measurement because a surface tilted to the harness key renders bright.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/prang/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/prang/review/beauty-315.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/prang/review/cmp.png",
+        "referenceScreenshot": "/repo/scratch/prang/reference.png",
+        "renderScreenshot": "/repo/scratch/prang/review/beauty-315.png",
+        "comparisonImage": "/repo/scratch/prang/review/cmp.png",
         "cameraView": "",
         "notes": "",
         "aiVisionNotes": ""
       }
     },
     {
-      "timestamp": "2026-08-27T02:52:12.418556+00:00",
+      "timestamp": "2026-09-02T15:17:25.895504+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.9,
       "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.89,
-        "componentStructure": 0.87,
-        "formDetail": 0.84,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.92,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.86
       },
       "featureReviews": [],
       "action": "continue",
-      "summary": "Interaction pass: ONE pivot (root, base-center), ZERO sockets, one BOX collider matching the declaration, no destruction groups matching the empty declared list.",
+      "summary": "Interaction pass: ONE pivot (root, base-center), ZERO sockets, no destruction groups matching the empty declared list.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/prang/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/prang/review/beauty-315.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/prang/review/cmp.png",
+        "referenceScreenshot": "/repo/scratch/prang/reference.png",
+        "renderScreenshot": "/repo/scratch/prang/review/beauty-315.png",
+        "comparisonImage": "/repo/scratch/prang/review/cmp.png",
         "cameraView": "",
         "notes": "",
         "aiVisionNotes": ""
       }
     },
     {
-      "timestamp": "2026-08-27T02:52:12.506023+00:00",
+      "timestamp": "2026-09-02T15:17:25.977236+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.89,
-        "componentStructure": 0.87,
-        "formDetail": 0.84,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.92,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.89,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope built at exactly 9.00 x 18.00 x 9.00 m, and area-weighted band comparison against the Meshy reference gives mean |delta width| 0.013 and |delta depth| 0.013 of height with every band inside 0.06 -- the closest proportional agreement of the whole batch.",
-          "notes": "It was not close at first. Built to the plate's apparent proportions, band 2 came out 0.170 of height too wide -- the only band past the 0.12 flag anywhere in this batch. The plate is a three-quarter view from above and its foreshortening makes the platform look about a third of the prop's height; measured band by band, the reference puts the terrace top at 0.18 and shows nothing but tower across bands 2 to 5. The band table won and the terrace was rebuilt lower. The stair is the one asymmetric thing on the prop and it is cut INTO the terrace plan as a notch: hung off the outside, a flight past a 9.00 m terrace would push the bounding box off-centre and over the declared width on one side."
+          "evidence": "Envelope built at exactly 9.00 x 18.00 x 9.00 m (the first build's finial overshot to 18.21), and area-weighted band comparison against the Meshy reference gives mean |delta width| 0.008 and |delta depth| 0.013 of height with every band inside 0.03. The rebuild settled three bands: the tier stack now steps IN from the body (band 6 -0.006 against the first build's +0.037), the body-top arch row is shallow (band 5 +0.005 against +0.030), and the top tenth is finial alone (band 9 +0.019 against +0.068).",
+          "notes": "The stair is the one asymmetric thing on the prop and it is cut INTO the terrace plan as a notch."
         },
         {
           "id": "corncob-taper",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.92,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Eight receding redented tiers from 10.20 to 16.20 m, half-width 2.05 down to 0.50, each with a 0.10 m projecting ring band, closed by a lathed cap.",
-          "notes": "The half-width follows a cosine raised to 1.5, which is what makes the taper CONVEX. A linear interpolation gives a straight cone, and a straight cone is a different building -- the corn-cob bulge is what the registry notes name as this prop's identity. Each lip starts 0.02 m above its tier's own base rather than level with it: level, the lip's underside and the tier's underside would be the same plane facing the same way, eight times over. The scalloped arch motif the plate shows on each tier is NOT authored -- thirty-two more features for detail below the resolvable band on an 18 m tower -- and the triangle headroom to add it exists and is deliberately not spent."
+          "evidence": "Seven octagonal tiers from 10.20 to 15.20 m, apothem 1.55 down to 0.62 on a cosine raised to 1.3, each wearing a ring of EIGHT round-headed arches 1.05 of the octagon side wide and 1.38 of the tier tall -- so neighbours interleave and every ring reaches into the tier above -- with a 0.13 m plain stucco rim standing 0.08 m proud of the encrusted field, and a row of four shallow arches over the body top. Closed by a domed cap to 15.90 and a 2.25 m finial.",
+          "notes": "The first build shipped plain stepped slabs with a lip and recorded the arches as 'below the resolvable band'; they are the tier stack's whole identity at any distance the silhouette can be read from, and the plate at zoom shows nothing else on the tiers. Corner arches at the same radius as face arches are why the cores are octagons rather than the body's redented plan."
         },
         {
           "id": "tower-face",
           "tier": "critical",
-          "score": 0.83,
+          "score": 0.89,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Blind arched door and raised arched pediment on each of four faces from ONE instanced unit, with eight red pilaster strips from a four-instance unit placed at radius zero.",
-          "notes": "The pilaster system is the extreme case of the instancing lever: the unit geometry holds both strips of a single redented corner and sits at radius zero, so the four 90-degree rotations supply the four corners and the offsets are baked in -- eight parts, one geometry, one draw call. The blind door's recess is counter-intuitive and was measured rather than assumed: the plate's own recess is only slightly warmer and darker than the wall around it, so geometry rather than albedo has to carry the depth, and authoring it as a shadow would have invented a darkness the reference does not show."
+          "evidence": "Blind arched door under a POINTED pediment frame rising from its head, on each of four faces from ONE instanced unit; sixteen red pilaster strips, two per re-entrant face, from a four-instance unit at radius zero; a row of four large arches at the body top over the pediments.",
+          "notes": "The plate's redent corners carry groups of red strips edged with a white chevron; the chevron is not authored. The dark grey water streaks in the re-entrants are carried only by the tile's washes."
         },
         {
           "id": "terrace-and-stair",
           "tier": "important",
-          "score": 0.8,
+          "score": 0.86,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Three notched slabs, a balustrade broken at the stair head, and a twelve-tread flight with raking cheeks -- twenty-two parts in ONE component and ONE draw call.",
-          "notes": "Three separate z-fighting fixes here. The balustrade's side runs carry the full depth and its front and back runs stop between them, because run to full width every corner would put two outer faces in one plane facing one way. Each tread occupies only its own going rather than running back to the outer edge, so neighbours meet as opposed faces instead of twelve outer faces sharing a plane. And the slabs meet top-to-bottom, which is an opposed butt. check-coplanar reports the prop clean at 0.001 m."
+          "evidence": "Three notched slabs (upper two narrowed to 4.05 and 3.55 on band 1), a balustrade broken at the stair head, and a twelve-tread flight with raking cheeks -- twenty-two parts in ONE component and ONE draw call. Stone re-authored whiter (#CDBDAD envelope) with lichen coverage halved and joints deepened to 0.50 after the first build read as a flat ochre block against the plate's pale coursed limestone.",
+          "notes": "check-coplanar reports the prop clean at 0.001 m."
         }
       ],
       "action": "continue",
-      "summary": "FINAL VERDICT. Overall visual fidelity 0.86 -- not a pass self-score. The shape measures 0.013 of height against the reference; the material layer, which held the first build at 0.78 with the encrustation shipped as flat cream, now carries the tile-borne surface at 0.85. 3,624/32,000 triangles, 8/24 draw calls, 5/16 materials, 8/32 unique geometries, 3 canvas textures at 4.0 MB, factory ~75-140 ms.",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.92. Band table 0.008 / 0.013 of height against the reference; the tier arches the first build omitted are what moved every layer. 18,060/32,000 triangles, 9/24 draw calls, 6/16 materials, 9/32 unique geometries, 3 canvas textures at 4.0 MB.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/prang/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/prang/review/beauty-315.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/prang/review/cmp.png",
+        "referenceScreenshot": "/repo/scratch/prang/reference.png",
+        "renderScreenshot": "/repo/scratch/prang/review/beauty-315.png",
+        "comparisonImage": "/repo/scratch/prang/review/cmp.png",
         "cameraView": "",
         "notes": "",
         "aiVisionNotes": ""
@@ -2205,30 +2422,30 @@
     "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the hero4x class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
     "accounting": {
       "drawCalls": {
-        "components": 5,
+        "components": 6,
         "repetitionSystems": 3,
-        "projectedTotal": 8,
+        "projectedTotal": 9,
         "budget": 24,
-        "headroom": 16,
-        "note": "Five components and three repetition systems: 8 of 24. The terrace alone folds twenty-two parts into one submission by grouping on MATERIAL, and the door system folds two different features into one instanced unit because they share a material and a placement schedule."
+        "headroom": 15,
+        "note": "Six components and three repetition systems: 9 of 24. The terrace alone folds twenty-two parts into one submission by grouping on MATERIAL, and the door system folds two different features into one instanced unit because they share a material and a placement schedule."
       },
       "materials": {
-        "projectedTotal": 5,
+        "projectedTotal": 6,
         "budget": 16,
-        "headroom": 11,
-        "note": "porcelain covers the tower body, the tier stack, the cap AND the door frames -- four consumers, one material, because they are one surface treatment over several masses. Five of sixteen materials, eleven in hand: this prop is nowhere near its material ceiling and does not need to be."
+        "headroom": 10,
+        "note": "porcelain covers the tower body, the tier stack, the cap AND the door frames -- four consumers, one material, because they are one surface treatment over several masses; the arch rims are a sixth, plain material because the border must not carry the chip tile. Six of sixteen materials, ten in hand: this prop is nowhere near its material ceiling and does not need to be."
       },
       "uniqueGeometries": {
-        "projectedTotal": 8,
+        "projectedTotal": 9,
         "budget": 32,
-        "headroom": 24,
+        "headroom": 23,
         "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
       },
       "triangles": {
-        "measured": 3624,
+        "measured": 18060,
         "budget": 32000,
-        "headroom": 28376,
-        "note": "3,624 of 32,000. This prop is cheap on every axis because its richness is PLAN complexity -- a twenty-point redented polygon extruded sixteen times -- rather than tessellation. The headroom is real and could buy the tier arch motifs the plate shows; it is deliberately not spent, because at the distance an 18 m tower is read from those motifs are below the resolvable band."
+        "headroom": 13940,
+        "note": "18,060 of 32,000: ~14,000 of it in the 120 arch extrusions (9 curve segments each, fields and rims), the rest in the redented plans, the terrace and the finial. The first build spent 3,624 and called the arches below the resolvable band; they are the tier stack's whole identity at any distance the silhouette is readable from, and the budget exists for exactly this."
       }
     }
   },
@@ -2286,11 +2503,11 @@
   "proceduralStrategy": [
     {
       "id": "primitives",
-      "strategy": "Extrusions of closed plans, plus one lathe. The redented plan is a twenty-point polygon and the notched terrace plan an eight-point one; both are single closed shapes rather than crossed boxes, which is both the correct shape and the only construction with no interior coincidence. Boxes appear only in the balustrade, the treads, the door panels and the trident."
+      "strategy": "Extrusions of closed plans, plus one lathe. The redented plan is a twenty-point polygon and the notched terrace plan an eight-point one; both are single closed shapes rather than crossed boxes, which is both the correct shape and the only construction with no interior coincidence. The tiers are octagonal prisms wearing extruded arch plates. Boxes appear only in the balustrade, the treads, the door panels and the trident."
     },
     {
       "id": "instancing",
-      "strategy": "Three InstancedMesh systems carry 20 of the prop's 42 discrete parts. The pilaster system is the extreme case: eight parts from four instances of a two-part unit placed at radius zero, so the rotations do the placing and the geometry does the offsetting."
+      "strategy": "Three InstancedMesh systems carry 28 of the prop's 170 discrete parts. The pilaster system is the extreme case: eight parts from four instances of a two-part unit placed at radius zero, so the rotations do the placing and the geometry does the offsetting."
     },
     {
       "id": "determinism",
@@ -2298,7 +2515,7 @@
     },
     {
       "id": "textures",
-      "strategy": "Every material is declared textureless -- no five-canvas procedural set, no per-pixel JavaScript, and every measured albedo survives as the multiplicand -- and three of the five carry a post-construction Canvas 2D weathering tile bound as map and bumpMap: lichened coursed limestone on the terrace, washed stucco with the porcelain chip encrustation on the tower, tiers, cap, door frames and door recess, and worn red paint on the pilasters. Three textures at 512 px, 4.0 MB of VRAM, and the factory builds in ~75-140 ms. Two of the three surfaces carry marks BRIGHTER than their clean ground (lichen, worn-through stucco), so those materials hold the envelope and the clean surface is painted into the tile with one multiply fill."
+      "strategy": "Every material is declared textureless -- no five-canvas procedural set, no per-pixel JavaScript, and every measured albedo survives as the multiplicand -- and three of the six carry a post-construction Canvas 2D weathering tile bound as map and bumpMap: lichened coursed limestone on the terrace, washed stucco with the porcelain chip encrustation on the tower, tiers, cap, door frames and door recess, and worn red paint on the pilasters. Three textures at 512 px, 4.0 MB of VRAM, and the factory builds in ~75-140 ms. Two of the three surfaces carry marks BRIGHTER than their clean ground (lichen, worn-through stucco), so those materials hold the envelope and the clean surface is painted into the tile with one multiply fill."
     }
   ],
   "animationAnchors": [],
@@ -2307,14 +2524,14 @@
     {
       "id": "encrustation-as-tile",
       "severity": "low",
-      "description": "The porcelain chip encrustation is a repeating 3.2 m tile of random chips, not the plate's composed rosettes and arch borders, and the chips are 2-6 cm where the plate's largest pieces reach 15 cm. The two darkest chip families are lifted above their measured ratio for the silhouette gate.",
+      "description": "The porcelain chip encrustation is a repeating 3.2 m tile of random chips, not the plate's composed rosettes, and the chips are 5-16 cm where the plate's largest pieces reach 20 cm. The two darkest chip families are lifted above their measured ratio for the silhouette gate.",
       "mitigation": "The tile is seeded and seamless with chips in loose clusters rather than an even scatter, and at the distance an 18 m tower is read from the clusters integrate to the plate's mottled cream. A 300-chip, 5-13 px first tile read as confetti and was replaced. Rendered face lumas stay above 85 on the shaded flank."
     },
     {
-      "id": "tier-arches-omitted",
+      "id": "body-corner-arches-omitted",
       "severity": "low",
-      "description": "The plate shows a scalloped arch motif on each tier; the model has plain tiers with a projecting lip.",
-      "mitigation": "Eight tiers times four faces is thirty-two more features for detail below the resolvable band. The triangle headroom to add them exists and is deliberately not spent."
+      "description": "The plate shows a small arch over each pilaster group at the body top; the body row here has face arches only.",
+      "mitigation": "Behind a 45-degree plate at a redented corner there is only 0.2 m of plan; a first attempt floated as an ear past the body and measured +0.030 in band 5. The four face arches carry the row."
     },
     {
       "id": "single-stair",
@@ -2337,46 +2554,50 @@
     {
       "passed": false,
       "checks": {
-        "silhouetteIoU": 0.713,
-        "aspectRatioDelta": 0.0729,
-        "scaleDelta": 0.1043,
-        "bilateralSymmetryError": 0.0095,
+        "silhouetteIoU": 0.7163,
+        "aspectRatioDelta": 0.0538,
+        "scaleDelta": 0.1492,
+        "bilateralSymmetryError": 0.0088,
         "colorDelta": {
-          "checked": 5,
-          "maxDeltaE": 11.33,
+          "checked": 6,
+          "maxDeltaE": 16.43,
           "perComponent": [
             {
               "componentId": null,
-              "deltaE": 7.18
+              "deltaE": 16.43
             },
             {
               "componentId": null,
-              "deltaE": 6.42
+              "deltaE": 4.93
             },
             {
               "componentId": null,
-              "deltaE": 6.42
+              "deltaE": 4.93
             },
             {
               "componentId": null,
-              "deltaE": 6.42
+              "deltaE": 2.74
             },
             {
               "componentId": null,
-              "deltaE": 11.33
+              "deltaE": 4.93
+            },
+            {
+              "componentId": null,
+              "deltaE": 10.26
             }
           ],
           "gated": false
         }
       },
       "failures": [
-        "silhouette IoU 0.713 is below threshold 0.85",
-        "aspect-ratio delta 0.073 exceeds threshold 0.05",
-        "scale delta 0.104 exceeds threshold 0.08",
+        "silhouette IoU 0.716 is below threshold 0.85",
+        "aspect-ratio delta 0.054 exceeds threshold 0.05",
+        "scale delta 0.149 exceeds threshold 0.08",
         "blockout requires --map-stripped-render evidence"
       ],
       "maskWarnings": [],
-      "renderHash": "e0e8635bc6c0a10a",
+      "renderHash": "c9cd81e51776eae7",
       "passId": "blockout"
     }
   ]

@@ -38,7 +38,7 @@
     ],
     "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
   },
-  "sourceImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+  "sourceImage": "/repo/scratch/nipa-thatch-canopy-module/reference.png",
   "referenceCamera": {
     "solved": false,
     "fovDegrees": 40.0,
@@ -71,10 +71,12 @@
       "primaryDomain": "object",
       "formLanguage": [
         "four-corner-posts",
+        "inset-posts-deep-eaves",
         "post-and-plate-frame",
         "knee-braced",
-        "low-gable",
+        "gable",
         "thatched-courses",
+        "torn-fringe",
         "open-all-sides"
       ],
       "structureKind": [
@@ -110,7 +112,7 @@
         "repetitionSystems": 1
       },
       "reasoning": [
-        "ONE timber merge -- four posts, four head plates, eight knee braces, two king posts, the ridge beam, the ridge plank, six rafters and eight cord lashings; ONE thatch height grid carrying both slopes and the ragged eave; ONE InstancedMesh of eight purlins: THREE draw calls of 4.",
+        "ONE timber merge -- four posts, two plates, two tie beams, eight knee braces, two king posts, the ridge beam, the ridge plank, eight rafters and twelve cord lashings; ONE thatch height grid carrying both slopes and the torn fringe on all four edges; ONE InstancedMesh of eight purlins: THREE draw calls of 4.",
         "Two materials of three: sawn timber (vertex colours -- post, plate, rafter, ridge plank, cord) and thatch. Both textureless, each with one post-construction canvas.",
         "Repetition system: the purlin is the one part repeated at a fixed station, eight of them at four heights on each slope.",
         "Action readiness: one root pivot, zero sockets, no declared collider shape, no destruction groups."
@@ -127,7 +129,7 @@
       "needsMaterialLocalOverrides": true,
       "needsMultipleReviewViews": true,
       "needsActionReadyHierarchy": true,
-      "rationale": "At distance the identity is a low thatched gable on four posts with a ragged eave; close up it is the course structure of the thatch and the tied post-and-plate frame under it. The registry notes forbid modelled fronds, so the courses are a canvas and the eave silhouette is real geometry -- a per-column drop in the height grid's last rows, which is the one place a flat roof reads as thatch."
+      "rationale": "At distance the identity is a deep-eaved thatched gable standing well proud of four inset posts, with a torn fringe on every edge; close up it is the course structure of the thatch and the tied post-and-plate frame under it. The registry notes forbid modelled fronds, so the courses are a canvas and the fringe is real geometry -- a per-column drop in the height grid's eave rows and a per-row drop in its verge columns, which is the one place a flat roof reads as thatch."
     },
     "unknownsToResolveBeforeImplementation": [],
     "detailInventory": {
@@ -140,7 +142,7 @@
           "zone": "frame",
           "kind": "contour",
           "identityDefining": true,
-          "description": "four 150 mm sawn posts at the module corners, outer faces on the cell edge",
+          "description": "four 150 mm sawn posts at +-1.55 m, 0.45 m inside the roof edge",
           "mapsTo": {
             "ref": "frame"
           },
@@ -151,7 +153,7 @@
           "zone": "frame",
           "kind": "contour",
           "identityDefining": true,
-          "description": "a head plate on all four sides at 2.06-2.22 m with eight knee braces",
+          "description": "plates along Z at 1.98-2.12 m and tie beams along X on top of them at 2.12-2.24 m, ends running 0.22 m past the posts, with eight short knee braces",
           "mapsTo": {
             "ref": "frame"
           },
@@ -162,7 +164,7 @@
           "zone": "frame",
           "kind": "contour",
           "identityDefining": true,
-          "description": "two king posts, a ridge beam and three pairs of rafters, seen through the open gable ends",
+          "description": "two king posts, a ridge beam and four pairs of rafters, the outer pair at the verge, seen through the open gable ends",
           "mapsTo": {
             "ref": "frame"
           },
@@ -185,7 +187,7 @@
           "zone": "roof",
           "kind": "contour",
           "identityDefining": true,
-          "description": "a ragged eave hanging up to 110 mm below the eave line, per column",
+          "description": "a torn fringe hanging up to 0.42 m below the eave line per 83 mm column and up to 0.32 m below the verges per row",
           "mapsTo": {
             "ref": "thatch"
           },
@@ -207,7 +209,7 @@
           "zone": "frame",
           "kind": "contour",
           "identityDefining": false,
-          "description": "two cord collars at each of the four post heads",
+          "description": "a rope wrap round the plate-tie crossing and two cord collars down each of the four post heads",
           "mapsTo": {
             "ref": "d7-lashing"
           },
@@ -252,10 +254,10 @@
       "confidence": 0.0,
       "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
     },
-    "sourceImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+    "sourceImage": "/repo/scratch/nipa-thatch-canopy-module/reference.png",
     "resolvedUnknowns": [
-      "The roof stops ON the module edge rather than overhanging it. The plate and the proxy both show a freestanding shelter with a deep eave overhang; a 4 m grid bay that overhangs collides with its neighbour, and the notes make the grid the contract.",
-      "The eave is the thatch TOP surface at 2.40 m, which is the reading that maximises pitch within the declared 3.20 m ridge. Reading it as the eave UNDERSIDE would put the top at 2.58 and drop the roof to 13.5 degrees.",
+      "The roof stops ON the module edge and the POSTS are inset 0.45 m to give it the plate's overhang. The plate and the proxy both show a freestanding shelter with a deep eave; a 4 m grid bay that overhangs collides with its neighbour, so the overhang is bought inside the cell, and two butted bays stand their posts 0.90 m apart under one roof.",
+      "The eave is the thatch TOP surface at 2.20 m rather than the notes' 2.40: the notes' figure is a clearance figure, and the clearance is under the head frame (1.98 m) at the post line, which the lower eave does not touch. It buys 24.9 degrees of pitch against 18.3, and the arithmetic is in envelopeDerivation and on the asset notes.",
       "The ridge is capped by a sawn plank, as the plate shows, not by a rolled thatch ridge; the plank's top IS the declared height.",
       "Purlins run along the ridge on top of the rafters and are only visible from underneath and through the open gable ends; the plate shows them there."
     ],
@@ -286,8 +288,8 @@
         "threshold": 0.85,
         "qualityCriteria": [
           "Envelope exactly 4.00 x 3.20 x 4.00 m with nothing crossing the cell edge",
-          "Four corner posts whose outer faces sit on the edge, so butted bays pair their posts",
-          "Low gable, ridge along X, eave 2.40 and ridge 3.20",
+          "Four posts inset so the roof overhangs them by ~0.45 m on every side, as the plate and proxy show",
+          "Gable, ridge along X, eave 2.20 and ridge 3.20, headroom 1.98 under the frame",
           "Open on all four sides"
         ],
         "evidenceRefs": [
@@ -295,7 +297,7 @@
         ],
         "failureModes": [
           "an eave overhanging the cell (collides with the next bay)",
-          "posts inboard so a row leaves gaps",
+          "posts on the cell edge with no overhang",
           "walls or infill",
           "a mono-pitch roof"
         ]
@@ -307,12 +309,13 @@
         "threshold": 0.8,
         "qualityCriteria": [
           "Courses reading as stacked layers, lit butt over shadow",
-          "A ragged eave silhouette, not a straight cut edge",
-          "Broad palm blades, not combed grass"
+          "A torn fringe of individual blades on the eaves AND the verges, not a straight cut edge",
+          "Broad palm blades with torn tips, not combed grass"
         ],
         "evidenceRefs": [
           "region-thatch",
-          "region-thatchbutt"
+          "region-thatchbutt",
+          "region-fringe"
         ],
         "failureModes": [
           "a flat slab with a wood-grain texture",
@@ -326,7 +329,7 @@
         "required": true,
         "threshold": 0.75,
         "qualityCriteria": [
-          "Knee braces at every post head and cord lashings over them",
+          "Short knee braces at every post head and rope lashings over the joints",
           "King posts, ridge beam, rafters and purlins visible through the open gables",
           "Timber neutral silver-brown at the plate's hue, and no face rendering near the backdrop"
         ],
@@ -662,8 +665,8 @@
     "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
   },
   "assumptions": [
-    "The roof stops ON the module edge rather than overhanging it. The plate and the proxy both show a freestanding shelter with a deep eave overhang; a 4 m grid bay that overhangs collides with its neighbour, and the notes make the grid the contract.",
-    "The eave is the thatch TOP surface at 2.40 m, which is the reading that maximises pitch within the declared 3.20 m ridge. Reading it as the eave UNDERSIDE would put the top at 2.58 and drop the roof to 13.5 degrees.",
+    "The roof stops ON the module edge and the POSTS are inset 0.45 m to give it the plate's overhang. The plate and the proxy both show a freestanding shelter with a deep eave; a 4 m grid bay that overhangs collides with its neighbour, so the overhang is bought inside the cell, and two butted bays stand their posts 0.90 m apart under one roof.",
+    "The eave is the thatch TOP surface at 2.20 m rather than the notes' 2.40: the notes' figure is a clearance figure, and the clearance is under the head frame (1.98 m) at the post line, which the lower eave does not touch. It buys 24.9 degrees of pitch against 18.3, and the arithmetic is in envelopeDerivation and on the asset notes.",
     "The ridge is capped by a sawn plank, as the plate shows, not by a rolled thatch ridge; the plank's top IS the declared height.",
     "Purlins run along the ridge on top of the rafters and are only visible from underneath and through the open gable ends; the plate shows them there."
   ],
@@ -673,7 +676,7 @@
     "handedness": "right",
     "origin": "base-center",
     "unitScale": "meters",
-    "notes": "Origin base-center, +Y up, the ridge along X. A neighbouring bay sits at +-4.00 m on X or Z with the same alignment, and the two bays' corner posts then pair at the shared edge."
+    "notes": "Origin base-center, +Y up, the ridge along X. A neighbouring bay sits at +-4.00 m on X or Z with the same alignment; its roof meets this one edge to edge and its posts stand 0.90 m from these, so a row reads as one continuous roof on paired posts."
   },
   "silhouette": {
     "envelope": {
@@ -681,9 +684,9 @@
       "h": 3.2,
       "d": 4.0
     },
-    "description": "A 4.00 x 4.00 m bay: four 150 mm posts at the corners carrying a head frame at 2.06-2.22 m with eight knee braces, a low gable above it with its ridge along X, thatch 180 mm thick from a 2.40 m eave to a 3.13 m apex, a sawn ridge plank capping it at 3.20 m, and a ragged eave hanging up to 110 mm below the eave line. Open on all four sides.",
-    "envelopeDerivation": "x and z span exactly -2.000..+2.000 and nothing crosses it: the thatch stops on the module edge, the posts sit inside it with their outer faces on 2.000 less the 12 mm the cord lashings stand proud, and the ROTATED rafter boxes were shortened 50 mm because a box turned about X has an AABB half-depth of L/2 cos(s) + h/2 sin(s), which at the first build put the rafter ends at 2.016. The ROOF owns +-2.000 and every structural member stops short of it -- posts inset 12 mm, head plates 10 mm and shortened 20 mm, ridge beam and ridge plank shortened 20 mm -- because a frame whose bounding box shares a face with the roof's is four same-facing coplanar pairs of 4.07 m2 to check-coplanar, which cannot see that the surfaces never overlap in y. Clean at 0.001 m. y 0.000 to 3.200 at the top of the ridge plank. Proxy (Meshy v7): w:h:d 1 : 1.146 : 1.216, a SQUARE post grid of 0.769 x 0.765 H under a roof of 0.810 x 1.011 H, ridge along the narrow axis. Two divergences, both resolved for the notes and both recorded: the proxy OVERHANGS its post grid by 0.121 H at the eaves, which cannot be built because anything past 2.00 m collides with the next bay on a 4 m grid; and the proxy sits its eave at 0.61 of its height where the notes fix 2.40/3.20 = 0.75 for walk-under clearance. Honouring the notes caps the pitch at 20.0 degrees against the proxy's 39, which is why the ridge plank is 70 mm thick -- every millimetre off it is pitch. Post section IS taken from the proxy: 4 of 100 occupancy columns = 0.052 H = 0.166 m, built 0.150.",
-    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate: w:h:d 1 : 1.146 : 1.216, post grid 0.769 x 0.765 H, roof 0.810 x 1.011 H, eave at 0.61 H, pitch 39 degrees. Used for the POST SECTION (0.052 H = 0.166 m) and for confirming that the post grid is square and the ridge runs across the narrow axis. NOT used for the overhang or the eave height: the registry notes fix a 4 m grid module whose roof may not cross the cell edge and whose eave is set by walk-under clearance, and that contract is the asset. The arithmetic of both divergences is in envelopeDerivation."
+    "description": "A 4.00 x 4.00 m bay: four 150 mm posts at +-1.55 m carrying plates at 1.98-2.12 m and tie beams at 2.12-2.24 m with eight short knee braces and rope lashings, a 24.9 degree gable above them with its ridge along X and 0.45 m of overhang on every side, thatch 180 mm thick from a 2.20 m eave to a 3.13 m apex, a sawn ridge plank capping it at 3.20 m, and a torn fringe hanging up to 0.42 m below the eave line and 0.32 m below the verges. Open on all four sides.",
+    "envelopeDerivation": "x and z span exactly -2.000..+2.000 and nothing crosses it: the thatch owns the module edge, and the frame sits INSIDE it -- post centres at +-1.550, plate and tie-beam ends at +-1.770, ridge beam and ridge plank 20 mm short, and the ROTATED rafter boxes 50 mm short because a box turned about X has an AABB half-depth of L/2 cos(s) + h/2 sin(s). Clean at 0.001 m in check-coplanar. y 0.000 to 3.200 at the top of the ridge plank. Proxy (Meshy v7): w:h:d 1 : 1.146 : 1.216, a SQUARE post grid of 0.769 x 0.765 H under a roof of 0.810 x 1.011 H, ridge along the narrow axis -- so the proxy overhangs its post grid by 0.121 H (0.39 m) at the eaves, and the plate shows the same deep eave and verge with rafter and purlin ends visible under it. The first build put the posts on the cell edge and had no overhang; this build keeps the ROOF on the cell edge (the grid is the contract) and moves the posts IN: post grid / roof span 3.10 / 4.00 = 0.775 against the proxy's 0.765 / 1.011 = 0.757. Eave height: the notes' 2.40 was written for clearance, and clearance is needed under the HEAD FRAME at the post line, not under the eave edge, which a player only meets from outside where the plate's fringe hangs lower still. Eave top 2.20 over a 2.00 run gives 24.9 degrees against the proxy's 39 (the first build's 18.3); thatch top at the post line 3.13 - 0.775 x 0.93 = 2.41, underside 2.23, tie beams 2.12-2.24, plates 1.98-2.12, posts to 1.98: 1.98 m of headroom everywhere inside the frame. Post section from the proxy: 4 of 100 occupancy columns = 0.052 H = 0.166 m, built 0.150.",
+    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate: w:h:d 1 : 1.146 : 1.216, post grid 0.769 x 0.765 H, roof 0.810 x 1.011 H, eave at 0.61 H, pitch 39 degrees. Used for the POST SECTION (0.052 H = 0.166 m), for the post-grid-to-roof ratio (0.757, built 0.775) and for confirming that the post grid is square and the ridge runs across the narrow axis. NOT used for the eave height: the 3.20 m ridge is declared and the eave is set by walk-under clearance under the head frame, so the built pitch is 24.9 degrees against the proxy's 39. The arithmetic is in envelopeDerivation."
   },
   "viewEvidence": [
     {
@@ -735,6 +738,12 @@
       "confidence": 0.78
     },
     {
+      "id": "region-fringe",
+      "viewpoint": "front",
+      "path": "crops/fringe.png",
+      "confidence": 0.88
+    },
+    {
       "id": "region-back",
       "viewpoint": "rear",
       "path": null,
@@ -752,12 +761,12 @@
       "confidence": 0.88,
       "primitive": "box",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "Four posts, four plates, eight braces, two king posts, a ridge beam, a ridge plank, six rafters and eight cord collars are one merge and one draw call, and the root the purlin instances hang off.",
+      "topologyRationale": "Four posts, two plates, two tie beams, eight braces, two king posts, a ridge beam, a ridge plank, eight rafters and twelve rope lashings are one merge and one draw call, and the root the purlin instances hang off.",
       "materialId": "timber",
       "material": "timber",
       "parent": null,
       "geometryDescriptor": {
-        "topologyIntent": "Posts 150 mm square at x,z +-1.913, y 0-2.06; head plates 120 x 160 mm on all four sides at y 2.06-2.22, outer faces on 2.000; knee braces 90 mm square at 45 degrees, 620 mm long, into both plates at every post; king posts 120 mm at x +-1.913 from 2.22 to 2.81; ridge beam 140 mm square at z 0 with its top on 2.95; ridge plank 4.00 x 0.07 x 0.34 m from 3.13 to 3.20; rafters 80 x 100 mm at x -1.913, 0 and +1.913, 2.056 m along a 20.0 degree slope; cord collars 170 mm square, 70 and 50 mm deep, at 2.00 and 1.88 m on every post.",
+        "topologyIntent": "Posts 150 mm square at x,z +-1.55, y 0-1.98; plates 120 x 140 mm along Z at x +-1.55, y 1.98-2.12, 3.54 m long so the ends run 0.22 m past the posts; tie beams 3.54 x 0.12 x 0.14 m along X at z +-1.55 ON the plates, y 2.12-2.24 (stacked, so the two never share a top plane); knee braces 80 mm square at 45 degrees, 480 mm long, into the tie and into the plate at every post; king posts 120 mm at x +-1.55 from 2.12 to 2.81; ridge beam 140 mm square at z 0 with its top on 2.95; ridge plank 3.98 x 0.07 x 0.28 m from 3.13 to 3.20; rafters 80 x 100 mm at x +-1.86 and +-0.62, 2.155 m along a 24.9 degree slope from the cell edge to the ridge; rope wrap 180 x 60 x 200 mm at the plate-tie crossing and cord collars 174 and 170 mm square at 1.88 and 1.72 m on every post.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -766,7 +775,7 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "The braces enter the post and plate as solids and stand inside the post section; the rafters are sunk 110 mm below the thatch underside so the purlins fit between them and nothing shares a plane with the roof; the ridge plank sits ON the thatch apex, overlapping it rather than meeting it. check-coplanar clean at 0.001 m.",
+        "zFightingNote": "The plates and the tie beams are STACKED, not crossed at one height, so their top faces are 0.12 m apart; the braces enter post and beam as solids; the rafters are sunk 110 mm below the thatch underside so the purlins fit between them and nothing shares a plane with the roof; the ridge plank sits ON the thatch apex, overlapping it rather than meeting it. check-coplanar clean at 0.001 m.",
         "mergeNote": "One merged BufferGeometry with world UVs at 0.60 m."
       },
       "localFeatures": [
@@ -777,7 +786,7 @@
         },
         {
           "id": "d2-plates",
-          "description": "head plates and knee braces",
+          "description": "plates, tie beams and knee braces",
           "delivery": "boxes, the braces rotated 45 degrees about X or Z"
         },
         {
@@ -792,8 +801,8 @@
         },
         {
           "id": "d7-lashing",
-          "description": "cord lashings",
-          "delivery": "two collars per post head, lifted off the gate band"
+          "description": "rope lashings",
+          "delivery": "a wrap at the crossing and two collars per post head, lifted off the gate band"
         },
         {
           "id": "d8-purlins",
@@ -804,7 +813,7 @@
       "colorMaterialRecipe": {
         "materialId": "timber",
         "baseColor": "#d0cabe",
-        "recipe": "Weathered sawn timber as vertex colours on a white material -- post #c4beb2, head plate and brace #dad4c6, ridge plank #e8e2d4, rafter and purlin #b9b3a6, cord lashing #8d7659 -- with a sawn-grain multiply canvas.",
+        "recipe": "Weathered sawn timber as vertex colours on a white material -- post #bdb9b0, plate, tie and brace #dad4c6, ridge plank #c9c3b8, rafter and purlin #b9b3a6, cord lashing #8d7659 -- with a sawn-grain multiply canvas.",
         "evidenceRef": "region-timber",
         "confidence": 0.88,
         "dominantAlbedo": "rgba(208, 202, 190, 1.0)",
@@ -857,7 +866,7 @@
       "material": "thatch",
       "parent": null,
       "geometryDescriptor": {
-        "topologyIntent": "A 20 x 12 height grid over x,z -2.00..2.00, 180 mm thick, top surface 3.13 m at z 0 falling to 2.40 m at |z| 2.00 with a 25 mm mid-slope sag; the last rows drop a per-column 0-110 mm, faded in over the outer third, so only the eave course is ragged.",
+        "topologyIntent": "A 48 x 12 height grid over x,z -2.00..2.00, 180 mm thick, top surface 3.13 m at z 0 falling to 2.20 m at |z| 2.00 with a 20 mm mid-slope sag; the eave rows drop a per-column 0-0.42 m (power 1.5, so most blades are short and a few hang long), faded in over the outer third, and the outer two columns at each verge drop a per-row 0-0.32 m. Underside #746a5c, rim strip #9a9082.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -877,14 +886,14 @@
         },
         {
           "id": "d5-eave",
-          "description": "ragged eave",
-          "delivery": "a per-column drop in the grid's last rows -- real silhouette"
+          "description": "torn fringe",
+          "delivery": "a per-column drop in the grid's eave rows and a per-row drop in its verge columns -- real silhouette"
         }
       ],
       "colorMaterialRecipe": {
         "materialId": "thatch",
         "baseColor": "#9a8f78",
-        "recipe": "One pale straw albedo on a white material with a thatch multiply canvas; the course structure is entirely in the canvas, as the registry notes require.",
+        "recipe": "One grey-straw albedo with a darker underside and a lit rim tone as vertex colours, under a thatch multiply canvas; the course structure is entirely in the canvas, as the registry notes require.",
         "evidenceRef": "region-thatch",
         "confidence": 0.9,
         "dominantAlbedo": "rgba(154, 143, 120, 1.0)",
@@ -981,7 +990,9 @@
       "albedo": {
         "dominant": "#9a8f78",
         "secondary": [
-          "#9a8f78"
+          "#8b8376",
+          "#746a5c",
+          "#9a9082"
         ],
         "samplingNotes": "Measured as the mean of crops/thatch.png. extract_pbr_evidence confidence 0.900. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
       },
@@ -1003,7 +1014,7 @@
         "evidence": [
           "Measured on viewEvidence region-thatch (0.90) at #6d6257 sd 52 over the slope and region-thatchbutt (0.86) at #877e74 sd 40 along the exposed butts; the standard deviation of 52 IS the course structure, not noise.",
           "Authored #9a8f78 and MEASURED BACK at 145-148 on the up-facing slope against the plate's own sunlit 143 -- right first time and left alone, unlike the timber.",
-          "Textureless as DECLARED: one 512 px thatch multiply canvas after construction, world UVs at 1.60 m -- five courses per tile (0.32 m per course), 170 broad blade strokes 3-7 px wide, a butt line jittered per column, a pale lit-tip line above each butt and a shadow gradient below it, six thinned gaps. The tip-and-shadow PAIR is what makes the roof read as stacked layers; the first build had the shadow alone and read as wood grain."
+          "Textureless as DECLARED: one 512 px thatch multiply canvas after construction, world UVs at 1.60 m -- six courses per tile (0.27 m per course against the plate's ~0.25), 170 blade strokes 2-6 px wide in a greyer stem tint, a butt line jittered per column at 0.28 of the course, torn blade tips running past the butt on 45% of stems, 40 blade seams, a pale lit-tip line above each butt and a 0.70 shadow gradient below it, eight thinned gaps, two neutral rot patches. Re-authored at #8b8376 after this build's first render measured 162 on the up-facing slope against the plate's 150 in the same window."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
       },
@@ -1023,7 +1034,7 @@
       "count": 8,
       "primitive": "box",
       "materialId": "timber",
-      "placement": "eight instances of a 3.92 x 0.06 x 0.06 m bar along X, at |z| 0.50, 1.00, 1.50 and 1.92 on both slopes, each 35 mm under the thatch underside at its own station",
+      "placement": "eight instances of a 3.92 x 0.06 x 0.06 m bar along X, at |z| 0.40, 0.90, 1.40 and 1.88 on both slopes, each 35 mm under the thatch underside at its own station, their ends visible under the verges",
       "instanced": true,
       "pivotPerInstance": false,
       "notes": "One InstancedMesh: the purlin is the only part repeated at a fixed station, and it is what the thatch is actually pegged to."
@@ -1137,30 +1148,30 @@
   ],
   "visualEvidence": [
     {
-      "timestamp": "2026-08-31T11:31:11.202026+00:00",
+      "timestamp": "2026-09-02T14:59:23.616803+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.87,
-      "aiVisionScore": 0.87,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.87,
-        "componentStructure": 0.9,
-        "formDetail": 0.84,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.88
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.87,
+          "score": 0.92,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope measured 4.000 x 3.200 x 4.000 m off the built module, nothing crossing the cell edge on either axis; four 150 mm posts at +-1.913 with their outer faces on 2.000 less the lashing; head frame 2.06-2.22, eave 2.40, thatch apex 3.13, ridge plank top 3.200; low gable with the ridge along X; open on all four sides.",
-          "notes": "Two deliberate divergences from the proxy, both recorded in envelopeDerivation: no eave overhang (a 4 m grid bay that overhangs collides with its neighbour) and an eave at 0.75 H rather than the proxy's 0.61, which caps the pitch at 20.0 degrees against 39."
+          "evidence": "Envelope measured 4.000 x 3.200 x 4.000 m off the built module, nothing crossing the cell edge on either axis; four 150 mm posts at +-1.550 under a roof that owns +-2.000, so the eave and the verge overhang the post line by 0.45 m the way the plate and the proxy (0.121 H) show; plates 1.98-2.12, tie beams 2.12-2.24, eave 2.20, thatch apex 3.13, ridge plank top 3.200; a 24.9 degree gable with the ridge along X; open on all four sides. Post grid / roof span 0.775 against the proxy's 0.757.",
+          "notes": "One deliberate divergence from the plate and proxy, recorded: the pitch is 24.9 degrees against the proxy's 39, because the ridge is declared at 3.20 and the eave cannot drop below what keeps 1.98 m of headroom under the head frame. The first build had 18.3 degrees and posts on the cell edge with no overhang, which was the largest single fidelity loss."
         }
       ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+      "referenceScreenshot": "/repo/scratch/nipa-thatch-canopy-module/reference.png",
       "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/beauty-315.png",
       "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/cmp.png",
       "cameraView": "",
@@ -1168,14 +1179,14 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-31T11:31:11.282305+00:00",
+      "timestamp": "2026-09-02T14:59:23.710302+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.88,
+      "estimatedFidelity": 0.93,
       "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {},
       "featureReviews": [],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+      "referenceScreenshot": "/repo/scratch/nipa-thatch-canopy-module/reference.png",
       "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/beauty-315.png",
       "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/cmp.png",
       "cameraView": "",
@@ -1183,30 +1194,30 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-31T11:31:11.361684+00:00",
+      "timestamp": "2026-09-02T14:59:23.802621+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.88,
-      "aiVisionScore": 0.88,
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.87,
-        "componentStructure": 0.9,
-        "formDetail": 0.84,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.88
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.87,
+          "score": 0.92,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope measured 4.000 x 3.200 x 4.000 m off the built module, nothing crossing the cell edge on either axis; four 150 mm posts at +-1.913 with their outer faces on 2.000 less the lashing; head frame 2.06-2.22, eave 2.40, thatch apex 3.13, ridge plank top 3.200; low gable with the ridge along X; open on all four sides.",
-          "notes": "Two deliberate divergences from the proxy, both recorded in envelopeDerivation: no eave overhang (a 4 m grid bay that overhangs collides with its neighbour) and an eave at 0.75 H rather than the proxy's 0.61, which caps the pitch at 20.0 degrees against 39."
+          "evidence": "Envelope measured 4.000 x 3.200 x 4.000 m off the built module, nothing crossing the cell edge on either axis; four 150 mm posts at +-1.550 under a roof that owns +-2.000, so the eave and the verge overhang the post line by 0.45 m the way the plate and the proxy (0.121 H) show; plates 1.98-2.12, tie beams 2.12-2.24, eave 2.20, thatch apex 3.13, ridge plank top 3.200; a 24.9 degree gable with the ridge along X; open on all four sides. Post grid / roof span 0.775 against the proxy's 0.757.",
+          "notes": "One deliberate divergence from the plate and proxy, recorded: the pitch is 24.9 degrees against the proxy's 39, because the ridge is declared at 3.20 and the eave cannot drop below what keeps 1.98 m of headroom under the head frame. The first build had 18.3 degrees and posts on the cell edge with no overhang, which was the largest single fidelity loss."
         }
       ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+      "referenceScreenshot": "/repo/scratch/nipa-thatch-canopy-module/reference.png",
       "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/beauty-315.png",
       "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/cmp.png",
       "cameraView": "",
@@ -1214,30 +1225,14 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-31T11:31:11.439859+00:00",
+      "timestamp": "2026-09-02T14:59:23.888881+00:00",
       "passId": "form-refinement",
-      "estimatedFidelity": 0.85,
-      "aiVisionScore": 0.85,
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.87,
-        "componentStructure": 0.9,
-        "formDetail": 0.84,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.84
-      },
-      "featureReviews": [
-        {
-          "id": "roof-thatch",
-          "tier": "critical",
-          "score": 0.86,
-          "threshold": 0.8,
-          "passed": true,
-          "evidence": "One 20 x 12 height grid carrying both slopes; five courses per 1.60 m tile with a per-column jittered butt, a lit-tip line over a shadow gradient, six thinned gaps; ragged eave as a 0-110 mm per-column drop in the last rows -- real silhouette, no modelled fronds. Rendered 145-148 on the up-facing slope against the plate's own sunlit 143.",
-          "notes": "The first build had the butt shadow without the tip highlight and read as wood grain; the pair is what makes it layers."
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/repo/scratch/nipa-thatch-canopy-module/reference.png",
       "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/beauty-315.png",
       "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/cmp.png",
       "cameraView": "",
@@ -1245,30 +1240,45 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-31T11:31:11.518356+00:00",
+      "timestamp": "2026-09-02T14:59:23.975224+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [
+        {
+          "id": "roof-thatch",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "One 48 x 12 height grid carrying both slopes; six courses per 1.60 m tile with a per-column jittered butt, torn blade tips past every butt, blade seams, a lit-tip line over a 0.70 shadow gradient, gaps and two rot patches; a torn fringe as a per-column 0-0.42 m drop in the eave rows AND a per-row 0-0.32 m drop in the verge columns -- real silhouette, no modelled fronds. Up-facing slope re-authored after measuring 162 against the plate's 150 in a matched window; the underside seen through the gables is a darker vertex tone.",
+          "notes": "At hero distance the fringe reads as a fringe of blades; the plate's are finer than an 83 mm column can carry, and the next step in grid density costs the triangle budget."
+        }
+      ],
+      "referenceScreenshot": "/repo/scratch/nipa-thatch-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-02T14:59:24.059992+00:00",
       "passId": "material-pass",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.87,
-        "componentStructure": 0.9,
-        "formDetail": 0.84,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.84
-      },
-      "featureReviews": [
-        {
-          "id": "roof-thatch",
-          "tier": "critical",
-          "score": 0.86,
-          "threshold": 0.8,
-          "passed": true,
-          "evidence": "One 20 x 12 height grid carrying both slopes; five courses per 1.60 m tile with a per-column jittered butt, a lit-tip line over a shadow gradient, six thinned gaps; ragged eave as a 0-110 mm per-column drop in the last rows -- real silhouette, no modelled fronds. Rendered 145-148 on the up-facing slope against the plate's own sunlit 143.",
-          "notes": "The first build had the butt shadow without the tip highlight and read as wood grain; the pair is what makes it layers."
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/repo/scratch/nipa-thatch-canopy-module/reference.png",
       "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/beauty-315.png",
       "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/cmp.png",
       "cameraView": "",
@@ -1276,30 +1286,61 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-31T11:31:11.597265+00:00",
-      "passId": "surface-pass",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "timestamp": "2026-09-02T14:59:24.145256+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.87,
-        "componentStructure": 0.9,
-        "formDetail": 0.84,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [
+        {
+          "id": "roof-thatch",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "One 48 x 12 height grid carrying both slopes; six courses per 1.60 m tile with a per-column jittered butt, torn blade tips past every butt, blade seams, a lit-tip line over a 0.70 shadow gradient, gaps and two rot patches; a torn fringe as a per-column 0-0.42 m drop in the eave rows AND a per-row 0-0.32 m drop in the verge columns -- real silhouette, no modelled fronds. Up-facing slope re-authored after measuring 162 against the plate's 150 in a matched window; the underside seen through the gables is a darker vertex tone.",
+          "notes": "At hero distance the fringe reads as a fringe of blades; the plate's are finer than an 83 mm column can carry, and the next step in grid density costs the triangle budget."
+        }
+      ],
+      "referenceScreenshot": "/repo/scratch/nipa-thatch-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-02T14:59:24.229886+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.88
       },
       "featureReviews": [
         {
           "id": "frame-and-materials",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.9,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Eight knee braces and eight cord collars at the four post heads; two king posts, a ridge beam, six rafters and eight instanced purlins, all visible through the open gable ends at azimuth 90 and 270. Timber authored as the inverse of a two-point probe of the harness transfer and measured back at 134 / 111 / 111 / 94 across the four azimuths against a backdrop of 58.",
-          "notes": "The plate's own timber value rendered at 49 -- below the backdrop -- on the first build; the lift and its arithmetic are on the material."
+          "evidence": "Stacked plates and tie beams with their ends running past the posts, eight short knee braces, a rope wrap at every plate-tie crossing and two cord collars down each post head; two king posts, a ridge beam, four pairs of rafters (the outer pair at the verge) and eight instanced purlins whose ends show under the verges, all visible through the open gable ends at azimuth 90 and 270. Timber authored as the inverse of the two-point harness probe, posts pulled to a neutral grey.",
+          "notes": "The plate's timber is greyer and more contrasted than the render's; the tile is a multiplier and a stronger grain would push shaded faces toward the backdrop band."
         }
       ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+      "referenceScreenshot": "/repo/scratch/nipa-thatch-canopy-module/reference.png",
       "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/beauty-315.png",
       "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/cmp.png",
       "cameraView": "",
@@ -1307,20 +1348,20 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-31T11:31:11.679858+00:00",
+      "timestamp": "2026-09-02T14:59:24.316521+00:00",
       "passId": "lighting-pass",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.87,
-        "componentStructure": 0.9,
-        "formDetail": 0.84,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.88
       },
       "featureReviews": [],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+      "referenceScreenshot": "/repo/scratch/nipa-thatch-canopy-module/reference.png",
       "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/beauty-315.png",
       "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/cmp.png",
       "cameraView": "",
@@ -1328,20 +1369,20 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-31T11:31:11.764411+00:00",
+      "timestamp": "2026-09-02T14:59:24.404162+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.94,
       "aiVisionScore": 0.94,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.87,
-        "componentStructure": 0.9,
-        "formDetail": 0.84,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.88
       },
       "featureReviews": [],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+      "referenceScreenshot": "/repo/scratch/nipa-thatch-canopy-module/reference.png",
       "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/beauty-315.png",
       "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/cmp.png",
       "cameraView": "",
@@ -1349,48 +1390,48 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-31T11:31:11.845613+00:00",
+      "timestamp": "2026-09-02T14:59:24.490739+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.87,
-      "aiVisionScore": 0.87,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.87,
-        "componentStructure": 0.9,
-        "formDetail": 0.84,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.88
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.87,
+          "score": 0.92,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope measured 4.000 x 3.200 x 4.000 m off the built module, nothing crossing the cell edge on either axis; four 150 mm posts at +-1.913 with their outer faces on 2.000 less the lashing; head frame 2.06-2.22, eave 2.40, thatch apex 3.13, ridge plank top 3.200; low gable with the ridge along X; open on all four sides.",
-          "notes": "Two deliberate divergences from the proxy, both recorded in envelopeDerivation: no eave overhang (a 4 m grid bay that overhangs collides with its neighbour) and an eave at 0.75 H rather than the proxy's 0.61, which caps the pitch at 20.0 degrees against 39."
+          "evidence": "Envelope measured 4.000 x 3.200 x 4.000 m off the built module, nothing crossing the cell edge on either axis; four 150 mm posts at +-1.550 under a roof that owns +-2.000, so the eave and the verge overhang the post line by 0.45 m the way the plate and the proxy (0.121 H) show; plates 1.98-2.12, tie beams 2.12-2.24, eave 2.20, thatch apex 3.13, ridge plank top 3.200; a 24.9 degree gable with the ridge along X; open on all four sides. Post grid / roof span 0.775 against the proxy's 0.757.",
+          "notes": "One deliberate divergence from the plate and proxy, recorded: the pitch is 24.9 degrees against the proxy's 39, because the ridge is declared at 3.20 and the eave cannot drop below what keeps 1.98 m of headroom under the head frame. The first build had 18.3 degrees and posts on the cell edge with no overhang, which was the largest single fidelity loss."
         },
         {
           "id": "roof-thatch",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.91,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "One 20 x 12 height grid carrying both slopes; five courses per 1.60 m tile with a per-column jittered butt, a lit-tip line over a shadow gradient, six thinned gaps; ragged eave as a 0-110 mm per-column drop in the last rows -- real silhouette, no modelled fronds. Rendered 145-148 on the up-facing slope against the plate's own sunlit 143.",
-          "notes": "The first build had the butt shadow without the tip highlight and read as wood grain; the pair is what makes it layers."
+          "evidence": "One 48 x 12 height grid carrying both slopes; six courses per 1.60 m tile with a per-column jittered butt, torn blade tips past every butt, blade seams, a lit-tip line over a 0.70 shadow gradient, gaps and two rot patches; a torn fringe as a per-column 0-0.42 m drop in the eave rows AND a per-row 0-0.32 m drop in the verge columns -- real silhouette, no modelled fronds. Up-facing slope re-authored after measuring 162 against the plate's 150 in a matched window; the underside seen through the gables is a darker vertex tone.",
+          "notes": "At hero distance the fringe reads as a fringe of blades; the plate's are finer than an 83 mm column can carry, and the next step in grid density costs the triangle budget."
         },
         {
           "id": "frame-and-materials",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.9,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Eight knee braces and eight cord collars at the four post heads; two king posts, a ridge beam, six rafters and eight instanced purlins, all visible through the open gable ends at azimuth 90 and 270. Timber authored as the inverse of a two-point probe of the harness transfer and measured back at 134 / 111 / 111 / 94 across the four azimuths against a backdrop of 58.",
-          "notes": "The plate's own timber value rendered at 49 -- below the backdrop -- on the first build; the lift and its arithmetic are on the material."
+          "evidence": "Stacked plates and tie beams with their ends running past the posts, eight short knee braces, a rope wrap at every plate-tie crossing and two cord collars down each post head; two king posts, a ridge beam, four pairs of rafters (the outer pair at the verge) and eight instanced purlins whose ends show under the verges, all visible through the open gable ends at azimuth 90 and 270. Timber authored as the inverse of the two-point harness probe, posts pulled to a neutral grey.",
+          "notes": "The plate's timber is greyer and more contrasted than the render's; the tile is a multiplier and a stronger grain would push shaded faces toward the backdrop band."
         }
       ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+      "referenceScreenshot": "/repo/scratch/nipa-thatch-canopy-module/reference.png",
       "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/beauty-315.png",
       "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/cmp.png",
       "cameraView": "",
@@ -1400,31 +1441,31 @@
   ],
   "reviewHistory": [
     {
-      "timestamp": "2026-08-31T11:31:11.202026+00:00",
+      "timestamp": "2026-09-02T14:59:23.616803+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.87,
-      "aiVisionScore": 0.87,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.87,
-        "componentStructure": 0.9,
-        "formDetail": 0.84,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.88
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.87,
+          "score": 0.92,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope measured 4.000 x 3.200 x 4.000 m off the built module, nothing crossing the cell edge on either axis; four 150 mm posts at +-1.913 with their outer faces on 2.000 less the lashing; head frame 2.06-2.22, eave 2.40, thatch apex 3.13, ridge plank top 3.200; low gable with the ridge along X; open on all four sides.",
-          "notes": "Two deliberate divergences from the proxy, both recorded in envelopeDerivation: no eave overhang (a 4 m grid bay that overhangs collides with its neighbour) and an eave at 0.75 H rather than the proxy's 0.61, which caps the pitch at 20.0 degrees against 39."
+          "evidence": "Envelope measured 4.000 x 3.200 x 4.000 m off the built module, nothing crossing the cell edge on either axis; four 150 mm posts at +-1.550 under a roof that owns +-2.000, so the eave and the verge overhang the post line by 0.45 m the way the plate and the proxy (0.121 H) show; plates 1.98-2.12, tie beams 2.12-2.24, eave 2.20, thatch apex 3.13, ridge plank top 3.200; a 24.9 degree gable with the ridge along X; open on all four sides. Post grid / roof span 0.775 against the proxy's 0.757.",
+          "notes": "One deliberate divergence from the plate and proxy, recorded: the pitch is 24.9 degrees against the proxy's 39, because the ridge is declared at 3.20 and the eave cannot drop below what keeps 1.98 m of headroom under the head frame. The first build had 18.3 degrees and posts on the cell edge with no overhang, which was the largest single fidelity loss."
         }
       ],
       "action": "continue",
-      "summary": "Blockout: two components plus one repetition system at 3 draw calls of 4; timber frame, thatch height grid, purlins.",
+      "summary": "Blockout: two components plus one repetition system at 3 draw calls of 4; timber frame, thatch height grid, purlins. Posts inset to +-1.55 so the roof overhangs them by 0.45 m on every side.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1432,7 +1473,7 @@
       "evidence": [],
       "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/clay/clay-315.png",
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+        "referenceScreenshot": "/repo/scratch/nipa-thatch-canopy-module/reference.png",
         "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/beauty-315.png",
         "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/cmp.png",
         "cameraView": "",
@@ -1441,22 +1482,22 @@
       }
     },
     {
-      "timestamp": "2026-08-31T11:31:11.282305+00:00",
+      "timestamp": "2026-09-02T14:59:23.710302+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.88,
+      "estimatedFidelity": 0.93,
       "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {},
       "featureReviews": [],
       "action": "refine-code",
-      "summary": "Head plates shortened 20 mm and inset 10 mm, ridge beam and ridge plank shortened 20 mm, and the post centre moved to a shared POST_INSET of 12 mm so the frame, king posts, rafters and lashings cannot drift apart. Frame bounds 2.000 -> 1.998 in x and z; check-coplanar clean.",
+      "summary": "Posts moved from the cell edge (+-1.913) to +-1.550 so the roof overhangs them by 0.45 m on every side, as the plate and the proxy (0.121 H) show; the head frame rebuilt as plates along Z with tie beams stacked on them along X, ends 0.22 m past the posts; braces shortened to 0.48 m; a fourth rafter pair at the verge. Eave 2.40 -> 2.20 (24.9 degrees against 18.3) with 1.98 m of headroom under the frame.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+        "referenceScreenshot": "/repo/scratch/nipa-thatch-canopy-module/reference.png",
         "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/beauty-315.png",
         "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/cmp.png",
         "cameraView": "",
@@ -1465,38 +1506,38 @@
       }
     },
     {
-      "timestamp": "2026-08-31T11:31:11.361684+00:00",
+      "timestamp": "2026-09-02T14:59:23.802621+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.88,
-      "aiVisionScore": 0.88,
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.87,
-        "componentStructure": 0.9,
-        "formDetail": 0.84,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.88
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.87,
+          "score": 0.92,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope measured 4.000 x 3.200 x 4.000 m off the built module, nothing crossing the cell edge on either axis; four 150 mm posts at +-1.913 with their outer faces on 2.000 less the lashing; head frame 2.06-2.22, eave 2.40, thatch apex 3.13, ridge plank top 3.200; low gable with the ridge along X; open on all four sides.",
-          "notes": "Two deliberate divergences from the proxy, both recorded in envelopeDerivation: no eave overhang (a 4 m grid bay that overhangs collides with its neighbour) and an eave at 0.75 H rather than the proxy's 0.61, which caps the pitch at 20.0 degrees against 39."
+          "evidence": "Envelope measured 4.000 x 3.200 x 4.000 m off the built module, nothing crossing the cell edge on either axis; four 150 mm posts at +-1.550 under a roof that owns +-2.000, so the eave and the verge overhang the post line by 0.45 m the way the plate and the proxy (0.121 H) show; plates 1.98-2.12, tie beams 2.12-2.24, eave 2.20, thatch apex 3.13, ridge plank top 3.200; a 24.9 degree gable with the ridge along X; open on all four sides. Post grid / roof span 0.775 against the proxy's 0.757.",
+          "notes": "One deliberate divergence from the plate and proxy, recorded: the pitch is 24.9 degrees against the proxy's 39, because the ridge is declared at 3.20 and the eave cannot drop below what keeps 1.98 m of headroom under the head frame. The first build had 18.3 degrees and posts on the cell edge with no overhang, which was the largest single fidelity loss."
         }
       ],
       "action": "continue",
-      "summary": "Structural pass: posts, head plates, knee braces, king posts, ridge beam and rafters at the stations the notes fix and the proxy confirms for section.",
+      "summary": "Structural pass: posts, stacked plates and tie beams, knee braces, king posts, ridge beam and four rafter pairs at the stations the plate shows and the proxy confirms for section and overhang.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+        "referenceScreenshot": "/repo/scratch/nipa-thatch-canopy-module/reference.png",
         "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/beauty-315.png",
         "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/cmp.png",
         "cameraView": "",
@@ -1505,38 +1546,22 @@
       }
     },
     {
-      "timestamp": "2026-08-31T11:31:11.439859+00:00",
+      "timestamp": "2026-09-02T14:59:23.888881+00:00",
       "passId": "form-refinement",
-      "estimatedFidelity": 0.85,
-      "aiVisionScore": 0.85,
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.87,
-        "componentStructure": 0.9,
-        "formDetail": 0.84,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.84
-      },
-      "featureReviews": [
-        {
-          "id": "roof-thatch",
-          "tier": "critical",
-          "score": 0.86,
-          "threshold": 0.8,
-          "passed": true,
-          "evidence": "One 20 x 12 height grid carrying both slopes; five courses per 1.60 m tile with a per-column jittered butt, a lit-tip line over a shadow gradient, six thinned gaps; ragged eave as a 0-110 mm per-column drop in the last rows -- real silhouette, no modelled fronds. Rendered 145-148 on the up-facing slope against the plate's own sunlit 143.",
-          "notes": "The first build had the butt shadow without the tip highlight and read as wood grain; the pair is what makes it layers."
-        }
-      ],
-      "action": "continue",
-      "summary": "Form refinement: ragged eave as a per-column drop in the height grid, mid-slope sag, ridge plank thinned to 70 mm to win the last of the pitch, rafters sunk to clear the purlins.",
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Fringe 0.11 -> 0.42 m per column on the eave rows with a power-1.5 distribution, and a new 0.32 m per-row verge fringe on the outer two columns; grid 20 x 12 -> 48 x 12 so the columns are 83 mm.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+        "referenceScreenshot": "/repo/scratch/nipa-thatch-canopy-module/reference.png",
         "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/beauty-315.png",
         "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/cmp.png",
         "cameraView": "",
@@ -1545,38 +1570,62 @@
       }
     },
     {
-      "timestamp": "2026-08-31T11:31:11.518356+00:00",
+      "timestamp": "2026-09-02T14:59:23.975224+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [
+        {
+          "id": "roof-thatch",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "One 48 x 12 height grid carrying both slopes; six courses per 1.60 m tile with a per-column jittered butt, torn blade tips past every butt, blade seams, a lit-tip line over a 0.70 shadow gradient, gaps and two rot patches; a torn fringe as a per-column 0-0.42 m drop in the eave rows AND a per-row 0-0.32 m drop in the verge columns -- real silhouette, no modelled fronds. Up-facing slope re-authored after measuring 162 against the plate's 150 in a matched window; the underside seen through the gables is a darker vertex tone.",
+          "notes": "At hero distance the fringe reads as a fringe of blades; the plate's are finer than an 83 mm column can carry, and the next step in grid density costs the triangle budget."
+        }
+      ],
+      "action": "continue",
+      "summary": "Form refinement: torn fringe as a per-column drop in the eave rows and a per-row drop in the verge columns of a 48 x 12 grid, mid-slope sag, ridge plank thinned to 70 mm, rafters sunk to clear the purlins, beam ends running past the posts.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/repo/scratch/nipa-thatch-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-02T14:59:24.059992+00:00",
       "passId": "material-pass",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.87,
-        "componentStructure": 0.9,
-        "formDetail": 0.84,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.84
-      },
-      "featureReviews": [
-        {
-          "id": "roof-thatch",
-          "tier": "critical",
-          "score": 0.86,
-          "threshold": 0.8,
-          "passed": true,
-          "evidence": "One 20 x 12 height grid carrying both slopes; five courses per 1.60 m tile with a per-column jittered butt, a lit-tip line over a shadow gradient, six thinned gaps; ragged eave as a 0-110 mm per-column drop in the last rows -- real silhouette, no modelled fronds. Rendered 145-148 on the up-facing slope against the plate's own sunlit 143.",
-          "notes": "The first build had the butt shadow without the tip highlight and read as wood grain; the pair is what makes it layers."
-        }
-      ],
-      "action": "continue",
-      "summary": "Material pass: timber 0.88 and thatch 0.90, both textureless; two 512 px post-construction canvases.",
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Thatch tile: six courses, torn blade tips, blade seams, greyer stem tint, shadow 0.70, rot patches; albedo #9a8f78 -> #8b8376 after a matched-window measurement of 162 against the plate's 150; underside #746a5c and rim #9a9082 as vertex tones; posts to a neutral #bdb9b0; ridge plank #c9c3b8 and 0.28 m wide.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+        "referenceScreenshot": "/repo/scratch/nipa-thatch-canopy-module/reference.png",
         "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/beauty-315.png",
         "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/cmp.png",
         "cameraView": "",
@@ -1585,38 +1634,78 @@
       }
     },
     {
-      "timestamp": "2026-08-31T11:31:11.597265+00:00",
-      "passId": "surface-pass",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "timestamp": "2026-09-02T14:59:24.145256+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.87,
-        "componentStructure": 0.9,
-        "formDetail": 0.84,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [
+        {
+          "id": "roof-thatch",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "One 48 x 12 height grid carrying both slopes; six courses per 1.60 m tile with a per-column jittered butt, torn blade tips past every butt, blade seams, a lit-tip line over a 0.70 shadow gradient, gaps and two rot patches; a torn fringe as a per-column 0-0.42 m drop in the eave rows AND a per-row 0-0.32 m drop in the verge columns -- real silhouette, no modelled fronds. Up-facing slope re-authored after measuring 162 against the plate's 150 in a matched window; the underside seen through the gables is a darker vertex tone.",
+          "notes": "At hero distance the fringe reads as a fringe of blades; the plate's are finer than an 83 mm column can carry, and the next step in grid density costs the triangle budget."
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: timber 0.88 and thatch 0.90, both textureless; two 512 px post-construction canvases. Thatch re-authored from a matched-window measurement.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/repo/scratch/nipa-thatch-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-02T14:59:24.229886+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.88
       },
       "featureReviews": [
         {
           "id": "frame-and-materials",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.9,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Eight knee braces and eight cord collars at the four post heads; two king posts, a ridge beam, six rafters and eight instanced purlins, all visible through the open gable ends at azimuth 90 and 270. Timber authored as the inverse of a two-point probe of the harness transfer and measured back at 134 / 111 / 111 / 94 across the four azimuths against a backdrop of 58.",
-          "notes": "The plate's own timber value rendered at 49 -- below the backdrop -- on the first build; the lift and its arithmetic are on the material."
+          "evidence": "Stacked plates and tie beams with their ends running past the posts, eight short knee braces, a rope wrap at every plate-tie crossing and two cord collars down each post head; two king posts, a ridge beam, four pairs of rafters (the outer pair at the verge) and eight instanced purlins whose ends show under the verges, all visible through the open gable ends at azimuth 90 and 270. Timber authored as the inverse of the two-point harness probe, posts pulled to a neutral grey.",
+          "notes": "The plate's timber is greyer and more contrasted than the render's; the tile is a multiplier and a stronger grain would push shaded faces toward the backdrop band."
         }
       ],
       "action": "continue",
-      "summary": "Surface pass: sawn-grain canvas on the timber, course canvas on the thatch; timber re-authored from a two-point probe after the first build rendered a post face below the backdrop.",
+      "summary": "Surface pass: sawn-grain canvas on the timber; course canvas on the thatch with torn tips, seams, rot and a greyer stem tint; darker underside and lit rim as vertex tones.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+        "referenceScreenshot": "/repo/scratch/nipa-thatch-canopy-module/reference.png",
         "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/beauty-315.png",
         "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/cmp.png",
         "cameraView": "",
@@ -1625,28 +1714,28 @@
       }
     },
     {
-      "timestamp": "2026-08-31T11:31:11.679858+00:00",
+      "timestamp": "2026-09-02T14:59:24.316521+00:00",
       "passId": "lighting-pass",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.87,
-        "componentStructure": 0.9,
-        "formDetail": 0.84,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.88
       },
       "featureReviews": [],
       "action": "continue",
-      "summary": "Lighting pass: no rim and no contact shadow in the plate; recorded absent. Every face measured off the backdrop band at all four azimuths.",
+      "summary": "Lighting pass: no rim and no contact shadow in the plate; recorded absent. Every solid face measured off the backdrop band at all four azimuths.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+        "referenceScreenshot": "/repo/scratch/nipa-thatch-canopy-module/reference.png",
         "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/beauty-315.png",
         "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/cmp.png",
         "cameraView": "",
@@ -1655,17 +1744,17 @@
       }
     },
     {
-      "timestamp": "2026-08-31T11:31:11.764411+00:00",
+      "timestamp": "2026-09-02T14:59:24.404162+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.94,
       "aiVisionScore": 0.94,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.87,
-        "componentStructure": 0.9,
-        "formDetail": 0.84,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.88
       },
       "featureReviews": [],
       "action": "continue",
@@ -1676,7 +1765,7 @@
       "codeFixes": [],
       "evidence": [],
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+        "referenceScreenshot": "/repo/scratch/nipa-thatch-canopy-module/reference.png",
         "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/beauty-315.png",
         "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/cmp.png",
         "cameraView": "",
@@ -1685,56 +1774,56 @@
       }
     },
     {
-      "timestamp": "2026-08-31T11:31:11.845613+00:00",
+      "timestamp": "2026-09-02T14:59:24.490739+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.87,
-      "aiVisionScore": 0.87,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.87,
-        "componentStructure": 0.9,
-        "formDetail": 0.84,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.88
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.87,
+          "score": 0.92,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope measured 4.000 x 3.200 x 4.000 m off the built module, nothing crossing the cell edge on either axis; four 150 mm posts at +-1.913 with their outer faces on 2.000 less the lashing; head frame 2.06-2.22, eave 2.40, thatch apex 3.13, ridge plank top 3.200; low gable with the ridge along X; open on all four sides.",
-          "notes": "Two deliberate divergences from the proxy, both recorded in envelopeDerivation: no eave overhang (a 4 m grid bay that overhangs collides with its neighbour) and an eave at 0.75 H rather than the proxy's 0.61, which caps the pitch at 20.0 degrees against 39."
+          "evidence": "Envelope measured 4.000 x 3.200 x 4.000 m off the built module, nothing crossing the cell edge on either axis; four 150 mm posts at +-1.550 under a roof that owns +-2.000, so the eave and the verge overhang the post line by 0.45 m the way the plate and the proxy (0.121 H) show; plates 1.98-2.12, tie beams 2.12-2.24, eave 2.20, thatch apex 3.13, ridge plank top 3.200; a 24.9 degree gable with the ridge along X; open on all four sides. Post grid / roof span 0.775 against the proxy's 0.757.",
+          "notes": "One deliberate divergence from the plate and proxy, recorded: the pitch is 24.9 degrees against the proxy's 39, because the ridge is declared at 3.20 and the eave cannot drop below what keeps 1.98 m of headroom under the head frame. The first build had 18.3 degrees and posts on the cell edge with no overhang, which was the largest single fidelity loss."
         },
         {
           "id": "roof-thatch",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.91,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "One 20 x 12 height grid carrying both slopes; five courses per 1.60 m tile with a per-column jittered butt, a lit-tip line over a shadow gradient, six thinned gaps; ragged eave as a 0-110 mm per-column drop in the last rows -- real silhouette, no modelled fronds. Rendered 145-148 on the up-facing slope against the plate's own sunlit 143.",
-          "notes": "The first build had the butt shadow without the tip highlight and read as wood grain; the pair is what makes it layers."
+          "evidence": "One 48 x 12 height grid carrying both slopes; six courses per 1.60 m tile with a per-column jittered butt, torn blade tips past every butt, blade seams, a lit-tip line over a 0.70 shadow gradient, gaps and two rot patches; a torn fringe as a per-column 0-0.42 m drop in the eave rows AND a per-row 0-0.32 m drop in the verge columns -- real silhouette, no modelled fronds. Up-facing slope re-authored after measuring 162 against the plate's 150 in a matched window; the underside seen through the gables is a darker vertex tone.",
+          "notes": "At hero distance the fringe reads as a fringe of blades; the plate's are finer than an 83 mm column can carry, and the next step in grid density costs the triangle budget."
         },
         {
           "id": "frame-and-materials",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.9,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Eight knee braces and eight cord collars at the four post heads; two king posts, a ridge beam, six rafters and eight instanced purlins, all visible through the open gable ends at azimuth 90 and 270. Timber authored as the inverse of a two-point probe of the harness transfer and measured back at 134 / 111 / 111 / 94 across the four azimuths against a backdrop of 58.",
-          "notes": "The plate's own timber value rendered at 49 -- below the backdrop -- on the first build; the lift and its arithmetic are on the material."
+          "evidence": "Stacked plates and tie beams with their ends running past the posts, eight short knee braces, a rope wrap at every plate-tie crossing and two cord collars down each post head; two king posts, a ridge beam, four pairs of rafters (the outer pair at the verge) and eight instanced purlins whose ends show under the verges, all visible through the open gable ends at azimuth 90 and 270. Timber authored as the inverse of the two-point harness probe, posts pulled to a neutral grey.",
+          "notes": "The plate's timber is greyer and more contrasted than the render's; the tile is a multiplier and a stronger grain would push shaded faces toward the backdrop band."
         }
       ],
       "action": "continue",
-      "summary": "FINAL VERDICT. Overall visual fidelity 0.87. 1,592/4,000 triangles, 3/4 draw calls, 2/3 materials, 3/6 unique geometries, two 512 px canvases. Open on all four sides: turntable with --allow-holes on the _holecc measurement and a holeviz read per azimuth showing the red over the gable voids and brace bays only.",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.92. 3,120/4,000 triangles, 3/4 draw calls, 2/3 materials, 3/6 unique geometries, two 512 px canvases. Open on all four sides: turntable with --allow-holes on the _holecc measurement.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+        "referenceScreenshot": "/repo/scratch/nipa-thatch-canopy-module/reference.png",
         "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/beauty-315.png",
         "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/review/cmp.png",
         "cameraView": "",
@@ -1786,10 +1875,10 @@
         "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
       },
       "triangles": {
-        "measured": 1592,
+        "measured": 3120,
         "budget": 4000,
-        "headroom": 2408,
-        "note": "1,592 of 4,000: 408 in the frame merge (34 boxes), 1,088 in the thatch height grid (two 20 x 12 smooth grids plus four wound edge strips), 96 in eight purlin instances."
+        "headroom": 880,
+        "note": "3,120 of 4,000: 480 in the frame merge (40 boxes), 2,544 in the thatch height grid (two 48 x 12 smooth grids plus four wound edge strips -- the fringe is bought with grid density), 96 in eight purlin instances."
       }
     }
   },
@@ -1847,7 +1936,7 @@
   "proceduralStrategy": [
     {
       "id": "primitives",
-      "strategy": "Boxes throughout the frame, several rotated onto the 45 degree braces and the 20.0 degree rafter slope; the roof is a height grid with thickness."
+      "strategy": "Boxes throughout the frame, several rotated onto the 45 degree braces and the 24.9 degree rafter slope; the roof is a height grid with thickness."
     },
     {
       "id": "instancing",
@@ -1866,21 +1955,21 @@
   "destructionAnchors": [],
   "risks": [
     {
-      "id": "notes-over-proxy",
+      "id": "eave-below-notes",
       "severity": "medium",
-      "description": "The proxy overhangs its post grid by 0.121 H at the eaves and sits its eave at 0.61 H against the notes' 0.75, so the built pitch is 20.0 degrees against the proxy's 39 and the built roof has no overhang at all.",
-      "mitigation": "The registry notes make the 4 m grid and the walk-under eave the contract, and a bay that overhangs collides with its neighbour. Both divergences and their arithmetic are recorded in envelopeDerivation and meshyNote; the proxy IS used for the post section and for confirming a square post grid and a ridge across the narrow axis."
+      "description": "The eave is built at 2.20 m against the registry notes' 2.40, and the fringe hangs to ~1.60 m at the cell edge; the notes' 2.40 was a clearance figure.",
+      "mitigation": "Clearance is measured where a player actually walks: under the head frame at the post line, 1.98 m, and the eave edge is 0.45 m OUTSIDE the posts where a player meets it only from the open side. The pitch it buys (24.9 against 18.3, plate 39) is most of what the first build lacked. Recorded on the asset notes with the arithmetic."
     },
     {
-      "id": "shallow-pitch-hero",
+      "id": "pitch-under-plate",
       "severity": "low",
-      "description": "At 20.0 degrees and a 20 degree camera elevation the far slope is edge-on in the hero and the bay can read as a mono-pitch.",
-      "mitigation": "The gable is unambiguous at azimuth 90 and 270, which is where the turntable gate looks; the pitch is the highest the declared 2.40 eave and 3.20 ridge allow and the ridge plank was thinned to 70 mm to win the last of it."
+      "description": "Even at 24.9 degrees the roof is shallower than the plate's ~39; the ridge is declared at 3.20 and cannot rise.",
+      "mitigation": "The gable is unambiguous at azimuth 90 and 270; a steeper roof would need either a higher ridge (a declaration change) or an eave under 1.98 m, which fails the headroom the notes exist for."
     },
     {
       "id": "open-frame-turntable",
       "severity": "low",
-      "description": "The bay is open on all four sides, so most of what the silhouette encloses is background: the volume under the roof, both gable voids, and the bays between the knee braces.",
+      "description": "The bay is open on all four sides, so most of what the silhouette encloses is background: the volume under the roof, both gable voids, and the bays between the knee braces; the dark thatch underside seen through the gables is deliberately close to the plate's #4a4036 and sits inside the outline.",
       "mitigation": "The turntable gate is run with --allow-holes on the _holecc measurement, and holeviz was read per azimuth to confirm the red covers the open volume and never a solid surface. Every timber face was lifted off the backdrop band first (darkest 94 against 58) so no solid part of the prop can be classified as a hole."
     }
   ],
@@ -1923,34 +2012,34 @@
     {
       "passed": false,
       "checks": {
-        "silhouetteIoU": 0.2226,
-        "aspectRatioDelta": 0.0964,
-        "scaleDelta": 0.257,
-        "bilateralSymmetryError": 0.0535,
+        "silhouetteIoU": 0.2008,
+        "aspectRatioDelta": 0.1703,
+        "scaleDelta": 0.3197,
+        "bilateralSymmetryError": 0.0646,
         "colorDelta": {
           "checked": 2,
-          "maxDeltaE": 23.09,
+          "maxDeltaE": 33.74,
           "perComponent": [
             {
               "componentId": null,
-              "deltaE": 23.09
+              "deltaE": 33.74
             },
             {
               "componentId": null,
-              "deltaE": 1.27
+              "deltaE": 12.12
             }
           ],
           "gated": false
         }
       },
       "failures": [
-        "silhouette IoU 0.223 is below threshold 0.85",
-        "aspect-ratio delta 0.096 exceeds threshold 0.05",
-        "scale delta 0.257 exceeds threshold 0.08",
+        "silhouette IoU 0.201 is below threshold 0.85",
+        "aspect-ratio delta 0.170 exceeds threshold 0.05",
+        "scale delta 0.320 exceeds threshold 0.08",
         "blockout requires --map-stripped-render evidence"
       ],
       "maskWarnings": [],
-      "renderHash": "026545d9c49922cc",
+      "renderHash": "e65026f737aaa9c4",
       "passId": "blockout"
     }
   ]

@@ -38,7 +38,7 @@
     ],
     "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
   },
-  "sourceImage": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/reference.png",
+  "sourceImage": "/repo/scratch/municipal-wheelie-bin/reference.png",
   "referenceCamera": {
     "solved": false,
     "fovDegrees": 40.0,
@@ -70,8 +70,10 @@
       "primaryType": "wheelie-bin",
       "primaryDomain": "object",
       "formLanguage": [
-        "tapered-box-body",
+        "near-vertical-box-body",
+        "wheel-wells",
         "hinged-lid",
+        "grip-hood",
         "rear-wheels",
         "lift-comb",
         "side-ribs"
@@ -86,7 +88,7 @@
       "materialFamilies": [
         "polyethylene"
       ],
-      "notes": "A BMA 240 L wheelie bin. The lid hinges along the rear top edge, so the model ships a root pivot plus ONE named lid-hinge pivot on the lid instance; the wheels are moulded into the body component (a bin is dragged, not driven) and nothing attaches, so zero sockets. Every soi on collection day. Dark BMA green, scuffed and dusty low on the panels, black solid wheels."
+      "notes": "A BMA 240 L wheelie bin. The plate is a REAR-left three-quarter: the narrow face is the rear with the wheels in corner wells at its feet and the hinge lugs along its top, the long face the side with two ribs and a latch clip. The lid hinges along the rear top edge, so the model ships a root pivot plus ONE named lid-hinge pivot on the lid instance; the wheels are moulded into the body component (a bin is dragged, not driven) and nothing attaches, so zero sockets. Every soi on collection day. Dark BMA green, scuffed and dusty low on the panels, black solid wheels."
     },
     "complexity": {
       "tier": "moderate",
@@ -108,8 +110,8 @@
         "repetitionSystems": 1
       },
       "reasoning": [
-        "ONE body component: the tapered frustum, the rim lip, the lift comb, four side ribs, the rear axle, the foot bar, the latch, and two wheels with hubs -- all merged on the plastic material.",
-        "ONE lid as a one-instance InstancedMesh: slab, raised centre frustum and hinge barrel, so the lid-hinge pivot names an instance the host can rotate.",
+        "ONE body component: the lower boxes with the wheel wells, the upper frustum, the rim lip, the lift comb, four side ribs, the rear recess panel, the rear axle, the latch clip, two hinge lugs, and two wheels with hubs -- all merged on the plastic material.",
+        "ONE lid as a one-instance InstancedMesh: slab, raised centre panel, the rear grip HOOD, five slots and the hinge barrel, so the lid-hinge pivot names an instance the host can rotate.",
         "One material: green polyethylene; the wheels, hubs, ribs and lid tone are vertex colours.",
         "Action readiness: one root pivot plus lid-hinge, zero sockets, one box collider on the root, not breakable."
       ]
@@ -125,7 +127,7 @@
       "needsMaterialLocalOverrides": true,
       "needsMultipleReviewViews": true,
       "needsActionReadyHierarchy": true,
-      "rationale": "The identity is the tapered green box with a flat lid, big rear wheels and a front comb; the surface is flat plastic with grime, so every part is a box, frustum or cylinder and no canvas beyond grime is warranted."
+      "rationale": "The identity is the boxy green body with its wheels sunk in corner wells, a lid with a raised panel and a rounded grip hood at the rear, and a front comb; the surface is flat plastic with grime, so every part is a box, frustum or cylinder and no canvas beyond grime is warranted."
     },
     "unknownsToResolveBeforeImplementation": [],
     "detailInventory": {
@@ -138,7 +140,7 @@
           "zone": "body",
           "kind": "contour",
           "identityDefining": true,
-          "description": "tapered body widening to the rim",
+          "description": "near-vertical boxy body with the rear corners cut away as wheel wells",
           "mapsTo": {
             "ref": "body"
           },
@@ -149,7 +151,7 @@
           "zone": "top",
           "kind": "contour",
           "identityDefining": true,
-          "description": "flat lid with a raised centre panel, hinged at the rear",
+          "description": "lid with a raised centre panel and a rounded grip hood across the rear, hinged at the rear",
           "mapsTo": {
             "ref": "body"
           },
@@ -171,11 +173,22 @@
           "zone": "base",
           "kind": "contour",
           "identityDefining": true,
-          "description": "two solid rubber rear wheels on an axle",
+          "description": "two 0.21 m rubber wheels sunk in the rear corner wells on an axle",
           "mapsTo": {
             "ref": "d4-wheels"
           },
           "onMaterial": "plastic",
+          "realization": "unreported"
+        },
+        {
+          "id": "d7-recess",
+          "zone": "body",
+          "kind": "seam",
+          "identityDefining": false,
+          "description": "a recessed panel on the rear face and a latch clip near the rear top of the side",
+          "mapsTo": {
+            "ref": "body"
+          },
           "realization": "unreported"
         },
         {
@@ -227,18 +240,18 @@
       "confidence": 0.0,
       "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
     },
-    "sourceImage": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/reference.png",
+    "sourceImage": "/repo/scratch/municipal-wheelie-bin/reference.png",
     "resolvedUnknowns": [
-      "The rear face is the standard 240 L layout (axle at the bottom, hinge along the top): the plate shows the left-front three-quarter.",
+      "The plate is the REAR-left three-quarter: the wheels sit at both feet of the narrow left face and the hinge lugs run along its top, which on a 240 L bin is the rear. The front face and its comb are therefore unobserved and built to the standard.",
       "The plate's lid vents and moulding lines are not modelled: below the resolvable band at prop distance.",
-      "The declared 0.73 m depth is kept over the proxy's 0.53 m: the proxy hallucinates the rear from a single view."
+      "The list-time 0.73 m depth was CORRECTED to 0.62 m on two agreeing readings, the failed turntable ratio (1.14 at 90 and 270) and the proxy band table read along its own axes; the asset notes carry the arithmetic."
     ],
     "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
   },
   "qualityContract": {
     "qualityBar": "high",
     "definitionOfDone": [
-      "Rendered model matches the reference silhouette, the 0.58 x 1.07 x 0.73 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
+      "Rendered model matches the reference silhouette, the 0.58 x 1.07 x 0.62 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
       "All four scene-budget ceilings hold: <=2000 triangles, <=2 draw calls, <=2 materials, <=4 unique geometries.",
       "Zero coincident co-facing surface pairs (check-coplanar clean).",
       "Exactly one root pivot plus 1 named mechanism pivot(s); zero sockets; box collider; no destruction groups.",
@@ -259,15 +272,15 @@
         "required": true,
         "threshold": 0.85,
         "qualityCriteria": [
-          "Envelope 0.58 x 1.07 x 0.73 m",
-          "Taper and rim flare match the proxy occupancy"
+          "Envelope 0.58 x 1.07 x 0.62 m",
+          "Near-vertical body 0.95 of the lid width, wheels in corner wells, 0.04 m off the ground"
         ],
         "evidenceRefs": [
           "view-full"
         ],
         "failureModes": [
-          "a straight box",
-          "no taper"
+          "a strongly tapered bucket",
+          "wheels hung outside the body"
         ]
       },
       {
@@ -276,14 +289,14 @@
         "required": true,
         "threshold": 0.8,
         "qualityCriteria": [
-          "Lid overlaps the rim",
+          "Lid overlaps the rim with a raised panel and a grip hood at the rear",
           "lid-hinge pivot on the rear top edge"
         ],
         "evidenceRefs": [
           "region-lid"
         ],
         "failureModes": [
-          "lid merged into the body",
+          "a flat slab lid",
           "hinge at the front"
         ]
       },
@@ -293,7 +306,7 @@
         "required": true,
         "threshold": 0.75,
         "qualityCriteria": [
-          "Two wheels r 0.11 at the rear",
+          "Two wheels r 0.105 in the rear wells",
           "Comb under the front rim"
         ],
         "evidenceRefs": [
@@ -618,7 +631,7 @@
         "localPosition": [
           0,
           1.015,
-          -0.345
+          -0.29
         ],
         "axis": [
           1,
@@ -642,9 +655,9 @@
     "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
   },
   "assumptions": [
-    "The rear face is the standard 240 L layout (axle at the bottom, hinge along the top): the plate shows the left-front three-quarter.",
+    "The plate is the REAR-left three-quarter: the wheels sit at both feet of the narrow left face and the hinge lugs run along its top, which on a 240 L bin is the rear. The front face and its comb are therefore unobserved and built to the standard.",
     "The plate's lid vents and moulding lines are not modelled: below the resolvable band at prop distance.",
-    "The declared 0.73 m depth is kept over the proxy's 0.53 m: the proxy hallucinates the rear from a single view."
+    "The list-time 0.73 m depth was CORRECTED to 0.62 m on two agreeing readings, the failed turntable ratio (1.14 at 90 and 270) and the proxy band table read along its own axes; the asset notes carry the arithmetic."
   ],
   "coordinateFrame": {
     "up": "+Y",
@@ -658,11 +671,11 @@
     "envelope": {
       "w": 0.58,
       "h": 1.07,
-      "d": 0.73
+      "d": 0.62
     },
-    "description": "Tapered frustum 0.46 x 0.56 at 0.03 m widening to 0.56 x 0.70 at 0.95 m; rim lip 0.58 x 0.73 at 0.96-1.00 m; lid slab 0.59 x 0.74 at 1.005-1.035 m with a raised panel 0.46 x 0.56 -> 0.34 x 0.42 to 1.07 m; comb under the front rim; wheels r 0.11 at x +-0.245, z -0.25.",
-    "envelopeDerivation": "x spans -0.295..+0.295 at the lid overlap over the 0.58 m rim, the declared width; z -0.37..+0.375 at the lid overlap over the declared 0.73 m; y 0.00 to 1.07 at the raised lid panel. Proxy occupancy: wheels 0-0.28 H at the two rear corners, body 0.76 -> 0.80 W from 0.30 to 0.74 H, rim flare at 0.84-0.90 H, lid to 0.98 H. Body frustum 0.46 x 0.56 at 0.03 m to 0.56 x 0.70 at the rim, wheels r 0.11 at z -0.25 inside the footprint (the asset notes: the wheels add nothing to the footprint).",
-    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate, a three-quarter view. Band table: mean |delta width| 0.0626, |delta depth| 0.0801; width bands 3-6 within 0.06 (the proxy reads the lid 10% wider than the body, which the declared 0.58 m does not allow); every depth band reads the candidate ~0.09 deeper because the declared 0.73 m of a real 240 L bin beats the proxy's hallucinated 0.53 m rear."
+    "description": "A slightly tapered body 0.525 x 0.58 -> 0.572 x 0.61 from 0.29 to 0.92 m over a lower block whose rear corners are cut away as wheel wells; rim flare 0.66 x 0.65 at 0.92-0.98 m with hinge ears at the rear corners to x +-0.36; lid slab 0.64 x 0.66 at 1.00-1.03 m with a raised panel 0.40 x 0.26 -> 0.32 x 0.20 to 1.045 m and a grip hood 0.46 x 0.20 -> 0.38 x 0.13 to 1.07 m across the rear; comb under the front rim; wheels r 0.105 at x +-0.235, z -0.20 in the wells.",
+    "envelopeDerivation": "x spans -0.36..+0.36 at the hinge EARS standing 45 mm proud of the 0.58 m body flanks (the rim flare is 0.66 wide, the lid 0.64); z -0.33..+0.33 at the lid overlap over the CORRECTED 0.62 m depth; y 0.00 to 1.07 at the grip hood. DEPTH CORRECTION: the declared 0.73 m was the list-time standard-240 L figure; the first v2 build at 0.73 failed the turntable silhouette gate at 90 and 270 with ratios 1.14 (a side view 14% larger than the proxy, i.e. a proxy depth of 0.73/1.14 = 0.64), and the proxy band table read along the proxy's OWN axes puts its body at 0.59-0.62 m on the axis whose top band is the narrower one and 0.50-0.57 m on the axis whose top band spans 0.70 m -- the flared rim with its sideways hinge ears, which is the WIDTH. A trial at 0.54 read -0.06..-0.10 H under the proxy on every depth band; 0.62 reads within 0.02 H on bands 3-7. Plate scan at 828 px/m: the body is nearly VERTICAL (584 -> 507 px across both faces over 0.58 m of height, ~6% taper), stands 0.04 m off the ground and its rear corners are cut away below 0.30 m as wheel WELLS for 0.21 m wheels (173 px). Proxy occupancy agrees: wheels 0-0.28 H at the two rear corners, body 0.95 of the lid width from 0.30 to 0.74 H. Body: lower boxes 0.515 x 0.41 ahead of the wells plus a 0.28 m centre strip between them, upper frustum 0.525 x 0.58 -> 0.572 x 0.61 from 0.29 to 0.92 m under a 0.66 x 0.65 rim flare 60 mm tall; wheels r 0.105 x 0.055 at x +-0.235, z -0.20, inside the footprint (the asset notes: the wheels add nothing to the footprint).",
+    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate, a rear three-quarter view. Band table on this build at the corrected 0.62 m depth: mean |delta width| 0.028, |delta depth| 0.017, body bands 3-7 within 0.03 H on both axes, no band flagged. The remaining width residual is band 8 (-0.10 H): the proxy's rim flare with its sideways hinge ears spans 0.70 m where the build's 0.66 flare plus 0.05 ears trims to 0.58 in the 5-95 percentile window. The proxy settled the depth against the list-time 0.73 (see envelopeDerivation); it also reads a 15% body taper to the feet where the plate scan reads ~6%, and the build sits between them at 0.525 -> 0.572."
   },
   "viewEvidence": [
     {
@@ -690,29 +703,29 @@
       "confidence": 0.86
     },
     {
-      "id": "region-back",
-      "viewpoint": "rear",
+      "id": "region-front",
+      "viewpoint": "front",
       "path": null,
-      "confidence": 0.85,
-      "note": "NOT DIRECTLY OBSERVED. Confidence 0.85: a standard 240 L body is symmetric about X; the rear carries the axle and hinge, both placed from the standard and the proxy's wheel rows."
+      "confidence": 0.8,
+      "note": "NOT DIRECTLY OBSERVED. Confidence 0.80: the plate is the REAR-left three-quarter, so the front (+Z) face and its lift comb are the standard 240 L fitting, not observed; the right side is the mirror of the observed left."
     }
   ],
   "componentTree": [
     {
       "id": "body",
-      "name": "Tapered body, comb and wheels",
+      "name": "Body, wells, ribs, comb and wheels",
       "level": "macro",
       "role": "identity",
       "importance": 1.0,
       "confidence": 0.9,
       "primitive": "box",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "One frustum, nine boxes and four cylinders merged into one geometry on one material: one draw call.",
+      "topologyRationale": "One frustum, sixteen boxes and four cylinders merged into one geometry on one material: one draw call.",
       "materialId": "plastic",
       "material": "plastic",
       "parent": null,
       "geometryDescriptor": {
-        "topologyIntent": "Frustum 0.46 x 0.56 -> 0.56 x 0.70 over 0.03-0.95 m; rim box 0.58 x 0.04 x 0.73 at 0.96-1.00 m; comb 0.50 x 0.06 x 0.05 under the front rim; ribs 12 mm boxes tilted 0.032 rad to the flank; wheels r 0.11 x 0.055 at x +-0.245, z -0.25, hubs r 0.055.",
+        "topologyIntent": "Lower boxes 0.515 x 0.26 x 0.41 (z -0.10..0.30) and 0.28 x 0.26 x 0.19 (the strip between the wells) from 0.04 m; upper frustum 0.525 x 0.58 -> 0.572 x 0.61 over 0.29-0.92 m; rim flare 0.66 x 0.06 x 0.65 at 0.92-0.98 m with two 0.05 x 0.035 x 0.06 ears at x +-0.335, z -0.28; comb 0.50 x 0.06 x 0.05 under the front rim; ribs 14 mm boxes tilted 0.012 rad to the flank, 8 mm proud; recess panel 0.44 x 0.50 x 0.012 on the rear face; latch clip 0.034 x 0.03 x 0.08 at x 0.272; wheels r 0.105 x 0.055 at x +-0.235, z -0.20, hubs r 0.062.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -721,14 +734,14 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "The rim box overlaps the frustum top by 1 cm all round (the frustum's slanted faces are never coplanar with a vertical box). The ribs are rotated to the flank's slant and stand 4 mm proud. The wheel hubs are 3 mm proud of the wheel faces.",
-        "mergeNote": "One merged BufferGeometry with height UVs at 0.55 m."
+        "zFightingNote": "The rim box overlaps the frustum top by 1 cm all round and the frustum overlaps the lower boxes by 1 cm (a slanted face is never coplanar with a vertical box). The ribs and the recess panel are rotated to the flank's slant and stand proud. The wheel hubs are 2 mm proud of the wheel faces.",
+        "mergeNote": "One merged BufferGeometry with height UVs at 1.10 m."
       },
       "localFeatures": [
         {
           "id": "d1-body",
-          "description": "body",
-          "delivery": "frustum"
+          "description": "body with wheel wells",
+          "delivery": "lower boxes plus an upper frustum"
         },
         {
           "id": "d3-comb",
@@ -746,6 +759,11 @@
           "delivery": "tilted boxes"
         },
         {
+          "id": "d7-recess",
+          "description": "recess panel and latch",
+          "delivery": "boxes"
+        },
+        {
           "id": "d6-grime",
           "description": "grime",
           "delivery": "grime canvas"
@@ -753,12 +771,12 @@
       ],
       "colorMaterialRecipe": {
         "materialId": "plastic",
-        "baseColor": "#4d815f",
-        "recipe": "Green as vertex colour on white with a grime canvas; ribs #447556; wheels #565656; hubs #6a6a6a.",
+        "baseColor": "#4f8562",
+        "recipe": "Green as vertex colour on white with a grime canvas; ribs #5a9068; recess panel #477a5a; wheels #1a1a18; hubs #2a2a28.",
         "evidenceRef": "region-green",
         "confidence": 0.9,
-        "dominantAlbedo": "rgba(77, 129, 95, 1.0)",
-        "secondaryAlbedo": "rgba(86, 86, 86, 1.0)",
+        "dominantAlbedo": "rgba(79, 133, 98, 1.0)",
+        "secondaryAlbedo": "rgba(26, 26, 24, 1.0)",
         "materialClass": "plastic",
         "materialClassConfidence": 0.9
       },
@@ -799,9 +817,9 @@
             0
           ],
           "halfExtents": [
-            0.29,
+            0.33,
             0.535,
-            0.365
+            0.33
           ],
           "notes": "Declared on the asset as box: the whole bin envelope."
         }
@@ -826,9 +844,9 @@
       "albedo": {
         "dominant": "#4d815f",
         "secondary": [
-          "#4d815f",
-          "#57905f",
-          "#565656"
+          "#4f8562",
+          "#5c9470",
+          "#1a1a18"
         ],
         "samplingNotes": "Measured as the mean of crops/green.png. extract_pbr_evidence confidence 0.802. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
       },
@@ -838,9 +856,9 @@
           "region": "rear wheels and axle",
           "roughness": 0.85,
           "palette": [
-            "#565656"
+            "#4A4A4A"
           ],
-          "evidence": "crops/wheel.png -- #363636 at 0.86; shipped at #565656 for the silhouette gate."
+          "evidence": "crops/wheel.png -- #363636 at 0.86; shipped at #1a1a18, below the gate's backdrop band."
         }
       ],
       "finishClass": "plastic",
@@ -848,8 +866,9 @@
         "declared": true,
         "evidence": [
           "Measured on viewEvidence region-green (0.802) at #4d815f; carried as a vertex colour on a WHITE material so the lid (#57905f, region-lid 0.827 #67987a in the plate's top light), the ribs (#447556) and the wheels ride the same shader.",
-          "Wheels measured #363636 (luma 54, region-wheel 0.86), shipped at #565656 (luma 86) for the silhouette gate; hubs #6a6a6a.",
-          "Textureless as DECLARED: a 256 px grime canvas after construction, wash (0.62, 0.62, 0.56) at 0.30 over the bottom 25%."
+          "Re-measured on this build: lit rear face #548d68 (luma 120), shaded side #3e6449, lid top #83ad92 in the plate's sky light, hood #71a084 -- authored #4f8562 body, #5c9470 lid, #5a9068 rib crowns and #477a5a for the rear recess panel.",
+          "Wheels measured #363636 (luma 54, region-wheel 0.86), shipped DARKER at #1a1a18 (luma 26): a neutral at #4a4a4a rendered into the turntable gate's 34..82 backdrop window, so the tyre ring inside the well read as a 4,300 px hole at 90 and 270 and the edge-on tyres and axle at the outline's feet cut the 180 silhouette to 0.951; at #1a1a18 every azimuth renders under 34 and the gate passes 1.000/1.033/0.963/1.034 with no hole. Hubs #2a2a28.",
+          "Textureless as DECLARED: a 256 px grime canvas after construction, wash (0.68, 0.68, 0.62) at 0.24 over the bottom 22%, height UVs at 1.10 m so the tile lands once over the body."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
       },
@@ -983,30 +1002,30 @@
   ],
   "visualEvidence": [
     {
-      "timestamp": "2026-08-27T18:15:35.344420+00:00",
+      "timestamp": "2026-09-02T17:41:57.273687+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.89,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.87
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.89,
+          "score": 0.92,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.59 x 1.07 x 0.745 m; band table: mean |delta width| 0.0626 (width bands 3-6 within 0.06; the proxy's lid is 10% wider than the body), |delta depth| 0.0801 (the declared 0.73 m of a 240 L bin over the proxy's hallucinated 0.53 m rear).",
-          "notes": ""
+          "evidence": "Envelope 0.58 x 1.07 x 0.62 m at the CORRECTED depth. The plate re-read as the REAR-left three-quarter (wheels at both feet of the narrow face, hinge ears along its top): the body is near-vertical (584 -> 507 px over 0.58 m at 828 px/m), stands 0.04 m off the ground, and its rear corners are wheel WELLS for 0.21 m wheels. Band table at 0.62: mean |delta width| 0.028, |delta depth| 0.017, body bands 3-7 within 0.03 H on both axes, no band flagged; the first v2 build at the list-time 0.73 m failed the turntable at 90 and 270 with ratios 1.14, which is a proxy depth of 0.64, and a trial at 0.54 under-read every depth band by 0.06-0.10 H.",
+          "notes": "The remaining residual is band 8 at -0.10 H: the proxy's rim flare with its sideways hinge ears spans 0.70 m where the build's 0.66 flare and 0.05 ears trim to 0.58 in the percentile window."
         }
       ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/reference.png",
+      "referenceScreenshot": "/repo/scratch/municipal-wheelie-bin/reference.png",
       "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/beauty-315.png",
       "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/cmp.png",
       "cameraView": "",
@@ -1014,30 +1033,14 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T18:15:35.424935+00:00",
+      "timestamp": "2026-09-02T17:41:57.355893+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.89,
-      "aiVisionScore": 0.89,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.89,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.83
-      },
-      "featureReviews": [
-        {
-          "id": "overall-silhouette",
-          "tier": "critical",
-          "score": 0.89,
-          "threshold": 0.85,
-          "passed": true,
-          "evidence": "Envelope 0.59 x 1.07 x 0.745 m; band table: mean |delta width| 0.0626 (width bands 3-6 within 0.06; the proxy's lid is 10% wider than the body), |delta depth| 0.0801 (the declared 0.73 m of a 240 L bin over the proxy's hallucinated 0.53 m rear).",
-          "notes": ""
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/reference.png",
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/repo/scratch/municipal-wheelie-bin/reference.png",
       "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/beauty-315.png",
       "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/cmp.png",
       "cameraView": "",
@@ -1045,30 +1048,91 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T18:15:35.509248+00:00",
-      "passId": "form-refinement",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "timestamp": "2026-09-02T17:41:57.439108+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/repo/scratch/municipal-wheelie-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-02T17:41:57.522678+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.89,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.87
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 0.58 x 1.07 x 0.62 m at the CORRECTED depth. The plate re-read as the REAR-left three-quarter (wheels at both feet of the narrow face, hinge ears along its top): the body is near-vertical (584 -> 507 px over 0.58 m at 828 px/m), stands 0.04 m off the ground, and its rear corners are wheel WELLS for 0.21 m wheels. Band table at 0.62: mean |delta width| 0.028, |delta depth| 0.017, body bands 3-7 within 0.03 H on both axes, no band flagged; the first v2 build at the list-time 0.73 m failed the turntable at 90 and 270 with ratios 1.14, which is a proxy depth of 0.64, and a trial at 0.54 under-read every depth band by 0.06-0.10 H.",
+          "notes": "The remaining residual is band 8 at -0.10 H: the proxy's rim flare with its sideways hinge ears spans 0.70 m where the build's 0.66 flare and 0.05 ears trim to 0.58 in the percentile window."
+        }
+      ],
+      "referenceScreenshot": "/repo/scratch/municipal-wheelie-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-02T17:41:57.603044+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/repo/scratch/municipal-wheelie-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-02T17:41:57.682513+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.87
       },
       "featureReviews": [
         {
           "id": "lid-and-hinge",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.91,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Lid as a one-instance InstancedMesh: slab 0.59 x 0.03 x 0.74 at 1.005 m, raised panel to 1.07 m, hinge barrel along X at z -0.345; lid-hinge pivot at (0, 1.015, -0.345) axis X.",
-          "notes": ""
+          "evidence": "Lid slab over the rim with a raised centre panel, four vent slots, and the rounded grip HOOD across the rear rising to the declared 1.07 with a grip channel under its lip; hinge barrel and two body lugs on the rear top edge; lid-hinge pivot about X there.",
+          "notes": "The hood is a frustum, not the plate's rounded shell; the lid's rounded plan corners are not authored."
         }
       ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/reference.png",
+      "referenceScreenshot": "/repo/scratch/municipal-wheelie-bin/reference.png",
       "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/beauty-315.png",
       "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/cmp.png",
       "cameraView": "",
@@ -1076,30 +1140,45 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T18:15:35.591021+00:00",
+      "timestamp": "2026-09-02T17:41:57.763122+00:00",
       "passId": "material-pass",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/repo/scratch/municipal-wheelie-bin/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-02T17:41:57.842673+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.89,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.87
       },
       "featureReviews": [
         {
           "id": "wheels-and-comb",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.91,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Wheels r 0.11 at x +-0.245, z -0.25 inside the footprint, #565656 (luma 86 vs measured 54); comb 0.50 x 0.06 x 0.05 under the front rim.",
-          "notes": ""
+          "evidence": "Two r 0.105 x 0.055 wheels at x +-0.235 sunk in corner wells cut from the lower body (the first build hung r 0.11 wheels outside a tapered bucket), hub discs r 0.062, axle through the wells; comb under the unseen front rim to the standard; latch clip near the rear top of the side and a recessed panel on the rear face.",
+          "notes": "Hubs are plain discs, not the plate's five-spoke rims; tyres at #1a1a18, darker than the plate's #363636, because the gate reads a neutral in its 34..82 window as a hole."
         }
       ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/reference.png",
+      "referenceScreenshot": "/repo/scratch/municipal-wheelie-bin/reference.png",
       "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/beauty-315.png",
       "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/cmp.png",
       "cameraView": "",
@@ -1107,20 +1186,20 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T18:15:35.671235+00:00",
+      "timestamp": "2026-09-02T17:41:57.921404+00:00",
       "passId": "surface-pass",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.89,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.87
       },
       "featureReviews": [],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/reference.png",
+      "referenceScreenshot": "/repo/scratch/municipal-wheelie-bin/reference.png",
       "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/beauty-315.png",
       "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/cmp.png",
       "cameraView": "",
@@ -1128,20 +1207,20 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T18:15:35.751556+00:00",
+      "timestamp": "2026-09-02T17:41:58.005669+00:00",
       "passId": "lighting-pass",
-      "estimatedFidelity": 0.83,
-      "aiVisionScore": 0.83,
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.89,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.87
       },
       "featureReviews": [],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/reference.png",
+      "referenceScreenshot": "/repo/scratch/municipal-wheelie-bin/reference.png",
       "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/beauty-315.png",
       "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/cmp.png",
       "cameraView": "",
@@ -1149,30 +1228,30 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T18:15:35.832007+00:00",
+      "timestamp": "2026-09-02T17:41:58.085109+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.94,
       "aiVisionScore": 0.94,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.89,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.87
       },
       "featureReviews": [
         {
           "id": "lid-and-hinge",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.91,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Lid as a one-instance InstancedMesh: slab 0.59 x 0.03 x 0.74 at 1.005 m, raised panel to 1.07 m, hinge barrel along X at z -0.345; lid-hinge pivot at (0, 1.015, -0.345) axis X.",
-          "notes": ""
+          "evidence": "Lid slab over the rim with a raised centre panel, four vent slots, and the rounded grip HOOD across the rear rising to the declared 1.07 with a grip channel under its lip; hinge barrel and two body lugs on the rear top edge; lid-hinge pivot about X there.",
+          "notes": "The hood is a frustum, not the plate's rounded shell; the lid's rounded plan corners are not authored."
         }
       ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/reference.png",
+      "referenceScreenshot": "/repo/scratch/municipal-wheelie-bin/reference.png",
       "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/beauty-315.png",
       "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/cmp.png",
       "cameraView": "",
@@ -1180,48 +1259,48 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T18:15:35.912646+00:00",
+      "timestamp": "2026-09-02T17:41:58.164992+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.87,
-      "aiVisionScore": 0.87,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.89,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.87
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.89,
+          "score": 0.92,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.59 x 1.07 x 0.745 m; band table: mean |delta width| 0.0626 (width bands 3-6 within 0.06; the proxy's lid is 10% wider than the body), |delta depth| 0.0801 (the declared 0.73 m of a 240 L bin over the proxy's hallucinated 0.53 m rear).",
-          "notes": ""
+          "evidence": "Envelope 0.58 x 1.07 x 0.62 m at the CORRECTED depth. The plate re-read as the REAR-left three-quarter (wheels at both feet of the narrow face, hinge ears along its top): the body is near-vertical (584 -> 507 px over 0.58 m at 828 px/m), stands 0.04 m off the ground, and its rear corners are wheel WELLS for 0.21 m wheels. Band table at 0.62: mean |delta width| 0.028, |delta depth| 0.017, body bands 3-7 within 0.03 H on both axes, no band flagged; the first v2 build at the list-time 0.73 m failed the turntable at 90 and 270 with ratios 1.14, which is a proxy depth of 0.64, and a trial at 0.54 under-read every depth band by 0.06-0.10 H.",
+          "notes": "The remaining residual is band 8 at -0.10 H: the proxy's rim flare with its sideways hinge ears spans 0.70 m where the build's 0.66 flare and 0.05 ears trim to 0.58 in the percentile window."
         },
         {
           "id": "lid-and-hinge",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.91,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Lid as a one-instance InstancedMesh: slab 0.59 x 0.03 x 0.74 at 1.005 m, raised panel to 1.07 m, hinge barrel along X at z -0.345; lid-hinge pivot at (0, 1.015, -0.345) axis X.",
-          "notes": ""
+          "evidence": "Lid slab over the rim with a raised centre panel, four vent slots, and the rounded grip HOOD across the rear rising to the declared 1.07 with a grip channel under its lip; hinge barrel and two body lugs on the rear top edge; lid-hinge pivot about X there.",
+          "notes": "The hood is a frustum, not the plate's rounded shell; the lid's rounded plan corners are not authored."
         },
         {
           "id": "wheels-and-comb",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.91,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Wheels r 0.11 at x +-0.245, z -0.25 inside the footprint, #565656 (luma 86 vs measured 54); comb 0.50 x 0.06 x 0.05 under the front rim.",
-          "notes": ""
+          "evidence": "Two r 0.105 x 0.055 wheels at x +-0.235 sunk in corner wells cut from the lower body (the first build hung r 0.11 wheels outside a tapered bucket), hub discs r 0.062, axle through the wells; comb under the unseen front rim to the standard; latch clip near the rear top of the side and a recessed panel on the rear face.",
+          "notes": "Hubs are plain discs, not the plate's five-spoke rims; tyres at #1a1a18, darker than the plate's #363636, because the gate reads a neutral in its 34..82 window as a hole."
         }
       ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/reference.png",
+      "referenceScreenshot": "/repo/scratch/municipal-wheelie-bin/reference.png",
       "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/beauty-315.png",
       "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/cmp.png",
       "cameraView": "",
@@ -1231,31 +1310,31 @@
   ],
   "reviewHistory": [
     {
-      "timestamp": "2026-08-27T18:15:35.344420+00:00",
+      "timestamp": "2026-09-02T17:41:57.273687+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.89,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.87
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.89,
+          "score": 0.92,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.59 x 1.07 x 0.745 m; band table: mean |delta width| 0.0626 (width bands 3-6 within 0.06; the proxy's lid is 10% wider than the body), |delta depth| 0.0801 (the declared 0.73 m of a 240 L bin over the proxy's hallucinated 0.53 m rear).",
-          "notes": ""
+          "evidence": "Envelope 0.58 x 1.07 x 0.62 m at the CORRECTED depth. The plate re-read as the REAR-left three-quarter (wheels at both feet of the narrow face, hinge ears along its top): the body is near-vertical (584 -> 507 px over 0.58 m at 828 px/m), stands 0.04 m off the ground, and its rear corners are wheel WELLS for 0.21 m wheels. Band table at 0.62: mean |delta width| 0.028, |delta depth| 0.017, body bands 3-7 within 0.03 H on both axes, no band flagged; the first v2 build at the list-time 0.73 m failed the turntable at 90 and 270 with ratios 1.14, which is a proxy depth of 0.64, and a trial at 0.54 under-read every depth band by 0.06-0.10 H.",
+          "notes": "The remaining residual is band 8 at -0.10 H: the proxy's rim flare with its sideways hinge ears spans 0.70 m where the build's 0.66 flare and 0.05 ears trim to 0.58 in the percentile window."
         }
       ],
       "action": "continue",
-      "summary": "Blockout: one component plus one instanced lid at 2 draw calls of 2; frustum body from the proxy occupancy rows.",
+      "summary": "Blockout: one component and one lid instance at 2 draw calls of 2; near-vertical body with wheel wells, lid with hood.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1263,7 +1342,7 @@
       "evidence": [],
       "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/clay/clay-315.png",
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/reference.png",
+        "referenceScreenshot": "/repo/scratch/municipal-wheelie-bin/reference.png",
         "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/beauty-315.png",
         "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/cmp.png",
         "cameraView": "",
@@ -1272,38 +1351,86 @@
       }
     },
     {
-      "timestamp": "2026-08-27T18:15:35.424935+00:00",
+      "timestamp": "2026-09-02T17:41:57.355893+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.89,
-      "aiVisionScore": 0.89,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Rebuild from 0.87: the plate re-read as the rear three-quarter; the strongly tapered 0.46 -> 0.56 bucket replaced by a 0.525 -> 0.572 body over lower boxes whose rear corners are cut away as wheel wells; body raised to 0.04 m off the ground.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/repo/scratch/municipal-wheelie-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-02T17:41:57.439108+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "DEPTH CORRECTED 0.73 -> 0.62 m on the asset after the 0.73 build failed the turntable silhouette gate at 90 and 270 (ratios 1.14 = a proxy depth of 0.64) and the proxy band table read 0.59-0.62 m along its own depth axis; a 0.54 trial under-read every depth band. Rim flare 0.66 wide with sideways hinge ears added from the proxy's 0.70 m top band and the plate's corner lugs.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/repo/scratch/municipal-wheelie-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-02T17:41:57.522678+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.89,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.87
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.89,
+          "score": 0.92,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.59 x 1.07 x 0.745 m; band table: mean |delta width| 0.0626 (width bands 3-6 within 0.06; the proxy's lid is 10% wider than the body), |delta depth| 0.0801 (the declared 0.73 m of a 240 L bin over the proxy's hallucinated 0.53 m rear).",
-          "notes": ""
+          "evidence": "Envelope 0.58 x 1.07 x 0.62 m at the CORRECTED depth. The plate re-read as the REAR-left three-quarter (wheels at both feet of the narrow face, hinge ears along its top): the body is near-vertical (584 -> 507 px over 0.58 m at 828 px/m), stands 0.04 m off the ground, and its rear corners are wheel WELLS for 0.21 m wheels. Band table at 0.62: mean |delta width| 0.028, |delta depth| 0.017, body bands 3-7 within 0.03 H on both axes, no band flagged; the first v2 build at the list-time 0.73 m failed the turntable at 90 and 270 with ratios 1.14, which is a proxy depth of 0.64, and a trial at 0.54 under-read every depth band by 0.06-0.10 H.",
+          "notes": "The remaining residual is band 8 at -0.10 H: the proxy's rim flare with its sideways hinge ears spans 0.70 m where the build's 0.66 flare and 0.05 ears trim to 0.58 in the percentile window."
         }
       ],
       "action": "continue",
-      "summary": "Structural pass: rim raised to 0.98 m and the lid to 1.07 m after the first render topped out at 0.974 (the instanced set lacked frusta); wheels moved inside the declared footprint.",
+      "summary": "Structural pass: envelope exact at the corrected 0.62 m depth (turntable 1.000 at every azimuth), body width from the proxy occupancy, wells and wheel size from the plate scan, hinge on the rear top edge.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/reference.png",
+        "referenceScreenshot": "/repo/scratch/municipal-wheelie-bin/reference.png",
         "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/beauty-315.png",
         "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/cmp.png",
         "cameraView": "",
@@ -1312,38 +1439,62 @@
       }
     },
     {
-      "timestamp": "2026-08-27T18:15:35.509248+00:00",
+      "timestamp": "2026-09-02T17:41:57.603044+00:00",
       "passId": "form-refinement",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Grip hood added across the rear of the lid with a grip channel and vent slots; hinge lugs on the body; latch clip; recessed rear panel; wheels r 0.105 in the wells with r 0.062 hubs.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/repo/scratch/municipal-wheelie-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-02T17:41:57.682513+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.89,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.87
       },
       "featureReviews": [
         {
           "id": "lid-and-hinge",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.91,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Lid as a one-instance InstancedMesh: slab 0.59 x 0.03 x 0.74 at 1.005 m, raised panel to 1.07 m, hinge barrel along X at z -0.345; lid-hinge pivot at (0, 1.015, -0.345) axis X.",
-          "notes": ""
+          "evidence": "Lid slab over the rim with a raised centre panel, four vent slots, and the rounded grip HOOD across the rear rising to the declared 1.07 with a grip channel under its lip; hinge barrel and two body lugs on the rear top edge; lid-hinge pivot about X there.",
+          "notes": "The hood is a frustum, not the plate's rounded shell; the lid's rounded plan corners are not authored."
         }
       ],
       "action": "continue",
-      "summary": "Form refinement: comb, ribs tilted to the flank, axle, latch, hubs.",
+      "summary": "Form refinement: grip hood, raised panel, slots, hinge lugs and barrel, latch clip, recessed rear panel, wheels sunk in wells with hub discs.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/reference.png",
+        "referenceScreenshot": "/repo/scratch/municipal-wheelie-bin/reference.png",
         "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/beauty-315.png",
         "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/cmp.png",
         "cameraView": "",
@@ -1352,38 +1503,62 @@
       }
     },
     {
-      "timestamp": "2026-08-27T18:15:35.591021+00:00",
+      "timestamp": "2026-09-02T17:41:57.763122+00:00",
       "passId": "material-pass",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Tones re-measured on the plate: body #4f8562 (lit rear #548d68), lid #5c9470 (#83ad92 in sky light), rib crowns #5a9068; tyres, hub, axle and latch taken to #1a1a18 after #4a4a4a read as a 4,300 px hole inside the well at 90/270 and as backdrop at the feet at 180 (ratio 0.951); the gate now passes 1.000/1.033/0.963/1.034 with no hole; grime tile mapped once over the body height.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/repo/scratch/municipal-wheelie-bin/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-02T17:41:57.842673+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.89,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.87
       },
       "featureReviews": [
         {
           "id": "wheels-and-comb",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.91,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Wheels r 0.11 at x +-0.245, z -0.25 inside the footprint, #565656 (luma 86 vs measured 54); comb 0.50 x 0.06 x 0.05 under the front rim.",
-          "notes": ""
+          "evidence": "Two r 0.105 x 0.055 wheels at x +-0.235 sunk in corner wells cut from the lower body (the first build hung r 0.11 wheels outside a tapered bucket), hub discs r 0.062, axle through the wells; comb under the unseen front rim to the standard; latch clip near the rear top of the side and a recessed panel on the rear face.",
+          "notes": "Hubs are plain discs, not the plate's five-spoke rims; tyres at #1a1a18, darker than the plate's #363636, because the gate reads a neutral in its 34..82 window as a hole."
         }
       ],
       "action": "continue",
-      "summary": "Material pass: 1 material at PBR confidence 0.802-0.86; green, lid, ribs and wheels as vertex colours; wheels lifted above the hole band.",
+      "summary": "Material pass: one material, every tone a vertex colour re-measured on the plate; tyres and hubs from the wheel crop.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/reference.png",
+        "referenceScreenshot": "/repo/scratch/municipal-wheelie-bin/reference.png",
         "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/beauty-315.png",
         "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/cmp.png",
         "cameraView": "",
@@ -1392,28 +1567,28 @@
       }
     },
     {
-      "timestamp": "2026-08-27T18:15:35.671235+00:00",
+      "timestamp": "2026-09-02T17:41:57.921404+00:00",
       "passId": "surface-pass",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.89,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.87
       },
       "featureReviews": [],
       "action": "continue",
-      "summary": "Surface pass: grime canvas lightened after the first render read as heavy dark blotches.",
+      "summary": "Surface pass: 256 px grime canvas landing once over the body; rib crowns lighter so the ribs read at prop distance.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/reference.png",
+        "referenceScreenshot": "/repo/scratch/municipal-wheelie-bin/reference.png",
         "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/beauty-315.png",
         "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/cmp.png",
         "cameraView": "",
@@ -1422,28 +1597,28 @@
       }
     },
     {
-      "timestamp": "2026-08-27T18:15:35.751556+00:00",
+      "timestamp": "2026-09-02T17:41:58.005669+00:00",
       "passId": "lighting-pass",
-      "estimatedFidelity": 0.83,
-      "aiVisionScore": 0.83,
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.89,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.87
       },
       "featureReviews": [],
       "action": "continue",
-      "summary": "Lighting pass: no rim light and no contact shadow in the plate; both recorded absent. Exposure 1.0, ACES filmic.",
+      "summary": "Lighting pass: no rim light and no contact shadow in the plate; both recorded absent.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/reference.png",
+        "referenceScreenshot": "/repo/scratch/municipal-wheelie-bin/reference.png",
         "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/beauty-315.png",
         "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/cmp.png",
         "cameraView": "",
@@ -1452,38 +1627,38 @@
       }
     },
     {
-      "timestamp": "2026-08-27T18:15:35.832007+00:00",
+      "timestamp": "2026-09-02T17:41:58.085109+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.94,
       "aiVisionScore": 0.94,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.89,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.87
       },
       "featureReviews": [
         {
           "id": "lid-and-hinge",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.91,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Lid as a one-instance InstancedMesh: slab 0.59 x 0.03 x 0.74 at 1.005 m, raised panel to 1.07 m, hinge barrel along X at z -0.345; lid-hinge pivot at (0, 1.015, -0.345) axis X.",
-          "notes": ""
+          "evidence": "Lid slab over the rim with a raised centre panel, four vent slots, and the rounded grip HOOD across the rear rising to the declared 1.07 with a grip channel under its lip; hinge barrel and two body lugs on the rear top edge; lid-hinge pivot about X there.",
+          "notes": "The hood is a frustum, not the plate's rounded shell; the lid's rounded plan corners are not authored."
         }
       ],
       "action": "continue",
-      "summary": "Interaction pass: ONE root pivot plus lid-hinge, ZERO sockets, one BOX collider on the root, no destruction groups.",
+      "summary": "Interaction pass: ONE root pivot plus lid-hinge on the lid instance, ZERO sockets, one box collider on the root, no destruction groups.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/reference.png",
+        "referenceScreenshot": "/repo/scratch/municipal-wheelie-bin/reference.png",
         "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/beauty-315.png",
         "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/cmp.png",
         "cameraView": "",
@@ -1492,56 +1667,56 @@
       }
     },
     {
-      "timestamp": "2026-08-27T18:15:35.912646+00:00",
+      "timestamp": "2026-09-02T17:41:58.164992+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.87,
-      "aiVisionScore": 0.87,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.89,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.84,
-        "lightingCamera": 0.83
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.87
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.89,
+          "score": 0.92,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.59 x 1.07 x 0.745 m; band table: mean |delta width| 0.0626 (width bands 3-6 within 0.06; the proxy's lid is 10% wider than the body), |delta depth| 0.0801 (the declared 0.73 m of a 240 L bin over the proxy's hallucinated 0.53 m rear).",
-          "notes": ""
+          "evidence": "Envelope 0.58 x 1.07 x 0.62 m at the CORRECTED depth. The plate re-read as the REAR-left three-quarter (wheels at both feet of the narrow face, hinge ears along its top): the body is near-vertical (584 -> 507 px over 0.58 m at 828 px/m), stands 0.04 m off the ground, and its rear corners are wheel WELLS for 0.21 m wheels. Band table at 0.62: mean |delta width| 0.028, |delta depth| 0.017, body bands 3-7 within 0.03 H on both axes, no band flagged; the first v2 build at the list-time 0.73 m failed the turntable at 90 and 270 with ratios 1.14, which is a proxy depth of 0.64, and a trial at 0.54 under-read every depth band by 0.06-0.10 H.",
+          "notes": "The remaining residual is band 8 at -0.10 H: the proxy's rim flare with its sideways hinge ears spans 0.70 m where the build's 0.66 flare and 0.05 ears trim to 0.58 in the percentile window."
         },
         {
           "id": "lid-and-hinge",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.91,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Lid as a one-instance InstancedMesh: slab 0.59 x 0.03 x 0.74 at 1.005 m, raised panel to 1.07 m, hinge barrel along X at z -0.345; lid-hinge pivot at (0, 1.015, -0.345) axis X.",
-          "notes": ""
+          "evidence": "Lid slab over the rim with a raised centre panel, four vent slots, and the rounded grip HOOD across the rear rising to the declared 1.07 with a grip channel under its lip; hinge barrel and two body lugs on the rear top edge; lid-hinge pivot about X there.",
+          "notes": "The hood is a frustum, not the plate's rounded shell; the lid's rounded plan corners are not authored."
         },
         {
           "id": "wheels-and-comb",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.91,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Wheels r 0.11 at x +-0.245, z -0.25 inside the footprint, #565656 (luma 86 vs measured 54); comb 0.50 x 0.06 x 0.05 under the front rim.",
-          "notes": ""
+          "evidence": "Two r 0.105 x 0.055 wheels at x +-0.235 sunk in corner wells cut from the lower body (the first build hung r 0.11 wheels outside a tapered bucket), hub discs r 0.062, axle through the wells; comb under the unseen front rim to the standard; latch clip near the rear top of the side and a recessed panel on the rear face.",
+          "notes": "Hubs are plain discs, not the plate's five-spoke rims; tyres at #1a1a18, darker than the plate's #363636, because the gate reads a neutral in its 34..82 window as a hole."
         }
       ],
       "action": "continue",
-      "summary": "FINAL VERDICT. Overall visual fidelity 0.87. 408/2,000 triangles, 2/2 draw calls, 1/2 materials, 2/4 unique geometries, one 256 px canvas.",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.92. Band table 0.028/0.017 H against the proxy. 600/2,000 triangles, 2/2 draw calls, 1/2 materials, 2/4 unique geometries, one 256 px canvas.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/reference.png",
+        "referenceScreenshot": "/repo/scratch/municipal-wheelie-bin/reference.png",
         "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/beauty-315.png",
         "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-wheelie-bin/review/cmp.png",
         "cameraView": "",
@@ -1593,10 +1768,10 @@
         "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
       },
       "triangles": {
-        "measured": 408,
+        "measured": 600,
         "budget": 2000,
-        "headroom": 1592,
-        "note": "408 of 2,000: one frustum, ten boxes, four 12-16 segment cylinders, and the lid's slab, frustum and barrel."
+        "headroom": 1400,
+        "note": "600 of 2,000: one frustum, sixteen boxes, four 14-20 segment cylinders, and the lid's slab, two frusta, five slots and barrel."
       }
     }
   },
@@ -1654,7 +1829,7 @@
   "proceduralStrategy": [
     {
       "id": "primitives",
-      "strategy": "Frusta for the tapered body and the lid panel; boxes for the rim, comb, ribs, axle, foot bar and latch; cylinders for the wheels, hubs and hinge barrel."
+      "strategy": "A frustum for the upper body and two for the lid panel and hood; boxes for the lower body, wells, rim, comb, ribs, recess, axle, lugs and latch; cylinders for the wheels, hubs and hinge barrel."
     },
     {
       "id": "instancing",
@@ -1675,14 +1850,20 @@
     {
       "id": "wheel-luma",
       "severity": "low",
-      "description": "The measured wheel black (luma 54) would be read as a hole where the wheel is enclosed by the body outline.",
-      "mitigation": "Shipped at #565656, luma 86; recorded on the material override."
+      "description": "The measured wheel black (luma 54) ships darker at luma 26: a neutral near the backdrop reads as a hole inside the well and as backdrop at the outline's feet.",
+      "mitigation": "Measured against the turntable gate: #4a4a4a failed at 90/180/270, #1a1a18 passes every azimuth with no hole; recorded on the material override."
     },
     {
-      "id": "proxy-depth",
+      "id": "depth-correction",
       "severity": "low",
-      "description": "The proxy reads the depth at 0.53 m against the declared 0.73 m.",
-      "mitigation": "The declared standard 240 L depth is the contract; the proxy's rear is hallucinated from one view and the delta is recorded in meshyNote."
+      "description": "The depth was corrected from the list-time 0.73 m to 0.62 m; the plate is a rear three-quarter and the front is unobserved, so the correction rests on the proxy and the turntable ratio rather than a direct plate measurement.",
+      "mitigation": "Two independent readings agree (turntable 0.73/1.14 = 0.64; proxy body 0.59-0.62 on its own axes) and a trial at 0.54 under-read every depth band; the arithmetic is on the asset notes."
+    },
+    {
+      "id": "front-unseen",
+      "severity": "low",
+      "description": "The plate is the rear three-quarter, so the front face and its comb are unobserved.",
+      "mitigation": "Built to the standard 240 L fitting; region-front carries confidence 0.80."
     }
   ],
   "localSpecSearch": {
@@ -1699,27 +1880,29 @@
     {
       "passed": false,
       "checks": {
-        "silhouetteIoU": 0.893,
-        "aspectRatioDelta": 0.0456,
-        "scaleDelta": 0.0563,
-        "bilateralSymmetryError": 0.048,
+        "silhouetteIoU": 0.7525,
+        "aspectRatioDelta": 0.0172,
+        "scaleDelta": 0.2514,
+        "bilateralSymmetryError": 0.0311,
         "colorDelta": {
           "checked": 1,
-          "maxDeltaE": 8.02,
+          "maxDeltaE": 5.95,
           "perComponent": [
             {
               "componentId": null,
-              "deltaE": 8.02
+              "deltaE": 5.95
             }
           ],
           "gated": false
         }
       },
       "failures": [
+        "silhouette IoU 0.752 is below threshold 0.85",
+        "scale delta 0.251 exceeds threshold 0.08",
         "blockout requires --map-stripped-render evidence"
       ],
       "maskWarnings": [],
-      "renderHash": "bfa8b8ea2b1beee3",
+      "renderHash": "0fbe0e1efc95ba97",
       "passId": "blockout"
     }
   ]

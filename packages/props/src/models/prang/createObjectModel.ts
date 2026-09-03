@@ -19,14 +19,6 @@ import * as THREE from 'three';
  */
 
 export type ProceduralModelOptions = {
-  /**
-   * Where this prop's shipped files live, with a trailing slash.
-   *
-   * The maps are recorded as bare filenames because the bundle is EVALUATED
-   * rather than imported: it has no import.meta and no currentScript, so it
-   * cannot see its own URL. Every host derives this from the module URL.
-   */
-  baseUrl?: string;
   wireframe?: boolean;
   castShadow?: boolean;
   receiveShadow?: boolean;
@@ -51,7 +43,7 @@ const CONFIG = {
     "materials": [
       {
         "id": "stone",
-        "color": 13350822,
+        "color": 13483437,
         "roughness": 0.94,
         "metalness": 0,
         "vertexColors": true
@@ -80,6 +72,12 @@ const CONFIG = {
         "roughness": 0.34,
         "metalness": 0.32,
         "envMapIntensity": 1.2
+      },
+      {
+        "id": "stucco",
+        "color": 13616822,
+        "roughness": 0.8,
+        "metalness": 0
       }
     ],
     "geometry": {
@@ -92,12 +90,12 @@ const CONFIG = {
         [
           0.8,
           1.6,
-          4.15
+          4.05
         ],
         [
           1.6,
           2.45,
-          3.75
+          3.55
         ]
       ],
       "notch": {
@@ -118,20 +116,21 @@ const CONFIG = {
       "balustrade": {
         "y0": 2.45,
         "y1": 3.15,
-        "outer": 3.75,
+        "outer": 3.55,
         "thick": 0.3
       },
       "tower": {
         "y0": 2.45,
         "y1": 10.2,
-        "a": 2.2,
+        "a": 2.1,
         "r": 0.3
       },
       "pilaster": {
         "w": 0.18,
         "proud": 0.07,
         "y0": 2.65,
-        "y1": 10
+        "y1": 9.55,
+        "second": 0.34
       },
       "door": {
         "w": 1.35,
@@ -141,29 +140,43 @@ const CONFIG = {
         "sill": 0.2
       },
       "pediment": {
-        "w": 3,
-        "h": 2.2,
+        "w": 2.4,
+        "spring": 0.9,
+        "rise": 1.3,
         "depth": 0.16,
-        "y": 6.45
+        "y": 6.1
       },
       "tiers": {
         "y0": 10.2,
-        "y1": 16.2,
-        "count": 8,
-        "a0": 2.05,
-        "a1": 0.5,
-        "curve": 1.5,
-        "redent": 0.13,
-        "lip": 0.1
+        "y1": 15.2,
+        "count": 7,
+        "a0": 1.55,
+        "a1": 0.62,
+        "curve": 1.3,
+        "arch": {
+          "width": 1.05,
+          "height": 1.38,
+          "depth": 0.22,
+          "rim": 0.13,
+          "rimProud": 0.08,
+          "sink": 0.05
+        },
+        "bodyRow": {
+          "y": 9.55,
+          "h": 2.3,
+          "faceW": 3.3,
+          "depth": 0.08,
+          "rimProud": 0.06
+        }
       },
       "cap": {
-        "y0": 16,
-        "y1": 17.1,
-        "r": 0.6,
+        "y0": 15,
+        "y1": 15.9,
+        "r": 0.55,
         "seg": 24
       },
       "finial": {
-        "y0": 16.9,
+        "y0": 15.75,
         "y1": 18
       },
       "wear": {
@@ -190,9 +203,9 @@ const CONFIG = {
             0.75
           ],
           "jointTone": [
-            0.6,
-            0.6,
-            0.63
+            0.5,
+            0.5,
+            0.54
           ],
           "blockLo": 0.9,
           "blockHi": 1,
@@ -236,19 +249,19 @@ const CONFIG = {
             },
             {
               "tone": [
-                0.42,
-                0.5,
-                0.66
+                0.4,
+                0.48,
+                0.72
               ],
-              "w": 0.22
+              "w": 0.24
             },
             {
               "tone": [
-                0.46,
-                0.6,
-                0.5
+                0.44,
+                0.62,
+                0.48
               ],
-              "w": 0.18
+              "w": 0.2
             },
             {
               "tone": [
@@ -256,7 +269,7 @@ const CONFIG = {
                 0.76,
                 0.4
               ],
-              "w": 0.15
+              "w": 0.12
             },
             {
               "tone": [
@@ -264,7 +277,7 @@ const CONFIG = {
                 0.56,
                 0.42
               ],
-              "w": 0.1
+              "w": 0.09
             },
             {
               "tone": [
@@ -275,10 +288,10 @@ const CONFIG = {
               "w": 0.05
             }
           ],
-          "chipCount": 680,
+          "chipCount": 1400,
           "chipRad": [
-            3,
-            9
+            4,
+            13
           ]
         },
         "red": {
@@ -613,7 +626,7 @@ function hipRoof(hx: number, hz: number, ridgeHalfZ: number, y0: number, y1: num
  * distance a village skyline is read from -- a smooth green hemisphere reads as a water tank.
  */
 function ribbedDome(profile: number[][], ribs: number, amp: number, seg: number,
-                    valley?: number[]): THREE.BufferGeometry {
+                    valley?: number[], crest = 0.55): THREE.BufferGeometry {
   const tri: number[] = [];
   const col: number[] = [];
   // The ribs are not only a shape. On the mosque's domes the crests are pale and the valleys are
@@ -626,7 +639,9 @@ function ribbedDome(profile: number[][], ribs: number, amp: number, seg: number,
     // Raised to 0.55 rather than left linear. A cosine spends half its area near each extreme, and
     // that renders a dome that is pale overall where the plate's is green overall: the crest is a
     // narrow highlight on a real rib, not half of it. The exponent widens the valley.
-    const f = Math.pow((1 - Math.cos(ribs * ((j % seg) * Math.PI * 2 / seg))) / 2, 0.55);
+    // `crest` below 0.55 narrows the pale crest further: the mosque's plate at 3x shows the pale
+    // rib as about a quarter of the pitch, which is 0.35.
+    const f = Math.pow((1 - Math.cos(ribs * ((j % seg) * Math.PI * 2 / seg))) / 2, crest);
     return [1 + (valley[0] - 1) * f, 1 + (valley[1] - 1) * f, 1 + (valley[2] - 1) * f];
   };
   const push = (a: number[], b: number[], c: number[]) => tri.push(...a, ...b, ...c);
@@ -970,9 +985,13 @@ export function createPrangModel(options: ProceduralModelOptions = {}): THREE.Gr
     const py = (P.y0 + P.y1) / 2, ph = P.y1 - P.y0;
     // The re-entrant faces of the +X+Z corner: one at x = a-r looking +X, one at z = a-r looking +Z.
     const xf = T.a - T.r, zf = T.a - T.r, near = T.a - 2 * T.r;
+    // TWO strips on each re-entrant face: the plate's corners carry a group of red strips, not one,
+    // and the second stands P.second inboard of the first on the same face.
     const unit = mergeGeos([
       boxAt(xf + P.proud / 2, py, (near + zf) / 2, P.proud, ph, P.w),
+      boxAt(xf + P.proud / 2 - 0.01, py, (near + zf) / 2 - P.second, P.proud, ph - 0.10, P.w),
       boxAt((near + xf) / 2, py, zf + P.proud / 2, P.w, ph, P.proud),
+      boxAt((near + xf) / 2 - P.second, py, zf + P.proud / 2 - 0.01, P.w, ph - 0.10, P.proud),
     ]);
     boxUv(unit, W.red.tile);
     addInst('pilasters', 'Redent pilaster strips', unit, 'red', quad(0, 0));
@@ -995,7 +1014,8 @@ export function createPrangModel(options: ProceduralModelOptions = {}): THREE.Gr
     doorFrame.translate(0, D.y, face - D.depth + 0.16);
     doorFrame.computeVertexNormals();
 
-    const pedShape = archedPlate(PD.w, PD.h, PD.w / 2, PD.h - PD.w / 2);
+    const pedShape = pointedArchShape(PD.w, PD.spring, PD.rise, 0,
+      { w: PD.w - 0.44, spring: PD.spring - 0.10, apexRise: PD.rise - 0.30, sill: 0.22 });
     const ped = new THREE.ExtrudeGeometry(pedShape,
       { depth: PD.depth, bevelEnabled: false, curveSegments: 10 });
     ped.translate(0, PD.y, face - PD.depth + 0.09);
@@ -1013,28 +1033,69 @@ export function createPrangModel(options: ProceduralModelOptions = {}): THREE.Gr
   }
 
   /* ---------------------------------------------------------------- corn-cob tiers
-   * Seven receding redented slabs, MERGED into one component. The half-width follows a cosine
-   * raised to a power just above one, which is what makes the taper CONVEX -- the corn-cob bulge
-   * the registry notes name as this prop's identity. A linear interpolation gives a straight cone,
-   * and a straight cone is a different building. */
+   * Seven OCTAGONAL cores, each carrying a ring of eight arches -- one on every face of the octagon,
+   * so the corner arches sit at exactly the same radius as the face arches. The arches are 5% wider
+   * than the octagon's side, so neighbours interleave, and 38% taller than the tier, so each ring
+   * overlaps the tier above: that interleaved, overlapping ring is the plate's whole tier stack and
+   * the "corn-cob" the registry names. The half-width follows a cosine raised to a power above one,
+   * which keeps the profile CONVEX rather than a straight cone.
+   *
+   * Every arch is a FIELD (encrusted porcelain, merged with the cores) and a RIM (plain stucco,
+   * merged into its own component) -- two draw calls for 128 arches, because they are merged rather
+   * than instanced: an instanced unit would stretch one tile's chips across arches of very different
+   * sizes, and the chips are supposed to be 5-20 cm everywhere. */
   {
-    const T = G.tiers;
+    const T = G.tiers, A = T.arch;
     const step = (T.y1 - T.y0) / T.count;
-    const parts: THREE.BufferGeometry[] = [];
+    const fields: THREE.BufferGeometry[] = [], rims: THREE.BufferGeometry[] = [];
+    const octagon = (ap: number) => {
+      const s = new THREE.Shape(), rr = ap / Math.cos(Math.PI / 8);
+      for (let k = 0; k < 8; k++) {
+        const a = Math.PI / 8 + k * Math.PI / 4, x = rr * Math.sin(a), z = rr * Math.cos(a);
+        if (k === 0) s.moveTo(x, z); else s.lineTo(x, z);
+      }
+      s.closePath(); return s;
+    };
+    /** One arch: a round-headed plate w wide and h tall, extruded depth outward from a back
+     *  plane at radius, facing angle. With rim the plate is a border of that width instead. */
+    const arch = (w: number, h: number, depth: number, angle: number, radius: number, y: number, rim?: number) => {
+      const shape = archedPlate(w, h, w / 2, h - w / 2,
+        rim ? { r: w / 2 - rim, spring: h - w / 2, sill: rim } : undefined);
+      const g = new THREE.ExtrudeGeometry(shape, { depth, bevelEnabled: false, curveSegments: 9 });
+      g.translate(0, y, radius);
+      g.rotateY(angle);
+      g.computeVertexNormals();
+      return g;
+    };
+    const ring = (n: number, phase: number, w: number, h: number, radius: number, y: number, depth = A.depth, proud = A.rimProud) => {
+      for (let k = 0; k < n; k++) {
+        const ang = phase + k * Math.PI * 2 / n;
+        fields.push(arch(w, h, depth, ang, radius - A.sink, y));
+        // the rim's back sits 20 mm further in than the field's, so the two backs are not one plane
+        rims.push(arch(w, h + 0.02, depth + proud + 0.02, ang, radius - A.sink - 0.02, y, A.rim));
+      }
+    };
     for (let i = 0; i < T.count; i++) {
       const t = i / T.count;
       const a = T.a1 + (T.a0 - T.a1) * Math.pow(Math.cos(t * Math.PI / 2), T.curve);
       const y0 = T.y0 + i * step;
-      parts.push(extrudeSlab(redentedShape(a, a * T.redent), y0, T.y0 + (i + 1) * step));
-      // A projecting lip at the foot of each tier -- the ring band the plate shows at every step.
-      // It starts 0.02 m ABOVE the tier's own base rather than level with it: level, the lip's
-      // underside and the tier's underside would be the same plane facing the same way.
-      const la = a + T.lip;
-      parts.push(extrudeSlab(redentedShape(la, la * T.redent), y0 + 0.02, y0 + 0.16));
+      fields.push(extrudeSlab(octagon(a), y0, y0 + step));
+      const side = 2 * a * Math.tan(Math.PI / 8);
+      ring(8, 0, side * A.width, step * A.height, a, y0 + 0.05);
     }
-    const stack = mergeGeos(parts);
+    // The body-top row: four face arches over the pediments, SHALLOW (80 mm) because the band table
+    // puts the body top at the body's own width -- a deep row here read as a cornice. No corner
+    // arches: behind a 45-degree plate at the redented corner there is only 0.2 m of plan, and the
+    // rest of the arch floated as an ear past the body. Sills below the body top so the row
+    // overlaps the first tier the way every other ring overlaps the next.
+    const B = T.bodyRow, TB = G.tower;
+    ring(4, 0, B.faceW, B.h, TB.a, B.y, B.depth, B.rimProud);
+    const stack = mergeGeos(fields);
     boxUv(stack, W.porcelain.tile);
-    add('tiers', 'Corn-cob tiers', stack, 'porcelain');
+    add('tiers', 'Corn-cob tiers and arch fields', stack, 'porcelain');
+    const rimGeo = mergeGeos(rims);
+    boxUv(rimGeo, W.porcelain.tile);
+    add('arch-rims', 'Arch rims', rimGeo, 'stucco');
   }
 
   /* ---------------------------------------------------------------- cap
@@ -1061,11 +1122,16 @@ export function createPrangModel(options: ProceduralModelOptions = {}): THREE.Gr
   {
     const F = G.finial;
     const shaft = F.y0;
+    // 2.25 m from the cap to the tip: the band table reads the top tenth of the reference as
+    // 0.017 H wide, i.e. finial ALONE from 0.87 H up, and the plate shows a tall stem with a
+    // ball under the trident. The first build's finial was 1.1 m and overshot 18.00 by 0.21.
     const parts: THREE.BufferGeometry[] = [
-      cylAt(0, shaft + 0.10, 0, 0.11, 0.14, 0.20, 12),   // collar
-      cylAt(0, shaft + 0.34, 0, 0.05, 0.07, 0.30, 12),   // stem
-      boxAt(0, shaft + 0.50, 0, 0.40, 0.07, 0.07),       // cross bar the outer prongs spring from
-      cylAt(0, shaft + 0.90, 0, 0.008, 0.055, 0.82, 10), // tapered centre spike
+      cylAt(0, shaft + 0.10, 0, 0.12, 0.15, 0.20, 12),   // collar
+      cylAt(0, shaft + 0.60, 0, 0.05, 0.08, 0.84, 12),   // stem
+      cylAt(0, shaft + 1.08, 0, 0.12, 0.12, 0.20, 12),   // the ball
+      cylAt(0, shaft + 1.10, 0, 0.16, 0.16, 0.10, 12),
+      boxAt(0, shaft + 1.24, 0, 0.44, 0.07, 0.07),       // cross bar the outer prongs spring from
+      cylAt(0, shaft + 1.75, 0, 0.008, 0.055, 1.00, 10), // tapered centre spike, tip at 18.00
     ];
     // The two outer prongs CURL. In the plate they spring outward from the bar and hook back in at
     // the tip, and that curl is most of what identifies the mark as a trident at all -- two
@@ -1073,7 +1139,7 @@ export function createPrangModel(options: ProceduralModelOptions = {}): THREE.Gr
     // sampled along a sine, is the cheapest thing that keeps the hook.
     for (const sign of [-1, 1]) {
       const n = 5;
-      const at = (u: number) => [sign * (0.17 + 0.15 * Math.sin(u * Math.PI * 0.72)), shaft + 0.52 + 0.60 * u];
+      const at = (u: number) => [sign * (0.19 + 0.16 * Math.sin(u * Math.PI * 0.72)), shaft + 1.26 + 0.72 * u];
       for (let j = 0; j < n; j++) {
         const a = at(j / n), b = at((j + 1) / n);
         const dx = b[0] - a[0], dy = b[1] - a[1];
@@ -1281,7 +1347,7 @@ export function createPrangModel(options: ProceduralModelOptions = {}): THREE.Gr
         ctx.globalCompositeOperation = 'multiply';
         ctx.fillStyle = css(P.clean, 1); ctx.fillRect(0, 0, S, S);
         ctx.globalCompositeOperation = 'source-over';
-        cloud(ctx, r, S, wrapped, P.lichen, 30, 0.16, 0.95, 10);
+        cloud(ctx, r, S, wrapped, P.lichen, 14, 0.14, 0.70, 10);
         crust(ctx, r, S, wrapped, P.lichen, 60, 40, 0.04, 0.8);
         washes(ctx, r, S, wrapped, P.grime, 24, 0.7, 5);
         cloud(ctx, r, S, wrapped, P.grime, 6, 0.09, 0.4, 16);
@@ -1396,13 +1462,8 @@ export function createObjectModel(spec?: unknown, options: ProceduralModelOption
 }
 
 /**
- * The one-argument entry point: vibe3d's contract, and img2threejs's own.
- *
- * `createObjectModel` above keeps thaikit's historical (spec, options) shape so
- * the harness, the level editor and the Node-side gates carry on unchanged.
- * `spec` has never been passed by any caller -- it is inspection data that is
- * already baked into this module -- so this is the honest signature, and it is
- * what a vibe3d consumer installs and calls.
+ * vibe3d's one-argument entry: the same factory under the name a pack consumer installs and
+ * calls. `model.ts` beside this file re-exports it as the item's `createModel`.
  */
 export function createModel(options: ProceduralModelOptions = {}): THREE.Group {
   return createObjectModel(undefined, options);

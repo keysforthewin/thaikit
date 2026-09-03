@@ -9,7 +9,7 @@ import * as THREE from 'three';
  * instancing and the lathe helpers below are hand-rolled -- anything under three/examples/jsm is
  * a second import.
  *
- * Envelope 2 x 1.5 x 0.09 m, origin base-center, +Y up, +Z front, tiles post to post along X.
+ * Envelope 2 x 1.5 x 0.21 m, origin base-center, +Y up, +Z front, tiles post to post along X.
  * Budget (large): <=4000 triangles, <=4 draw calls, <=3 materials, <=6 unique geometries.
  *
  * This is one of thaikit's FENCE PANELS -- a post-and-rail structure that tiles post to post. The
@@ -20,14 +20,6 @@ import * as THREE from 'three';
  */
 
 export type ProceduralModelOptions = {
-  /**
-   * Where this prop's shipped files live, with a trailing slash.
-   *
-   * The maps are recorded as bare filenames because the bundle is EVALUATED
-   * rather than imported: it has no import.meta and no currentScript, so it
-   * cannot see its own URL. Every host derives this from the module URL.
-   */
-  baseUrl?: string;
   wireframe?: boolean;
   castShadow?: boolean;
   receiveShadow?: boolean;
@@ -48,18 +40,18 @@ const CONFIG = {
     "id": "bamboo-fence-panel",
     "name": "Bamboo Fence Panel",
     "exportName": "BambooFencePanel",
-    "envelope": "Envelope 2 x 1.5 x 0.09 m, origin base-center, +Y up, +Z front, tiles post to post along X.\n * Budget (large): <=4000 triangles, <=4 draw calls, <=3 materials, <=6 unique geometries.",
+    "envelope": "Envelope 2 x 1.5 x 0.21 m, origin base-center, +Y up, +Z front, tiles post to post along X.\n * Budget (large): <=4000 triangles, <=4 draw calls, <=3 materials, <=6 unique geometries.",
     "materials": [
       {
         "id": "bamboo",
-        "color": 13026238,
+        "color": 15130582,
         "roughness": 0.8,
         "metalness": 0,
         "vertexColors": true
       },
       {
         "id": "culm",
-        "color": 11447206,
+        "color": 12104620,
         "roughness": 0.78,
         "metalness": 0,
         "vertexColors": true
@@ -70,16 +62,17 @@ const CONFIG = {
         "material": "bamboo",
         "kind": "bamboo",
         "size": 512,
-        "strips": 28,
+        "strips": 16,
         "seed": 51,
-        "bump": 0.02
+        "bump": 0.035,
+        "crossings": 0
       },
       {
         "material": "culm",
         "kind": "culm",
         "size": 512,
         "seed": 17,
-        "bump": 0.015
+        "bump": 0.02
       }
     ],
     "geometry": {
@@ -88,19 +81,19 @@ const CONFIG = {
         "localCenter": [
           0,
           0.75,
-          0
+          0.04
         ],
         "halfExtents": [
           1,
           0.75,
-          0.045
+          0.105
         ],
         "notes": "Declared on the asset as box."
       },
       "components": [
         {
           "id": "frame",
-          "name": "Post, rails and lashings",
+          "name": "Post, rails, lath and lashings",
           "material": "culm",
           "uv": "culm",
           "uvScale": 0.6,
@@ -109,152 +102,356 @@ const CONFIG = {
             "localCenter": [
               0,
               0.75,
-              0
+              0.04
             ],
             "halfExtents": [
               1,
               0.75,
-              0.045
+              0.105
             ]
           },
           "cyls": [
             {
               "at": [
-                -0.943,
+                -0.927,
                 0.75,
                 0
               ],
-              "rt": 0.045,
-              "rb": 0.045,
+              "rt": 0.065,
+              "rb": 0.065,
               "h": 1.5,
-              "seg": 12,
+              "seg": 14,
+              "open": true,
               "hex": 16777215,
-              "vOff": 0.05
+              "vOff": 0.283
             },
             {
               "at": [
-                0.028500000000000025,
-                0.24,
-                0.03
+                0.0040000000000000036,
+                0.21,
+                0.08
               ],
-              "rt": 0.04,
-              "rb": 0.04,
-              "h": 1.943,
+              "rt": 0.06,
+              "rb": 0.06,
+              "h": 1.992,
               "seg": 12,
               "rz": 1.5707963267948966,
               "hex": 16777215,
-              "vOff": 0.37
+              "uvScale": 1,
+              "vOff": 0.847
             },
             {
               "at": [
-                0.028500000000000025,
-                1.32,
-                0.03
+                0.0040000000000000036,
+                1.3,
+                0.08
               ],
-              "rt": 0.04,
-              "rb": 0.04,
-              "h": 1.943,
+              "rt": 0.06,
+              "rb": 0.06,
+              "h": 1.992,
               "seg": 12,
               "rz": 1.5707963267948966,
               "hex": 16777215,
-              "vOff": 0.81
+              "uvScale": 1,
+              "vOff": 0.387
             },
             {
               "at": [
-                -0.943,
-                0.24,
+                0.06899999999999995,
+                1.212,
+                0.07
+              ],
+              "rt": 0.033,
+              "rb": 0.033,
+              "h": 1.862,
+              "seg": 10,
+              "rz": 1.5707963267948966,
+              "hex": 16777215,
+              "uvScale": 0.8,
+              "vOff": 0.62
+            }
+          ],
+          "lathes": [
+            {
+              "at": [
+                -0.927,
+                0,
                 0
               ],
-              "rt": 0.056999999999999995,
-              "rb": 0.056999999999999995,
-              "h": 0.07,
-              "seg": 12,
-              "hex": 5920592,
-              "vOff": 0.45
+              "pts": [
+                [
+                  0.065,
+                  1.5
+                ],
+                [
+                  0.054000000000000006,
+                  1.5
+                ]
+              ],
+              "seg": 14,
+              "hex": 16777215
             },
             {
               "at": [
-                -0.943,
-                1.32,
+                -0.927,
+                0,
                 0
               ],
-              "rt": 0.056999999999999995,
-              "rb": 0.056999999999999995,
-              "h": 0.07,
-              "seg": 12,
-              "hex": 5920592,
-              "vOff": 0.45
+              "pts": [
+                [
+                  0.054000000000000006,
+                  1.5
+                ],
+                [
+                  0.054000000000000006,
+                  1.43
+                ],
+                [
+                  0,
+                  1.43
+                ]
+              ],
+              "seg": 14,
+              "hex": 3815219
+            },
+            {
+              "at": [
+                -0.927,
+                0,
+                0
+              ],
+              "pts": [
+                [
+                  0,
+                  0
+                ],
+                [
+                  0.065,
+                  0
+                ]
+              ],
+              "seg": 14,
+              "hex": 16777215
+            }
+          ],
+          "tori": [
+            {
+              "at": [
+                -0.8440000000000001,
+                0.21,
+                0.08
+              ],
+              "r": 0.064,
+              "tube": 0.0045,
+              "ry": 1.5707963267948966,
+              "hex": 5920592
+            },
+            {
+              "at": [
+                -0.8320000000000001,
+                0.21,
+                0.08
+              ],
+              "r": 0.064,
+              "tube": 0.0045,
+              "ry": 1.5707963267948966,
+              "hex": 5920592
+            },
+            {
+              "at": [
+                -0.8200000000000001,
+                0.21,
+                0.08
+              ],
+              "r": 0.064,
+              "tube": 0.0045,
+              "ry": 1.5707963267948966,
+              "hex": 5920592
+            },
+            {
+              "at": [
+                -0.927,
+                0.29200000000000004,
+                0
+              ],
+              "r": 0.07100000000000001,
+              "tube": 0.0045,
+              "rx": 1.5707963267948966,
+              "hex": 5920592
+            },
+            {
+              "at": [
+                -0.927,
+                0.128,
+                0
+              ],
+              "r": 0.07100000000000001,
+              "tube": 0.0045,
+              "rx": 1.5707963267948966,
+              "hex": 5920592
+            },
+            {
+              "at": [
+                -0.927,
+                0.21,
+                0
+              ],
+              "r": 0.07300000000000001,
+              "tube": 0.0045,
+              "rx": 2.5207963267948967,
+              "hex": 5920592
+            },
+            {
+              "at": [
+                -0.927,
+                0.21,
+                0
+              ],
+              "r": 0.07300000000000001,
+              "tube": 0.0045,
+              "rx": 0.6207963267948966,
+              "hex": 5920592
+            },
+            {
+              "at": [
+                -0.8440000000000001,
+                1.3,
+                0.08
+              ],
+              "r": 0.064,
+              "tube": 0.0045,
+              "ry": 1.5707963267948966,
+              "hex": 5920592
+            },
+            {
+              "at": [
+                -0.8320000000000001,
+                1.3,
+                0.08
+              ],
+              "r": 0.064,
+              "tube": 0.0045,
+              "ry": 1.5707963267948966,
+              "hex": 5920592
+            },
+            {
+              "at": [
+                -0.8200000000000001,
+                1.3,
+                0.08
+              ],
+              "r": 0.064,
+              "tube": 0.0045,
+              "ry": 1.5707963267948966,
+              "hex": 5920592
+            },
+            {
+              "at": [
+                -0.927,
+                1.3820000000000001,
+                0
+              ],
+              "r": 0.07100000000000001,
+              "tube": 0.0045,
+              "rx": 1.5707963267948966,
+              "hex": 5920592
+            },
+            {
+              "at": [
+                -0.927,
+                1.218,
+                0
+              ],
+              "r": 0.07100000000000001,
+              "tube": 0.0045,
+              "rx": 1.5707963267948966,
+              "hex": 5920592
+            },
+            {
+              "at": [
+                -0.927,
+                1.3,
+                0
+              ],
+              "r": 0.07300000000000001,
+              "tube": 0.0045,
+              "rx": 2.5207963267948967,
+              "hex": 5920592
+            },
+            {
+              "at": [
+                -0.927,
+                1.3,
+                0
+              ],
+              "r": 0.07300000000000001,
+              "tube": 0.0045,
+              "rx": 0.6207963267948966,
+              "hex": 5920592
             }
           ]
         },
         {
           "id": "weave",
-          "name": "Woven split-bamboo panel",
+          "name": "Horizontal woven bands",
           "material": "bamboo",
           "uv": "panel-rot",
           "uvScale": 0.45,
-          "extrudes": [
-            {
-              "poly": [
-                [
-                  -0.8879999999999999,
-                  0.27999999999999997
-                ],
-                [
-                  0.99,
-                  0.27999999999999997
-                ],
-                [
-                  0.99,
-                  1.28
-                ],
-                [
-                  -0.8879999999999999,
-                  1.28
-                ]
-              ],
-              "holes": [
-                [
-                  [
-                    -0.52,
-                    0.62
-                  ],
-                  [
-                    -0.1,
-                    0.62
-                  ],
-                  [
-                    -0.1,
-                    0.98
-                  ],
-                  [
-                    -0.52,
-                    0.98
-                  ]
-                ],
-                [
-                  [
-                    0.26,
-                    0.62
-                  ],
-                  [
-                    0.68,
-                    0.62
-                  ],
-                  [
-                    0.68,
-                    0.98
-                  ],
-                  [
-                    0.26,
-                    0.98
-                  ]
-                ]
-              ],
-              "z0": -0.0125,
-              "z1": 0.0125,
-              "hex": 16777215
-            }
+          "boxes": [
+            [
+              16777215,
+              -0.5070000000000001,
+              1.0670000000000002,
+              0,
+              0.7,
+              0.2140000000000002,
+              0.03
+            ],
+            [
+              16777215,
+              0.009499999999999842,
+              1.0670000000000002,
+              0.003,
+              0.33299999999999996,
+              0.2140000000000002,
+              0.03
+            ],
+            [
+              16777215,
+              0.7569999999999998,
+              1.0670000000000002,
+              0,
+              0.46599999999999997,
+              0.2140000000000002,
+              0.03
+            ],
+            [
+              15723751,
+              -0.5070000000000001,
+              0.39,
+              0.003,
+              0.7,
+              0.24,
+              0.03
+            ],
+            [
+              16777215,
+              0.03799999999999992,
+              0.39,
+              0,
+              0.3900000000000001,
+              0.24,
+              0.03
+            ],
+            [
+              16777215,
+              0.6664999999999998,
+              0.39,
+              0.003,
+              0.647,
+              0.24,
+              0.03
+            ]
           ]
         },
         {
@@ -265,31 +462,58 @@ const CONFIG = {
           "uvScale": 0.45,
           "boxes": [
             [
-              14868184,
-              0.08,
-              0.8,
-              0,
-              0.36,
-              0.42,
-              0.031
+              16777215,
+              -0.7260000000000001,
+              0.735,
+              0.004,
+              0.262,
+              0.44999999999999996,
+              0.03
             ],
             [
-              14868184,
-              -0.708,
-              0.8,
-              0,
-              0.36,
-              0.42,
-              0.031
+              16777215,
+              -0.29100000000000004,
+              0.735,
+              0.004,
+              0.352,
+              0.44999999999999996,
+              0.03
             ],
             [
-              14868184,
-              0.835,
-              0.8,
-              0,
-              0.31,
-              0.42,
-              0.031
+              16777215,
+              0.25949999999999973,
+              0.8420000000000001,
+              0.006,
+              0.16700000000000004,
+              0.6640000000000001,
+              0.03
+            ],
+            [
+              16777215,
+              0.4334999999999999,
+              0.8420000000000001,
+              0.003,
+              0.18100000000000005,
+              0.6640000000000001,
+              0.03
+            ],
+            [
+              16777215,
+              0.8544999999999999,
+              0.735,
+              0.004,
+              0.2709999999999999,
+              0.44999999999999996,
+              0.03
+            ],
+            [
+              15723751,
+              0.2879999999999999,
+              0.39,
+              0.006,
+              0.10999999999999988,
+              0.24,
+              0.03
             ]
           ]
         }
@@ -1333,7 +1557,7 @@ function mouldClusters(ctx: CanvasRenderingContext2D, rnd: () => number, s: numb
  *  grain, lengthwise weathering patches, a soft dark joint against its neighbour, and a plain-weave
  *  crossing band a few times per tile that passes over every other strip. Mould speckle in
  *  clusters. A multiplier on the measured silver-grey; the reference weave crop is the evidence. */
-function bambooTile(size: number, strips: number, seed: number): THREE.CanvasTexture | null {
+function bambooTile(size: number, strips: number, seed: number, crossings = 3): THREE.CanvasTexture | null {
   return canvasTile(size, (ctx, s) => {
     const rnd = lcg(seed);
     ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, s, s);
@@ -1348,11 +1572,13 @@ function bambooTile(size: number, strips: number, seed: number): THREE.CanvasTex
     // crossing bands of the weave: three per tile at staggered stations, a strip wide, each passing
     // over a loose random half of the strips -- the plate shows a coarse weave, not a checkerboard
     const cross: number[][] = [];
-    for (let k = 0; k < 3; k++) cross.push([s * ((k + 0.2 + rnd() * 0.6) / 3), sw * (0.9 + rnd() * 0.4)]);
+    for (let k = 0; k < crossings; k++) cross.push([s * ((k + 0.2 + rnd() * 0.6) / Math.max(1, crossings)), sw * (0.9 + rnd() * 0.4)]);
     for (let b = 0; b < strips; b++) {
       const x0 = edges[b], x1 = edges[b + 1], swb = x1 - x0;
       // base tone: silver-grey to a darker weathered grey, a quarter with a warm cast, most near the top
-      const warm = rnd() < 0.25, t = 0.70 + Math.pow(rnd(), 0.6) * 0.30;
+      // the plate's strips run from near-white to a mid weathered grey (luma ~90..215 on a 128 backdrop),
+      // so the spread is 0.52..1.0 with a heavy pale tail, not the 0.70..1.0 of the first build
+      const warm = rnd() < 0.25, t = 0.44 + Math.pow(rnd(), 0.5) * 0.56;
       const r = Math.round(255 * t), g = Math.round(255 * (t - (warm ? 0.025 : 0.008))), bl = Math.round(255 * (t - (warm ? 0.07 : 0.025)));
       ctx.fillStyle = `rgb(${r},${g},${bl})`; ctx.fillRect(x0, 0, swb + 1, s);
       // the culm's round across the strip: shade toward both joints, a soft highlight off centre
@@ -1363,13 +1589,13 @@ function bambooTile(size: number, strips: number, seed: number): THREE.CanvasTex
       weatherPatches(ctx, rnd, s, x0, x1, 3, 0.12, 0.30);
       grainLines(ctx, rnd, x0 + 1, x1 - 1, 0, s, 14 + Math.floor(rnd() * 10), DARK, LIGHT, 0.30);
       // joint against the neighbour: a thin dark line with a one-pixel soft edge
-      ctx.fillStyle = 'rgba(40,34,28,0.55)'; ctx.fillRect(x0, 0, 1, s);
-      ctx.fillStyle = 'rgba(40,34,28,0.18)'; ctx.fillRect(x0 + 1, 0, 1, s);
+      ctx.fillStyle = 'rgba(40,34,28,0.85)'; ctx.fillRect(x0, 0, 1.5, s);
+      ctx.fillStyle = 'rgba(40,34,28,0.30)'; ctx.fillRect(x0 + 1.5, 0, 1.5, s);
       // an occasional node on a strip, never aligned with its neighbours: dark line under a pale ridge
       if (rnd() < 0.45) {
         const y = rnd() * s;
-        ctx.fillStyle = 'rgba(70,58,46,0.38)'; ctx.fillRect(x0, y, swb, 2);
-        ctx.fillStyle = 'rgba(255,255,255,0.20)'; ctx.fillRect(x0, y + 2, swb, 2);
+        ctx.fillStyle = 'rgba(70,58,46,0.34)'; ctx.fillRect(x0, y, swb, 2);
+        ctx.fillStyle = 'rgba(255,255,255,0.10)'; ctx.fillRect(x0, y + 2, swb, 1.5);
       }
       // plain weave: the crossing band passes OVER every other strip
       for (const [cy, cw] of cross) {
@@ -1387,7 +1613,7 @@ function bambooTile(size: number, strips: number, seed: number): THREE.CanvasTex
     }
     const spots: number[][] = [];
     for (let i = 0; i < 6; i++) spots.push([rnd() * s, rnd() * s]);
-    mouldClusters(ctx, rnd, s, spots, s * 0.08, s * 0.14, 60, 0.26);
+    mouldClusters(ctx, rnd, s, spots, s * 0.10, s * 0.16, 90, 0.40);
   });
 }
 
@@ -1435,7 +1661,10 @@ function culmTile(size: number, seed: number): THREE.CanvasTexture | null {
     const spots: number[][] = [];
     for (const y of nodes) for (let i = 0; i < 2; i++) spots.push([rnd() * s, y + s * (0.02 + rnd() * 0.05)]);
     for (let i = 0; i < 3; i++) spots.push([rnd() * s, rnd() * s]);
-    mouldClusters(ctx, rnd, s, spots, s * 0.10, s * 0.06, 90, 0.30);
+    // heavier than the first build: the plate's culms carry near-black mould sheets below the joints
+    // aMax 0.60: the core multiplies at ~0.46, which on the #b8b3ac envelope renders near luma 75 -- black
+    // enough to read as the plate's mould sheets, clear of the turntable gate's backdrop band at 58
+    mouldClusters(ctx, rnd, s, spots, s * 0.16, s * 0.10, 180, 0.60);
   });
 }
 
@@ -1591,10 +1820,19 @@ export function createBambooFencePanelModel(options: ProceduralModelOptions = {}
     for (const b of mirrorX((c.boxesMirrored ?? []) as number[][])) gs.push(tintGeo(rbox(b.slice(1)), b[0]));
     for (const t of (c.tubes ?? []) as any[]) gs.push(tube(t.pts, t.r, t.seg ?? 8, t.hex));
     for (const cy of (c.cyls ?? []) as any[]) {
-      const g = new THREE.CylinderGeometry(cy.rt, cy.rb, cy.h, cy.seg ?? 12);
-      if (c.uv === 'culm') culmUV(g, cy.rt, cy.h, c.uvScale ?? 1, cy.vOff ?? 0);   // around x along, before it is placed
+      // `open` drops both caps (a cut culm whose hollow is a lathe of its own); `uvScale` overrides
+      // the component's tile length for this one culm, so a rail's nodes sit further apart than a post's
+      const g = new THREE.CylinderGeometry(cy.rt, cy.rb, cy.h, cy.seg ?? 12, 1, !!cy.open);
+      if (c.uv === 'culm') culmUV(g, cy.rt, cy.h, cy.uvScale ?? c.uvScale ?? 1, cy.vOff ?? 0);   // around x along, before it is placed
       if (cy.rx) g.rotateX(cy.rx); if (cy.rz) g.rotateZ(cy.rz);
       g.translate(cy.at[0], cy.at[1], cy.at[2]); gs.push(tintGeo(g, cy.hex));
+    }
+    for (const t of (c.tori ?? []) as any[]) {
+      // A ring of cord: TorusGeometry lies in XY (axis Z); rx/ry/rz are applied in that order, so
+      // rx = PI/2 stands it around a vertical post and a further rz tilts it into a diagonal lash.
+      const g = new THREE.TorusGeometry(t.r, t.tube, t.tseg ?? 6, t.rseg ?? 14);
+      if (t.rx) g.rotateX(t.rx); if (t.ry) g.rotateY(t.ry); if (t.rz) g.rotateZ(t.rz);
+      g.translate(t.at[0], t.at[1], t.at[2]); gs.push(tintGeo(g, t.hex));
     }
     for (const l of (c.lathes ?? []) as any[]) {
       const g = lathe(l.pts, l.seg ?? 12); g.translate(l.at[0], l.at[1], l.at[2]); gs.push(tintGeo(g, l.hex));
@@ -1672,7 +1910,7 @@ export function createBambooFencePanelModel(options: ProceduralModelOptions = {}
     if (t.kind === 'corrugation') tex = corrugationTile(t.size ?? 512, t.pitch ?? 12, t.low ?? 0.7, t.seed ?? 3);
     if (t.kind === 'grime') tex = grimeTile(t.size ?? 512, t.seed ?? 11, t);
     if (t.kind === 'chainlink') tex = chainlinkTile(t.size ?? 256, t.wire ?? 0.09, t.seed ?? 4);
-    if (t.kind === 'bamboo') tex = bambooTile(t.size ?? 512, t.strips ?? 10, t.seed ?? 6);
+    if (t.kind === 'bamboo') tex = bambooTile(t.size ?? 512, t.strips ?? 10, t.seed ?? 6, t.crossings ?? 3);
     if (t.kind === 'culm') tex = culmTile(t.size ?? 512, t.seed ?? 9);
     if (t.kind === 'poster') tex = posterTile(t.size ?? 512, t.seed ?? 8, t.lines ?? []);
     bindTile(mat, tex, t.bump ?? 0);
@@ -1752,13 +1990,9 @@ export function createObjectModel(spec?: unknown, options: ProceduralModelOption
 }
 
 /**
- * The one-argument entry point: vibe3d's contract, and img2threejs's own.
- *
- * `createObjectModel` above keeps thaikit's historical (spec, options) shape so
- * the harness, the level editor and the Node-side gates carry on unchanged.
- * `spec` has never been passed by any caller -- it is inspection data that is
- * already baked into this module -- so this is the honest signature, and it is
- * what a vibe3d consumer installs and calls.
+ * vibe3d's entry: the one-argument factory the pack's `model.ts` re-exports. thaikit's own
+ * `createObjectModel(spec, options)` keeps its historical shape for the harness and the level
+ * editor; the spec is baked into this module, so this is the honest signature.
  */
 export function createModel(options: ProceduralModelOptions = {}): THREE.Group {
   return createObjectModel(undefined, options);

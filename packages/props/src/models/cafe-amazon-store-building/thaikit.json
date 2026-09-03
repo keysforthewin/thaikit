@@ -4,6 +4,7 @@
   "createdAt": "2026-08-25T01:23:54.874Z",
   "description": "",
   "destructionGroups": [],
+  "forkedFrom": null,
   "hidden": false,
   "id": "cafe-amazon-store-building",
   "image": {
@@ -37,24 +38,24 @@
   "maxUniqueGeometries": 16,
   "model": {
     "colliders": {
-      "coverage": 0.9729,
-      "derivedAt": "2026-08-28T13:22:10.148Z",
+      "coverage": 0.9967,
+      "derivedAt": "2026-09-03T02:18:24.594Z",
       "file": "packages/props/src/models/cafe-amazon-store-building/colliders.json",
-      "handTuned": false,
-      "ledgesPreserved": "3/4",
-      "maxLedgeError": 0.7763,
+      "handTuned": true,
+      "ledgesPreserved": "6/6",
+      "maxLedgeError": 0.931,
       "measurementSkipped": null,
-      "overshoot": 0.062,
-      "p95LedgeError": 0.7763,
-      "parts": 5
+      "overshoot": 0.0033,
+      "p95LedgeError": 0.049,
+      "parts": 8
     },
-    "drawCalls": 10,
+    "drawCalls": 11,
     "export": "createObjectModel",
-    "fileBytes": 479989,
-    "gpuBytesEstimate": 2640214,
+    "fileBytes": 145655,
+    "gpuBytesEstimate": 10140756,
     "maps": [],
-    "materials": 8,
-    "meshes": 10,
+    "materials": 7,
+    "meshes": 11,
     "quarantine": null,
     "reference": {
       "at": null,
@@ -66,80 +67,87 @@
       "seed": null
     },
     "review": {
-      "comparisonImage": "scratch/cafe-amazon-store-building/renders/cmp.png",
+      "comparisonImage": null,
       "corrections": {
         "maxTotal": 10,
         "perPass": 0,
         "total": 0
       },
-      "critique": "Final measured budgets, off the built model rather than estimated off the spec: 2,168 triangles / 16,000 (14%), 10 draw calls / 12, 8 materials / 8, 8 unique geometries / 16. The BINDING axis is MATERIALS at 8 of 8 with zero headroom - not triangles, which have 13,832 spare. That headroom was spent deliberately on geometry that beats texture (42 battens, a 20-segment fan recess per condenser) and must not be read as licence to split components, which would spend draw calls. Unique geometries measured 8 where the validator's len(components)+len(repetitionSystems) formula reads 10: three of the four clusters SHARE one unit box, each instance carrying its size in a per-instance matrix. Both counts are inside 16, so unlike the AIS sibling there is no caveat to argue - the asset-level override from 8 to 16 is exactly what bought that room. Time to first draw: 51 ms inside createObjectModel, because all eight materials declare textureless; at 1024 the eight procedural texture sets would have cost roughly 15 s of pixel-by-pixel canvas writing before the drawer could show anything. The single canvas this prop builds is the brand mark, assigned after material construction and unaffected by the declaration. No decimation and no LOD tiers were needed at 14% of the triangle ceiling.",
+      "critique": "FINAL VERDICT. Overall visual fidelity 0.92 -- not a pass self-score. 2200/16000 triangles, 11/12 draw calls, 7/8 materials, 11/16 unique geometries, 5 textures, factory ~110 ms. Plain glazing by brief; the mullion rhythm, door width, pilaster width, batten count, canopy top, condenser scale and deck tone each corrected against a measurement of the plate.",
       "decision": "continue",
       "featureReviews": [
         {
-          "id": "fascia-band-wrap",
-          "notes": "Band wraps the front-right corner and terminates on the side elevation at z=1.30, as the plate shows. Top sits under the coping.",
+          "evidence": "Envelope built at exactly 8.00 x 4.60 x 7.00 m against the declared 8 x 4.6 x 7: wall 7.44 m wide plus the canopy's 0.46 m -X overhang, canopy nose at z 3.45. Front and +X elevations rectified at 150 px/m (scratch/_ca/front_rect_grid.png, side_rect_grid.png); Meshy h/w 0.573 against the declared 0.575. check-coplanar clean at 0.001 m after two pairs the canopy's move out of the frame merge exposed (dado backing at x -3.50, corner return at z 3.06) were separated.",
+          "id": "overall-silhouette",
+          "notes": "Third build. Envelope unchanged from the second (0.91); the massing was already right. The proxy reads the depth 13% shallower than the module; the module is the kit's shared retail envelope and wins.",
+          "passed": true,
           "score": 0.92,
           "threshold": 0.85,
           "tier": "critical"
         },
         {
-          "id": "brand-sign",
-          "notes": "Position, proportion, tray edge and the light-green-on-dark-green wordmark are right. The roundel is a STYLISED canvas approximation -- white/orange ring, foliage, toucan with an orange beak -- not the registered artwork, which this pipeline has no vector for. Improved once from a much cruder first draft; still below its 0.85 threshold and reported as the one critical feature that does not clear.",
-          "score": 0.8,
+          "evidence": "Toucan badge (Nano Banana 2 front-on redraw of the plate's sign crop, sign/nb_roundel.png) now 1.05 m wide at world x -2.59, y 3.72 -- the rectified front measures it 0.48..1.55 m (1.07 x 0.97 m), the second build's 0.95 was 10% under -- and the 'Cafe Amazon' wordmark 2.79 m long with a 10 mm stroke on the Ubuntu Bold so it carries the plate's rounded heavy weight, baked into one 2048x320 strip on the fascia's #3D6644 (scratch/_ca/bake_sign.py). Front render (renders/beauty-000.png) shows badge and wordmark filling the band as the plate does.",
+          "id": "brand-fascia",
+          "notes": "The plate's wordmark slopes down to the right with the canopy line and the band bottom; that is the generated plate's projective inconsistency and the build sets it level.",
+          "passed": true,
+          "score": 0.93,
           "threshold": 0.85,
           "tier": "critical"
         },
         {
+          "evidence": "Deep green block over the right bay (y 2.2..4.5) wrapping +X as a 0.6 m return; and the pilaster between the left glazing and the corner bay is now 0.87 m wide (world 1.12..1.99): on the 2x zoom of the rectified front the left run's glass ends at 4.97 m and green fills 4.97..5.9 m. The second build had a 0.37 m pilaster there and ran the glass 0.5 m further. All six green boards sample one baked strip: one material, one draw call.",
+          "id": "green-corner",
+          "notes": "Corner block, return, pilasters and band read as one green (#3D6644) in the render.",
+          "passed": true,
+          "score": 0.92,
+          "threshold": 0.8,
+          "tier": "critical"
+        },
+        {
+          "evidence": "Layout re-read off a column-luma scan of the rectified front (rows 440..500, dark verticals at luma 12..27): door leaf 0.61..1.57 m -> 0.92 m wide on a hinge at world -3.02 (was 0.80 at -3.10), two mullions at 2.67 and 3.87 m -> world -1.02 and -0.10 giving panes of 1.00 / 0.92 / 1.22 m (the second build had three mullions plus a wide stile at a rhythm the plate does not have), corner window and return unchanged. The glass is PLAIN tinted glazing on the brief -- no interior image -- a flat cool blue-green gradient with a soft sheen (sign/bake_glass.py) held on chroma: rendered panes measure (67,86,89) sat 0.25 and (72,95,98) sat 0.27, and the turntable gate passed at all four azimuths with no holes (largest enclosed component 325 px, an edge).",
+          "id": "dark-shopfront",
+          "notes": "The second build projected the plate's own shopfront behind the glass; the owner rejected it -- a flat photograph on a flat pane slides against the built frames as the camera orbits. Rendered without it the frame rhythm is what carries the shopfront's identity, which is why the mullion count was worth correcting.",
+          "passed": true,
+          "score": 0.92,
+          "threshold": 0.8,
+          "tier": "critical"
+        },
+        {
+          "evidence": "23 batten courses (38 mm at 45.65 mm pitch) in three runs over a dark backing, where the plate's corner-return zoom (scratch/_ca dado crop) counts ~23 grooves over the 1.05 m; the second build's nine 95 mm courses read as planks. The canopy is a pale blue-grey slab (#8C989C; the plate's slab top samples (96,108,122)..(150,160,165)) with a 0.12 m timber edge board proud of its nose and -X end, leaving a centimetre of pale edge above and below as the plate shows -- the second build carried it as a dark slab under a 0.18 m board. 72 boxes, eight vertex tones, one draw call.",
           "id": "timber-dado",
-          "notes": "14 real batten courses with real 0.0166 m gaps over three runs, interrupted by the entrance and returning around the corner. Geometry, not texture, so it self-shadows at grazing angles.",
+          "notes": "Tones bracket the plate's lit (174,123,78) and shaded (82,68,55) timber.",
+          "passed": true,
+          "score": 0.92,
+          "threshold": 0.8,
+          "tier": "important"
+        },
+        {
+          "evidence": "Rectified +X elevation: one cream door 1.0 x 2.25 m at 4.0..5.0 m from the front corner. Built at z -2.10..-1.10, recessed 0.12 m in a reveal (shell boxes leave the pocket), the leaf in the wall material as the plate shows, with a near-black reveal frame and lever so it reads.",
+          "id": "side-fittings",
+          "notes": "Unchanged from the second build. Not mirrored onto the unobserved -X wall.",
+          "passed": true,
           "score": 0.88,
-          "threshold": 0.82,
-          "tier": "critical"
-        },
-        {
-          "id": "shopfront-glazing",
-          "notes": "Dark tinted field between the pilasters with slim near-black members. Reads as glass, not as a hole. Opaque by design -- there is a cream wall directly behind it.",
-          "score": 0.85,
-          "threshold": 0.82,
-          "tier": "critical"
-        },
-        {
-          "id": "shell-proportion",
-          "notes": "8.0 x 4.6 x 7.0 m. Meshy proxy independently gives h/w 0.573 against the declared 0.575. Coping slimmed and deck dropped after the first side-by-side showed the parapet reading as a thick white frame rather than an upstand.",
-          "score": 0.91,
-          "threshold": 0.88,
-          "tier": "critical"
-        },
-        {
-          "id": "rooftop-plant",
-          "notes": "Three identical units in a row, tops 0.19 m above the coping so they break the parapet line. Fan recess is a real square recess with ring and hub -- cavity shading, never albedo.",
-          "score": 0.84,
           "threshold": 0.75,
           "tier": "important"
         },
         {
-          "id": "canopy-cantilever",
-          "notes": "Slim slab projecting 0.55 m, overhanging the left corner, wrapping the right. Thinned 0.20 -> 0.14 after the side-by-side. Its TOP is timber where the plate shows dark grey-blue: the visible cost of the 8-of-8 material ceiling, and invisible from an eye-level camera.",
-          "score": 0.78,
-          "threshold": 0.75,
-          "tier": "important"
-        },
-        {
-          "id": "side-elevation",
-          "notes": "Unbroken cream render with one service door and the coping return. No invented openings.",
-          "score": 0.86,
-          "threshold": 0.72,
+          "evidence": "Three instanced split condensers at a uniform 1.3 scale of the MK unit (1.17 x 0.86 x 0.44 casing, tops 0.92 m over the deck) at x -2.62 / -1.00 / 0.62 with 0.45 m gaps along the rear upstand: the plate's roof zoom shows units about 2.5x the upstand's height and wider than tall, and the 0.66 m unit of the second build read as toy-sized. The deck is authored #868280 to render at 0.87 of the cream wall (measured 156 vs 179 on the hero) against the plate's 0.84 (183 vs 217); the second build's near-white deck rendered at 0.94.",
+          "id": "roof-plant",
+          "notes": "Units carry the MK geometry (dark front plate, fan disc behind guard bars, side louvre); the plate's grille is a larger dark square, a difference at prop distance only.",
+          "passed": true,
+          "score": 0.9,
+          "threshold": 0.8,
           "tier": "important"
         }
       ],
-      "fidelity": 0.86,
-      "judgedAt": "2026-08-25T16:42:58.625Z",
+      "fidelity": 0.92,
+      "judgedAt": "2026-09-03T02:25:58.331Z",
       "layerScores": {
-        "componentStructure": 0.94,
-        "formDetail": 0.85,
-        "lightingCamera": 0.76,
-        "materialSurface": 0.78,
-        "silhouetteProportion": 0.91
+        "componentStructure": 0.93,
+        "formDetail": 0.92,
+        "lightingCamera": 0.86,
+        "materialSurface": 0.92,
+        "silhouetteProportion": 0.92
       },
       "passed": true,
       "passesComplete": [
@@ -152,13 +160,14 @@
         "interaction-pass",
         "optimization-pass"
       ],
-      "score": 86,
+      "score": 92,
       "threshold": 70
     },
     "runtime": {
       "destructionGroups": [],
       "nodes": 11,
       "pivots": [
+        "door-hinge",
         "root"
       ],
       "sockets": []
@@ -167,11 +176,11 @@
     "spec": "packages/props/src/models/cafe-amazon-store-building/object-sculpt-spec.json",
     "state": "scratch/cafe-amazon-store-building/.img2threejs/state.json",
     "status": "done",
-    "textures": 3,
+    "textures": 5,
     "thumb": "packages/props/src/models/cafe-amazon-store-building/thumb.webp",
-    "triangles": 2168,
-    "uniqueGeometries": 8,
-    "vertices": 6504
+    "triangles": 2200,
+    "uniqueGeometries": 11,
+    "vertices": 6552
   },
   "name": "Cafe Amazon Store Building",
   "nameTh": "คาเฟ่ อเมซอน",
@@ -215,5 +224,5 @@
     "hero"
   ],
   "targetTriangles": null,
-  "updatedAt": "2026-08-28T13:22:10.181Z"
+  "updatedAt": "2026-09-03T02:26:02.438Z"
 }

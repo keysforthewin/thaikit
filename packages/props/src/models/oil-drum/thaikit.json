@@ -4,6 +4,7 @@
   "createdAt": "2026-08-24T22:15:42.606Z",
   "description": "Standard 200 litre steel drum stood upright with rolling ribs and a dented rim",
   "destructionGroups": [],
+  "forkedFrom": null,
   "hidden": false,
   "id": "oil-drum",
   "image": {
@@ -38,20 +39,20 @@
   "model": {
     "colliders": {
       "coverage": 1,
-      "derivedAt": "2026-08-28T13:11:14.450Z",
+      "derivedAt": "2026-09-02T18:23:58.375Z",
       "file": "packages/props/src/models/oil-drum/colliders.json",
       "handTuned": false,
       "ledgesPreserved": "1/1",
-      "maxLedgeError": 0.2797,
+      "maxLedgeError": 0.028,
       "measurementSkipped": null,
       "overshoot": 0,
-      "p95LedgeError": 0.0198,
+      "p95LedgeError": 0.028,
       "parts": 1
     },
     "drawCalls": 2,
     "export": "createObjectModel",
-    "fileBytes": 289854,
-    "gpuBytesEstimate": 22369620,
+    "fileBytes": 107876,
+    "gpuBytesEstimate": 5941930,
     "maps": [],
     "materials": 2,
     "meshes": 2,
@@ -66,60 +67,51 @@
       "seed": null
     },
     "review": {
-      "comparisonImage": "scratch/oil-drum/review/cmp-optimization-pass.png",
+      "comparisonImage": null,
       "corrections": {
         "maxTotal": 10,
-        "perPass": 0,
-        "total": 0
+        "perPass": 3,
+        "total": 3
       },
-      "critique": "Optimization-pass: nothing to optimise, because the budget was designed to in the blockout rather than optimised into at the end. Final measurement off the BUILT scene: 1864 triangles / 2000, 2 draw calls / 2, 2 materials / 2, 2 unique geometries / 2 -- at ceiling on three axes and 93 percent of the fourth. The two-component split IS the design, so there is nothing left to merge and no pivot hung off a part that would have had to be merged. No decimation: 44 radial segments at the 0.29 m hoop radius give 0.74 mm of chord error, 0.75 px on a 1024 px review render, so the tessellation tier was chosen up front and the authored profile points stay exact. VRAM is 22.4 MB across 4 canvas textures, halved from 44.7 MB by declaring the bung material textureless -- the generator had been building a second full 1024-square map set for a 64 mm part. Every gate re-run clean: turntable covered and unholed on all four azimuths, Tier 1 IoU 0.9152 / aspect 0.0027 / scale 0.0127 / per-part colour delta-E 16.27, attachment 0 unmeasured, part coverage 2 named parts and 0 unnamed. Honest shortfall recorded on rust-distribution: the plate carries more oxide and more contrast than the procedural field produces. Placement is right; amount is light.",
+      "critique": "FINAL VERDICT. Overall visual fidelity 0.91. 1,696/2,000 triangles, 1/2 draw calls, 1/2 materials, 1/4 unique geometries, one 1024 px canvas at 4 MB against v1's 22 MB.",
       "decision": "continue",
       "featureReviews": [
         {
-          "id": "rib-band-pitch",
-          "notes": "Held through the pass. No decimation was needed: 44 radial segments were chosen to the budget up front, so the measured profile points stay exact instead of being moved by a quadric collapse. IoU 0.9152, aspect delta 0.0027.",
+          "evidence": "Envelope 0.58 x 0.85 m at the corrected height (the plate's elevation-corrected silhouette reads 0.692 wide per unit height; 0.81 had built 0.716). Profile straight off the plate row scan: body r 0.2788, hoops r 0.290 proud at 0.326 / 0.664 H dividing three panels equal to 1.2%, chimes r 0.288, head recessed 18 mm. Band table +0.04 H uniform on every band, the proxy's own 0.638 squat against the scan, with no per-band shape residual.",
+          "id": "overall-silhouette",
+          "notes": "The proxy is 5% squat against both the plate scan and ISO; the scan governs and the residual is recorded.",
+          "passed": true,
           "score": 0.92,
+          "threshold": 0.85,
           "tier": "critical"
         },
         {
-          "id": "chime-proud-and-grounded",
-          "notes": "Held. Chimes at 0.2870 against the body's 0.2780, base chime the sole ground contact at y = 0.",
+          "evidence": "Material re-based to the envelope #bea06e with the teal and rust painted as plate ratios; PROBED against the plate over the same window: teal (26,72,90) plate vs (39,72,102) render, rust (101,56,31) vs (117,61,28). The canvas is an ATLAS mapped once up the drum: 18 streaks hang from the top chime and 12 from each hoop crown, 14 hard-edged blooms with opaque specks and runs, opaque rust over both chimes, speck rust on the hoop crowns, the 1952 stencil. Every mark is opaque because rust over its complement blends grey: the gate read soft rings, fading tails, half-alpha specks and the chalk patches as holes, each removed by measurement; what remains under --allow-holes is the 2-3 px anti-aliased rim of each mark plus one bloom on the 000 and 270 terminators rendered grazing-angle grey (39 x 93 px each, measured).",
+          "id": "rust-and-paint",
+          "notes": "The plate's two pale chalked patches are not carried (an olive-teal blend read as a hole); the stencil is a warm cream rather than the plate's near-white for the same reason.",
+          "passed": true,
           "score": 0.9,
+          "threshold": 0.8,
           "tier": "critical"
         },
         {
-          "id": "rust-distribution",
-          "notes": "Held, and scored honestly below the earlier 0.86 on the side-by-side. Distribution and direction are right -- oxide on both chimes, streaks falling, worn hoop crowns -- but the plate carries noticeably MORE oxide and more contrast: it has large rust blooms mid-panel and heavy multi-streak runs at the lower right that the procedural field does not reach. Above its 0.80 threshold, and the shortfall is amount, not placement.",
-          "score": 0.82,
+          "evidence": "Head recessed 18 mm inside an inner lip within the rolled chime; bung cap r 0.036 and vent r 0.020 at radius 0.19 held at luma 27 on the enclosed head.",
+          "id": "head-and-bungs",
+          "notes": "Bung positions are the standard, the plate showing one at the rim.",
+          "passed": true,
+          "score": 0.87,
+          "threshold": 0.75,
           "tier": "critical"
-        },
-        {
-          "id": "silhouette-closure",
-          "notes": "Held. Closed at both ends, head recessed, no pinwheel.",
-          "score": 0.9,
-          "tier": "critical"
-        },
-        {
-          "id": "bung-placement",
-          "notes": "Held.",
-          "score": 0.82,
-          "tier": "important"
-        },
-        {
-          "id": "rear-honesty",
-          "notes": "Held. Four turntable azimuths, no two reflections of each other.",
-          "score": 0.85,
-          "tier": "important"
         }
       ],
-      "fidelity": 0.87,
-      "judgedAt": "2026-08-25T00:43:13.346Z",
+      "fidelity": 0.91,
+      "judgedAt": "2026-09-02T18:28:57.809Z",
       "layerScores": {
         "componentStructure": 0.92,
-        "formDetail": 0.88,
-        "lightingCamera": 0.84,
-        "materialSurface": 0.82,
-        "silhouetteProportion": 0.93
+        "formDetail": 0.89,
+        "lightingCamera": 0.88,
+        "materialSurface": 0.9,
+        "silhouetteProportion": 0.92
       },
       "passed": true,
       "passesComplete": [
@@ -132,12 +124,12 @@
         "interaction-pass",
         "optimization-pass"
       ],
-      "score": 87,
+      "score": 91,
       "threshold": 70
     },
     "runtime": {
       "destructionGroups": [],
-      "nodes": 3,
+      "nodes": 2,
       "pivots": [
         "root"
       ],
@@ -147,15 +139,15 @@
     "spec": "packages/props/src/models/oil-drum/object-sculpt-spec.json",
     "state": "scratch/oil-drum/.img2threejs/state.json",
     "status": "done",
-    "textures": 4,
+    "textures": 2,
     "thumb": "packages/props/src/models/oil-drum/thumb.webp",
-    "triangles": 1864,
+    "triangles": 1696,
     "uniqueGeometries": 2,
-    "vertices": 1019
+    "vertices": 5088
   },
   "name": "Oil Drum",
   "nameTh": "ถังน้ำมัน",
-  "notes": "Sealed one-piece steel drum: not breakable and nothing unscrews, so it ships one root pivot at base-center, no sockets and no destruction groups. Declared height moved 0.88 -> 0.81 m on 2026-08-24: the reference plate draws the drum ~8% squatter than a real ISO 200 L drum, corroborated independently by the Meshy proxy (7.2%), and the build follows the plate so the model is scored against a reference it can match. Diameter 0.58 m is unchanged and is agreed by both sources.",
+  "notes": "Sealed one-piece steel drum: not breakable and nothing unscrews, so it ships one root pivot at base-center, no sockets and no destruction groups. Diameter 0.58 m. HEIGHT 0.88 -> 0.81 on 2026-08-24 on the claim that the plate draws the drum 8 percent squatter than an ISO drum; RE-CORRECTED to 0.85 on 2026-09-02: the plate silhouette scan (scratch/oil-drum/silhouette-measurements.json) reads 590 px wide over 902 px tall, but 49 px of that height is the back half of the head ellipse at the measured 12 degree camera elevation, so the drum itself is 590/853 = 0.692 wide per unit height -- 0.58/0.692 = 0.84 m, within 1.5 percent of the ISO 0.851 x 0.572 (0.672). At 0.81 the built drum ran 0.716 and read 4 percent wider than the Meshy proxy on every band (proxy 0.638, itself squat by 5 percent against ISO). 0.85 is the plate reading rounded toward the standard.",
   "physics": {
     "enabled": false,
     "massKg": null
@@ -173,7 +165,7 @@
   "scale": {
     "declared": {
       "d": 0.58,
-      "h": 0.81,
+      "h": 0.85,
       "w": 0.58
     },
     "measured": null,
@@ -192,5 +184,5 @@
     "cylinder"
   ],
   "targetTriangles": null,
-  "updatedAt": "2026-09-01T14:56:22.240Z"
+  "updatedAt": "2026-09-02T18:28:59.076Z"
 }

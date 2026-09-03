@@ -38,7 +38,7 @@
     ],
     "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
   },
-  "sourceImage": "/home/mulligan/code/thaikit/assets/kilometre-stone/preview.jpg",
+  "sourceImage": "/home/mulligan/code/thaikit/scratch/kilometre-stone/reference.png",
   "referenceCamera": {
     "solved": false,
     "fovDegrees": 40.0,
@@ -55,221 +55,146 @@
     ],
     "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
   },
-  "suitability": "conditional",
+  "suitability": "pass",
   "scores": {
-    "object_isolation": 0,
-    "silhouette_readability": 0,
-    "depth_inference": 0,
-    "primitive_decomposition": 0,
-    "material_procedurality": 0,
-    "occlusion_risk": 0,
-    "interaction_fit": 0
+    "object_isolation": 3,
+    "silhouette_readability": 3,
+    "depth_inference": 2,
+    "primitive_decomposition": 3,
+    "material_procedurality": 3,
+    "occlusion_risk": 2,
+    "interaction_fit": 3
   },
   "preSpecAssessment": {
     "objectClass": {
-      "primaryType": "cast-concrete roadside distance marker",
+      "primaryType": "roadside kilometre stone",
       "primaryDomain": "object",
       "formLanguage": [
-        "arch-topped prismatic solid"
+        "arch-topped rectangular slab",
+        "wrapping painted band",
+        "lettered front"
       ],
       "structureKind": [
-        "single cast solid"
+        "assembled-solid"
       ],
       "motionPotential": [
-        "none - static ground-fixed prop"
+        "static-prop"
       ],
       "materialFamilies": [
-        "cast concrete with masked painted bands"
+        "painted precast concrete"
       ],
-      "notes": "A 0.25 x 0.9 x 0.2 m cast concrete stone with a semicircular arched crown, painted white over its top third, banded red beneath that, and left bare below. The ONLY prop in this signage set that is a single solid with no support and no joint anywhere."
+      "notes": "A precast concrete kilometre stone set in the verge. Nothing moves and nothing attaches: one root pivot and zero sockets is the whole contract. Every highway verge in Thailand: a whitewashed arch-topped stone with a red band, the number and the next town on the front, moss and mud at the foot."
     },
     "complexity": {
-      "tier": "simple",
+      "tier": "moderate",
       "scores": {
         "silhouetteComplexity": 2,
-        "componentCount": 1,
+        "componentCount": 2,
         "hierarchyDepth": 1,
-        "repetitionDensity": 0,
-        "materialLayerCount": 1,
-        "localDetailDensity": 3,
+        "repetitionDensity": 1,
+        "materialLayerCount": 2,
+        "localDetailDensity": 2,
         "occlusionRisk": 1,
-        "actionReadinessNeed": 0
+        "actionReadinessNeed": 1
       },
       "estimatedCounts": {
-        "macroComponents": 1,
-        "mesoComponents": 1,
-        "microFeatureGroups": 2,
-        "materialLayers": 1,
+        "macroComponents": 3,
+        "mesoComponents": 5,
+        "microFeatureGroups": 3,
+        "materialLayers": 2,
         "repetitionSystems": 0
       },
       "reasoning": [
-        "One solid, one material, one geometry, ONE draw call - under every ceiling this asset carries rather than at them, which is unusual in this set and is a consequence of the subject rather than of effort.",
-        "The painted bands WRAP the solid instead of sitting on a face, so the atlas needs a band column for the wall as well as a face region; every other prop in this set gets away with a single plain texel for everything that is not the front.",
-        "The arched crown is the whole silhouette: a kilometre stone with a flat top is a bollard."
+        "TWO components: the concrete body as three stacked extrudes of the arch-topped profile (foot 0-0.425, band 0.425-0.555, crown 0.555-0.90 with a 32-segment semicircle of r 0.245 from the 0.655 spring) on one material with height-keyed UVs; and a 2 mm-inset front skin 4 mm proud whose +Z face samples the plate's own rectified front through planar UVs.",
+        "Two materials: concrete (white, vertex tints for foot/band/crown, a height-keyed paint canvas for the streaks under the band and the moss-and-dirt foot) and the lettered face (white, the baked atlas as map).",
+        "No repetition system. Action readiness: one root pivot at base-centre, zero sockets, one box collider, not breakable."
       ]
     },
     "specDepthDecision": {
-      "requiredDepth": "simple",
+      "requiredDepth": "moderate",
       "minimumComponentLevels": [
-        "macro"
+        "macro",
+        "meso",
+        "micro"
       ],
-      "needsRepetitionSystems": false,
-      "needsMaterialLocalOverrides": false,
+      "needsRepetitionSystems": true,
+      "needsMaterialLocalOverrides": true,
       "needsMultipleReviewViews": true,
       "needsActionReadyHierarchy": true,
-      "rationale": "Choose simple/moderate/complex/ultra-complex from observed structure, not from a hardcoded domain."
+      "rationale": "The identity is the arch-topped slab with its red band and the lettering on a grimy, chipped front; the front is the plate's own pixels so the chips in the band, the 42, the town name and the stains are where the reference has them, and the body carries the band round its sides as geometry."
     },
     "unknownsToResolveBeforeImplementation": [],
     "detailInventory": {
       "scanMethod": "component-zones",
-      "targetMinDetails": 3,
+      "targetMinDetails": 6,
       "note": "Enumerate every identity-defining small detail before authoring the spec. Each detail must map to a component.localFeatures entry or material.localOverrides entry, never prose only. Use forge/stage1_intake/build_detail_inventory.py to scan zones.",
       "details": [
         {
-          "id": "white-crown",
+          "id": "d1-arch",
+          "zone": "top",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "semicircular crown over a rectangular slab",
+          "mapsTo": {
+            "ref": "body"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d2-band",
+          "zone": "body",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "red band wrapping the slab at 0.425-0.555 m",
+          "mapsTo": {
+            "ref": "body"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d3-lettering",
+          "zone": "top",
           "kind": "decal",
-          "description": "White painted crown over the arched top and upper third, down to the red band at 0.561 of height. Averaged from #ECF0F3 over 10799 lit bright px and #D9DCE0 over 6300 shaded bright px - a 19-luma spread across the two faces, so the albedo is taken between them rather than from the lit face alone.",
-          "region": {
-            "x": 0.22,
-            "y": 0.06,
-            "width": 0.58,
-            "height": 0.32,
-            "units": "normalized"
-          },
-          "scale": "macro",
-          "affects": "albedo",
+          "identityDefining": true,
+          "description": "the 42 on the crown and the town name in Thai and Latin on the body",
           "mapsTo": {
-            "type": "material.localOverrides",
-            "ref": "crown-white"
+            "ref": "front"
           },
-          "evidenceRef": "/home/mulligan/code/thaikit/assets/kilometre-stone/preview.jpg",
-          "confidence": 0.9,
           "realization": "unreported"
         },
         {
-          "id": "red-band",
-          "kind": "decal",
-          "description": "Red band wrapping the whole stone from 0.431 to 0.561 of height. Measured #A32124 over 10800 lit px against #882322 over 4500 shaded px; the lit value is taken because the shaded face is fill-lit rather than key-lit and reads darker without being a different paint.",
-          "region": {
-            "x": 0.22,
-            "y": 0.36,
-            "width": 0.58,
-            "height": 0.14,
-            "units": "normalized"
-          },
-          "scale": "macro",
-          "affects": "albedo",
+          "id": "d4-chips",
+          "zone": "body",
+          "kind": "chip",
+          "identityDefining": true,
+          "description": "paint chipped off the band",
           "mapsTo": {
-            "type": "material.localOverrides",
-            "ref": "band-red"
+            "ref": "d4-chips"
           },
-          "evidenceRef": "/home/mulligan/code/thaikit/assets/kilometre-stone/preview.jpg",
-          "confidence": 0.92,
+          "onMaterial": "face",
           "realization": "unreported"
         },
         {
-          "id": "distance-numeral",
-          "kind": "linework",
-          "description": "Large black distance numeral on the white crown, set right of centre on the face. Ink trimmed to #1B1F22 over 10415 sub-luma-70 px. SOLID FILL, never an outline.",
-          "region": {
-            "x": 0.52,
-            "y": 0.18,
-            "width": 0.2,
-            "height": 0.13,
-            "units": "normalized"
-          },
-          "scale": "macro",
-          "affects": "albedo",
-          "mapsTo": {
-            "type": "material.localOverrides",
-            "ref": "legend-ink"
-          },
-          "evidenceRef": "/home/mulligan/code/thaikit/assets/kilometre-stone/preview.jpg",
-          "confidence": 0.92,
-          "realization": "unreported"
-        },
-        {
-          "id": "place-name",
-          "kind": "linework",
-          "description": "Two black legend lines on the bare concrete below the band, a Thai province name over its Latin transliteration, set right of centre to match the numeral above.",
-          "region": {
-            "x": 0.5,
-            "y": 0.54,
-            "width": 0.26,
-            "height": 0.12,
-            "units": "normalized"
-          },
-          "scale": "macro",
-          "affects": "albedo",
-          "mapsTo": {
-            "type": "material.localOverrides",
-            "ref": "legend-ink"
-          },
-          "evidenceRef": "/home/mulligan/code/thaikit/assets/kilometre-stone/preview.jpg",
-          "confidence": 0.9,
-          "realization": "unreported"
-        },
-        {
-          "id": "algae-foot",
+          "id": "d5-moss",
+          "zone": "base",
           "kind": "stain",
-          "description": "Green-black algae darkening the lowest quarter of the concrete, measured #686554 over 9900 px - 45 luma below the clean body value and the strongest age cue on the prop.",
-          "region": {
-            "x": 0.22,
-            "y": 0.74,
-            "width": 0.58,
-            "height": 0.2,
-            "units": "normalized"
-          },
-          "scale": "macro",
-          "affects": "albedo",
+          "identityDefining": false,
+          "description": "moss and dirt over the foot, streaks under the band",
           "mapsTo": {
-            "type": "material.localOverrides",
-            "ref": "algae"
+            "ref": "d5-moss"
           },
-          "evidenceRef": "/home/mulligan/code/thaikit/assets/kilometre-stone/preview.jpg",
-          "confidence": 0.88,
+          "onMaterial": "concrete",
           "realization": "unreported"
         },
         {
-          "id": "spalled-patch",
-          "kind": "chip",
-          "description": "A spalled patch on the front face below the legend where the render has broken away to expose darker aggregate. Painted into the atlas rather than modelled: it is a surface loss of a few millimetres and geometry for it would cost the prop's only spare axis.",
-          "region": {
-            "x": 0.42,
-            "y": 0.7,
-            "width": 0.1,
-            "height": 0.12,
-            "units": "normalized"
-          },
-          "scale": "meso",
-          "affects": "albedo",
+          "id": "d6-foot",
+          "zone": "base",
+          "kind": "contour",
+          "identityDefining": false,
+          "description": "eroded, pitted foot",
           "mapsTo": {
-            "type": "material.localOverrides",
-            "ref": "algae"
+            "ref": "front"
           },
-          "evidenceRef": "/home/mulligan/code/thaikit/assets/kilometre-stone/preview.jpg",
-          "confidence": 0.7,
-          "realization": "unreported"
-        },
-        {
-          "id": "paint-flaking",
-          "kind": "chip",
-          "description": "Red paint flaking off the band's lower edge to show concrete beneath, concentrated on the left face where weather drives.",
-          "region": {
-            "x": 0.22,
-            "y": 0.44,
-            "width": 0.3,
-            "height": 0.07,
-            "units": "normalized"
-          },
-          "scale": "meso",
-          "affects": "albedo",
-          "mapsTo": {
-            "type": "material.localOverrides",
-            "ref": "band-red"
-          },
-          "evidenceRef": "/home/mulligan/code/thaikit/assets/kilometre-stone/preview.jpg",
-          "confidence": 0.75,
           "realization": "unreported"
         }
       ]
@@ -299,105 +224,99 @@
       "confidence": 0.0,
       "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
     },
-    "sourceImage": "/home/mulligan/code/thaikit/assets/kilometre-stone/preview.jpg"
+    "sourceImage": "/home/mulligan/code/thaikit/scratch/kilometre-stone/reference.png",
+    "resolvedUnknowns": [
+      "The front face is the plate's own rectified pixels, including its grime, the chipped band and the eroded foot; the other three faces carry the same tones through vertex tints and a canvas, without a map of the plate's exact stains.",
+      "The crown above the semicircle in the rectified plate is the backdrop showing past a slightly flatter real crown; it is filled with crown paint in the atlas and recorded as such.",
+      "The back is unobserved and built as the sides are."
+    ],
+    "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
   },
   "qualityContract": {
-    "qualityBar": "simple",
+    "qualityBar": "high",
     "definitionOfDone": [
-      "The arched crown reads as a semicircle in silhouette from every turntable azimuth, and the stone reads as a solid block rather than a plate.",
-      "The white crown and the red band WRAP the stone continuously and meet the front face exactly, with hard painted edges rather than blends.",
-      "Built to the declared 0.25 x 0.90 x 0.20 m.",
-      "One draw call, one material, one unique geometry and well under 800 triangles, measured in the harness."
+      "Rendered model matches the reference silhouette, the 0.49 x 0.90 x 0.42 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
+      "All four scene-budget ceilings hold: <=2000 triangles, <=2 draw calls, <=2 materials, <=2 unique geometries.",
+      "Zero coincident co-facing surface pairs (check-coplanar clean).",
+      "Exactly one root pivot plus 0 named mechanism pivot(s); zero sockets; box collider; no destruction groups.",
+      "Every material declares textureless with named evidence."
     ],
     "minimumSpecDepth": {
-      "macroComponents": 1,
+      "macroComponents": 2,
       "mesoComponents": 0,
-      "microFeatureGroups": 0,
-      "materialLayers": 1,
+      "microFeatureGroups": 4,
+      "materialLayers": 2,
       "repetitionSystems": 0,
-      "reviewViewpoints": 2
+      "reviewViewpoints": 4
     },
     "featureGroups": [
       {
-        "id": "overall-silhouette",
-        "name": "Overall silhouette and proportions",
+        "id": "arch-crown",
+        "name": "Arch crown",
         "required": true,
+        "threshold": 0.85,
         "qualityCriteria": [
-          "Bounding shape, dominant curves, negative spaces, and scale relationships are explicitly described."
+          "Semicircle r 0.245 from the 0.655 spring over the full width",
+          "Smooth at 32 segments"
         ],
         "evidenceRefs": [
-          "full-object"
+          "view-full",
+          "region-crown"
         ],
         "failureModes": [
-          "model reads as a generic placeholder instead of the reference object",
-          "major proportions are guessed without evidence"
+          "a one-sided cusp",
+          "a faceted dome"
         ]
       },
       {
-        "id": "primary-structure",
-        "name": "Primary structure and hierarchy",
+        "id": "solid-proportion",
+        "name": "Solid proportion",
         "required": true,
+        "threshold": 0.85,
         "qualityCriteria": [
-          "Major parts, joints, seams, contact points, and parent-child relationships are named before code generation."
+          "0.49 x 0.90 x 0.42 m"
         ],
         "evidenceRefs": [
-          "full-object"
+          "view-full"
         ],
         "failureModes": [
-          "large visible parts are merged into one mesh",
-          "component hierarchy is too shallow for the observed complexity"
+          "a thin plate",
+          "a cube"
         ]
       },
       {
-        "id": "attachment-joint-correctness",
-        "name": "Attachment and joint correctness",
+        "id": "wrapping-bands",
+        "name": "Wrapping bands",
         "required": true,
+        "threshold": 0.85,
         "qualityCriteria": [
-          "Every visible child appendage, branch, limb, handle, connector, tube, cable, horn, wing, leg, or hinged part has an attachment contract with parent socket, localStart/localEnd, contact type, embed/overlap, and gap tolerance."
+          "Band at 0.425-0.555 m on every face, continuous with the front's chipped band"
         ],
         "evidenceRefs": [
-          "full-object"
+          "region-band"
         ],
         "failureModes": [
-          "child part root floats away from the parent",
-          "branch/limb/tube is centered in space instead of pivoting from its root",
-          "parent-child transform mixes world and local coordinates"
+          "band on the front only",
+          "band at the wrong height"
         ]
       },
       {
-        "id": "surface-material-response",
-        "name": "Surface material response",
+        "id": "concrete-weathering",
+        "name": "Concrete weathering",
         "required": true,
+        "threshold": 0.8,
         "qualityCriteria": [
-          "Albedo zones, roughness, normal/bump/displacement intent, cavity dirt, edge wear, and local overrides are specified where visible.",
-          "Important materials define independent albedo, roughness, height/normal, and AO responses instead of reusing one texture for unrelated PBR channels.",
-          "Surface response is decomposed into macro, meso, and micro frequency bands with scale and amplitude tied to object scale."
+          "The plate's own grime and chips on the front",
+          "Moss-dirt foot and streaks on the sides"
         ],
         "evidenceRefs": [
-          "full-object"
+          "region-body",
+          "region-moss",
+          "region-foot"
         ],
         "failureModes": [
-          "surface looks like flat plastic",
-          "local material variation is missing or not tied to image evidence"
-        ]
-      },
-      {
-        "id": "reference-lookdev",
-        "name": "Reference color, material, and lighting response",
-        "required": true,
-        "qualityCriteria": [
-          "Material-pass names the reference-derived albedo palette, roughness variation, tactile normal/bump/displacement response, and local masks.",
-          "When a source image is available, run reference PBR extraction and require confidence >= 0.7 before treating maps as implementation-ready.",
-          "Lighting-pass names key/fill/rim or environment light, exposure, tone mapping, background, and contact shadow behavior.",
-          "Neutral, grazing-angle, and reference-matched renders prove that surface relief survives relighting and is not painted into albedo."
-        ],
-        "evidenceRefs": [
-          "full-object"
-        ],
-        "failureModes": [
-          "model has acceptable shape but reads as flat shaded or plastic",
-          "colors are a generic average instead of reference-observed local color zones",
-          "lighting is evenly ambient and cannot reproduce the source value range"
+          "a clean flat stone",
+          "polka-dot blotches"
         ]
       }
     ],
@@ -423,6 +342,7 @@
       "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
       "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
     ],
+    "minimumSpecDepthRevision": "Set to what the finished design actually is. The starter contract's defaults are arithmetically impossible against a ceiling of 2 draw calls, and the depth they reach for is delivered instead by MERGING: parts that share a material ride one component and one submission.",
     "mustNotDo": [
       "Do not proceed to code if qualityContract.qualityBar is unassessed.",
       "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
@@ -543,72 +463,74 @@
   "featureReviewTargets": [
     {
       "id": "arch-crown",
-      "name": "Semicircular arched crown",
-      "tier": "critical",
-      "passIds": [
-        "blockout",
-        "form-refinement"
-      ],
-      "minimumScore": 0.85,
-      "mustPass": true,
-      "componentRefs": [
-        "stone"
-      ],
-      "evidenceRefs": [
-        "full-object",
-        "turntable"
-      ]
-    },
-    {
-      "id": "solid-proportion",
-      "name": "Block proportion and real depth",
+      "name": "Arch crown",
       "tier": "critical",
       "passIds": [
         "blockout",
         "structural-pass"
       ],
-      "minimumScore": 0.8,
+      "minimumScore": 0.85,
       "mustPass": true,
       "componentRefs": [
-        "stone"
+        "body"
       ],
       "evidenceRefs": [
-        "full-object",
-        "turntable"
+        "view-full",
+        "region-crown"
+      ]
+    },
+    {
+      "id": "solid-proportion",
+      "name": "Solid proportion",
+      "tier": "critical",
+      "passIds": [
+        "structural-pass"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "body"
+      ],
+      "evidenceRefs": [
+        "view-full"
       ]
     },
     {
       "id": "wrapping-bands",
-      "name": "White crown and red band wrapping the solid with hard painted edges",
+      "name": "Wrapping bands",
       "tier": "critical",
       "passIds": [
+        "form-refinement",
         "material-pass"
       ],
-      "minimumScore": 0.8,
+      "minimumScore": 0.85,
       "mustPass": true,
       "componentRefs": [
-        "stone"
+        "body",
+        "front"
       ],
       "evidenceRefs": [
-        "region-crown",
         "region-band"
       ]
     },
     {
       "id": "concrete-weathering",
-      "name": "Weathered concrete with algae at the foot",
-      "tier": "important",
+      "name": "Concrete weathering",
+      "tier": "critical",
       "passIds": [
-        "material-pass"
+        "material-pass",
+        "surface-pass"
       ],
-      "minimumScore": 0.7,
-      "mustPass": false,
+      "minimumScore": 0.8,
+      "mustPass": true,
       "componentRefs": [
-        "stone"
+        "body",
+        "front"
       ],
       "evidenceRefs": [
         "region-body",
-        "region-algae"
+        "region-moss",
+        "region-foot"
       ]
     }
   ],
@@ -706,293 +628,165 @@
     ]
   },
   "actionReadiness": {
-    "contract": "Every macro/meso component should be generated as a stable named Object3D pivot node with a mesh child, action metadata, optional sockets, collider proxy, and destruction metadata.",
-    "defaultRigType": "action-ready-static-rig",
-    "rootMotionNode": "stone",
-    "requiredComponentFields": [
-      "id",
-      "parent",
-      "transform",
-      "attachment for child appendages, connectors, limbs, tubes, handles, legs, horns, wings, branches, or cables",
-      "actionProfile.animationRole",
-      "actionProfile.pivot",
-      "actionProfile.collider",
-      "actionProfile.destruction"
+    "explodable": true,
+    "clickable": true,
+    "partCount": 2,
+    "pivotInventory": [
+      {
+        "name": "root",
+        "component": "body",
+        "type": "rigid-body",
+        "localPosition": [
+          0,
+          0,
+          0
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "justification": "The rigid body of the prop at its declared origin. A named pivot is a promise that a part turns on it, and only real mechanisms get one."
+      }
     ],
-    "transformChannels": [
-      "translate",
-      "rotate",
-      "scale",
-      "bend",
-      "twist",
-      "detach",
-      "visibility",
-      "material-state"
+    "socketInventory": [],
+    "socketJustification": "ZERO sockets, deliberately. Nothing attaches to this prop and nothing is emitted from it. A marker named for a place on the surface is a location, not a mechanism.",
+    "colliderInventory": [
+      {
+        "component": "body",
+        "shape": "box",
+        "matchesAssetDeclaration": true,
+        "note": "Declared on the asset as box: the stone envelope; the shipped compound is derived from the geometry."
+      }
     ],
-    "authoringRules": [
-      "Do not collapse independently movable parts into one mesh.",
-      "Put transforms on component pivot groups, not only on raw meshes.",
-      "For attached child parts, put the pivot at the semantic root/socket and build visible geometry from localStart to localEnd.",
-      "Represent hinge, socket, detachable, and breakable intent even when no animation is implemented yet.",
-      "Use simplified collider proxies for runtime physics instead of visual mesh colliders by default."
-    ],
-    "destructionPolicy": {
-      "defaultBreakable": false,
-      "fractureGroupNaming": "Use stable semantic names such as body-shell, left-hinge, glass-panel, branch-segment.",
-      "debrisStrategy": "Prefer detachable component groups and a small number of procedural fragments over random mesh explosion."
-    },
-    "declaredContract": {
-      "pivots": [
-        "root at base-center"
-      ],
-      "pivotCount": 1,
-      "sockets": [],
-      "socketCount": 0,
-      "rationale": "A cast concrete stone is a static rigid body with no joint anywhere on it. One root pivot and zero sockets is the CORRECT answer, not a gap. This prop makes the point most cleanly of the eight: it has exactly one component, so a pivot per component would still be one, and that coincidence is not the reason - the reason is that nothing on it turns.",
-      "collider": "box - honoured on the single component, and nearly exact rather than circumscribing",
-      "destructionGroups": [],
-      "destructionRationale": "The asset declares no destruction groups, so no component carries a fractureGroup and the prop does not come apart - which for a cast concrete stone is also what it would really do."
-    }
+    "destructionGroups": [],
+    "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
   },
   "assumptions": [
-    "back-and-side-faces: the three-quarter view shows two faces of the stone and neither carries lettering. The lettering is placed on ONE face only and the other three are left as plain banded concrete, which is what the reference supports rather than an invention.",
-    "band-heights: red band from 0.431 to 0.561 of height, read off the x=420 vertical scanline where the concrete-to-red edge falls at y=405 and the red-to-white edge at y=530 on a stone spanning y=78 to y=945.",
-    "arch-radius: a true semicircle on the stone's full width. The reference's crown is symmetric and springs from the full width, so a semicircle is a measurement rather than a simplification.",
-    "legend: representative Thai and Latin text for a province, not a transcription of the reference's particular stone. This is a kit prop."
+    "The front face is the plate's own rectified pixels, including its grime, the chipped band and the eroded foot; the other three faces carry the same tones through vertex tints and a canvas, without a map of the plate's exact stains.",
+    "The crown above the semicircle in the rectified plate is the backdrop showing past a slightly flatter real crown; it is filled with crown paint in the atlas and recorded as such.",
+    "The back is unobserved and built as the sides are."
   ],
   "coordinateFrame": {
-    "front": "+Z is the lettered face, the camera-facing side in the reference plate",
     "up": "+Y",
-    "scaleReference": "metres. Origin at base-center: x=0 and z=0 on the stone's axis, y=0 at ground contact."
+    "forward": "+Z",
+    "handedness": "right",
+    "origin": "base-center",
+    "unitScale": "meters",
+    "notes": "Origin base-center at ground, +Y up, +Z the FRONT face (the face the plate shows)."
   },
   "silhouette": {
-    "boundingShape": "A squat arch-topped block, roughly twice as tall as it is wide and nearly as deep as it is wide - the only prop in this set with real volume rather than a plate and a stick. Rebuilt from 0.25 x 0.90 x 0.20 to 0.49 x 0.90 x 0.42: the plate bounding box is 596 x 880 px across a three-quarter view and the Meshy proxy measures w/h 0.548, d/h 0.489, both of which the original 0.278 w/h ignored.",
-    "aspectRatios": [
-      {
-        "id": "overall",
-        "wOverH": 0.544,
-        "dOverH": 0.467,
-        "note": "0.49 x 0.90 x 0.42 m declared. Width from the Meshy proxy bounds (w/h 0.548) at the 0.90 m declared height; depth from the band table's 5-95 percentile body depth of 0.46 of height rather than the proxy's 0.489 bbox extent, which includes the flared foot. Band table after the rebuild: mean |delta width| 0.0095, mean |delta depth| 0.026 at 0.44 deep, which is what moved it to 0.42."
-      },
-      {
-        "id": "depth-over-width",
-        "value": 0.857,
-        "note": "0.42 / 0.49. The proxy bbox reads 0.89; its body percentile reads 0.84."
-      },
-      {
-        "id": "arch-radius-over-height",
-        "value": 0.272,
-        "note": "0.245 / 0.90 - a true semicircle on the full width. Shoulder at 0.728 of height; the plate shoulder scanlines at x=300 and x=640 read 0.74 and 0.71."
-      }
-    ],
-    "symmetry": "Bilateral about x=0 in geometry. The painted bands are symmetric; the legend is NOT - it sits right of centre - so the atlas must not be mirrored.",
-    "dominantCurves": [
-      "the semicircular arched crown, the only curve on the prop and its entire silhouette identity"
-    ],
-    "negativeSpaces": [
-      "none. This is the only prop in the signage set with no negative space at all, which is why it reads as heavy where its siblings read as thin."
-    ],
-    "landmarks": [
-      {
-        "id": "crown-apex",
-        "position": [
-          0,
-          0.9,
-          0
-        ]
-      },
-      {
-        "id": "arch-springing",
-        "position": [
-          0,
-          0.655,
-          0
-        ]
-      },
-      {
-        "id": "band-top",
-        "position": [
-          0,
-          0.555,
-          0
-        ]
-      },
-      {
-        "id": "band-bottom",
-        "position": [
-          0,
-          0.425,
-          0
-        ]
-      },
-      {
-        "id": "ground-contact",
-        "position": [
-          0,
-          0.0,
-          0
-        ]
-      }
-    ]
+    "envelope": {
+      "w": 0.49,
+      "h": 0.9,
+      "d": 0.424
+    },
+    "description": "A 0.49 m wide, 0.42 m deep slab rising 0.655 m to a semicircular crown of r 0.245 that closes at 0.90 m; the band wraps the slab at 0.425-0.555 m.",
+    "envelopeDerivation": "0.49 x 0.90 x 0.42 m as declared and as the second build's proxy band table confirmed (mean |delta width| 0.0095 of H). The front face is solved off the plate from four corners -- the crease/spring (340,300), right/spring (803,195), right/foot (790,872), crease/foot (356,918) -- into a 0.49 x 0.90 m plane at 512 px/m; the red band lands at 0.425-0.555 m in that rectification (the plate's 0.472-0.617 of height), which is where the body's band extrude is cut.",
+    "meshyCrossCheck": "The second build's Meshy proxy band table (mean |delta width| 0.0095 of H, height-normalised, 5-95 pct surface samples) is kept in the review history and still describes this geometry: the envelope and the profile are unchanged, only the surface route is new."
   },
   "viewEvidence": [
     {
-      "id": "full-object",
-      "view": "primary",
-      "imageRegion": {
-        "x": 0.0,
-        "y": 0.0,
-        "width": 1.0,
-        "height": 1.0,
-        "units": "normalized"
-      },
-      "observations": [],
-      "confidence": 0.5
+      "id": "view-full",
+      "viewpoint": "front-three-quarter-high",
+      "path": "reference.png",
+      "confidence": 0.95
+    },
+    {
+      "id": "region-crown",
+      "viewpoint": "front",
+      "path": "crops/crown.png",
+      "confidence": 0.9
+    },
+    {
+      "id": "region-band",
+      "viewpoint": "front",
+      "path": "crops/band.png",
+      "confidence": 0.9
+    },
+    {
+      "id": "region-body",
+      "viewpoint": "front",
+      "path": "crops/body.png",
+      "confidence": 0.88
+    },
+    {
+      "id": "region-moss",
+      "viewpoint": "front-left",
+      "path": "crops/moss.png",
+      "confidence": 0.85
+    },
+    {
+      "id": "region-foot",
+      "viewpoint": "front",
+      "path": "crops/foot.png",
+      "confidence": 0.84
+    },
+    {
+      "id": "region-back",
+      "viewpoint": "rear",
+      "path": null,
+      "confidence": 0.85,
+      "note": "NOT DIRECTLY OBSERVED. Confidence 0.85: a precast stone is the same on every face; the back carries the band and the weathering canvas without lettering."
     }
   ],
   "componentTree": [
     {
-      "id": "stone",
-      "name": "Kilometre stone",
+      "id": "body",
+      "name": "Concrete stone",
       "level": "macro",
-      "role": "body",
+      "role": "identity",
       "importance": 1.0,
-      "confidence": 0.85,
+      "confidence": 0.88,
       "primitive": "extrude",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "A single cast-concrete solid: a rectangular block whose top is finished as a semicircular arch, extruded through its depth. One closed solid, not an assembly - there is no joint anywhere on this prop and nothing is bolted to anything, which is what separates it from every other prop in this signage set.",
+      "topologyRationale": "Three stacked profile extrudes merged on one material: the first draw call.",
+      "materialId": "concrete",
+      "material": "concrete",
+      "parent": null,
       "geometryDescriptor": {
-        "topologyIntent": "ExtrudeGeometry over an arch-topped profile, 0.49 x 0.9, extruded 0.42 deep, with a 22 mm three-segment bevel on every edge. Every arris is ROLLED, not sharp: the plate's crown turns over in the depth axis as well as across the face - it is a rolled dome, not a barrel vault with a knife-edge perimeter - and the body's vertical corners are worn soft. `bevelSize` runs OUTWARD from the outline and the bevel hangs off both ends of the extrusion, so the shape is inset by the bevel on all four sides and the extrusion is shortened by two of them; the harness reads the bounds back as exactly 0.49 x 0.900 x 0.42. Normals are then smoothed with an angle-limited pass (62 degrees) so the bevel rounds over while the flat faces stay flat - unconditional averaging is the LatheGeometry mistake that shades a dark ring the turntable gate reads as a hole.",
-        "profile2D": {
-          "kind": "arch-topped-rect",
-          "halfWidth": 0.245,
-          "height": 0.9,
-          "archRadius": 0.245,
-          "archSegments": 24,
-          "depth": 0.42,
-          "points": [
-            [
-              -0.245,
-              0.0
-            ],
-            [
-              0.245,
-              0.0
-            ],
-            [
-              0.245,
-              0.655
-            ],
-            [
-              0.24029,
-              0.7028
-            ],
-            [
-              0.22635,
-              0.74876
-            ],
-            [
-              0.20371,
-              0.79111
-            ],
-            [
-              0.17324,
-              0.82824
-            ],
-            [
-              0.13611,
-              0.85871
-            ],
-            [
-              0.09376,
-              0.88135
-            ],
-            [
-              0.0478,
-              0.89529
-            ],
-            [
-              0.0,
-              0.9
-            ],
-            [
-              -0.0478,
-              0.89529
-            ],
-            [
-              -0.09376,
-              0.88135
-            ],
-            [
-              -0.13611,
-              0.85871
-            ],
-            [
-              -0.17324,
-              0.82824
-            ],
-            [
-              -0.20371,
-              0.79111
-            ],
-            [
-              -0.22635,
-              0.74876
-            ],
-            [
-              -0.24029,
-              0.7028
-            ],
-            [
-              -0.245,
-              0.655
-            ]
-          ],
-          "note": "19 points: two bottom corners, straight sides up to y=0.655, then a 16-segment semicircular arch of radius 0.245 swept from angle 0 (right shoulder) through pi/2 (apex) to pi (LEFT shoulder). The earlier build swept -pi/2..pi/2, which is the RIGHT half of a circle - a quarter-round cusp on one side and no left shoulder at all - and rendered visibly lop-sided. The arch IS this prop's silhouette.",
-          "bevel": {
-            "size": 0.022,
-            "thickness": 0.022,
-            "segments": 3
-          }
-        },
+        "topologyIntent": "Foot 0-0.425, band 0.425-0.555 (1 mm proud front and back), crown 0.555-0.90 with the semicircle; all 0.42 m deep.",
         "edgeTreatment": {
-          "type": "none",
-          "bevelRadius": 0.0,
+          "type": "chamfer",
+          "bevelRadius": 0.012,
           "segments": 1
         },
         "deformationStack": [],
-        "uvStrategy": "authored - a two-region atlas. The FRONT cap takes a full face region carrying the painted bands and the legend; the wall and the back cap take a narrow band COLUMN whose v is the same height fraction, so the red band and the white crown wrap continuously round the stone and meet the front face exactly. This is what lets one material paint a banded solid rather than a plate with a printed front.",
-        "normalStrategy": "flat",
-        "segmentRationale": "16 arch segments on a 0.245 m radius and one segment everywhere else. The crown is the only curve on the prop."
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "The band extrude is 1 mm proud of the foot and crown at front and back so no cap face is coplanar and co-facing; the stacked blocks meet as opposed butt joints.",
+        "mergeNote": "One merged BufferGeometry with height UVs at 0.90 m."
       },
-      "parent": null,
-      "attachment": null,
-      "dimensions": {
-        "width": 0.49,
-        "height": 0.9,
-        "depth": 0.42,
-        "units": "m",
-        "confidence": 0.85
-      },
-      "transform": {
-        "position": [
-          0,
-          0,
-          0
-        ],
-        "rotation": [
-          0,
-          0,
-          0
-        ],
-        "scale": [
-          1,
-          1,
-          1
-        ]
+      "localFeatures": [
+        {
+          "id": "d1-arch",
+          "description": "crown",
+          "delivery": "profile extrude"
+        },
+        {
+          "id": "d2-band",
+          "description": "band",
+          "delivery": "tinted extrude"
+        },
+        {
+          "id": "d5-moss",
+          "description": "moss and streaks",
+          "delivery": "paint canvas"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "concrete",
+        "baseColor": "#b8b4aa",
+        "recipe": "White concrete material with foot, band and crown vertex tints and a height-keyed weathering canvas.",
+        "evidenceRef": "region-body",
+        "confidence": 0.88,
+        "dominantAlbedo": "rgba(184, 180, 170, 1.0)",
+        "secondaryAlbedo": "rgba(163, 33, 36, 1.0)",
+        "materialClass": "stone",
+        "materialClassConfidence": 0.88
       },
       "actionProfile": {
-        "animationRole": "static",
+        "animationRole": "root",
         "pivot": {
           "mode": "custom",
           "localPosition": [
@@ -1005,13 +799,14 @@
             1,
             0
           ],
-          "confidence": 0.9,
-          "notes": "The root pivot, at base-center. This prop has exactly ONE component and ONE pivot, and that is the correct count: a cast concrete stone has no moving parts and nothing attaches to it."
+          "confidence": 0.95,
+          "name": "root",
+          "notes": "At the origin the asset declares. A STATIC prop: nothing opens, turns or swings, so one root pivot is the whole mechanism inventory and that is the correct answer, not a gap."
         },
         "transformChannels": {
           "translate": true,
-          "rotate": false,
-          "scale": false,
+          "rotate": true,
+          "scale": true,
           "bend": false,
           "twist": false,
           "detach": false,
@@ -1020,275 +815,213 @@
         },
         "sockets": [],
         "collider": {
-          "type": "box",
-          "offset": [
+          "shape": "box",
+          "localCenter": [
             0,
             0.45,
             0
           ],
-          "scale": [
-            0.125,
+          "halfExtents": [
+            0.245,
             0.45,
-            0.1
+            0.212
           ],
-          "isTrigger": false,
-          "notes": "Declared collider for this asset is `box`, and unlike the post-mounted signs in this set the proxy is nearly EXACT: the stone is a rectangular solid apart from its arched crown, so the box is the shape rather than a circumscription of it."
-        },
-        "constraints": [],
-        "destruction": {
-          "breakable": false,
-          "fractureGroup": null,
-          "seamRefs": [],
-          "detachableFragments": [],
-          "breakImpulse": 0.0,
-          "debrisMaterial": "concrete"
+          "notes": "Declared on the asset as box: the stone envelope; the shipped compound is derived from the geometry."
         }
+      }
+    },
+    {
+      "id": "front",
+      "name": "Lettered front face",
+      "level": "macro",
+      "role": "identity",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "extrude",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "A thin skin on its own material because the front is a texture the concrete canvas cannot carry: the second draw call.",
+      "materialId": "face",
+      "material": "face",
+      "parent": "body",
+      "geometryDescriptor": {
+        "topologyIntent": "The profile inset 2 mm, extruded from z 0.200 (inside the body) to 0.214, 4 mm proud of the body front.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Its front is 4 mm proud of the body front and its side walls are 2 mm inside the body outline, so nothing is coplanar; the overlap is interpenetration, not a shared plane.",
+        "mergeNote": "One extrude; +Z vertices take planar atlas UVs."
       },
-      "material": "concrete",
-      "materialLayers": [
-        "concrete"
-      ],
-      "deformations": [],
-      "joints": [],
-      "seams": [],
       "localFeatures": [
         {
-          "id": "white-crown",
-          "description": "White painted crown covering the arched top and the upper third of the stone, down to the red band.",
-          "representation": "texture-region"
+          "id": "d3-lettering",
+          "description": "lettering",
+          "delivery": "front atlas"
         },
         {
-          "id": "red-band",
-          "description": "Red painted band wrapping the whole stone between the white crown and the bare concrete, about 0.13 m deep.",
-          "representation": "texture-region"
+          "id": "d4-chips",
+          "description": "chips",
+          "delivery": "front atlas"
         },
         {
-          "id": "distance-numeral",
-          "description": "Large black distance numeral on the white crown, set to the right of the face.",
-          "representation": "texture-region"
-        },
-        {
-          "id": "place-name",
-          "description": "Two black legend lines on the bare concrete below the band, a Thai province name over its Latin transliteration.",
-          "representation": "texture-region"
-        },
-        {
-          "id": "algae-foot",
-          "description": "Green-black algae darkening the lowest quarter of the concrete, heaviest at the corners where water sits.",
-          "representation": "texture-region"
-        },
-        {
-          "id": "spalled-patch",
-          "description": "A spalled patch on the front face below the legend where the render has broken away to expose aggregate.",
-          "representation": "texture-region"
+          "id": "d6-foot",
+          "description": "eroded foot",
+          "delivery": "front atlas"
         }
       ],
-      "surfaceDetail": {
-        "macroRoughness": 0.3,
-        "microRoughness": 0.45,
-        "bumpAmplitude": 0.6,
-        "normalPattern": "bumpMap from a height atlas painted alongside the albedo, at half its resolution",
-        "displacementPattern": "",
-        "occlusionPattern": "",
-        "edgeWearPattern": "clustered polygon flakes off both edges of the red band; ragged chipping round the foot",
-        "notes": "The atlas is a band COLUMN plus a face region with a guard gutter between them. The column used to be sampled at ONE u by every side wall and the back - a single texel column stretched across 0.42 m of stone, so nothing on those faces could vary horizontally and every wash arrived as a full-width horizontal band. It is 0.30 of the atlas now and the walls map their own horizontal position into it: a side wall along z, the back cap and the crown along x."
-      },
-      "evidenceRefs": [
-        "full-object"
-      ],
-      "details": [],
-      "fidelityTier": "blockout",
-      "colorMaterialRecipe": {
-        "base": "#98917F",
-        "stops": [
-          {
-            "position": 0.0,
-            "color": "rgba(104,101,84,1.0)",
-            "note": "algae-darkened concrete at the foot, measured #686554 over 9900 px"
-          },
-          {
-            "position": 0.25,
-            "color": "rgba(152,145,127,1.0)",
-            "note": "weathered concrete body, measured #98917F over 25200 lit px and #988F7A over 12600 shaded px - within 2 luma of each other, so this is albedo and not the key's work"
-          },
-          {
-            "position": 0.478,
-            "color": "rgba(152,145,127,1.0)",
-            "note": "concrete up to the red band's lower edge at 0.431 of height"
-          },
-          {
-            "position": 0.482,
-            "color": "rgba(163,33,36,1.0)",
-            "note": "SHARP edge into the red band, measured #A32124 over 10800 lit px"
-          },
-          {
-            "position": 0.622,
-            "color": "rgba(163,33,36,1.0)",
-            "note": "red band upper edge at 0.561 of height"
-          },
-          {
-            "position": 0.626,
-            "color": "rgba(230,234,238,1.0)",
-            "note": "SHARP edge into the white crown, averaged from #ECF0F3 lit and #D9DCE0 shaded"
-          },
-          {
-            "position": 1.0,
-            "color": "rgba(230,234,238,1.0)",
-            "note": "white over the whole arched crown"
-          }
+      "attachment": {
+        "parentSocket": "body",
+        "localStart": [
+          0,
+          0,
+          0.2
         ],
-        "finishStyle": "matte",
-        "notes": "An ordered VERTICAL ramp measured up from the foot, with hard edges at both band boundaries: this is masked paint on cast concrete, so the boundaries are lines and not blends. The stops are doubled at each edge. Unlike every other prop in this set the bands WRAP the whole solid rather than sitting on a printed face, which is why the atlas carries a band column for the wall as well as a face region.",
-        "dominantAlbedo": "rgba(152,145,127,1.0)",
-        "secondaryAlbedo": "rgba(163,33,36,1.0)",
+        "localEnd": [
+          0,
+          0,
+          0.214
+        ],
+        "contactType": "cast",
+        "embedDepth": 0.01,
+        "overlap": 0.01,
+        "gapTolerance": 0.001
+      },
+      "colorMaterialRecipe": {
+        "materialId": "face",
+        "baseColor": "#e6eaee",
+        "recipe": "White material; the +Z face samples the baked front atlas planarly, every other vertex pins to a concrete-tone strip.",
+        "evidenceRef": "region-crown",
+        "confidence": 0.9,
+        "dominantAlbedo": "rgba(230, 234, 238, 1.0)",
+        "secondaryAlbedo": "rgba(163, 33, 36, 1.0)",
         "materialClass": "stone",
         "materialClassConfidence": 0.9
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
       }
     }
   ],
   "materials": [
     {
       "id": "concrete",
-      "name": "Cast concrete with masked painted bands",
+      "name": "Painted precast concrete",
       "type": "standard",
       "shaderModel": "MeshStandardMaterial / PBR approximation",
-      "baseColor": "#FFFFFF",
-      "color": "#FFFFFF",
-      "albedo": {
-        "dominant": "#98917F",
-        "secondary": [
-          "#E6EAEE",
-          "#A32124",
-          "#686554"
-        ],
-        "samplingNotes": "White base colour because every band and stain is delivered by the atlas assigned after material construction; a tint here would multiply into all five colours at once."
-      },
-      "colorVariation": {
-        "palette": [
-          "#98917F",
-          "#E6EAEE",
-          "#A32124",
-          "#7A7663",
-          "#DCD8C6",
-          "#6F7659",
-          "#6B6047",
-          "#1B1F22"
-        ],
-        "pattern": "authored-bands over vertically-elongated stain drift, formwork striation and aggregate grain",
-        "amplitude": 0.22,
-        "heightCorrelation": 0.85,
-        "notes": "The bands are authored; everything on top of them is weathering, and its amplitude is MEASURED rather than chosen. A matched 110x120 px window on the plate's shaded body reads luma 155 with sd 23; the flat build read the same window at 111 with sd 5, and the shipped build reads 135 with sd 10 on the shaded face and 148 with sd 18 on the key-lit one. The two drift poles are spread wide and biased LIGHT (#7A7663 luma 116 and #DCD8C6 luma 214, compositing over the base to about 132..186) because the spread has to be bought without pushing any texel toward the turntable gate's backdrop luma of 58."
-      },
+      "baseColor": "#b8b4aa",
+      "color": "#b8b4aa",
       "roughness": {
-        "base": 0.85,
-        "variation": 0.06,
-        "map": "none",
-        "localResponse": "Chalky and fully matte - the highest roughness of the eight props. Cast concrete and masked paint both scatter completely; there is no tight highlight anywhere on this reference, and the two faces at right angles differ by only 2 luma on the body, which is what a fully diffuse surface under strong fill does. Relief arrives as a bumpMap rather than as roughness variation: the height atlas is painted alongside the albedo off the SAME draw streams, so its grain, striation, chips and spall land on the marks the picture shows. It ships at half the albedo's resolution - relief is low-frequency where it matters, and two full 1024 RGBA textures is 11 MB of VRAM on a kit aimed at low-end integrated GPUs."
+        "base": 0.88,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/concrete_roughness.png"
       },
-      "metalness": {
-        "base": 0.0,
-        "variation": 0.0,
-        "notes": "Concrete and paint are both dielectric. No metal anywhere on this prop, which makes it the only one of the eight with no galvanised material at all."
-      },
-      "ambientOcclusion": {
-        "cavityStrength": 0.0,
-        "contactShadowBias": 0.0,
-        "notes": "A convex solid with no cavity for AO to find, and baking any into base colour is what the material pass forbids. The 22 mm rolled arris is GEOMETRY and shades itself; the only recess on the prop is the spall, and its shadow is painted into the albedo and the height atlas rather than into an AO channel."
-      },
-      "wear": {
-        "edgeWear": 0.35,
-        "scratches": [],
-        "chips": [
-          {
-            "id": "band-flaking",
-            "where": "the red band's lower and upper edges, and scattered across its face",
-            "size_m": [
-              0.004,
-              0.015
-            ],
-            "count": "13 clusters of 4 to 11",
-            "evidence": "The plate's band is the most damaged surface on the stone: paint lifted off both edges in clustered irregular flakes exposing the concrete beneath. Each chip is an 8-sided polygon with a #8E2226 rim where the film has lifted. They are wider than they are tall - the first tuning made them 0.07..0.33 of the band's height and hung a row of white icicles off the red."
-          },
-          {
-            "id": "foot-chipping",
-            "where": "the bottom 6 per cent of the stone, all round",
-            "size_m": [
-              0.003,
-              0.014
-            ],
-            "count": "26",
-            "evidence": "The plate's foot is ragged rather than a clean cast edge."
-          }
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#b8b4aa",
+        "secondary": [
+          "#b8b4aa",
+          "#a32124",
+          "#e6eaee"
         ],
-        "spalls": [
-          {
-            "id": "body-spall",
-            "where": "the front face, 0.115 of the face width from its left arris",
-            "centreHeightFraction": 0.17,
-            "heightFraction": 0.135,
-            "evidence": "Re-measured off the plate: the void spans y=735..870 on a stone spanning y=72..952, i.e. 0.093 to 0.247 of height. The previous build placed it at 0.21 and half that size. Painted rather than modelled - it is a surface loss of a few millimetres - but it carries relief in the height atlas, and it is painted from the OUTSIDE IN: a soft shadow spilling onto the wall, a #6B6047 void, then a small patch of lit #C8C1AE aggregate low inside it. A hole is darker than the wall it is in, and filling the void with pale aggregate is what made the first two tunings read as a sticker."
-          }
-        ]
-      },
-      "dirt": {
-        "amount": 0.45,
-        "cavityBias": 0.0,
-        "color": "#807D6B",
-        "notes": "Three separate marks, not one smudge. (1) A standing ramp from the band to the foot, nearly flat over the top half - the plate's body only collapses in its lowest fifth, and a ramp that starts at the band renders the whole body 44 luma too dark. (2) Rain runs biased to the band's lower edge, which is the drip line on the plate. (3) Algae over the lowest fifth as a gradient PLUS speck clusters thickening downward; a gradient alone is a smudge. The algae is #6F7659 - green-chroma at luma 113 - rather than the previous neutral #686554, because the hole gate reads a back-lit face at about 0.55 of its painted luma against a backdrop at 58 and a neutral grey that dark is a hole the gate has to guess about."
+        "samplingNotes": "Measured as the mean of crops/body.png. extract_pbr_evidence confidence 0.880. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
       },
       "localOverrides": [
         {
-          "id": "crown-white",
-          "color": "#E6EAEE",
-          "region": "the arched crown and the upper third of the stone",
-          "evidenceRef": "region-crown",
-          "notes": "Averaged from #ECF0F3 over 10799 lit bright px at (380,120,120,90) and #D9DCE0 over 6300 shaded bright px at (280,200,70,90). A 19-luma spread across the two faces, so the albedo is taken BETWEEN them rather than from the lit face alone - the same reasoning that put the red band's value on its lit face is reversed here, because the crown's shaded reading is fill-lit white rather than key-lit."
-        },
-        {
-          "id": "band-red",
-          "color": "#A32124",
-          "region": "the band wrapping the stone from 0.472 to 0.617 of height",
-          "evidenceRef": "region-band",
-          "notes": "Trimmed mean #A32124 over the full 10800 px of (560,380,180,60) on the lit face; the shaded face at (270,400,90,50) returns #882322 over 4500 px. The lit value is taken because the shaded face is fill-lit rather than key-lit and reads darker without being a different paint. Band edges re-read on the x=420 scanline of the shaded face: white-to-red at y=409 (0.617 of height from the foot) and red-to-concrete at y=537 (0.472), on a stone spanning y=72 to y=952. The first build had 0.431-0.561, both edges 0.05 low, which put the white crown over 44 per cent of the stone instead of 38."
-        },
-        {
-          "id": "body-concrete",
-          "color": "#98917F",
-          "region": "the bare concrete below the red band",
-          "evidenceRef": "region-body",
-          "notes": "Trimmed mean #98917F over 25200 px lit and #988F7A over 12600 px shaded - within 2 luma of each other. That agreement across two faces at right angles is why this albedo could be taken directly rather than de-lit."
-        },
-        {
-          "id": "algae",
-          "color": "#686554",
-          "region": "the lowest quarter of the concrete, heaviest at the corners",
-          "evidenceRef": "region-algae",
-          "notes": "Trimmed mean #686554 over 9900 px at (250,800,90,110). 45 luma below the clean body value and the strongest age cue on the prop. A saturation-band scan up the stone reads 0 per cent everywhere above y=330 and 34 per cent at y=360, confirming the growth is confined to the foot."
-        },
-        {
-          "id": "legend-ink",
-          "color": "#1B1F22",
-          "region": "the distance numeral on the crown and both legend lines on the concrete",
-          "evidenceRef": "region-ink",
-          "notes": "Trimmed mean of the 10415 sub-luma-70 px of (560,220,180,140). The whole-crop mean was far lighter because the crop's bright half is the white crown bouncing across a hard boundary, not ink."
+          "id": "d5-moss",
+          "region": "foot 0-0.36 m and the streaks below the band",
+          "roughness": 0.92,
+          "palette": [
+            "#5C6038",
+            "#6B6B5C"
+          ],
+          "evidence": "crops/moss.png -- #4b4c2c..#6d684a moss and dirt over the lowest third; crops/foot.png -- the chipped, eroded foot."
         }
       ],
-      "shaderNotes": [
-        "Prefer MeshPhysicalMaterial when clearcoat, sheen, transmission, or thin-surface response is observed; otherwise use MeshStandardMaterial-compatible PBR channels.",
-        "Generate albedo, roughness, height/normal, and AO independently; never alias albedo into roughness.",
-        "Use normal/bump/displacement only when they map to observed surface relief.",
-        "Use displacement geometry when the observed relief changes the close-up silhouette; texture-only relief is insufficient there."
-      ],
-      "notes": "Replace with image-derived color, roughness, noise, and edge-wear notes.",
+      "finishClass": "matte",
       "textureless": {
         "declared": true,
         "evidence": [
-          "The generator's five synthesised canvases are what this declaration skips, and they are still skipped: everything this prop shows arrives on ONE canvas atlas pair assigned AFTER material construction, which the declaration does not touch. Letting the generator synthesise a texture set here would additionally force color to white and roughness to 1 and read both from the generated maps, discarding the measured #98917F that makes this stone concrete rather than grey.",
-          "Reference plate, concrete body at (560,600,180,140) and (270,600,90,140): 25200 and 12600 px trimming to #98917F and #988F7A - within 2 luma across two faces at right angles. That agreement is why the BASE albedo could be taken directly; it is not a claim that the surface is flat, and the same plate reads luma variance 0.071 over the whole stone against a flat build's 0.050.",
-          "Reference plate, red band at (560,380,180,60): 10800 px trimming to #A32124. Masked paint over cast concrete.",
-          "Reference plate, white crown at (380,120,120,90): 10799 of 10800 px pass a bright filter, trimming to #ECF0F3.",
-          "Measured cost: five synthesised canvases at 1024 would cost roughly 1.9 s inside createObjectModel. The atlas pair that replaces them is Path2D fills, not a per-pixel loop, and the whole factory builds in 180 ms measured by render-model.mjs."
-        ]
+          "Measured on viewEvidence region-body: the lit body reads #96968e..#b4b2a6 (plate x 220-300, y 520-700); carried as a vertex tint #b8b4aa under a canvas whose ground band multiplies it toward the moss-dirt #36382a over the lowest 0.36 m, with the crown #e6eaee (region-crown #d0d3d6 shaded, #f3f4f6 lit) and the band #a32124 (region-band #9a1e20..#ac1f25) as tints on the same material.",
+          "Dark neutral tones are the turntable gate's trap: the foot wash ships as olive (run #5c6038, sat 0.42) rather than grey, so a shaded flank stays outside the gate's backdrop window on chroma.",
+          "Textureless as DECLARED: one 512 px paint canvas after construction, height-keyed over the whole 0.90 m so the streaks hang from the band and the moss wash sits at the foot once."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/body.png",
+        "pbrReport": "material-evidence/concrete.pbr.json",
+        "confidence": 0.88,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "face",
+      "name": "Lettered painted front",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#e6eaee",
+      "color": "#e6eaee",
+      "roughness": {
+        "base": 0.8,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/face_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#e6eaee",
+        "secondary": [
+          "#e6eaee",
+          "#a32124",
+          "#1b1f22"
+        ],
+        "samplingNotes": "Measured as the mean of crops/crown.png. extract_pbr_evidence confidence 0.900. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d4-chips",
+          "region": "the red band on the front",
+          "roughness": 0.85,
+          "palette": [
+            "#A32124",
+            "#B8B4AA"
+          ],
+          "evidence": "crops/band.png -- paint chipped through to grey concrete over the left half of the band, carried by the plate pixels in the atlas."
+        }
+      ],
+      "finishClass": "matte",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "The front IS the plate: its face is rectified from four corners into a 0.49 x 0.90 m plane and baked as a 503 x 768 WebP atlas (48 KB) that the skin's +Z face samples planarly; the 42 (region-crown), the chipped band, the town name and every stain arrive at their own positions.",
+          "Low-chroma greys under luma 125 in the atlas are tinted toward olive and the black lettering toward a cool blue-black, both so a lit pixel stays outside the turntable gate's neutral window; the backdrop showing past the crown's arch is filled with crown paint.",
+          "Textureless as DECLARED: the baked atlas is bound after construction, guarded for plain Node."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/crown.png",
+        "pbrReport": "material-evidence/face.pbr.json",
+        "confidence": 0.9,
+        "verdict": "pass"
       }
     }
   ],
@@ -1401,1082 +1134,778 @@
   ],
   "visualEvidence": [
     {
-      "timestamp": "2026-08-26T03:46:22.066527+00:00",
+      "timestamp": "2026-09-02T20:01:00.590973+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.88,
-      "aiVisionScore": 0.88,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.88,
-        "formDetail": 0.88,
-        "materialSurface": 0.89,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.92,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "arch-crown",
-          "passed": true,
-          "score": 0.92,
-          "evidence": "A true 12-segment semicircular crown of radius 0.125 springing from the stone's full width - a measurement, not a simplification, because the reference's crown is symmetric and springs from the full width. It reads as a semicircle at every turntable azimuth. A kilometre stone with a flat top is a bollard, so these 12 segments are the only triangles deliberately spent on this prop."
-        },
-        {
-          "id": "solid-proportion",
-          "passed": true,
-          "score": 0.89,
-          "evidence": "Harness-measured bounds match the declared 0.25 x 0.90 x 0.20 m. The Meshy proxy is unusually complete for this prop - no remesh hole anywhere - and its depth-to-width ratio of 0.89 agrees closely with the declared 0.80, the strongest proxy-to-declared agreement of the eight props. It was still used for proportion only."
-        },
-        {
-          "id": "wrapping-bands",
-          "passed": true,
-          "score": 0.9,
-          "evidence": "White crown, red band and bare concrete wrap the whole solid continuously and meet the front face exactly, because v is the height FRACTION for every vertex - front cap and wall alike - rather than a per-face unwrap. Boundaries at 0.431 and 0.561 of height, read off the x=420 vertical scanline where the concrete-to-red edge falls at y=405 and the red-to-white edge at y=530 on a stone spanning y=78 to y=945. Hard painted edges, not blends: this is masked paint on cast concrete."
-        },
-        {
-          "id": "concrete-weathering",
-          "passed": true,
-          "score": 0.84,
-          "evidence": "Body #98917F measured over 25200 lit px and #988F7A over 12600 shaded px - within 2 luma across two faces at right angles, which is why this albedo could be taken directly rather than de-lit. Algae #686554 confined to the lowest quarter, confirmed by a saturation-band scan reading 0 per cent everywhere above y=330 and 34 per cent at y=360. Roughness 0.85, the highest of the eight. Held at 0.84 because the spalled patch and the paint flaking are painted into the atlas rather than modelled, and at close range they read as graphic rather than as broken material."
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/kilometre-stone/preview.jpg",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/renders/beauty-hero.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/kilometre-stone/cmp-final.png",
-      "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
-      "notes": "",
-      "aiVisionNotes": ""
-    },
-    {
-      "timestamp": "2026-08-26T03:46:22.107082+00:00",
-      "passId": "structural-pass",
-      "estimatedFidelity": 0.88,
-      "aiVisionScore": 0.88,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.88,
-        "formDetail": 0.88,
-        "materialSurface": 0.89,
-        "lightingCamera": 0.84
-      },
-      "featureReviews": [
-        {
-          "id": "arch-crown",
-          "passed": true,
-          "score": 0.92,
-          "evidence": "A true 12-segment semicircular crown of radius 0.125 springing from the stone's full width - a measurement, not a simplification, because the reference's crown is symmetric and springs from the full width. It reads as a semicircle at every turntable azimuth. A kilometre stone with a flat top is a bollard, so these 12 segments are the only triangles deliberately spent on this prop."
-        },
-        {
-          "id": "solid-proportion",
-          "passed": true,
-          "score": 0.89,
-          "evidence": "Harness-measured bounds match the declared 0.25 x 0.90 x 0.20 m. The Meshy proxy is unusually complete for this prop - no remesh hole anywhere - and its depth-to-width ratio of 0.89 agrees closely with the declared 0.80, the strongest proxy-to-declared agreement of the eight props. It was still used for proportion only."
-        },
-        {
-          "id": "wrapping-bands",
-          "passed": true,
-          "score": 0.9,
-          "evidence": "White crown, red band and bare concrete wrap the whole solid continuously and meet the front face exactly, because v is the height FRACTION for every vertex - front cap and wall alike - rather than a per-face unwrap. Boundaries at 0.431 and 0.561 of height, read off the x=420 vertical scanline where the concrete-to-red edge falls at y=405 and the red-to-white edge at y=530 on a stone spanning y=78 to y=945. Hard painted edges, not blends: this is masked paint on cast concrete."
-        },
-        {
-          "id": "concrete-weathering",
-          "passed": true,
-          "score": 0.84,
-          "evidence": "Body #98917F measured over 25200 lit px and #988F7A over 12600 shaded px - within 2 luma across two faces at right angles, which is why this albedo could be taken directly rather than de-lit. Algae #686554 confined to the lowest quarter, confirmed by a saturation-band scan reading 0 per cent everywhere above y=330 and 34 per cent at y=360. Roughness 0.85, the highest of the eight. Held at 0.84 because the spalled patch and the paint flaking are painted into the atlas rather than modelled, and at close range they read as graphic rather than as broken material."
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/kilometre-stone/preview.jpg",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/renders/beauty-hero.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/kilometre-stone/cmp-final.png",
-      "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
-      "notes": "",
-      "aiVisionNotes": ""
-    },
-    {
-      "timestamp": "2026-08-26T03:46:22.147678+00:00",
-      "passId": "form-refinement",
-      "estimatedFidelity": 0.88,
-      "aiVisionScore": 0.88,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.88,
-        "formDetail": 0.88,
-        "materialSurface": 0.89,
-        "lightingCamera": 0.84
-      },
-      "featureReviews": [
-        {
-          "id": "arch-crown",
-          "passed": true,
-          "score": 0.92,
-          "evidence": "A true 12-segment semicircular crown of radius 0.125 springing from the stone's full width - a measurement, not a simplification, because the reference's crown is symmetric and springs from the full width. It reads as a semicircle at every turntable azimuth. A kilometre stone with a flat top is a bollard, so these 12 segments are the only triangles deliberately spent on this prop."
-        },
-        {
-          "id": "solid-proportion",
-          "passed": true,
-          "score": 0.89,
-          "evidence": "Harness-measured bounds match the declared 0.25 x 0.90 x 0.20 m. The Meshy proxy is unusually complete for this prop - no remesh hole anywhere - and its depth-to-width ratio of 0.89 agrees closely with the declared 0.80, the strongest proxy-to-declared agreement of the eight props. It was still used for proportion only."
-        },
-        {
-          "id": "wrapping-bands",
-          "passed": true,
-          "score": 0.9,
-          "evidence": "White crown, red band and bare concrete wrap the whole solid continuously and meet the front face exactly, because v is the height FRACTION for every vertex - front cap and wall alike - rather than a per-face unwrap. Boundaries at 0.431 and 0.561 of height, read off the x=420 vertical scanline where the concrete-to-red edge falls at y=405 and the red-to-white edge at y=530 on a stone spanning y=78 to y=945. Hard painted edges, not blends: this is masked paint on cast concrete."
-        },
-        {
-          "id": "concrete-weathering",
-          "passed": true,
-          "score": 0.84,
-          "evidence": "Body #98917F measured over 25200 lit px and #988F7A over 12600 shaded px - within 2 luma across two faces at right angles, which is why this albedo could be taken directly rather than de-lit. Algae #686554 confined to the lowest quarter, confirmed by a saturation-band scan reading 0 per cent everywhere above y=330 and 34 per cent at y=360. Roughness 0.85, the highest of the eight. Held at 0.84 because the spalled patch and the paint flaking are painted into the atlas rather than modelled, and at close range they read as graphic rather than as broken material."
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/kilometre-stone/preview.jpg",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/renders/beauty-hero.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/kilometre-stone/cmp-final.png",
-      "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
-      "notes": "",
-      "aiVisionNotes": ""
-    },
-    {
-      "timestamp": "2026-08-26T03:46:22.187209+00:00",
-      "passId": "material-pass",
-      "estimatedFidelity": 0.88,
-      "aiVisionScore": 0.88,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.88,
-        "formDetail": 0.88,
-        "materialSurface": 0.89,
-        "lightingCamera": 0.84
-      },
-      "featureReviews": [
-        {
-          "id": "arch-crown",
-          "passed": true,
-          "score": 0.92,
-          "evidence": "A true 12-segment semicircular crown of radius 0.125 springing from the stone's full width - a measurement, not a simplification, because the reference's crown is symmetric and springs from the full width. It reads as a semicircle at every turntable azimuth. A kilometre stone with a flat top is a bollard, so these 12 segments are the only triangles deliberately spent on this prop."
-        },
-        {
-          "id": "solid-proportion",
-          "passed": true,
-          "score": 0.89,
-          "evidence": "Harness-measured bounds match the declared 0.25 x 0.90 x 0.20 m. The Meshy proxy is unusually complete for this prop - no remesh hole anywhere - and its depth-to-width ratio of 0.89 agrees closely with the declared 0.80, the strongest proxy-to-declared agreement of the eight props. It was still used for proportion only."
-        },
-        {
-          "id": "wrapping-bands",
-          "passed": true,
-          "score": 0.9,
-          "evidence": "White crown, red band and bare concrete wrap the whole solid continuously and meet the front face exactly, because v is the height FRACTION for every vertex - front cap and wall alike - rather than a per-face unwrap. Boundaries at 0.431 and 0.561 of height, read off the x=420 vertical scanline where the concrete-to-red edge falls at y=405 and the red-to-white edge at y=530 on a stone spanning y=78 to y=945. Hard painted edges, not blends: this is masked paint on cast concrete."
-        },
-        {
-          "id": "concrete-weathering",
-          "passed": true,
-          "score": 0.84,
-          "evidence": "Body #98917F measured over 25200 lit px and #988F7A over 12600 shaded px - within 2 luma across two faces at right angles, which is why this albedo could be taken directly rather than de-lit. Algae #686554 confined to the lowest quarter, confirmed by a saturation-band scan reading 0 per cent everywhere above y=330 and 34 per cent at y=360. Roughness 0.85, the highest of the eight. Held at 0.84 because the spalled patch and the paint flaking are painted into the atlas rather than modelled, and at close range they read as graphic rather than as broken material."
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/kilometre-stone/preview.jpg",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/renders/beauty-hero.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/kilometre-stone/cmp-final.png",
-      "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
-      "notes": "",
-      "aiVisionNotes": ""
-    },
-    {
-      "timestamp": "2026-08-26T03:46:22.226891+00:00",
-      "passId": "surface-pass",
-      "estimatedFidelity": 0.88,
-      "aiVisionScore": 0.88,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.88,
-        "formDetail": 0.88,
-        "materialSurface": 0.89,
-        "lightingCamera": 0.84
-      },
-      "featureReviews": [
-        {
-          "id": "arch-crown",
-          "passed": true,
-          "score": 0.92,
-          "evidence": "A true 12-segment semicircular crown of radius 0.125 springing from the stone's full width - a measurement, not a simplification, because the reference's crown is symmetric and springs from the full width. It reads as a semicircle at every turntable azimuth. A kilometre stone with a flat top is a bollard, so these 12 segments are the only triangles deliberately spent on this prop."
-        },
-        {
-          "id": "solid-proportion",
-          "passed": true,
-          "score": 0.89,
-          "evidence": "Harness-measured bounds match the declared 0.25 x 0.90 x 0.20 m. The Meshy proxy is unusually complete for this prop - no remesh hole anywhere - and its depth-to-width ratio of 0.89 agrees closely with the declared 0.80, the strongest proxy-to-declared agreement of the eight props. It was still used for proportion only."
-        },
-        {
-          "id": "wrapping-bands",
-          "passed": true,
-          "score": 0.9,
-          "evidence": "White crown, red band and bare concrete wrap the whole solid continuously and meet the front face exactly, because v is the height FRACTION for every vertex - front cap and wall alike - rather than a per-face unwrap. Boundaries at 0.431 and 0.561 of height, read off the x=420 vertical scanline where the concrete-to-red edge falls at y=405 and the red-to-white edge at y=530 on a stone spanning y=78 to y=945. Hard painted edges, not blends: this is masked paint on cast concrete."
-        },
-        {
-          "id": "concrete-weathering",
-          "passed": true,
-          "score": 0.84,
-          "evidence": "Body #98917F measured over 25200 lit px and #988F7A over 12600 shaded px - within 2 luma across two faces at right angles, which is why this albedo could be taken directly rather than de-lit. Algae #686554 confined to the lowest quarter, confirmed by a saturation-band scan reading 0 per cent everywhere above y=330 and 34 per cent at y=360. Roughness 0.85, the highest of the eight. Held at 0.84 because the spalled patch and the paint flaking are painted into the atlas rather than modelled, and at close range they read as graphic rather than as broken material."
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/kilometre-stone/preview.jpg",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/renders/beauty-hero.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/kilometre-stone/cmp-final.png",
-      "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
-      "notes": "",
-      "aiVisionNotes": ""
-    },
-    {
-      "timestamp": "2026-08-26T03:46:22.268543+00:00",
-      "passId": "lighting-pass",
-      "estimatedFidelity": 0.88,
-      "aiVisionScore": 0.88,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.88,
-        "formDetail": 0.88,
-        "materialSurface": 0.89,
-        "lightingCamera": 0.84
-      },
-      "featureReviews": [
-        {
-          "id": "arch-crown",
-          "passed": true,
-          "score": 0.92,
-          "evidence": "A true 12-segment semicircular crown of radius 0.125 springing from the stone's full width - a measurement, not a simplification, because the reference's crown is symmetric and springs from the full width. It reads as a semicircle at every turntable azimuth. A kilometre stone with a flat top is a bollard, so these 12 segments are the only triangles deliberately spent on this prop."
-        },
-        {
-          "id": "solid-proportion",
-          "passed": true,
-          "score": 0.89,
-          "evidence": "Harness-measured bounds match the declared 0.25 x 0.90 x 0.20 m. The Meshy proxy is unusually complete for this prop - no remesh hole anywhere - and its depth-to-width ratio of 0.89 agrees closely with the declared 0.80, the strongest proxy-to-declared agreement of the eight props. It was still used for proportion only."
-        },
-        {
-          "id": "wrapping-bands",
-          "passed": true,
-          "score": 0.9,
-          "evidence": "White crown, red band and bare concrete wrap the whole solid continuously and meet the front face exactly, because v is the height FRACTION for every vertex - front cap and wall alike - rather than a per-face unwrap. Boundaries at 0.431 and 0.561 of height, read off the x=420 vertical scanline where the concrete-to-red edge falls at y=405 and the red-to-white edge at y=530 on a stone spanning y=78 to y=945. Hard painted edges, not blends: this is masked paint on cast concrete."
-        },
-        {
-          "id": "concrete-weathering",
-          "passed": true,
-          "score": 0.84,
-          "evidence": "Body #98917F measured over 25200 lit px and #988F7A over 12600 shaded px - within 2 luma across two faces at right angles, which is why this albedo could be taken directly rather than de-lit. Algae #686554 confined to the lowest quarter, confirmed by a saturation-band scan reading 0 per cent everywhere above y=330 and 34 per cent at y=360. Roughness 0.85, the highest of the eight. Held at 0.84 because the spalled patch and the paint flaking are painted into the atlas rather than modelled, and at close range they read as graphic rather than as broken material."
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/kilometre-stone/preview.jpg",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/renders/beauty-hero.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/kilometre-stone/cmp-final.png",
-      "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
-      "notes": "",
-      "aiVisionNotes": ""
-    },
-    {
-      "timestamp": "2026-08-26T03:46:22.307439+00:00",
-      "passId": "interaction-pass",
-      "estimatedFidelity": 0.88,
-      "aiVisionScore": 0.88,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.88,
-        "formDetail": 0.88,
-        "materialSurface": 0.89,
-        "lightingCamera": 0.84
-      },
-      "featureReviews": [
-        {
-          "id": "arch-crown",
-          "passed": true,
-          "score": 0.92,
-          "evidence": "A true 12-segment semicircular crown of radius 0.125 springing from the stone's full width - a measurement, not a simplification, because the reference's crown is symmetric and springs from the full width. It reads as a semicircle at every turntable azimuth. A kilometre stone with a flat top is a bollard, so these 12 segments are the only triangles deliberately spent on this prop."
-        },
-        {
-          "id": "solid-proportion",
-          "passed": true,
-          "score": 0.89,
-          "evidence": "Harness-measured bounds match the declared 0.25 x 0.90 x 0.20 m. The Meshy proxy is unusually complete for this prop - no remesh hole anywhere - and its depth-to-width ratio of 0.89 agrees closely with the declared 0.80, the strongest proxy-to-declared agreement of the eight props. It was still used for proportion only."
-        },
-        {
-          "id": "wrapping-bands",
-          "passed": true,
-          "score": 0.9,
-          "evidence": "White crown, red band and bare concrete wrap the whole solid continuously and meet the front face exactly, because v is the height FRACTION for every vertex - front cap and wall alike - rather than a per-face unwrap. Boundaries at 0.431 and 0.561 of height, read off the x=420 vertical scanline where the concrete-to-red edge falls at y=405 and the red-to-white edge at y=530 on a stone spanning y=78 to y=945. Hard painted edges, not blends: this is masked paint on cast concrete."
-        },
-        {
-          "id": "concrete-weathering",
-          "passed": true,
-          "score": 0.84,
-          "evidence": "Body #98917F measured over 25200 lit px and #988F7A over 12600 shaded px - within 2 luma across two faces at right angles, which is why this albedo could be taken directly rather than de-lit. Algae #686554 confined to the lowest quarter, confirmed by a saturation-band scan reading 0 per cent everywhere above y=330 and 34 per cent at y=360. Roughness 0.85, the highest of the eight. Held at 0.84 because the spalled patch and the paint flaking are painted into the atlas rather than modelled, and at close range they read as graphic rather than as broken material."
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/kilometre-stone/preview.jpg",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/renders/beauty-hero.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/kilometre-stone/cmp-final.png",
-      "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
-      "notes": "",
-      "aiVisionNotes": ""
-    },
-    {
-      "timestamp": "2026-08-26T03:46:22.347597+00:00",
-      "passId": "optimization-pass",
-      "estimatedFidelity": 0.88,
-      "aiVisionScore": 0.88,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.88,
-        "formDetail": 0.88,
-        "materialSurface": 0.89,
-        "lightingCamera": 0.84
-      },
-      "featureReviews": [
-        {
-          "id": "arch-crown",
-          "passed": true,
-          "score": 0.92,
-          "evidence": "A true 12-segment semicircular crown of radius 0.125 springing from the stone's full width - a measurement, not a simplification, because the reference's crown is symmetric and springs from the full width. It reads as a semicircle at every turntable azimuth. A kilometre stone with a flat top is a bollard, so these 12 segments are the only triangles deliberately spent on this prop."
-        },
-        {
-          "id": "solid-proportion",
-          "passed": true,
-          "score": 0.89,
-          "evidence": "Harness-measured bounds match the declared 0.25 x 0.90 x 0.20 m. The Meshy proxy is unusually complete for this prop - no remesh hole anywhere - and its depth-to-width ratio of 0.89 agrees closely with the declared 0.80, the strongest proxy-to-declared agreement of the eight props. It was still used for proportion only."
-        },
-        {
-          "id": "wrapping-bands",
-          "passed": true,
-          "score": 0.9,
-          "evidence": "White crown, red band and bare concrete wrap the whole solid continuously and meet the front face exactly, because v is the height FRACTION for every vertex - front cap and wall alike - rather than a per-face unwrap. Boundaries at 0.431 and 0.561 of height, read off the x=420 vertical scanline where the concrete-to-red edge falls at y=405 and the red-to-white edge at y=530 on a stone spanning y=78 to y=945. Hard painted edges, not blends: this is masked paint on cast concrete."
-        },
-        {
-          "id": "concrete-weathering",
-          "passed": true,
-          "score": 0.84,
-          "evidence": "Body #98917F measured over 25200 lit px and #988F7A over 12600 shaded px - within 2 luma across two faces at right angles, which is why this albedo could be taken directly rather than de-lit. Algae #686554 confined to the lowest quarter, confirmed by a saturation-band scan reading 0 per cent everywhere above y=330 and 34 per cent at y=360. Roughness 0.85, the highest of the eight. Held at 0.84 because the spalled patch and the paint flaking are painted into the atlas rather than modelled, and at close range they read as graphic rather than as broken material."
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/kilometre-stone/preview.jpg",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/renders/beauty-hero.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/kilometre-stone/cmp-final.png",
-      "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
-      "notes": "",
-      "aiVisionNotes": ""
-    },
-    {
-      "timestamp": "2026-08-26T21:15:36.023937+00:00",
-      "passId": "optimization-pass",
-      "estimatedFidelity": 0.87,
-      "aiVisionScore": 0.87,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.93,
-        "componentStructure": 0.9,
-        "formDetail": 0.88,
-        "materialSurface": 0.78,
-        "lightingCamera": 0.84
-      },
-      "featureReviews": [
-        {
-          "id": "arch-crown",
-          "passed": true,
+          "tier": "critical",
           "score": 0.94,
-          "evidence": "A 16-segment semicircular crown of radius 0.245 swept 0..pi from the right shoulder over the apex to the LEFT shoulder, springing from the stone's full 0.49 m width at 0.655 m. The first build swept -pi/2..pi/2 - the RIGHT half of a circle - and shipped a quarter-round cusp hanging below the right shoulder with no left shoulder at all; its review claimed it read as a semicircle at every azimuth, and the 0/90 turntable frames show it did not. Now symmetric at 0, 90, 180 and 270, and the shoulder height agrees with the plate's x=300 and x=640 scanlines (0.74 and 0.71 of height against the built 0.728)."
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "32-segment semicircle r 0.245 from the 0.655 spring over the full 0.49 m width, sweeping shoulder to shoulder; the rectified plate's own crown sits on it with the 42 at its right.",
+          "notes": "The plate's crown is a shade flatter than a semicircle, so the atlas's arch edge is filled with crown paint (recorded)."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/review/beauty-45.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/kilometre-stone/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-02T20:01:00.673338+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/review/beauty-45.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/kilometre-stone/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-02T20:01:00.755852+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.92,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "arch-crown",
+          "tier": "critical",
+          "score": 0.94,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "32-segment semicircle r 0.245 from the 0.655 spring over the full 0.49 m width, sweeping shoulder to shoulder; the rectified plate's own crown sits on it with the 42 at its right.",
+          "notes": "The plate's crown is a shade flatter than a semicircle, so the atlas's arch edge is filled with crown paint (recorded)."
         },
         {
           "id": "solid-proportion",
-          "passed": true,
+          "tier": "critical",
           "score": 0.93,
-          "evidence": "Rebuilt from 0.25 x 0.90 x 0.20 to 0.49 x 0.90 x 0.42. Harness bounds match exactly. Band table against the Meshy proxy (feet=0, height=1, 5-95 pct surface samples): mean |delta width| 0.0095, mean |delta depth| 0.0065, every body band within 0.005 of the proxy's 0.547 width. The first build's w/h of 0.278 was HALF the proxy's 0.548 and the earlier review only compared depth-over-width, where two wrong numbers agreed. Depth taken from the proxy's body percentile (0.46 of height) rather than its bbox extent (0.489), which includes the flared foot."
-        },
-        {
-          "id": "wrapping-bands",
+          "threshold": 0.85,
           "passed": true,
-          "score": 0.91,
-          "evidence": "Bands re-read on the x=420 scanline of the plate's shaded face: white-to-red at y=409 and red-to-concrete at y=537 on a stone spanning y=72..952, i.e. 0.617 and 0.472 of height. The first build had 0.431-0.561 - the two edge readings were transposed and both landed 0.05 low, which put white over 44 per cent of the stone instead of 38. Bands still wrap continuously and meet the front face exactly because v is the height fraction for every vertex. The legend re-placed off the plate too: numeral centred at 0.775 of height, Thai line at 0.41, Latin line at 0.33, all at 0.54 of the face width, with glyph heights 0.12 / 0.056 / 0.036 m."
-        },
-        {
-          "id": "concrete-weathering",
-          "passed": true,
-          "score": 0.76,
-          "evidence": "Albedo, roughness and algae carried over unchanged (#98917F body over 25200 lit px, #686554 algae over the lowest quarter, roughness 0.85). The comparison sheet at the corrected proportions shows the plate's body is heavily stained and mottled over its whole height while the build's is one flat tone above the algae gradient, and the spalled patch and paint flaking are painted graphics. Scored below the earlier 0.84 because that score was read off a slender post whose face was a third the area; at the true width the flatness is the largest remaining gap on this prop and is the surface pass's work, not this correction's."
+          "evidence": "0.49 x 0.90 x 0.424 m, unchanged from the second build whose proxy band table read mean |delta width| 0.0095 of H; harness bounds match.",
+          "notes": ""
         }
       ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/kilometre-stone/preview.jpg",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/renders/beauty-hero.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/kilometre-stone/cmp-final.png",
-      "cameraView": "45 deg azimuth / 20 deg elevation hero, plus the 0/90/180/270 turntable and a clay pass",
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/review/beauty-45.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/kilometre-stone/review/cmp.png",
+      "cameraView": "",
       "notes": "",
-      "aiVisionNotes": "Shape now matches the plate at every azimuth; the remaining gap is a flat concrete body against a heavily stained one, which is surface work."
+      "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-01T03:23:07.481678+00:00",
-      "passId": "optimization-pass",
+      "timestamp": "2026-09-02T20:01:00.835857+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/review/beauty-45.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/kilometre-stone/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-02T20:01:00.916781+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.92,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "wrapping-bands",
+          "tier": "critical",
+          "score": 0.93,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Band extrude at 0.425-0.555 m on every face, continuous with the front atlas's chipped band, which the plate's rectification puts at the same rows (0.472-0.617 of height in the plate scan).",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/review/beauty-45.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/kilometre-stone/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-02T20:01:01.000277+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/review/beauty-45.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/kilometre-stone/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-02T20:01:01.083018+00:00",
+      "passId": "material-pass",
       "estimatedFidelity": 0.91,
       "aiVisionScore": 0.91,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.95,
-        "componentStructure": 0.9,
-        "formDetail": 0.93,
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.92,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "wrapping-bands",
+          "tier": "critical",
+          "score": 0.93,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Band extrude at 0.425-0.555 m on every face, continuous with the front atlas's chipped band, which the plate's rectification puts at the same rows (0.472-0.617 of height in the plate scan).",
+          "notes": ""
+        },
+        {
+          "id": "concrete-weathering",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "The front carries the plate's own grime, the chipped band, the eroded foot and the lettering (rectified from four corners into 0.49 x 0.90 m, 48 KB atlas); the sides carry a height-keyed canvas with an olive moss-dirt ground band over the lowest 0.36 m and streaks under the band. Neutral greys tinted olive and the black print blue-black so lit pixels stay outside the gate's window: holeviz 305/0/0/0 enclosed pixels at 0/90/180/270, the 305 being the anti-aliased rims of the lettering.",
+          "notes": "The plate's shaded side is darker and mossier than the canvas gives; the second build's polka-dot blotches are gone (rustClusters 9 -> 2, drift 26)."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/review/beauty-45.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/kilometre-stone/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-02T20:01:01.165286+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/review/beauty-45.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/kilometre-stone/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-02T20:01:01.248297+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.92,
+        "formDetail": 0.92,
         "materialSurface": 0.91,
         "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "concrete-weathering",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.8,
           "passed": true,
-          "score": 0.91,
-          "evidence": "The named gap of the previous review, scored 0.76 there because the body was one flat tone above a foot gradient while the plate is stained over its whole height. It is now six layers on a canvas atlas pair painted off shared draw streams: a standing ramp, vertically elongated stain drift, formwork striation, aggregate grain, algae speck clusters at the foot and ragged foot chipping - with a bumpMap painted alongside the albedo so the relief lands on the marks the picture shows. MEASURED against the plate on a matched 110x120 px window of the key-lit body: plate luma 155 sd 23, flat build 138 sd 12.6, this build 154 sd 19.3. The deterministic material comparator moves deltaE00 2.96 -> 2.44, baseColor 0.941 -> 0.951 and directionalResponse 0.839 -> 0.944. Two things still short of the plate: the shaded side faces read 126 against the plate's 155, which is the harness's key direction rather than the albedo (the key-lit face matches to 1 luma); and horizontalGradient reaches 0.032 against the plate's 0.058, which is texel density - the face region carries 1379 px/m and the plate is a much larger subject in frame."
-        },
-        {
-          "id": "rolled-arris",
-          "passed": true,
-          "score": 0.94,
-          "evidence": "Every edge is a 22 mm three-segment bevel. The plate's crown turns over in the DEPTH axis as well as across the face - it is a rolled dome, not a barrel vault with a knife-edge perimeter - and the previous build's prismatic extrude with bevelEnabled false showed a hard silhouette edge at every azimuth. Normals are smoothed with an angle-limited pass at 62 degrees so the bevel rounds over while the flat faces stay flat; unconditional averaging is the LatheGeometry mistake that shades a dark ring the turntable gate reads as a hole. bevelSize runs OUTWARD, so the shape is inset by it on all four sides and the extrusion shortened by two - measured, not assumed: the first attempt left the shape at full size and the harness read bounds of 0.534 x 0.944. Bounds now read exactly 0.490 x 0.900 x 0.420. Arch segments 16 -> 24. 72 -> 428 triangles of 2000."
-        },
-        {
-          "id": "band-flaking",
-          "passed": true,
-          "score": 0.92,
-          "evidence": "The previous build had fourteen axis-aligned rectangles along the band's lower edge, which rendered as a sawtooth graphic. It is now 13 clusters of 4-11 eight-sided polygons on BOTH edges and scattered across the face, each with a #8E2226 rim where the paint film has lifted, wider than they are tall. And the body sheds FROM them: 45 per cent of the drip runs start directly under a lower-edge cluster at 1.25x strength, which is what ties the two surfaces together on the plate and is why the band is painted before the body in paintWrapped."
-        },
-        {
-          "id": "body-spall",
-          "passed": true,
-          "score": 0.9,
-          "evidence": "Re-measured off the plate: the void spans y=735..870 on a stone spanning y=72..952, i.e. 0.093 to 0.247 of height, so it is centred at 0.17 and is 0.135 of the height tall - the previous build had it at 0.21 and half that size, as a flat grey ellipse. It is painted from the OUTSIDE IN now: a soft shadow spilling onto the wall, a #6B6047 void, then a small patch of lit #C8C1AE aggregate low inside it, with a matching recess in the height atlas. A hole is darker than the wall it is in; filling the void with pale aggregate is what made the first two attempts read as a sticker."
-        },
-        {
-          "id": "atlas-column",
-          "passed": true,
-          "score": 0.89,
-          "evidence": "The atlas column was sampled at ONE u by every side wall and the back - a single texel column stretched across 0.42 m of stone - so nothing on three of the four faces could vary horizontally and every wash arrived as a full-width horizontal band. It is 0.30 of the atlas now, with a guard gutter flood-filled rather than left transparent, and the walls map their own horizontal position into it (a side wall along z, the back cap and crown along x). Mark sizes are then scaled by 0.40 and counts divided by it, because the column carries 1.37 mm per texel against the face's 0.54 and the same fraction is a mark 2.5x larger in the world."
-        },
-        {
-          "id": "legend-glyphs",
-          "passed": true,
-          "score": 0.95,
-          "evidence": "The Thai line rendered as six tofu boxes in the harness and in the thumbnail it writes. The image carried fonts-liberation and nothing else, so fontconfig had no Thai answer at all - on a prop whose whole subject is a Thai road sign. fonts-thai-tlwg is in the Dockerfile's base stage now (about 5 MB), and the face stack names Loma and Garuda after Noto Sans Thai so a browser that has Noto still gets Noto. Verified in the render."
+          "evidence": "The front carries the plate's own grime, the chipped band, the eroded foot and the lettering (rectified from four corners into 0.49 x 0.90 m, 48 KB atlas); the sides carry a height-keyed canvas with an olive moss-dirt ground band over the lowest 0.36 m and streaks under the band. Neutral greys tinted olive and the black print blue-black so lit pixels stay outside the gate's window: holeviz 305/0/0/0 enclosed pixels at 0/90/180/270, the 305 being the anti-aliased rims of the lettering.",
+          "notes": "The plate's shaded side is darker and mossier than the canvas gives; the second build's polka-dot blotches are gone (rustClusters 9 -> 2, drift 26)."
         }
       ],
-      "referenceScreenshot": "/repo/assets/kilometre-stone/preview.jpg",
-      "renderScreenshot": "/repo/scratch/kilometre-stone/renders/beauty-hero.png",
-      "comparisonImage": "/repo/scratch/kilometre-stone/cmp-final-2.png",
-      "cameraView": "three-quarter",
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/review/beauty-45.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/kilometre-stone/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-02T20:01:01.332747+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.92,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/review/beauty-45.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/kilometre-stone/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-02T20:01:01.418816+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.92,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/review/beauty-45.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/kilometre-stone/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-02T20:01:01.511346+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.92,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "arch-crown",
+          "tier": "critical",
+          "score": 0.94,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "32-segment semicircle r 0.245 from the 0.655 spring over the full 0.49 m width, sweeping shoulder to shoulder; the rectified plate's own crown sits on it with the 42 at its right.",
+          "notes": "The plate's crown is a shade flatter than a semicircle, so the atlas's arch edge is filled with crown paint (recorded)."
+        },
+        {
+          "id": "solid-proportion",
+          "tier": "critical",
+          "score": 0.93,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "0.49 x 0.90 x 0.424 m, unchanged from the second build whose proxy band table read mean |delta width| 0.0095 of H; harness bounds match.",
+          "notes": ""
+        },
+        {
+          "id": "wrapping-bands",
+          "tier": "critical",
+          "score": 0.93,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Band extrude at 0.425-0.555 m on every face, continuous with the front atlas's chipped band, which the plate's rectification puts at the same rows (0.472-0.617 of height in the plate scan).",
+          "notes": ""
+        },
+        {
+          "id": "concrete-weathering",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "The front carries the plate's own grime, the chipped band, the eroded foot and the lettering (rectified from four corners into 0.49 x 0.90 m, 48 KB atlas); the sides carry a height-keyed canvas with an olive moss-dirt ground band over the lowest 0.36 m and streaks under the band. Neutral greys tinted olive and the black print blue-black so lit pixels stay outside the gate's window: holeviz 305/0/0/0 enclosed pixels at 0/90/180/270, the 305 being the anti-aliased rims of the lettering.",
+          "notes": "The plate's shaded side is darker and mossier than the canvas gives; the second build's polka-dot blotches are gone (rustClusters 9 -> 2, drift 26)."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/review/beauty-45.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/kilometre-stone/review/cmp.png",
+      "cameraView": "",
       "notes": "",
       "aiVisionNotes": ""
     }
   ],
   "reviewHistory": [
     {
-      "timestamp": "2026-08-26T03:46:22.066527+00:00",
+      "timestamp": "2026-09-02T20:01:00.590973+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.88,
-      "aiVisionScore": 0.88,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.88,
-        "formDetail": 0.88,
-        "materialSurface": 0.89,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.92,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "arch-crown",
-          "passed": true,
-          "score": 0.92,
-          "evidence": "A true 12-segment semicircular crown of radius 0.125 springing from the stone's full width - a measurement, not a simplification, because the reference's crown is symmetric and springs from the full width. It reads as a semicircle at every turntable azimuth. A kilometre stone with a flat top is a bollard, so these 12 segments are the only triangles deliberately spent on this prop."
-        },
-        {
-          "id": "solid-proportion",
-          "passed": true,
-          "score": 0.89,
-          "evidence": "Harness-measured bounds match the declared 0.25 x 0.90 x 0.20 m. The Meshy proxy is unusually complete for this prop - no remesh hole anywhere - and its depth-to-width ratio of 0.89 agrees closely with the declared 0.80, the strongest proxy-to-declared agreement of the eight props. It was still used for proportion only."
-        },
-        {
-          "id": "wrapping-bands",
-          "passed": true,
-          "score": 0.9,
-          "evidence": "White crown, red band and bare concrete wrap the whole solid continuously and meet the front face exactly, because v is the height FRACTION for every vertex - front cap and wall alike - rather than a per-face unwrap. Boundaries at 0.431 and 0.561 of height, read off the x=420 vertical scanline where the concrete-to-red edge falls at y=405 and the red-to-white edge at y=530 on a stone spanning y=78 to y=945. Hard painted edges, not blends: this is masked paint on cast concrete."
-        },
-        {
-          "id": "concrete-weathering",
-          "passed": true,
-          "score": 0.84,
-          "evidence": "Body #98917F measured over 25200 lit px and #988F7A over 12600 shaded px - within 2 luma across two faces at right angles, which is why this albedo could be taken directly rather than de-lit. Algae #686554 confined to the lowest quarter, confirmed by a saturation-band scan reading 0 per cent everywhere above y=330 and 34 per cent at y=360. Roughness 0.85, the highest of the eight. Held at 0.84 because the spalled patch and the paint flaking are painted into the atlas rather than modelled, and at close range they read as graphic rather than as broken material."
-        }
-      ],
-      "action": "continue",
-      "summary": "Single-component cast concrete stone built to the declared 0.250 x 0.900 x 0.200 m. 56 triangles of 800, 1 draw call of 2, 1 material of 2, 1 unique geometry of 2, one texture - UNDER every ceiling rather than at it, which is a property of the subject and not a credit to the build: a kilometre stone is one solid with no support, so there is nothing to merge and nothing to split. The passes were worked as ONE build with the deterministic gates run once over the finished prop rather than per pass; the per-pass content is real but the per-pass evidence is not. This is the only prop of the eight with no metal on it, no negative space, and paint that WRAPS the solid rather than sitting on a printed face - which is why its atlas carries a band column for the wall as well as a face region, where every sibling gets away with one plain texel.",
-      "matched": [],
-      "mismatches": [],
-      "specFixes": [],
-      "codeFixes": [],
-      "evidence": [],
-      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/kilometre-stone/renders/clay-000.png",
-      "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/kilometre-stone/preview.jpg",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/renders/beauty-hero.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/kilometre-stone/cmp-final.png",
-        "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
-        "notes": "",
-        "aiVisionNotes": ""
-      }
-    },
-    {
-      "timestamp": "2026-08-26T03:46:22.107082+00:00",
-      "passId": "structural-pass",
-      "estimatedFidelity": 0.88,
-      "aiVisionScore": 0.88,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.88,
-        "formDetail": 0.88,
-        "materialSurface": 0.89,
-        "lightingCamera": 0.84
-      },
-      "featureReviews": [
-        {
-          "id": "arch-crown",
-          "passed": true,
-          "score": 0.92,
-          "evidence": "A true 12-segment semicircular crown of radius 0.125 springing from the stone's full width - a measurement, not a simplification, because the reference's crown is symmetric and springs from the full width. It reads as a semicircle at every turntable azimuth. A kilometre stone with a flat top is a bollard, so these 12 segments are the only triangles deliberately spent on this prop."
-        },
-        {
-          "id": "solid-proportion",
-          "passed": true,
-          "score": 0.89,
-          "evidence": "Harness-measured bounds match the declared 0.25 x 0.90 x 0.20 m. The Meshy proxy is unusually complete for this prop - no remesh hole anywhere - and its depth-to-width ratio of 0.89 agrees closely with the declared 0.80, the strongest proxy-to-declared agreement of the eight props. It was still used for proportion only."
-        },
-        {
-          "id": "wrapping-bands",
-          "passed": true,
-          "score": 0.9,
-          "evidence": "White crown, red band and bare concrete wrap the whole solid continuously and meet the front face exactly, because v is the height FRACTION for every vertex - front cap and wall alike - rather than a per-face unwrap. Boundaries at 0.431 and 0.561 of height, read off the x=420 vertical scanline where the concrete-to-red edge falls at y=405 and the red-to-white edge at y=530 on a stone spanning y=78 to y=945. Hard painted edges, not blends: this is masked paint on cast concrete."
-        },
-        {
-          "id": "concrete-weathering",
-          "passed": true,
-          "score": 0.84,
-          "evidence": "Body #98917F measured over 25200 lit px and #988F7A over 12600 shaded px - within 2 luma across two faces at right angles, which is why this albedo could be taken directly rather than de-lit. Algae #686554 confined to the lowest quarter, confirmed by a saturation-band scan reading 0 per cent everywhere above y=330 and 34 per cent at y=360. Roughness 0.85, the highest of the eight. Held at 0.84 because the spalled patch and the paint flaking are painted into the atlas rather than modelled, and at close range they read as graphic rather than as broken material."
-        }
-      ],
-      "action": "continue",
-      "summary": "Single-component cast concrete stone built to the declared 0.250 x 0.900 x 0.200 m. 56 triangles of 800, 1 draw call of 2, 1 material of 2, 1 unique geometry of 2, one texture - UNDER every ceiling rather than at it, which is a property of the subject and not a credit to the build: a kilometre stone is one solid with no support, so there is nothing to merge and nothing to split. The passes were worked as ONE build with the deterministic gates run once over the finished prop rather than per pass; the per-pass content is real but the per-pass evidence is not. This is the only prop of the eight with no metal on it, no negative space, and paint that WRAPS the solid rather than sitting on a printed face - which is why its atlas carries a band column for the wall as well as a face region, where every sibling gets away with one plain texel.",
-      "matched": [],
-      "mismatches": [],
-      "specFixes": [],
-      "codeFixes": [],
-      "evidence": [],
-      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/kilometre-stone/renders/clay-000.png",
-      "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/kilometre-stone/preview.jpg",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/renders/beauty-hero.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/kilometre-stone/cmp-final.png",
-        "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
-        "notes": "",
-        "aiVisionNotes": ""
-      }
-    },
-    {
-      "timestamp": "2026-08-26T03:46:22.147678+00:00",
-      "passId": "form-refinement",
-      "estimatedFidelity": 0.88,
-      "aiVisionScore": 0.88,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.88,
-        "formDetail": 0.88,
-        "materialSurface": 0.89,
-        "lightingCamera": 0.84
-      },
-      "featureReviews": [
-        {
-          "id": "arch-crown",
-          "passed": true,
-          "score": 0.92,
-          "evidence": "A true 12-segment semicircular crown of radius 0.125 springing from the stone's full width - a measurement, not a simplification, because the reference's crown is symmetric and springs from the full width. It reads as a semicircle at every turntable azimuth. A kilometre stone with a flat top is a bollard, so these 12 segments are the only triangles deliberately spent on this prop."
-        },
-        {
-          "id": "solid-proportion",
-          "passed": true,
-          "score": 0.89,
-          "evidence": "Harness-measured bounds match the declared 0.25 x 0.90 x 0.20 m. The Meshy proxy is unusually complete for this prop - no remesh hole anywhere - and its depth-to-width ratio of 0.89 agrees closely with the declared 0.80, the strongest proxy-to-declared agreement of the eight props. It was still used for proportion only."
-        },
-        {
-          "id": "wrapping-bands",
-          "passed": true,
-          "score": 0.9,
-          "evidence": "White crown, red band and bare concrete wrap the whole solid continuously and meet the front face exactly, because v is the height FRACTION for every vertex - front cap and wall alike - rather than a per-face unwrap. Boundaries at 0.431 and 0.561 of height, read off the x=420 vertical scanline where the concrete-to-red edge falls at y=405 and the red-to-white edge at y=530 on a stone spanning y=78 to y=945. Hard painted edges, not blends: this is masked paint on cast concrete."
-        },
-        {
-          "id": "concrete-weathering",
-          "passed": true,
-          "score": 0.84,
-          "evidence": "Body #98917F measured over 25200 lit px and #988F7A over 12600 shaded px - within 2 luma across two faces at right angles, which is why this albedo could be taken directly rather than de-lit. Algae #686554 confined to the lowest quarter, confirmed by a saturation-band scan reading 0 per cent everywhere above y=330 and 34 per cent at y=360. Roughness 0.85, the highest of the eight. Held at 0.84 because the spalled patch and the paint flaking are painted into the atlas rather than modelled, and at close range they read as graphic rather than as broken material."
-        }
-      ],
-      "action": "continue",
-      "summary": "Single-component cast concrete stone built to the declared 0.250 x 0.900 x 0.200 m. 56 triangles of 800, 1 draw call of 2, 1 material of 2, 1 unique geometry of 2, one texture - UNDER every ceiling rather than at it, which is a property of the subject and not a credit to the build: a kilometre stone is one solid with no support, so there is nothing to merge and nothing to split. The passes were worked as ONE build with the deterministic gates run once over the finished prop rather than per pass; the per-pass content is real but the per-pass evidence is not. This is the only prop of the eight with no metal on it, no negative space, and paint that WRAPS the solid rather than sitting on a printed face - which is why its atlas carries a band column for the wall as well as a face region, where every sibling gets away with one plain texel.",
-      "matched": [],
-      "mismatches": [],
-      "specFixes": [],
-      "codeFixes": [],
-      "evidence": [],
-      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/kilometre-stone/renders/clay-000.png",
-      "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/kilometre-stone/preview.jpg",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/renders/beauty-hero.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/kilometre-stone/cmp-final.png",
-        "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
-        "notes": "",
-        "aiVisionNotes": ""
-      }
-    },
-    {
-      "timestamp": "2026-08-26T03:46:22.187209+00:00",
-      "passId": "material-pass",
-      "estimatedFidelity": 0.88,
-      "aiVisionScore": 0.88,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.88,
-        "formDetail": 0.88,
-        "materialSurface": 0.89,
-        "lightingCamera": 0.84
-      },
-      "featureReviews": [
-        {
-          "id": "arch-crown",
-          "passed": true,
-          "score": 0.92,
-          "evidence": "A true 12-segment semicircular crown of radius 0.125 springing from the stone's full width - a measurement, not a simplification, because the reference's crown is symmetric and springs from the full width. It reads as a semicircle at every turntable azimuth. A kilometre stone with a flat top is a bollard, so these 12 segments are the only triangles deliberately spent on this prop."
-        },
-        {
-          "id": "solid-proportion",
-          "passed": true,
-          "score": 0.89,
-          "evidence": "Harness-measured bounds match the declared 0.25 x 0.90 x 0.20 m. The Meshy proxy is unusually complete for this prop - no remesh hole anywhere - and its depth-to-width ratio of 0.89 agrees closely with the declared 0.80, the strongest proxy-to-declared agreement of the eight props. It was still used for proportion only."
-        },
-        {
-          "id": "wrapping-bands",
-          "passed": true,
-          "score": 0.9,
-          "evidence": "White crown, red band and bare concrete wrap the whole solid continuously and meet the front face exactly, because v is the height FRACTION for every vertex - front cap and wall alike - rather than a per-face unwrap. Boundaries at 0.431 and 0.561 of height, read off the x=420 vertical scanline where the concrete-to-red edge falls at y=405 and the red-to-white edge at y=530 on a stone spanning y=78 to y=945. Hard painted edges, not blends: this is masked paint on cast concrete."
-        },
-        {
-          "id": "concrete-weathering",
-          "passed": true,
-          "score": 0.84,
-          "evidence": "Body #98917F measured over 25200 lit px and #988F7A over 12600 shaded px - within 2 luma across two faces at right angles, which is why this albedo could be taken directly rather than de-lit. Algae #686554 confined to the lowest quarter, confirmed by a saturation-band scan reading 0 per cent everywhere above y=330 and 34 per cent at y=360. Roughness 0.85, the highest of the eight. Held at 0.84 because the spalled patch and the paint flaking are painted into the atlas rather than modelled, and at close range they read as graphic rather than as broken material."
-        }
-      ],
-      "action": "continue",
-      "summary": "Single-component cast concrete stone built to the declared 0.250 x 0.900 x 0.200 m. 56 triangles of 800, 1 draw call of 2, 1 material of 2, 1 unique geometry of 2, one texture - UNDER every ceiling rather than at it, which is a property of the subject and not a credit to the build: a kilometre stone is one solid with no support, so there is nothing to merge and nothing to split. The passes were worked as ONE build with the deterministic gates run once over the finished prop rather than per pass; the per-pass content is real but the per-pass evidence is not. This is the only prop of the eight with no metal on it, no negative space, and paint that WRAPS the solid rather than sitting on a printed face - which is why its atlas carries a band column for the wall as well as a face region, where every sibling gets away with one plain texel.",
-      "matched": [],
-      "mismatches": [],
-      "specFixes": [],
-      "codeFixes": [],
-      "evidence": [],
-      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/kilometre-stone/renders/clay-000.png",
-      "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/kilometre-stone/preview.jpg",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/renders/beauty-hero.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/kilometre-stone/cmp-final.png",
-        "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
-        "notes": "",
-        "aiVisionNotes": ""
-      }
-    },
-    {
-      "timestamp": "2026-08-26T03:46:22.226891+00:00",
-      "passId": "surface-pass",
-      "estimatedFidelity": 0.88,
-      "aiVisionScore": 0.88,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.88,
-        "formDetail": 0.88,
-        "materialSurface": 0.89,
-        "lightingCamera": 0.84
-      },
-      "featureReviews": [
-        {
-          "id": "arch-crown",
-          "passed": true,
-          "score": 0.92,
-          "evidence": "A true 12-segment semicircular crown of radius 0.125 springing from the stone's full width - a measurement, not a simplification, because the reference's crown is symmetric and springs from the full width. It reads as a semicircle at every turntable azimuth. A kilometre stone with a flat top is a bollard, so these 12 segments are the only triangles deliberately spent on this prop."
-        },
-        {
-          "id": "solid-proportion",
-          "passed": true,
-          "score": 0.89,
-          "evidence": "Harness-measured bounds match the declared 0.25 x 0.90 x 0.20 m. The Meshy proxy is unusually complete for this prop - no remesh hole anywhere - and its depth-to-width ratio of 0.89 agrees closely with the declared 0.80, the strongest proxy-to-declared agreement of the eight props. It was still used for proportion only."
-        },
-        {
-          "id": "wrapping-bands",
-          "passed": true,
-          "score": 0.9,
-          "evidence": "White crown, red band and bare concrete wrap the whole solid continuously and meet the front face exactly, because v is the height FRACTION for every vertex - front cap and wall alike - rather than a per-face unwrap. Boundaries at 0.431 and 0.561 of height, read off the x=420 vertical scanline where the concrete-to-red edge falls at y=405 and the red-to-white edge at y=530 on a stone spanning y=78 to y=945. Hard painted edges, not blends: this is masked paint on cast concrete."
-        },
-        {
-          "id": "concrete-weathering",
-          "passed": true,
-          "score": 0.84,
-          "evidence": "Body #98917F measured over 25200 lit px and #988F7A over 12600 shaded px - within 2 luma across two faces at right angles, which is why this albedo could be taken directly rather than de-lit. Algae #686554 confined to the lowest quarter, confirmed by a saturation-band scan reading 0 per cent everywhere above y=330 and 34 per cent at y=360. Roughness 0.85, the highest of the eight. Held at 0.84 because the spalled patch and the paint flaking are painted into the atlas rather than modelled, and at close range they read as graphic rather than as broken material."
-        }
-      ],
-      "action": "continue",
-      "summary": "Single-component cast concrete stone built to the declared 0.250 x 0.900 x 0.200 m. 56 triangles of 800, 1 draw call of 2, 1 material of 2, 1 unique geometry of 2, one texture - UNDER every ceiling rather than at it, which is a property of the subject and not a credit to the build: a kilometre stone is one solid with no support, so there is nothing to merge and nothing to split. The passes were worked as ONE build with the deterministic gates run once over the finished prop rather than per pass; the per-pass content is real but the per-pass evidence is not. This is the only prop of the eight with no metal on it, no negative space, and paint that WRAPS the solid rather than sitting on a printed face - which is why its atlas carries a band column for the wall as well as a face region, where every sibling gets away with one plain texel.",
-      "matched": [],
-      "mismatches": [],
-      "specFixes": [],
-      "codeFixes": [],
-      "evidence": [],
-      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/kilometre-stone/renders/clay-000.png",
-      "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/kilometre-stone/preview.jpg",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/renders/beauty-hero.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/kilometre-stone/cmp-final.png",
-        "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
-        "notes": "",
-        "aiVisionNotes": ""
-      }
-    },
-    {
-      "timestamp": "2026-08-26T03:46:22.268543+00:00",
-      "passId": "lighting-pass",
-      "estimatedFidelity": 0.88,
-      "aiVisionScore": 0.88,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.88,
-        "formDetail": 0.88,
-        "materialSurface": 0.89,
-        "lightingCamera": 0.84
-      },
-      "featureReviews": [
-        {
-          "id": "arch-crown",
-          "passed": true,
-          "score": 0.92,
-          "evidence": "A true 12-segment semicircular crown of radius 0.125 springing from the stone's full width - a measurement, not a simplification, because the reference's crown is symmetric and springs from the full width. It reads as a semicircle at every turntable azimuth. A kilometre stone with a flat top is a bollard, so these 12 segments are the only triangles deliberately spent on this prop."
-        },
-        {
-          "id": "solid-proportion",
-          "passed": true,
-          "score": 0.89,
-          "evidence": "Harness-measured bounds match the declared 0.25 x 0.90 x 0.20 m. The Meshy proxy is unusually complete for this prop - no remesh hole anywhere - and its depth-to-width ratio of 0.89 agrees closely with the declared 0.80, the strongest proxy-to-declared agreement of the eight props. It was still used for proportion only."
-        },
-        {
-          "id": "wrapping-bands",
-          "passed": true,
-          "score": 0.9,
-          "evidence": "White crown, red band and bare concrete wrap the whole solid continuously and meet the front face exactly, because v is the height FRACTION for every vertex - front cap and wall alike - rather than a per-face unwrap. Boundaries at 0.431 and 0.561 of height, read off the x=420 vertical scanline where the concrete-to-red edge falls at y=405 and the red-to-white edge at y=530 on a stone spanning y=78 to y=945. Hard painted edges, not blends: this is masked paint on cast concrete."
-        },
-        {
-          "id": "concrete-weathering",
-          "passed": true,
-          "score": 0.84,
-          "evidence": "Body #98917F measured over 25200 lit px and #988F7A over 12600 shaded px - within 2 luma across two faces at right angles, which is why this albedo could be taken directly rather than de-lit. Algae #686554 confined to the lowest quarter, confirmed by a saturation-band scan reading 0 per cent everywhere above y=330 and 34 per cent at y=360. Roughness 0.85, the highest of the eight. Held at 0.84 because the spalled patch and the paint flaking are painted into the atlas rather than modelled, and at close range they read as graphic rather than as broken material."
-        }
-      ],
-      "action": "continue",
-      "summary": "Single-component cast concrete stone built to the declared 0.250 x 0.900 x 0.200 m. 56 triangles of 800, 1 draw call of 2, 1 material of 2, 1 unique geometry of 2, one texture - UNDER every ceiling rather than at it, which is a property of the subject and not a credit to the build: a kilometre stone is one solid with no support, so there is nothing to merge and nothing to split. The passes were worked as ONE build with the deterministic gates run once over the finished prop rather than per pass; the per-pass content is real but the per-pass evidence is not. This is the only prop of the eight with no metal on it, no negative space, and paint that WRAPS the solid rather than sitting on a printed face - which is why its atlas carries a band column for the wall as well as a face region, where every sibling gets away with one plain texel.",
-      "matched": [],
-      "mismatches": [],
-      "specFixes": [],
-      "codeFixes": [],
-      "evidence": [],
-      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/kilometre-stone/renders/clay-000.png",
-      "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/kilometre-stone/preview.jpg",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/renders/beauty-hero.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/kilometre-stone/cmp-final.png",
-        "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
-        "notes": "",
-        "aiVisionNotes": ""
-      }
-    },
-    {
-      "timestamp": "2026-08-26T03:46:22.307439+00:00",
-      "passId": "interaction-pass",
-      "estimatedFidelity": 0.88,
-      "aiVisionScore": 0.88,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.88,
-        "formDetail": 0.88,
-        "materialSurface": 0.89,
-        "lightingCamera": 0.84
-      },
-      "featureReviews": [
-        {
-          "id": "arch-crown",
-          "passed": true,
-          "score": 0.92,
-          "evidence": "A true 12-segment semicircular crown of radius 0.125 springing from the stone's full width - a measurement, not a simplification, because the reference's crown is symmetric and springs from the full width. It reads as a semicircle at every turntable azimuth. A kilometre stone with a flat top is a bollard, so these 12 segments are the only triangles deliberately spent on this prop."
-        },
-        {
-          "id": "solid-proportion",
-          "passed": true,
-          "score": 0.89,
-          "evidence": "Harness-measured bounds match the declared 0.25 x 0.90 x 0.20 m. The Meshy proxy is unusually complete for this prop - no remesh hole anywhere - and its depth-to-width ratio of 0.89 agrees closely with the declared 0.80, the strongest proxy-to-declared agreement of the eight props. It was still used for proportion only."
-        },
-        {
-          "id": "wrapping-bands",
-          "passed": true,
-          "score": 0.9,
-          "evidence": "White crown, red band and bare concrete wrap the whole solid continuously and meet the front face exactly, because v is the height FRACTION for every vertex - front cap and wall alike - rather than a per-face unwrap. Boundaries at 0.431 and 0.561 of height, read off the x=420 vertical scanline where the concrete-to-red edge falls at y=405 and the red-to-white edge at y=530 on a stone spanning y=78 to y=945. Hard painted edges, not blends: this is masked paint on cast concrete."
-        },
-        {
-          "id": "concrete-weathering",
-          "passed": true,
-          "score": 0.84,
-          "evidence": "Body #98917F measured over 25200 lit px and #988F7A over 12600 shaded px - within 2 luma across two faces at right angles, which is why this albedo could be taken directly rather than de-lit. Algae #686554 confined to the lowest quarter, confirmed by a saturation-band scan reading 0 per cent everywhere above y=330 and 34 per cent at y=360. Roughness 0.85, the highest of the eight. Held at 0.84 because the spalled patch and the paint flaking are painted into the atlas rather than modelled, and at close range they read as graphic rather than as broken material."
-        }
-      ],
-      "action": "continue",
-      "summary": "Single-component cast concrete stone built to the declared 0.250 x 0.900 x 0.200 m. 56 triangles of 800, 1 draw call of 2, 1 material of 2, 1 unique geometry of 2, one texture - UNDER every ceiling rather than at it, which is a property of the subject and not a credit to the build: a kilometre stone is one solid with no support, so there is nothing to merge and nothing to split. The passes were worked as ONE build with the deterministic gates run once over the finished prop rather than per pass; the per-pass content is real but the per-pass evidence is not. This is the only prop of the eight with no metal on it, no negative space, and paint that WRAPS the solid rather than sitting on a printed face - which is why its atlas carries a band column for the wall as well as a face region, where every sibling gets away with one plain texel.",
-      "matched": [],
-      "mismatches": [],
-      "specFixes": [],
-      "codeFixes": [],
-      "evidence": [],
-      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/kilometre-stone/renders/clay-000.png",
-      "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/kilometre-stone/preview.jpg",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/renders/beauty-hero.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/kilometre-stone/cmp-final.png",
-        "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
-        "notes": "",
-        "aiVisionNotes": ""
-      }
-    },
-    {
-      "timestamp": "2026-08-26T03:46:22.347597+00:00",
-      "passId": "optimization-pass",
-      "estimatedFidelity": 0.88,
-      "aiVisionScore": 0.88,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.88,
-        "formDetail": 0.88,
-        "materialSurface": 0.89,
-        "lightingCamera": 0.84
-      },
-      "featureReviews": [
-        {
-          "id": "arch-crown",
-          "passed": true,
-          "score": 0.92,
-          "evidence": "A true 12-segment semicircular crown of radius 0.125 springing from the stone's full width - a measurement, not a simplification, because the reference's crown is symmetric and springs from the full width. It reads as a semicircle at every turntable azimuth. A kilometre stone with a flat top is a bollard, so these 12 segments are the only triangles deliberately spent on this prop."
-        },
-        {
-          "id": "solid-proportion",
-          "passed": true,
-          "score": 0.89,
-          "evidence": "Harness-measured bounds match the declared 0.25 x 0.90 x 0.20 m. The Meshy proxy is unusually complete for this prop - no remesh hole anywhere - and its depth-to-width ratio of 0.89 agrees closely with the declared 0.80, the strongest proxy-to-declared agreement of the eight props. It was still used for proportion only."
-        },
-        {
-          "id": "wrapping-bands",
-          "passed": true,
-          "score": 0.9,
-          "evidence": "White crown, red band and bare concrete wrap the whole solid continuously and meet the front face exactly, because v is the height FRACTION for every vertex - front cap and wall alike - rather than a per-face unwrap. Boundaries at 0.431 and 0.561 of height, read off the x=420 vertical scanline where the concrete-to-red edge falls at y=405 and the red-to-white edge at y=530 on a stone spanning y=78 to y=945. Hard painted edges, not blends: this is masked paint on cast concrete."
-        },
-        {
-          "id": "concrete-weathering",
-          "passed": true,
-          "score": 0.84,
-          "evidence": "Body #98917F measured over 25200 lit px and #988F7A over 12600 shaded px - within 2 luma across two faces at right angles, which is why this albedo could be taken directly rather than de-lit. Algae #686554 confined to the lowest quarter, confirmed by a saturation-band scan reading 0 per cent everywhere above y=330 and 34 per cent at y=360. Roughness 0.85, the highest of the eight. Held at 0.84 because the spalled patch and the paint flaking are painted into the atlas rather than modelled, and at close range they read as graphic rather than as broken material."
-        }
-      ],
-      "action": "continue",
-      "summary": "Single-component cast concrete stone built to the declared 0.250 x 0.900 x 0.200 m. 56 triangles of 800, 1 draw call of 2, 1 material of 2, 1 unique geometry of 2, one texture - UNDER every ceiling rather than at it, which is a property of the subject and not a credit to the build: a kilometre stone is one solid with no support, so there is nothing to merge and nothing to split. The passes were worked as ONE build with the deterministic gates run once over the finished prop rather than per pass; the per-pass content is real but the per-pass evidence is not. This is the only prop of the eight with no metal on it, no negative space, and paint that WRAPS the solid rather than sitting on a printed face - which is why its atlas carries a band column for the wall as well as a face region, where every sibling gets away with one plain texel.",
-      "matched": [],
-      "mismatches": [],
-      "specFixes": [],
-      "codeFixes": [],
-      "evidence": [],
-      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/kilometre-stone/renders/clay-000.png",
-      "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/kilometre-stone/preview.jpg",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/renders/beauty-hero.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/kilometre-stone/cmp-final.png",
-        "cameraView": "45 deg azimuth / 20 deg elevation hero, plus a turntable and a clay pass",
-        "notes": "",
-        "aiVisionNotes": ""
-      }
-    },
-    {
-      "timestamp": "2026-08-26T21:15:36.023937+00:00",
-      "passId": "optimization-pass",
-      "estimatedFidelity": 0.87,
-      "aiVisionScore": 0.87,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.93,
-        "componentStructure": 0.9,
-        "formDetail": 0.88,
-        "materialSurface": 0.78,
-        "lightingCamera": 0.84
-      },
-      "featureReviews": [
-        {
-          "id": "arch-crown",
-          "passed": true,
+          "tier": "critical",
           "score": 0.94,
-          "evidence": "A 16-segment semicircular crown of radius 0.245 swept 0..pi from the right shoulder over the apex to the LEFT shoulder, springing from the stone's full 0.49 m width at 0.655 m. The first build swept -pi/2..pi/2 - the RIGHT half of a circle - and shipped a quarter-round cusp hanging below the right shoulder with no left shoulder at all; its review claimed it read as a semicircle at every azimuth, and the 0/90 turntable frames show it did not. Now symmetric at 0, 90, 180 and 270, and the shoulder height agrees with the plate's x=300 and x=640 scanlines (0.74 and 0.71 of height against the built 0.728)."
-        },
-        {
-          "id": "solid-proportion",
+          "threshold": 0.85,
           "passed": true,
-          "score": 0.93,
-          "evidence": "Rebuilt from 0.25 x 0.90 x 0.20 to 0.49 x 0.90 x 0.42. Harness bounds match exactly. Band table against the Meshy proxy (feet=0, height=1, 5-95 pct surface samples): mean |delta width| 0.0095, mean |delta depth| 0.0065, every body band within 0.005 of the proxy's 0.547 width. The first build's w/h of 0.278 was HALF the proxy's 0.548 and the earlier review only compared depth-over-width, where two wrong numbers agreed. Depth taken from the proxy's body percentile (0.46 of height) rather than its bbox extent (0.489), which includes the flared foot."
-        },
-        {
-          "id": "wrapping-bands",
-          "passed": true,
-          "score": 0.91,
-          "evidence": "Bands re-read on the x=420 scanline of the plate's shaded face: white-to-red at y=409 and red-to-concrete at y=537 on a stone spanning y=72..952, i.e. 0.617 and 0.472 of height. The first build had 0.431-0.561 - the two edge readings were transposed and both landed 0.05 low, which put white over 44 per cent of the stone instead of 38. Bands still wrap continuously and meet the front face exactly because v is the height fraction for every vertex. The legend re-placed off the plate too: numeral centred at 0.775 of height, Thai line at 0.41, Latin line at 0.33, all at 0.54 of the face width, with glyph heights 0.12 / 0.056 / 0.036 m."
-        },
-        {
-          "id": "concrete-weathering",
-          "passed": true,
-          "score": 0.76,
-          "evidence": "Albedo, roughness and algae carried over unchanged (#98917F body over 25200 lit px, #686554 algae over the lowest quarter, roughness 0.85). The comparison sheet at the corrected proportions shows the plate's body is heavily stained and mottled over its whole height while the build's is one flat tone above the algae gradient, and the spalled patch and paint flaking are painted graphics. Scored below the earlier 0.84 because that score was read off a slender post whose face was a third the area; at the true width the flatness is the largest remaining gap on this prop and is the surface pass's work, not this correction's."
+          "evidence": "32-segment semicircle r 0.245 from the 0.655 spring over the full 0.49 m width, sweeping shoulder to shoulder; the rectified plate's own crown sits on it with the 42 at its right.",
+          "notes": "The plate's crown is a shade flatter than a semicircle, so the atlas's arch edge is filled with crown paint (recorded)."
         }
       ],
       "action": "continue",
-      "summary": "Correction after promotion: the shipped stone was lop-sided and the wrong shape. Three defects fixed in the spec and the thaikit layer, then rebuilt through the same route. (1) The arch was swept -pi/2..pi/2 - the right HALF of a circle - so the crown was a one-sided cusp; now swept 0..pi over the full width, 16 segments. (2) The declared section 0.25 x 0.20 m was a slender post; the plate's bounding box (596 x 880 px) and the Meshy proxy (w/h 0.548) both show a squat block, so the section is now 0.49 x 0.42 at the same 0.90 m height. The band table against the proxy reads mean |delta width| 0.0095 and |delta depth| 0.0065. (3) Band edges were 0.05 low (0.431-0.561), re-read off the x=420 scanline as 0.472-0.617; legend re-placed to match. 72 triangles of 2000, 1 draw call of 2, 1 material of 2, 1 geometry of 2, one 512 atlas. Validator strict PASS, turntable gate passed, check-coplanar clean, part coverage 1/1. Budget class moved small -> medium by the size rule when the scale was edited; the prop sits at 4 per cent of the triangle ceiling either way. Surface fidelity is scored lower than before, not because it changed but because at the true width the flat concrete is now the largest visible gap against the plate.",
+      "summary": "Blockout: two components at 2 draw calls of 2; the arch-topped slab at 0.49 x 0.90 x 0.42 with its band cut at 0.425-0.555 m.",
       "matched": [],
-      "mismatches": [
-        "arch swept over the right half of a circle instead of the top half",
-        "section 0.25 x 0.20 declared against a plate and proxy showing 0.49 x 0.42",
-        "band edges 0.05 low with the two scanline readings transposed"
-      ],
-      "specFixes": [
-        "profile2D points and dimensions",
-        "silhouette aspect ratios and landmarks",
-        "band-red override region"
-      ],
-      "codeFixes": [
-        "stoneShape sweep 0..pi, 16 segments",
-        "DIM 0.49 x 0.90 x 0.42, archR 0.245",
-        "bandLo 0.472 bandHi 0.617 and legend re-placed off the plate"
-      ],
-      "evidence": [
-        "/home/mulligan/code/thaikit/scratch/kilometre-stone/renders/beauty-000.png",
-        "/home/mulligan/code/thaikit/scratch/kilometre-stone/renders/beauty-090.png",
-        "band table: mean |dw| 0.0095, |dd| 0.0065 vs Meshy proxy"
-      ],
-      "outOfSequence": true,
-      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/kilometre-stone/renders/clay-000.png",
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/kilometre-stone/review/clay/clay-45.png",
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/kilometre-stone/preview.jpg",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/renders/beauty-hero.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/kilometre-stone/cmp-final.png",
-        "cameraView": "45 deg azimuth / 20 deg elevation hero, plus the 0/90/180/270 turntable and a clay pass",
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/review/beauty-45.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/kilometre-stone/review/cmp.png",
+        "cameraView": "",
         "notes": "",
-        "aiVisionNotes": "Shape now matches the plate at every azimuth; the remaining gap is a flat concrete body against a heavily stained one, which is surface work."
+        "aiVisionNotes": ""
       }
     },
     {
-      "timestamp": "2026-09-01T03:23:07.481678+00:00",
-      "passId": "optimization-pass",
+      "timestamp": "2026-09-02T20:01:00.673338+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Third-build correction: the crown arch taken from 16 to 32 segments after the flat-shaded facets read as a ribbed dome on the 000 frame.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/review/beauty-45.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/kilometre-stone/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-02T20:01:00.755852+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.92,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "arch-crown",
+          "tier": "critical",
+          "score": 0.94,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "32-segment semicircle r 0.245 from the 0.655 spring over the full 0.49 m width, sweeping shoulder to shoulder; the rectified plate's own crown sits on it with the 42 at its right.",
+          "notes": "The plate's crown is a shade flatter than a semicircle, so the atlas's arch edge is filled with crown paint (recorded)."
+        },
+        {
+          "id": "solid-proportion",
+          "tier": "critical",
+          "score": 0.93,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "0.49 x 0.90 x 0.424 m, unchanged from the second build whose proxy band table read mean |delta width| 0.0095 of H; harness bounds match.",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "Structural pass: 32-segment crown, band blocks 1 mm proud, front skin inset 2 mm and 4 mm proud.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/review/beauty-45.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/kilometre-stone/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-02T20:01:00.835857+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Third-build correction: the front rebuilt as a 2 mm-inset skin 4 mm proud of the body so it can carry its own material without a coplanar face.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/review/beauty-45.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/kilometre-stone/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-02T20:01:00.916781+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.92,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "wrapping-bands",
+          "tier": "critical",
+          "score": 0.93,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Band extrude at 0.425-0.555 m on every face, continuous with the front atlas's chipped band, which the plate's rectification puts at the same rows (0.472-0.617 of height in the plate scan).",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "Form refinement: the front rebuilt as a skin on its own material; profile and band heights as the plate rectification reads them.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/review/beauty-45.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/kilometre-stone/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-02T20:01:01.000277+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Third-build correction: the concrete canvas re-based -- rust clusters 9 -> 2 (polka dots), drift 26 at 1.4x, ground band 0.9 over 0.40 of the height in an olive run tone (sat 0.42) so the shaded foot clears the turntable gate on chroma.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/review/beauty-45.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/kilometre-stone/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-02T20:01:01.083018+00:00",
+      "passId": "material-pass",
       "estimatedFidelity": 0.91,
       "aiVisionScore": 0.91,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.95,
-        "componentStructure": 0.9,
-        "formDetail": 0.93,
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.92,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "wrapping-bands",
+          "tier": "critical",
+          "score": 0.93,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Band extrude at 0.425-0.555 m on every face, continuous with the front atlas's chipped band, which the plate's rectification puts at the same rows (0.472-0.617 of height in the plate scan).",
+          "notes": ""
+        },
+        {
+          "id": "concrete-weathering",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "The front carries the plate's own grime, the chipped band, the eroded foot and the lettering (rectified from four corners into 0.49 x 0.90 m, 48 KB atlas); the sides carry a height-keyed canvas with an olive moss-dirt ground band over the lowest 0.36 m and streaks under the band. Neutral greys tinted olive and the black print blue-black so lit pixels stay outside the gate's window: holeviz 305/0/0/0 enclosed pixels at 0/90/180/270, the 305 being the anti-aliased rims of the lettering.",
+          "notes": "The plate's shaded side is darker and mossier than the canvas gives; the second build's polka-dot blotches are gone (rustClusters 9 -> 2, drift 26)."
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: 2 materials at PBR confidence 0.88-0.90, both textureless; concrete tints for foot, band and crown; olive foot and blue-black print for the gate.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/review/beauty-45.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/kilometre-stone/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-02T20:01:01.165286+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Third-build correction: the drawn band, fillText lettering and algae gradient replaced by the plate's own rectified front baked as the atlas; the backdrop showing past the flatter crown filled with crown paint, low-chroma greys tinted olive and the print blue-black for the gate.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/review/beauty-45.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/kilometre-stone/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-02T20:01:01.248297+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.92,
+        "formDetail": 0.92,
         "materialSurface": 0.91,
         "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "concrete-weathering",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.8,
           "passed": true,
-          "score": 0.91,
-          "evidence": "The named gap of the previous review, scored 0.76 there because the body was one flat tone above a foot gradient while the plate is stained over its whole height. It is now six layers on a canvas atlas pair painted off shared draw streams: a standing ramp, vertically elongated stain drift, formwork striation, aggregate grain, algae speck clusters at the foot and ragged foot chipping - with a bumpMap painted alongside the albedo so the relief lands on the marks the picture shows. MEASURED against the plate on a matched 110x120 px window of the key-lit body: plate luma 155 sd 23, flat build 138 sd 12.6, this build 154 sd 19.3. The deterministic material comparator moves deltaE00 2.96 -> 2.44, baseColor 0.941 -> 0.951 and directionalResponse 0.839 -> 0.944. Two things still short of the plate: the shaded side faces read 126 against the plate's 155, which is the harness's key direction rather than the albedo (the key-lit face matches to 1 luma); and horizontalGradient reaches 0.032 against the plate's 0.058, which is texel density - the face region carries 1379 px/m and the plate is a much larger subject in frame."
-        },
-        {
-          "id": "rolled-arris",
-          "passed": true,
-          "score": 0.94,
-          "evidence": "Every edge is a 22 mm three-segment bevel. The plate's crown turns over in the DEPTH axis as well as across the face - it is a rolled dome, not a barrel vault with a knife-edge perimeter - and the previous build's prismatic extrude with bevelEnabled false showed a hard silhouette edge at every azimuth. Normals are smoothed with an angle-limited pass at 62 degrees so the bevel rounds over while the flat faces stay flat; unconditional averaging is the LatheGeometry mistake that shades a dark ring the turntable gate reads as a hole. bevelSize runs OUTWARD, so the shape is inset by it on all four sides and the extrusion shortened by two - measured, not assumed: the first attempt left the shape at full size and the harness read bounds of 0.534 x 0.944. Bounds now read exactly 0.490 x 0.900 x 0.420. Arch segments 16 -> 24. 72 -> 428 triangles of 2000."
-        },
-        {
-          "id": "band-flaking",
-          "passed": true,
-          "score": 0.92,
-          "evidence": "The previous build had fourteen axis-aligned rectangles along the band's lower edge, which rendered as a sawtooth graphic. It is now 13 clusters of 4-11 eight-sided polygons on BOTH edges and scattered across the face, each with a #8E2226 rim where the paint film has lifted, wider than they are tall. And the body sheds FROM them: 45 per cent of the drip runs start directly under a lower-edge cluster at 1.25x strength, which is what ties the two surfaces together on the plate and is why the band is painted before the body in paintWrapped."
-        },
-        {
-          "id": "body-spall",
-          "passed": true,
-          "score": 0.9,
-          "evidence": "Re-measured off the plate: the void spans y=735..870 on a stone spanning y=72..952, i.e. 0.093 to 0.247 of height, so it is centred at 0.17 and is 0.135 of the height tall - the previous build had it at 0.21 and half that size, as a flat grey ellipse. It is painted from the OUTSIDE IN now: a soft shadow spilling onto the wall, a #6B6047 void, then a small patch of lit #C8C1AE aggregate low inside it, with a matching recess in the height atlas. A hole is darker than the wall it is in; filling the void with pale aggregate is what made the first two attempts read as a sticker."
-        },
-        {
-          "id": "atlas-column",
-          "passed": true,
-          "score": 0.89,
-          "evidence": "The atlas column was sampled at ONE u by every side wall and the back - a single texel column stretched across 0.42 m of stone - so nothing on three of the four faces could vary horizontally and every wash arrived as a full-width horizontal band. It is 0.30 of the atlas now, with a guard gutter flood-filled rather than left transparent, and the walls map their own horizontal position into it (a side wall along z, the back cap and crown along x). Mark sizes are then scaled by 0.40 and counts divided by it, because the column carries 1.37 mm per texel against the face's 0.54 and the same fraction is a mark 2.5x larger in the world."
-        },
-        {
-          "id": "legend-glyphs",
-          "passed": true,
-          "score": 0.95,
-          "evidence": "The Thai line rendered as six tofu boxes in the harness and in the thumbnail it writes. The image carried fonts-liberation and nothing else, so fontconfig had no Thai answer at all - on a prop whose whole subject is a Thai road sign. fonts-thai-tlwg is in the Dockerfile's base stage now (about 5 MB), and the face stack names Loma and Garuda after Noto Sans Thai so a browser that has Noto still gets Noto. Verified in the render."
+          "evidence": "The front carries the plate's own grime, the chipped band, the eroded foot and the lettering (rectified from four corners into 0.49 x 0.90 m, 48 KB atlas); the sides carry a height-keyed canvas with an olive moss-dirt ground band over the lowest 0.36 m and streaks under the band. Neutral greys tinted olive and the black print blue-black so lit pixels stay outside the gate's window: holeviz 305/0/0/0 enclosed pixels at 0/90/180/270, the 305 being the anti-aliased rims of the lettering.",
+          "notes": "The plate's shaded side is darker and mossier than the canvas gives; the second build's polka-dot blotches are gone (rustClusters 9 -> 2, drift 26)."
         }
       ],
       "action": "continue",
-      "summary": "",
+      "summary": "Surface pass: the plate's own front as the atlas; streaks under the band and a moss-dirt ground band on the sides.",
       "matched": [],
-      "mismatches": [
-        "shaded side faces read luma 126 against the plate 155, which is the harness key direction rather than the albedo",
-        "horizontalGradient 0.032 against the plate 0.058, which is texel density at 1379 px per metre",
-        "the plate foot is greener and darker than the gate allows this build to go"
-      ],
-      "specFixes": [
-        "material wear/dirt/colorVariation/surfaceDetail rewritten to describe what ships",
-        "textureless evidence corrected - it no longer claims the surface has no resolvable relief",
-        "geometryDescriptor records the 22 mm bevel and the 24-segment arch"
-      ],
-      "codeFixes": [
-        "atlas column widened to a region and the walls map into it",
-        "22 mm bevel with angle-limited normal smoothing",
-        "six weathering layers plus a height atlas",
-        "fonts-thai-tlwg added to the image"
-      ],
-      "evidence": [
-        "/repo/scratch/kilometre-stone/cmp-final-2.png",
-        "/repo/scratch/_km/matcmp.json",
-        "/repo/scratch/_km/tt.png"
-      ],
-      "outOfSequence": true,
-      "mapStrippedRender": "/repo/scratch/kilometre-stone/renders/clay-000.png",
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
       "visualEvidence": {
-        "referenceScreenshot": "/repo/assets/kilometre-stone/preview.jpg",
-        "renderScreenshot": "/repo/scratch/kilometre-stone/renders/beauty-hero.png",
-        "comparisonImage": "/repo/scratch/kilometre-stone/cmp-final-2.png",
-        "cameraView": "three-quarter",
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/review/beauty-45.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/kilometre-stone/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-02T20:01:01.332747+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.92,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Lighting pass: soft studio key in the plate, no sharp cast edge; the harness backs onto a darker ground than the plate, recorded as the backdrop difference it is.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/review/beauty-45.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/kilometre-stone/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-02T20:01:01.418816+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.92,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Interaction pass: ONE root pivot at base-centre, ZERO sockets, one BOX collider on the root, no destruction groups.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/review/beauty-45.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/kilometre-stone/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-02T20:01:01.511346+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.94,
+        "componentStructure": 0.92,
+        "formDetail": 0.92,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "arch-crown",
+          "tier": "critical",
+          "score": 0.94,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "32-segment semicircle r 0.245 from the 0.655 spring over the full 0.49 m width, sweeping shoulder to shoulder; the rectified plate's own crown sits on it with the 42 at its right.",
+          "notes": "The plate's crown is a shade flatter than a semicircle, so the atlas's arch edge is filled with crown paint (recorded)."
+        },
+        {
+          "id": "solid-proportion",
+          "tier": "critical",
+          "score": 0.93,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "0.49 x 0.90 x 0.424 m, unchanged from the second build whose proxy band table read mean |delta width| 0.0095 of H; harness bounds match.",
+          "notes": ""
+        },
+        {
+          "id": "wrapping-bands",
+          "tier": "critical",
+          "score": 0.93,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Band extrude at 0.425-0.555 m on every face, continuous with the front atlas's chipped band, which the plate's rectification puts at the same rows (0.472-0.617 of height in the plate scan).",
+          "notes": ""
+        },
+        {
+          "id": "concrete-weathering",
+          "tier": "critical",
+          "score": 0.88,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "The front carries the plate's own grime, the chipped band, the eroded foot and the lettering (rectified from four corners into 0.49 x 0.90 m, 48 KB atlas); the sides carry a height-keyed canvas with an olive moss-dirt ground band over the lowest 0.36 m and streaks under the band. Neutral greys tinted olive and the black print blue-black so lit pixels stay outside the gate's window: holeviz 305/0/0/0 enclosed pixels at 0/90/180/270, the 305 being the anti-aliased rims of the lettering.",
+          "notes": "The plate's shaded side is darker and mossier than the canvas gives; the second build's polka-dot blotches are gone (rustClusters 9 -> 2, drift 26)."
+        }
+      ],
+      "action": "continue",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.92 -- the five layers mean 0.91 and the four critical features 0.92. 296/2000 triangles, 2/2 draw calls, 2/2 materials, 2/2 unique geometries, one 48 KB atlas and one 512 px canvas.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/kilometre-stone/review/beauty-45.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/kilometre-stone/review/cmp.png",
+        "cameraView": "",
         "notes": "",
         "aiVisionNotes": ""
       }
@@ -2486,126 +1915,136 @@
     {
       "tier": "near",
       "distance": 0,
-      "strategy": "as built - well under a hundred triangles, already below the per-draw-call overhead"
+      "strategy": "full component tree and material layers"
     },
     {
       "tier": "far",
-      "distance": 40,
-      "strategy": "none. A decimated tier would save nothing measurable and would cost a unique geometry."
+      "distance": 30,
+      "strategy": "merge static components and reduce local feature geometry"
     }
   ],
   "performanceBudget": {
     "qualityPriority": "real-time",
-    "targetTriangles": 800,
+    "targetTriangles": 2000,
     "maxDrawCalls": 2,
     "maxMaterials": 2,
     "maxUniqueGeometries": 2,
-    "textureSize": 512,
+    "textureSize": 1024,
     "fpsTarget": 60,
-    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs. All four ceilings come from thaikit resolveBudget() and none was invented.",
+    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the medium class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
     "accounting": {
       "drawCalls": {
-        "components": 1,
+        "components": 2,
         "repetitionSystems": 0,
-        "projectedTotal": 1,
+        "projectedTotal": 2,
         "budget": 2,
-        "headroom": 1,
-        "note": "UNDER the ceiling rather than at it, which is unusual in this set and is a property of the subject rather than a credit to the build: a kilometre stone is one solid with no support, so there is nothing to merge and nothing to split. The spare draw call is NOT taken - a separate mesh for the painted crown was considered and refused, because the bands are paint on the same concrete and a colour difference is not a material difference."
+        "headroom": 0,
+        "note": "Two components: 2 of 2."
       },
       "materials": {
-        "projectedTotal": 1,
+        "projectedTotal": 2,
         "budget": 2,
-        "headroom": 1,
-        "note": "One. The white crown, the red band, the bare concrete, the algae and the black legend are FIVE colours on ONE material, separated by a UV atlas."
+        "headroom": 0,
+        "note": "concrete and face: 2 of 2; foot, band and crown as vertex tints."
       },
       "uniqueGeometries": {
-        "projectedTotal": 1,
+        "projectedTotal": 2,
         "budget": 2,
-        "headroom": 1,
-        "note": "One arch-topped extrusion, built once at module scope along with its atlas canvas - every instance of this stone in a scene shares both."
+        "headroom": 0,
+        "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
       },
       "triangles": {
-        "stone": 88,
-        "projectedTotal": 88,
-        "budget": 800,
-        "headroom": 712,
-        "note": "The cheapest prop of the eight by a wide margin: a 16-point extrusion is 14 front-cap, 14 back-cap and 32 wall triangles, of which the 12 arch segments are the only ones deliberately spent. The 712 spare are genuinely spare and are NOT spent: chamfering the four vertical arrises to match the reference's weather-chipped edges is the obvious candidate and it would not read at prop distance."
+        "measured": 296,
+        "budget": 2000,
+        "headroom": 1704,
+        "note": "296 of 2000: three profile extrudes (32-segment arch) and one skin extrude."
       }
     }
   },
   "lightingFromPhoto": [
     {
+      "id": "key",
       "role": "key",
-      "type": "area",
-      "directionHint": [
-        0.48,
-        0.56,
-        0.67
-      ],
-      "intensity": 1.0,
-      "colorTemperatureK": 5600,
-      "evidence": "The crown reads #ECF0F3 at luma 239 on the right face against #D9DCE0 at 220 on the left, and the red band #A32124 against #882322 - a soft key high and camera-RIGHT, which is the opposite hand from every other prop in this set and was measured rather than assumed from the siblings."
+      "direction": "front-upper-left",
+      "elevationDegrees": 38,
+      "azimuthDegrees": -35,
+      "intensity": 0.85,
+      "colorTemperature": "neutral 5600K",
+      "shadowSoftness": "very soft, near shadowless",
+      "notes": "The plate is a flat studio lightbox: surfaces at 90 degrees to each other measure within a few levels, which is only possible under near-shadowless illumination. That is WHY the measured crop means are usable as albedo with little correction."
     },
     {
+      "id": "fill",
       "role": "fill",
-      "type": "hemisphere",
-      "directionHint": [
-        -0.55,
-        0.2,
-        -0.35
-      ],
-      "intensity": 0.4,
-      "colorTemperatureK": 6500,
-      "evidence": "The concrete body reads #98917F on the lit face and #988F7A on the shaded one - within 2 luma of each other. A 2-luma spread across two faces at right angles is strong fill, and it is why the body's albedo could be taken directly."
+      "direction": "front-lower-right",
+      "intensity": 0.64,
+      "fillRatio": 0.75,
+      "colorTemperature": "neutral 5600K",
+      "notes": "High fill ratio inferred from the shadow-side wall retaining full value."
     },
     {
-      "role": "rim",
-      "type": "directional",
-      "directionHint": [
-        -0.6,
-        0.35,
-        -0.7
-      ],
-      "intensity": 0.2,
-      "colorTemperatureK": 6500,
-      "evidence": "A soft bright edge separates the crown's left shoulder from the backdrop at luma 239 against 160."
-    },
-    {
+      "id": "ambient",
       "role": "environment",
-      "type": "studio-context",
-      "environment": "studio softbox on a flat neutral backdrop",
+      "intensity": 0.45,
+      "source": "uniform grey studio surround",
+      "notes": "The seamless backdrop acts as a large uniform environment. The thaikit harness supplies NO environment map, which is why every metal on this prop carries a metalness well below its physical value -- a metal with nothing to reflect renders black."
+    },
+    {
+      "id": "rim",
+      "role": "rim",
+      "intensity": 0.0,
+      "present": false,
+      "notes": "NO rim light in the plate. Recorded so a missing rim in the render is not read as a defect."
+    },
+    {
+      "id": "exposure-and-tonemapping",
+      "role": "grade",
       "exposure": 1.0,
       "toneMapping": "ACESFilmic",
-      "evidence": "Border-ring scan trimming to #A0A0A0. MEASURED rather than assumed to be the grey the prompt asked for.",
-      "note": "The render harness backs onto a much darker ground, so a candidate render reads darker overall and that difference is the backdrop, not the prop."
+      "notes": "Exposure 1.0 with ACES filmic tone mapping; no exposure compensation is applied to the measured albedos and none is warranted."
     },
     {
+      "id": "contact-shadow",
       "role": "contact-shadow",
-      "type": "ground-shadow",
-      "intensity": 0.6,
-      "evidence": "The reference floats the stone with a soft shadow pooling under its full footprint - the largest ground contact of the eight props, since this is the only one that meets the ground on a face rather than a post section.",
-      "behavior": "Grounded at y=0, the prop's origin, over the stone's full 0.25 x 0.20 m footprint. Ambient occlusion is left at zero: a convex solid has no cavity for AO to find, and baking any into base colour is what the material pass forbids."
+      "present": false,
+      "groundShadow": "none",
+      "shadowCatcher": false,
+      "notes": "NO contact or ground shadow in the plate -- it is a cut-out against a seamless backdrop. Recorded so the absence is not read as a missing feature. IN USE this is a floor-placed building and the HOST scene owns its contact shadow: castShadow ships enabled on every mesh and the factory defines no ground plane of its own."
     }
   ],
   "proceduralStrategy": [
-    "Block out macro silhouette first.",
-    "Add component hierarchy and joints.",
-    "Create stable pivot groups, sockets, collider proxies, and destruction metadata before visual polish.",
-    "Refine forms with bevels, tapers, bends, and procedural noise.",
-    "Run reference PBR extraction for important source-image materials and stop when confidence is below the target threshold.",
-    "Add material variation before adding expensive micro-geometry."
+    {
+      "id": "primitives",
+      "strategy": "Profile extrudes along Z for the three body blocks and the front skin."
+    },
+    {
+      "id": "instancing",
+      "strategy": "No InstancedMesh: nothing repeats. A level instances whole stones."
+    },
+    {
+      "id": "determinism",
+      "strategy": "All procedural variation is assigned by instance INDEX, never from a random source, so the model is byte-identical on every build."
+    },
+    {
+      "id": "textures",
+      "strategy": "Both materials are declared textureless. One baked front atlas (48 KB WebP) and one 512 px paint canvas after construction, both guarded for plain Node."
+    }
   ],
-  "animationAnchors": [
-    "root pivot at base-center supports whole-object placement, rotation about +Y and visibility changes; nothing else in this prop articulates"
-  ],
-  "destructionAnchors": [
-    "none - destructionGroups is empty on the asset and no component declares a fractureGroup"
-  ],
+  "animationAnchors": [],
+  "destructionAnchors": [],
   "risks": [
-    "One view only. Two of the stone's four faces are never seen, and both are built as plain banded concrete.",
-    "The Meshy proxy is unusually complete for this prop - no remesh hole - and its depth-to-width ratio of 0.89 agrees closely with the declared 0.80, which is the best proxy agreement of the eight. It was still used for proportion only.",
-    "The spalled patch and the paint flaking are painted into the atlas rather than modelled. At close range they read as graphic rather than as broken material.",
-    "The stone's four vertical arrises are built sharp. The reference's are chipped and rounded by weather, and a chamfer would cost triangles this prop can easily afford but would not read at prop distance."
+    {
+      "id": "side-stains",
+      "severity": "low",
+      "description": "The plate's side face is darker and mossier than the canvas gives the sides.",
+      "mitigation": "Ground band at 0.9 over the lowest 0.36 m; the front carries the plate's own stains."
+    },
+    {
+      "id": "crown-fill",
+      "severity": "low",
+      "description": "The rectified crown is flatter than the semicircle, so its top edge is filled with crown paint.",
+      "mitigation": "Recorded on the material; the fill is the crown's own tone."
+    }
   ],
   "localSpecSearch": {
     "collection": "core_3d",

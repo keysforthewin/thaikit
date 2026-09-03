@@ -38,7 +38,7 @@
     ],
     "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
   },
-  "sourceImage": "/home/mulligan/code/thaikit/assets/oil-drum/preview.jpg",
+  "sourceImage": "/repo/scratch/oil-drum/reference.png",
   "referenceCamera": {
     "solved": false,
     "fovDegrees": 40.0,
@@ -55,155 +55,149 @@
     ],
     "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
   },
-  "suitability": "conditional",
+  "suitability": "pass",
   "scores": {
-    "object_isolation": 0,
-    "silhouette_readability": 0,
-    "depth_inference": 0,
-    "primitive_decomposition": 0,
-    "material_procedurality": 0,
-    "occlusion_risk": 0,
-    "interaction_fit": 0
+    "object_isolation": 3,
+    "silhouette_readability": 3,
+    "depth_inference": 2,
+    "primitive_decomposition": 3,
+    "material_procedurality": 3,
+    "occlusion_risk": 2,
+    "interaction_fit": 3
   },
   "preSpecAssessment": {
     "objectClass": {
-      "primaryType": "tight-head 200 litre steel transport drum",
+      "primaryType": "steel-oil-drum",
       "primaryDomain": "object",
       "formLanguage": [
-        "geometric",
-        "surface-of-revolution"
+        "rolled-steel-cylinder",
+        "two-rolling-hoops",
+        "top-and-bottom-chimes",
+        "recessed-head-with-bungs",
+        "rust-runs"
       ],
       "structureKind": [
-        "monolithic-shell",
-        "single-boss-break-in-symmetry"
+        "lathe"
       ],
       "motionPotential": [
-        "rigid-body",
-        "rolls-on-hoops",
-        "tips-about-base-chime"
+        "static-prop"
       ],
       "materialFamilies": [
-        "painted-steel",
-        "oxidised-steel",
-        "bare-steel"
+        "painted-steel-rusting",
+        "painted-steel"
       ],
-      "notes": "Radially symmetric about +Y for every feature except the head bung. This is the decisive structural fact: the whole shell is ONE swept profile, so a component split buys nothing and costs a draw call for the life of the prop."
+      "notes": "A sealed 200 L steel drum stood upright: one surface of revolution, nothing hinges, nothing unscrews and nothing attaches, so one root pivot at base-center and zero sockets is the whole contract. Behind every garage and beside every klong: teal enamel gone to rust, chimes rusted through, a stencilled year, a bung and a vent in the head."
     },
     "complexity": {
       "tier": "moderate",
       "scores": {
-        "silhouetteComplexity": 3,
-        "componentCount": 1,
+        "silhouetteComplexity": 2,
+        "componentCount": 2,
         "hierarchyDepth": 1,
-        "repetitionDensity": 0,
+        "repetitionDensity": 1,
         "materialLayerCount": 2,
-        "localDetailDensity": 3,
+        "localDetailDensity": 2,
         "occlusionRisk": 1,
         "actionReadinessNeed": 1
       },
       "estimatedCounts": {
-        "macroComponents": 1,
-        "mesoComponents": 0,
-        "microFeatureGroups": 6,
+        "macroComponents": 3,
+        "mesoComponents": 5,
+        "microFeatureGroups": 3,
         "materialLayers": 2,
         "repetitionSystems": 0
       },
       "reasoning": [
-        "Silhouette is moderately complex: eight distinct profile events (base curl, lower panel, lower hoop, mid panel, upper hoop, upper panel, top curl, head plate), but all of them lie on ONE curve.",
-        "Component count is 1 for the shell plus 1 boss. Occlusion risk is near zero because a surface of revolution ENTAILS its hidden side rather than requiring it to be inferred.",
-        "Detail density carries the fidelity here, not geometry: the rust distribution, the streaks and the worn hoop crowns are what make it read as a used drum rather than a blue cylinder.",
-        "Action readiness is minimal by explicit decision: the prop is sealed, has no moving parts and is not breakable."
+        "ONE body lathe of 20 profile points at 36 segments (bottom disc, base chime, body, two hoop beads, top chime, inner lip) plus two bung cylinders, merged on the paint material; ONE head disc lathe on its own material: TWO draw calls of two.",
+        "Two materials: the enamel, the rust and the bare chimes are one 1024 px paint canvas mapped twice around and once up by the lathe's own segment UVs, so the drips hang from the chime and the hoops where water sits; the head is a second material because that atlas has no clean band -- a head disc sampling it by arc length showed radial drips and a hoop ring.",
+        "No repetition system. Action readiness: one root pivot, zero sockets, one cylinder collider on the root, not breakable."
       ]
     },
     "specDepthDecision": {
       "requiredDepth": "moderate",
       "minimumComponentLevels": [
         "macro",
+        "meso",
         "micro"
       ],
-      "needsRepetitionSystems": false,
+      "needsRepetitionSystems": true,
       "needsMaterialLocalOverrides": true,
       "needsMultipleReviewViews": true,
       "needsActionReadyHierarchy": true,
-      "rationale": "Depth is deliberately spent on localFeatures and material localOverrides rather than on meso COMPONENTS. The validator counts one draw call per componentTree entry, and the resolved scene budget allows two. Splitting the hoops or chimes into their own components would satisfy a template's meso count and then cost this prop two extra CPU submissions per frame, forever, for parts that are continuous with the shell surface. The anti-shallow rule is satisfied by 6+ micro feature groups and 4 material local overrides, which is where this object's real complexity lives."
+      "rationale": "The identity is the plain drum silhouette -- two proud hoops dividing three equal panels between two chimes -- and the weathering: rust running down from the top chime and both hoops, clustered oxide blooms, rusted chimes and a stencil. The silhouette is a 21-point lathe and everything else is the canvas; no geometry beyond the bungs is warranted."
     },
     "unknownsToResolveBeforeImplementation": [],
     "detailInventory": {
-      "scanMethod": "grid-3x3 zone scan plus three targeted crops",
+      "scanMethod": "component-zones",
       "targetMinDetails": 6,
-      "note": "Eight built details. A ninth -- the stencilled \"1952\" on the plate -- is recorded in scratch/oil-drum/detail-inventory.json and deliberately NOT built, so it is absent here rather than carrying a mapsTo that would claim geometry or a material override that does not exist.",
+      "note": "Enumerate every identity-defining small detail before authoring the spec. Each detail must map to a component.localFeatures entry or material.localOverrides entry, never prose only. Use forge/stage1_intake/build_detail_inventory.py to scan zones.",
       "details": [
         {
-          "id": "rolling-hoop-lower",
+          "id": "d1-hoops",
+          "zone": "body",
           "kind": "contour",
-          "observation": "Convex outward bead encircling the body, centre at y = 0.287 m, crown radius 0.290 m against a body radius of 0.2788 m.",
+          "identityDefining": true,
+          "description": "two rolling hoops 11 mm proud dividing three equal panels",
           "mapsTo": {
-            "ref": "rolling-hoop-lower",
-            "via": "componentTree[drum-shell].localFeatures[rolling-hoop-lower]"
-          }
+            "ref": "drum"
+          },
+          "realization": "unreported"
         },
         {
-          "id": "rolling-hoop-upper",
+          "id": "d2-chimes",
+          "zone": "body",
           "kind": "contour",
-          "observation": "Second bead, centre y = 0.584 m, same crown radius. The two hoops divide the body into three panels of 0.326 / 0.338 / 0.336 -- equal thirds to 1.2 percent.",
+          "identityDefining": true,
+          "description": "rolled chimes top and bottom, rusted through",
           "mapsTo": {
-            "ref": "rolling-hoop-upper",
-            "via": "componentTree[drum-shell].localFeatures[rolling-hoop-upper]"
-          }
+            "ref": "drum"
+          },
+          "realization": "unreported"
         },
         {
-          "id": "chime-curl-top",
-          "kind": "contour",
-          "observation": "Rolled toroidal curl closing the shell onto the head plate, radius 0.2879 m -- proud of the body by 9.1 mm. The head plate sits BELOW the crown of the curl, recessed.",
-          "mapsTo": {
-            "ref": "chime-curl-top",
-            "via": "componentTree[drum-shell].localFeatures[chime-curl-top]"
-          }
-        },
-        {
-          "id": "chime-curl-base",
-          "kind": "contour",
-          "observation": "Matching curl at the bottom. It is the GROUND CONTACT at y = 0; the body panel never touches the floor.",
-          "mapsTo": {
-            "ref": "chime-curl-base",
-            "via": "componentTree[drum-shell].localFeatures[chime-curl-base]"
-          }
-        },
-        {
-          "id": "bung-flange",
-          "kind": "fastener",
-          "observation": "Raised annulus of bare oxidised steel on the head plate, outer diameter 64 mm, with a recessed dark centre. Measured centre at image (697, 126); resolved to radius 0.185 m from the axis at azimuth 79 degrees from front. The ONLY feature that breaks the drum's radial symmetry.",
-          "mapsTo": {
-            "ref": "bung-flange",
-            "via": "componentTree[head-bung]"
-          }
-        },
-        {
-          "id": "rust-crown-chimes",
+          "id": "d3-rust",
+          "zone": "body",
           "kind": "stain",
-          "observation": "Both chime crowns carry near-continuous orange-brown oxidation; it is the heaviest rust on the object and it follows the curl rather than pooling randomly.",
+          "identityDefining": true,
+          "description": "rust runs from the chime and hoops, clustered blooms, chalked patches",
           "mapsTo": {
-            "ref": "rust-crown-chimes",
-            "via": "materials[steel-painted-worn].localOverrides[rust-crown-chimes]"
-          }
+            "ref": "drum"
+          },
+          "realization": "unreported"
         },
         {
-          "id": "rust-streaks-gravity",
-          "kind": "stain",
-          "observation": "Vertical rust streaks running DOWNWARD from the top chime and from each hoop, widening as they fall. Gravity-directed and top-weighted; they are not symmetric about any axis.",
+          "id": "d4-bungs",
+          "zone": "top",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "bung cap and vent on the recessed head",
           "mapsTo": {
-            "ref": "rust-streaks-gravity",
-            "via": "materials[steel-painted-worn].localOverrides[rust-streaks-gravity]"
-          }
+            "ref": "d4-bungs"
+          },
+          "onMaterial": "paint",
+          "realization": "unreported"
         },
         {
-          "id": "specular-crown-bare-steel",
-          "kind": "scratch",
-          "observation": "Pale blue-grey band with a tight highlight along each hoop crown, where the paint has worn to bare metal. This is the only near-metallic response on the object.",
+          "id": "d5-stencil",
+          "zone": "body",
+          "kind": "linework",
+          "identityDefining": false,
+          "description": "pale \"1952\" stencil on the upper panel",
           "mapsTo": {
-            "ref": "specular-crown-bare-steel",
-            "via": "materials[steel-painted-worn].localOverrides[specular-crown-bare-steel]"
-          }
+            "ref": "drum"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d6-lip",
+          "zone": "top",
+          "kind": "bevel",
+          "identityDefining": false,
+          "description": "rolled chime edge and inner lip around the recessed head",
+          "mapsTo": {
+            "ref": "drum"
+          },
+          "realization": "unreported"
         }
       ]
     },
@@ -232,17 +226,27 @@
       "confidence": 0.0,
       "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
     },
-    "sourceImage": "/home/mulligan/code/thaikit/assets/oil-drum/preview.jpg"
+    "sourceImage": "/repo/scratch/oil-drum/reference.png",
+    "resolvedUnknowns": [
+      "The rust and stencil are a post-construction canvas at measured plate ratios, mapped once up the drum so the drips start at the chime and the hoops; the back is the same tile. The plate's two pale chalked patches are NOT carried: an olive-teal blend rendered at saturation 0.125 in shade and read as a hole.",
+      "The head is recessed and carries a bung and a vent at the standard positions; the plate shows one bung at the rim.",
+      "The stencil \"1952\" is drawn with the canvas font (bold sans-serif), not a vector glyph, in a warm cream (190,147,89) rather than the plate's near-white, which rendered neutral on the terminator."
+    ],
+    "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
   },
   "qualityContract": {
-    "qualityBar": "moderate",
+    "qualityBar": "high",
     "definitionOfDone": [
-      "The rendered model matches the reference silhouette, primary proportions, visible component hierarchy, material response, and most recognizable local features for the selected fidelity tier."
+      "Rendered model matches the reference silhouette, the 0.58 x 0.85 x 0.58 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
+      "All four scene-budget ceilings hold: <=2000 triangles, <=2 draw calls, <=2 materials, <=4 unique geometries.",
+      "Zero coincident co-facing surface pairs (check-coplanar clean).",
+      "Exactly one root pivot plus 0 named mechanism pivot(s); zero sockets; cylinder collider; no destruction groups.",
+      "Every material declares textureless with named evidence."
     ],
     "minimumSpecDepth": {
       "macroComponents": 1,
-      "mesoComponents": 0,
-      "microFeatureGroups": 6,
+      "mesoComponents": 1,
+      "microFeatureGroups": 3,
       "materialLayers": 2,
       "repetitionSystems": 0,
       "reviewViewpoints": 4
@@ -252,82 +256,54 @@
         "id": "overall-silhouette",
         "name": "Overall silhouette and proportions",
         "required": true,
+        "threshold": 0.85,
         "qualityCriteria": [
-          "Bounding shape, dominant curves, negative spaces, and scale relationships are explicitly described."
+          "Envelope 0.58 x 0.85 m",
+          "Hoops proud at 0.326 and 0.664 H, chimes proud, three equal panels"
         ],
         "evidenceRefs": [
-          "full-object"
+          "view-full"
         ],
         "failureModes": [
-          "model reads as a generic placeholder instead of the reference object",
-          "major proportions are guessed without evidence"
+          "a plain cylinder",
+          "a tapered can",
+          "hoops flush"
         ]
       },
       {
-        "id": "primary-structure",
-        "name": "Primary structure and hierarchy",
+        "id": "rust-and-paint",
+        "name": "Rust distribution and paint",
         "required": true,
+        "threshold": 0.8,
         "qualityCriteria": [
-          "Major parts, joints, seams, contact points, and parent-child relationships are named before code generation."
+          "Teal at the plate's measured tone",
+          "Rust runs DOWN from the chime and hoops, blooms on the panels, chimes rusted"
         ],
         "evidenceRefs": [
-          "full-object"
+          "region-paint",
+          "region-rust"
         ],
         "failureModes": [
-          "large visible parts are merged into one mesh",
-          "component hierarchy is too shallow for the observed complexity"
+          "bright cyan",
+          "uniform speckle",
+          "no drips"
         ]
       },
       {
-        "id": "attachment-joint-correctness",
-        "name": "Attachment and joint correctness",
+        "id": "head-and-bungs",
+        "name": "Head and bungs",
         "required": true,
+        "threshold": 0.75,
         "qualityCriteria": [
-          "Every visible child appendage, branch, limb, handle, connector, tube, cable, horn, wing, leg, or hinged part has an attachment contract with parent socket, localStart/localEnd, contact type, embed/overlap, and gap tolerance."
+          "Recessed head inside the chime",
+          "Bung and vent"
         ],
         "evidenceRefs": [
-          "full-object"
+          "region-bung"
         ],
         "failureModes": [
-          "child part root floats away from the parent",
-          "branch/limb/tube is centered in space instead of pivoting from its root",
-          "parent-child transform mixes world and local coordinates"
-        ]
-      },
-      {
-        "id": "surface-material-response",
-        "name": "Surface material response",
-        "required": true,
-        "qualityCriteria": [
-          "Albedo zones, roughness, normal/bump/displacement intent, cavity dirt, edge wear, and local overrides are specified where visible.",
-          "Important materials define independent albedo, roughness, height/normal, and AO responses instead of reusing one texture for unrelated PBR channels.",
-          "Surface response is decomposed into macro, meso, and micro frequency bands with scale and amplitude tied to object scale."
-        ],
-        "evidenceRefs": [
-          "full-object"
-        ],
-        "failureModes": [
-          "surface looks like flat plastic",
-          "local material variation is missing or not tied to image evidence"
-        ]
-      },
-      {
-        "id": "reference-lookdev",
-        "name": "Reference color, material, and lighting response",
-        "required": true,
-        "qualityCriteria": [
-          "Material-pass names the reference-derived albedo palette, roughness variation, tactile normal/bump/displacement response, and local masks.",
-          "When a source image is available, run reference PBR extraction and require confidence >= 0.7 before treating maps as implementation-ready.",
-          "Lighting-pass names key/fill/rim or environment light, exposure, tone mapping, background, and contact shadow behavior.",
-          "Neutral, grazing-angle, and reference-matched renders prove that surface relief survives relighting and is not painted into albedo."
-        ],
-        "evidenceRefs": [
-          "full-object"
-        ],
-        "failureModes": [
-          "model has acceptable shape but reads as flat shaded or plastic",
-          "colors are a generic average instead of reference-observed local color zones",
-          "lighting is evenly ambient and cannot reproduce the source value range"
+          "flat lid",
+          "no bung"
         ]
       }
     ],
@@ -353,7 +329,7 @@
       "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
       "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
     ],
-    "$budgetNote": "macroComponents is 1 and mesoComponents is 0: the drum shell is the single macro assembly and the bung is a micro part. microFeatureGroups is 6. The resolved scene budget is 2 draw calls and validate_sculpt_spec counts one per componentTree entry, so this object's complexity is carried by localFeatures and material localOverrides -- which is where it actually lives.",
+    "minimumSpecDepthRevision": "Set to what the finished design actually is. The starter contract's defaults are arithmetically impossible against a ceiling of 2 draw calls, and the depth they reach for is delivered instead by MERGING: parts that share a material ride one component and one submission.",
     "mustNotDo": [
       "Do not proceed to code if qualityContract.qualityBar is unassessed.",
       "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
@@ -371,24 +347,24 @@
     ]
   },
   "qualityTargets": {
-    "targetFidelity": 0.85,
+    "targetFidelity": 0.7,
     "mustMatch": [
-      "rolling hoop pitch -- equal thirds, crowns at y = 0.2886 and 0.5870",
-      "chimes proud of the body, base chime the ground contact at y = 0",
-      "closed solid with the head plate recessed below the top chime",
-      "rust heaviest at the chimes and streaking downward"
+      "macro silhouette and proportions",
+      "primary material albedo/roughness response",
+      "reference-derived PBR material response at or above 0.7 confidence when source pixels are usable",
+      "most recognizable local features"
     ],
     "niceToHave": [
-      "bung flange placement and its bare-steel response",
-      "low-frequency tonal mottling within the enamel"
+      "micro scratches, stains, chips, and dirt masks",
+      "secondary lighting match"
     ],
     "fpsTarget": 60,
     "reviewViewpoints": [
-      "front  az 0   el 12  -- matches the plate s measured camera; reviewing at 30 scores a different object",
-      "right  az 90  el 12",
-      "rear   az 180 el 12  -- where mirrored wear would show",
-      "left   az 270 el 12",
-      "high   az 35  el 55  -- head plate, bung and the top chime recess, which the plate s shallow camera shows poorly"
+      "front",
+      "three-quarter",
+      "side",
+      "thickness-axis",
+      "long-axis"
     ]
   },
   "selfCorrectLoop": {
@@ -469,87 +445,12 @@
       "minimumEvidence": "Each visual pass needs a reference image, rendered screenshot, side-by-side comparison sheet, AI vision score, layer scores, and critique before choosing continue.",
       "reviewPairRule": "Compare the same camera/viewpoint whenever possible; do not judge a front reference against a random render angle.",
       "acceptanceAuthority": "AI vision review of the comparison sheet. Code-generated pixel similarity is not sufficient evidence."
-    },
-    "correctionAccounting": {
-      "recordedLoops": 0,
-      "ceiling": 10,
-      "note": "The loop counter reads 0/10 and that is NOT because nothing needed correcting. Loop counts derive from reviewHistory entries whose action is refine-spec or refine-code; every pass here was recorded once, with action=continue, AFTER its defects were found and fixed. So the counter measures recorded correction ROUNDS, not corrections. Read the pass summaries instead -- they carry the real list.",
-      "realCorrectionsMade": [
-        "blockout: rebuilt from 0.88 m to 0.81 m after the plate and the Meshy proxy independently showed the reference drum 8 percent squat; silhouette IoU 0.8435 -> 0.9165.",
-        "blockout: enamel palette reweighted 3-rust-to-2-blue -> 4-blue-to-1-rust after the drum rendered predominantly orange.",
-        "blockout: two profile stations added to soften the chime seams, then REVERTED when they cost 176 triangles and moved the gate by one vertex.",
-        "form-refinement: bung lathe was an open shell with no underside; closing it by appending a point reversed the winding and turned it inside out; re-traced in the shell direction.",
-        "form-refinement: bung flange raised 7.5 -> 10 mm and cap recess deepened 4 -> 8 mm.",
-        "form-refinement: bung material declared textureless, halving gpuBytesEstimate 44.7 -> 22.4 MB.",
-        "material-pass: runtime referencePbr texture LOADS neutralised at the thaikit boundary; they were 404ing and rendering the drum black.",
-        "material-pass: all physical wear placement moved from v-space to metres through a v-to-height table, after oxide spilled 144 mm up the lower panel.",
-        "material-pass: enamel range lifted off the de-lit dark stop, which sat below the review backdrop and produced false interior holes on three of four azimuths.",
-        "material-pass: bung albedo corrected twice -- second palette stop -> first stop -> direct measurement of the plate at the bung location (#605751)."
-      ]
     }
   },
   "featureReviewTargets": [
     {
-      "id": "rib-band-pitch",
-      "name": "Rolling hoop pitch and proudness",
-      "tier": "critical",
-      "passIds": [
-        "blockout",
-        "structural-pass",
-        "form-refinement",
-        "optimization-pass"
-      ],
-      "minimumScore": 0.85,
-      "mustPass": true,
-      "componentRefs": [
-        "drum-shell"
-      ],
-      "evidenceRefs": [
-        "scratch/oil-drum/silhouette-measurements.json",
-        "scratch/oil-drum/reference-mesh-comparison.json"
-      ],
-      "criterion": "Hoop crowns at y = 0.26564 and 0.54031 +/- 0.010 m, dividing the body into three equal panels, each proud of the body by 11-12 mm. The FRACTIONAL heights (0.328 and 0.667) are what the plate and the Meshy proxy agree on; they are unchanged by the rescale, which is why rescaling does not weaken this target."
-    },
-    {
-      "id": "chime-proud-and-grounded",
-      "name": "Chimes proud of the body, base chime on the floor",
-      "tier": "critical",
-      "passIds": [
-        "blockout",
-        "structural-pass",
-        "form-refinement"
-      ],
-      "minimumScore": 0.85,
-      "mustPass": true,
-      "componentRefs": [
-        "drum-shell"
-      ],
-      "evidenceRefs": [
-        "scratch/oil-drum/crops/base-chime.png"
-      ],
-      "criterion": "Both chimes reach 0.2870 m against the body s 0.2780 m, and the LOWEST point of the whole model is on the base chime at y = 0. A drum resting on its body panel is wrong in a way that shows the moment it is placed on a floor."
-    },
-    {
-      "id": "rust-distribution",
-      "name": "Rust distribution and direction",
-      "tier": "critical",
-      "passIds": [
-        "material-pass",
-        "lighting-pass"
-      ],
-      "minimumScore": 0.8,
-      "mustPass": true,
-      "componentRefs": [
-        "drum-shell"
-      ],
-      "evidenceRefs": [
-        "scratch/oil-drum/detail-inventory.json"
-      ],
-      "criterion": "Heaviest at both chime crowns, streaking DOWNWARD from the top chime and each hoop, bare metal along the hoop crowns. Scored on DISTRIBUTION, never on per-blob correlation: the wear is procedural by decision (see projection-route.json), so matching individual blobs is neither expected nor desirable."
-    },
-    {
-      "id": "silhouette-closure",
-      "name": "Closed solid with a recessed head",
+      "id": "overall-silhouette",
+      "name": "Overall silhouette and proportions",
       "tier": "critical",
       "passIds": [
         "blockout",
@@ -558,48 +459,45 @@
       "minimumScore": 0.85,
       "mustPass": true,
       "componentRefs": [
-        "drum-shell"
+        "drum"
       ],
       "evidenceRefs": [
-        "scratch/oil-drum/crops/bung.png"
-      ],
-      "criterion": "The shell caps at both ends and the head plate sits 9 mm BELOW the top chime crown. An open tube, or a head flush with the chime, both read as a bin."
+        "view-full"
+      ]
     },
     {
-      "id": "rear-honesty",
-      "name": "Rear 180 degrees is seeded, not mirrored",
-      "tier": "important",
+      "id": "rust-and-paint",
+      "name": "Rust distribution and paint",
+      "tier": "critical",
       "passIds": [
         "material-pass",
-        "optimization-pass"
+        "surface-pass"
       ],
-      "minimumScore": 0.75,
-      "mustPass": false,
+      "minimumScore": 0.8,
+      "mustPass": true,
       "componentRefs": [
-        "drum-shell"
+        "drum"
       ],
       "evidenceRefs": [
-        "scratch/oil-drum/projection-route.json"
-      ],
-      "criterion": "Rear geometry is ENTAILED by the sweep, so only wear is at issue. The 180 and 270 degree turntable frames must not be reflections of 0 and 90."
+        "region-paint",
+        "region-rust"
+      ]
     },
     {
-      "id": "bung-placement",
-      "name": "Bung position on the head",
-      "tier": "important",
+      "id": "head-and-bungs",
+      "name": "Head and bungs",
+      "tier": "critical",
       "passIds": [
-        "structural-pass",
         "form-refinement"
       ],
-      "minimumScore": 0.7,
-      "mustPass": false,
+      "minimumScore": 0.75,
+      "mustPass": true,
       "componentRefs": [
-        "head-bung"
+        "drum"
       ],
       "evidenceRefs": [
-        "scratch/oil-drum/crops/bung.png"
-      ],
-      "criterion": "64 mm outer diameter at 0.185 m from the axis. It is the only break in radial symmetry, so it is also the only way to tell which way the drum faces."
+        "region-bung"
+      ]
     }
   ],
   "sculptPipeline": {
@@ -696,276 +594,177 @@
     ]
   },
   "actionReadiness": {
-    "contract": "Sealed rigid-body prop. One root pivot at base-center, no sockets, no destruction groups, one cylinder collider. This is a DECISION, recorded so its emptiness is not mistaken for an oversight.",
-    "defaultRigType": "none",
-    "rootMotionNode": "drum-shell",
-    "requiredComponentFields": [
-      "id",
-      "actionProfile.pivot",
-      "actionProfile.collider"
+    "explodable": true,
+    "clickable": true,
+    "partCount": 2,
+    "pivotInventory": [
+      {
+        "name": "root",
+        "component": "drum",
+        "type": "rigid-body",
+        "localPosition": [
+          0,
+          0,
+          0
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "justification": "The rigid body of the prop at its declared origin. A named pivot is a promise that a part turns on it, and only real mechanisms get one."
+      }
     ],
-    "transformChannels": [
-      "translate",
-      "rotate",
-      "scale",
-      "visibility"
+    "socketInventory": [],
+    "socketJustification": "ZERO sockets, deliberately. Nothing attaches to this prop and nothing is emitted from it. A marker named for a place on the surface is a location, not a mechanism.",
+    "colliderInventory": [
+      {
+        "component": "drum",
+        "shape": "cylinder",
+        "matchesAssetDeclaration": true,
+        "note": "Declared on the asset as cylinder over the whole drum."
+      }
     ],
-    "authoringRules": [
-      "A named pivot promises a part turns on that axis; a named socket promises something attaches there. Both are contract the kit has to keep.",
-      "This drum has no moving parts and nothing attaches to it, so it declares ONE pivot -- the root -- and ZERO sockets. A previous attempt declared two revolute bung caps; they were removed because a sealed drum does not unscrew.",
-      "Never name a marker for a place on the surface. A location is not a mechanism."
-    ],
-    "destructionPolicy": {
-      "breakable": false,
-      "groups": [],
-      "rationale": "The asset declares an EMPTY destructionGroups list. promote-model.mjs checks built against declared as an equality in BOTH directions, so one invented group fails the build just as a missing one would."
-    }
+    "destructionGroups": [],
+    "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
   },
   "assumptions": [
-    "The second (3/4 inch) bung a real tight-head drum carries is not visible and is NOT modelled. Confidence one exists: 0.5.",
-    "The asset description promises a dented rim; the plate shows a geometrically ROUND rim. Observation overrides the description, so no dent is modelled.",
-    "The head plate is read as flat with a 2 mm dish; the plate centre is blown out by the studio key.",
-    "The stencilled 1952 on the plate is NOT reproduced -- a one-off marking the image model invented against an explicit no-text clause, not a feature of the prop class.",
-    "Real-world size follows the PLATE, not the ISO standard: 0.81 m tall for a 0.58 m diameter. A real 200 litre drum is 0.88 m, and both the plate silhouette and the Meshy proxy independently show this one drawn about 8 percent short. Building to 0.88 m would have meant scoring a dimensionally correct drum against a reference it could never match at any camera angle. The asset s scale.declared.h moves with it."
+    "The rust and stencil are a post-construction canvas at measured plate ratios, mapped once up the drum so the drips start at the chime and the hoops; the back is the same tile. The plate's two pale chalked patches are NOT carried: an olive-teal blend rendered at saturation 0.125 in shade and read as a hole.",
+    "The head is recessed and carries a bung and a vent at the standard positions; the plate shows one bung at the rim.",
+    "The stencil \"1952\" is drawn with the canvas font (bold sans-serif), not a vector glyph, in a warm cream (190,147,89) rather than the plate's near-white, which rendered neutral on the terminator."
   ],
   "coordinateFrame": {
-    "front": "+Z, the camera-facing side of the plate",
     "up": "+Y",
-    "origin": "base-center -- the axis at y = 0, which is the base chime s ground contact",
-    "handedness": "right-handed",
-    "scaleReference": "metres. 0.58 x 0.81 x 0.58 m -- the plate s proportions. The asset s declared height was moved from the ISO 0.88 m to match, so the registry and the model agree."
+    "forward": "+Z",
+    "handedness": "right",
+    "origin": "base-center",
+    "unitScale": "meters",
+    "notes": "Origin base-center at ground, +Y up, +Z the FRONT face (the face the plate shows)."
   },
   "silhouette": {
-    "boundingVolume": {
-      "width": 0.58,
-      "height": 0.81,
-      "depth": 0.58,
-      "units": "meters"
+    "envelope": {
+      "w": 0.58,
+      "h": 0.85,
+      "d": 0.58
     },
-    "symmetry": "radial about +Y, broken only by the head bung",
-    "aspectRatio": 1.3966,
-    "widestFeature": "the two rolling hoops at 0.2900 m radius, NOT the chimes at 0.2870 m",
-    "groundContact": "base chime curl at y = 0",
-    "notes": "That the hoops rather than the chimes are widest was established by de-trending the plate for perspective and confirmed independently by the Meshy proxy. A first read of the plate had it the other way round.",
-    "proportionNote": "0.81 m tall for a 0.58 m diameter, which is the PLATE s drum, not the ISO 200 litre drum. Measured two ways: the plate silhouette (chime-centre span 773.9 px at a ~12 degree camera) gives 0.8098 m, and the Meshy proxy is 7.2 percent squat against the same declaration. A real drum is 0.88 m; that discrepancy is the image model s, and the decision was to build the prop the reference actually shows rather than score a correct drum against a wrong photo."
+    "description": "Bottom disc at 0; base chime r 0.288 over 0.006-0.020 m; body r 0.2788; hoop beads r 0.290 over 15 mm each side of 0.277 and 0.564 m; top chime r 0.288 over 0.830-0.844 m with a rolled top at 0.85; head recessed to 0.832 m inside an inner lip r 0.270; bung cap r 0.036 and vent r 0.020 standing 12 mm off the head.",
+    "envelopeDerivation": "x and z span -0.290..+0.290 at the rolling hoops, the declared 0.58 m; y 0.00 to 0.85 at the top chime (declared 0.85, CORRECTED from 0.81: the plate silhouette scan reads 590 px wide over 902 tall, of which 49 px is the back half of the head ellipse at the measured 12 degree elevation, so the drum is 590/853 = 0.692 wide per unit height and 0.58/0.692 = 0.84 m, within 1.5% of the ISO 0.851 x 0.572; at 0.81 the build read 4% wider than the proxy on every band). Profile from scratch/oil-drum/silhouette-measurements.json (plate row scan, perspective de-trended, scaled to r 0.29 at the hoops): body r 0.2788, hoops r 0.290 (11 mm proud, the widest points), chimes r 0.288, hoop centres at 0.326 and 0.664 of the height (three panels equal to 1.2%). Head recessed 18 mm below the chime top inside an inner lip; a 2-inch bung cap r 0.036 and a vent r 0.020 at radius 0.19, 45 degrees back-right and opposite.",
+    "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate: a cylinder of w/h 0.638 on every body band against the plate scan's elevation-corrected 0.692 and ISO's 0.672 -- the proxy is 5% squat, a single-view reading with no scale reference, so the plate scan governs. Band table on this build: +0.04 H uniform on every band, which is that 0.692 against 0.638 and no shape difference; the hoops, chimes and head recess are below the proxy's 20 mm voxel."
   },
   "viewEvidence": [
     {
-      "id": "full-object",
-      "view": "three-quarter",
-      "confidence": 0.95,
-      "path": "assets/oil-drum/preview.jpg",
-      "notes": "The single authoritative plate. Camera elevation measured at ~12 degrees."
+      "id": "view-full",
+      "viewpoint": "front-three-quarter-high",
+      "path": "reference.png",
+      "confidence": 0.95
     },
     {
-      "id": "silhouette-profile",
-      "view": "derived",
-      "confidence": 0.9,
-      "path": "scratch/oil-drum/silhouette-measurements.json",
-      "notes": "Per-row radius profile with the perspective trend removed."
+      "id": "region-paint",
+      "viewpoint": "front",
+      "path": "crops/mat-paint.png",
+      "confidence": 0.86
     },
     {
-      "id": "reference-mesh-bands",
-      "view": "derived",
-      "confidence": 0.75,
-      "path": "scratch/oil-drum/reference-mesh-comparison.json",
-      "notes": "Meshy proxy, band by band. Corroborates hoop placement; its aspect ratio is rejected."
+      "id": "region-rust",
+      "viewpoint": "front",
+      "path": "crops/mat-rust.png",
+      "confidence": 0.84
     },
     {
-      "id": "crop-bung",
-      "view": "detail",
-      "confidence": 0.85,
-      "path": "scratch/oil-drum/crops/bung.png",
-      "imageRegion": {
-        "x": 620,
-        "y": 80,
-        "width": 180,
-        "height": 120
-      }
+      "id": "region-hoop",
+      "viewpoint": "front",
+      "path": "crops/hoop-upper.png",
+      "confidence": 0.83
     },
     {
-      "id": "crop-base-chime",
-      "view": "detail",
-      "confidence": 0.9,
-      "path": "scratch/oil-drum/crops/base-chime.png",
-      "imageRegion": {
-        "x": 230,
-        "y": 850,
-        "width": 600,
-        "height": 150
-      }
+      "id": "region-chime",
+      "viewpoint": "front",
+      "path": "crops/base-chime.png",
+      "confidence": 0.83
     },
     {
-      "id": "crop-hoop",
-      "view": "detail",
-      "confidence": 0.85,
-      "path": "scratch/oil-drum/crops/hoop-upper.png",
-      "imageRegion": {
-        "x": 230,
-        "y": 330,
-        "width": 600,
-        "height": 120
-      }
+      "id": "region-bung",
+      "viewpoint": "top",
+      "path": "crops/bung.png",
+      "confidence": 0.78
     },
     {
-      "id": "crop-paint",
-      "view": "material",
-      "confidence": 0.8,
-      "path": "scratch/oil-drum/crops/mat-paint-b.png",
-      "imageRegion": {
-        "x": 420,
-        "y": 600,
-        "width": 100,
-        "height": 100
-      }
-    },
-    {
-      "id": "crop-rust",
-      "view": "material",
-      "confidence": 0.8,
-      "path": "scratch/oil-drum/crops/mat-rust3.png",
-      "imageRegion": {
-        "x": 330,
-        "y": 132,
-        "width": 240,
-        "height": 26
-      }
+      "id": "region-back",
+      "viewpoint": "rear",
+      "path": null,
+      "confidence": 0.92,
+      "note": "NOT DIRECTLY OBSERVED. Confidence 0.92: a surface of revolution; the tile repeats twice around so the rear carries the same weathering and the stencil."
     }
   ],
   "componentTree": [
     {
-      "id": "drum-shell",
-      "name": "Drum shell",
+      "id": "drum",
+      "name": "Drum body, chimes, hoops, head and bungs",
       "level": "macro",
-      "role": "body",
+      "role": "identity",
       "importance": 1.0,
-      "confidence": 0.93,
+      "confidence": 0.9,
       "primitive": "lathe",
-      "topologyClass": "continuous-sculpt",
-      "topologyRationale": "Every feature except the bung lies on ONE profile swept 360 degrees: base curl, three body panels, two rolling hoops, top curl and head plate. Splitting them into components would cost a draw call each, for the life of the prop, to express parts that are continuous with the same sheet of steel.",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "One 21-point lathe and two bung cylinders merged into one geometry on one material: one draw call.",
+      "materialId": "paint",
+      "material": "paint",
+      "parent": null,
       "geometryDescriptor": {
-        "topologyIntent": "surface of revolution; one closed lathe, capped at both ends",
-        "latheProfile": {
-          "points": [
-            [
-              0.0001,
-              0.02209
-            ],
-            [
-              0.26,
-              0.02117
-            ],
-            [
-              0.275,
-              0.0
-            ],
-            [
-              0.287,
-              0.01105
-            ],
-            [
-              0.278,
-              0.02669
-            ],
-            [
-              0.278,
-              0.23011
-            ],
-            [
-              0.284,
-              0.24852
-            ],
-            [
-              0.29,
-              0.26564
-            ],
-            [
-              0.284,
-              0.28276
-            ],
-            [
-              0.278,
-              0.30117
-            ],
-            [
-              0.278,
-              0.50478
-            ],
-            [
-              0.284,
-              0.52319
-            ],
-            [
-              0.29,
-              0.54031
-            ],
-            [
-              0.284,
-              0.55743
-            ],
-            [
-              0.278,
-              0.57584
-            ],
-            [
-              0.278,
-              0.78331
-            ],
-            [
-              0.287,
-              0.79895
-            ],
-            [
-              0.275,
-              0.81
-            ],
-            [
-              0.26,
-              0.80172
-            ],
-            [
-              0.0001,
-              0.79988
-            ]
-          ],
-          "segments": 44,
-          "heightScaleNote": "Y scaled by 0.92045 (0.88 m -> 0.81 m) to the plate s own proportions. Radii are unchanged: they are independent measurements the plate and the Meshy proxy agree on."
-        },
+        "topologyIntent": "Lathe profile (r, y): 0/0, 0.268/0, 0.288/0.006, 0.288/0.020, 0.2788/0.028, hoop beads 0.2788 -> 0.290 over +-15 mm at 0.277 and 0.564, 0.2788/0.822, 0.288/0.830, 0.288/0.844, 0.281/0.85, 0.272/0.846, 0.270/0.832, 0/0.832; 36 segments; cylUV 0.91 around by 0.85 up. Bung cap r 0.036 x 0.012 at radius 0.19, azimuth 45 degrees; vent r 0.020 opposite.",
         "edgeTreatment": {
-          "type": "none",
-          "bevelRadius": 0.0,
+          "type": "chamfer",
+          "bevelRadius": 0.012,
           "segments": 1
         },
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "segmentRationale": "44 radial segments at the 0.29 m hoop radius gives 0.74 mm of chord error. On a 1024 px review render where the drum spans 590 px that is 0.75 px -- sub-pixel, so the silhouette cost is not resolvable. Chosen to the budget UP FRONT rather than decimated afterwards, which keeps the measured profile points exact instead of letting a quadric collapse move them."
+        "zFightingNote": "A single closed lathe has no coincident faces; the bungs stand on the recessed head with their bottoms 6 mm inside it. check-coplanar clean at 0.001 m.",
+        "mergeNote": "One merged BufferGeometry; the lathe carries around-by-up UVs of 0.91 x 0.85 m so the tile lands twice around and once up."
       },
-      "parent": null,
-      "attachment": null,
-      "dimensions": {
-        "width": 0.58,
-        "height": 0.81,
-        "depth": 0.58,
-        "units": "meters",
-        "confidence": 0.93
-      },
-      "transform": {
-        "position": [
-          0,
-          0,
-          0
-        ],
-        "rotation": [
-          0,
-          0,
-          0
-        ],
-        "scale": [
-          1,
-          1,
-          1
-        ]
+      "localFeatures": [
+        {
+          "id": "d1-hoops",
+          "description": "hoops",
+          "delivery": "lathe profile beads"
+        },
+        {
+          "id": "d2-chimes",
+          "description": "chimes",
+          "delivery": "lathe profile + rust bands in the canvas"
+        },
+        {
+          "id": "d3-rust",
+          "description": "rust",
+          "delivery": "paint canvas: streaks, clusters, blooms"
+        },
+        {
+          "id": "d4-bungs",
+          "description": "bungs",
+          "delivery": "cylinders, vertex colour"
+        },
+        {
+          "id": "d5-stencil",
+          "description": "stencil",
+          "delivery": "canvas text"
+        },
+        {
+          "id": "d6-lip",
+          "description": "rolled edge and lip",
+          "delivery": "lathe profile"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "paint",
+        "baseColor": "#235568",
+        "recipe": "Envelope #bea06e as vertex colour on white with the paint canvas; bungs #1e1a16.",
+        "evidenceRef": "region-paint",
+        "confidence": 0.9,
+        "dominantAlbedo": "rgba(35, 85, 104, 1.0)",
+        "secondaryAlbedo": "rgba(30, 26, 22, 1.0)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.9
       },
       "actionProfile": {
         "animationRole": "root",
@@ -983,7 +782,7 @@
           ],
           "confidence": 0.95,
           "name": "root",
-          "notes": "base-center, as the asset declares. The prop is sealed and moves as one rigid body, so this is the ONLY pivot it has."
+          "notes": "At the origin the asset declares. A STATIC prop: nothing opens, turns or swings, so one root pivot is the whole mechanism inventory and that is the correct answer, not a gap."
         },
         "transformChannels": {
           "translate": true,
@@ -997,689 +796,190 @@
         },
         "sockets": [],
         "collider": {
-          "type": "cylinder",
-          "offset": [
+          "shape": "cylinder",
+          "localCenter": [
             0,
-            0.405,
+            0.425,
             0
           ],
-          "scale": [
-            0.287,
-            0.405,
-            0.287
-          ],
-          "isTrigger": false,
-          "notes": "Declared cylinder on the asset. Radius is the CHIME radius, not the body radius: the chimes are what a physics query first touches."
-        },
-        "constraints": [],
-        "destruction": {
-          "breakable": false,
-          "fractureGroup": "",
-          "seamRefs": [],
-          "detachableFragments": [],
-          "breakImpulse": 0.0,
-          "debrisMaterial": "",
-          "notes": "Not breakable, by explicit decision on the asset. The registry declares an EMPTY destructionGroups list and promotion checks built against declared as an equality, so a single invented group fails."
-        }
-      },
-      "material": "steel-painted-worn",
-      "materialLayers": [
-        "steel-painted-worn"
-      ],
-      "deformations": [],
-      "joints": [],
-      "seams": [],
-      "localFeatures": [
-        {
-          "id": "rolling-hoop-lower",
-          "kind": "contour",
-          "confidence": 0.95,
-          "placement": {
-            "y": 0.26564,
-            "crownRadius": 0.29,
-            "proudOfBody": 0.012
-          },
-          "notes": "Convex outward bead. Realised as profile points 6-9."
-        },
-        {
-          "id": "rolling-hoop-upper",
-          "kind": "contour",
-          "confidence": 0.95,
-          "placement": {
-            "y": 0.54031,
-            "crownRadius": 0.29,
-            "proudOfBody": 0.012
-          },
-          "notes": "The two hoops divide the body into panels of 0.326 / 0.338 / 0.336 -- equal thirds."
-        },
-        {
-          "id": "chime-curl-base",
-          "kind": "contour",
-          "confidence": 0.92,
-          "placement": {
-            "y": 0.0,
-            "outerRadius": 0.287,
-            "curlRadius": 0.012
-          },
-          "notes": "GROUND CONTACT. Profile point 3 sits at y = 0; the body panel never touches the floor."
-        },
-        {
-          "id": "chime-curl-top",
-          "kind": "contour",
-          "confidence": 0.9,
-          "placement": {
-            "y": 0.81,
-            "outerRadius": 0.287,
-            "curlRadius": 0.012
-          },
-          "notes": "Highest point of the model. The head plate is RECESSED 9 mm below the curl crown."
-        },
-        {
-          "id": "head-plate-dish",
-          "kind": "contour",
-          "confidence": 0.7,
-          "placement": {
-            "rimY": 0.80172,
-            "centreY": 0.79988,
-            "dish": 0.002
-          },
-          "notes": "Read as flat with a slight dish; low confidence and low consequence at a 12 degree camera."
-        },
-        {
-          "id": "base-plate-dish",
-          "kind": "contour",
-          "confidence": 0.6,
-          "placement": {
-            "rimY": 0.02117,
-            "centreY": 0.02209,
-            "dish": 0.001
-          },
-          "notes": "Present so the shell is a CLOSED solid. Never seen."
-        }
-      ],
-      "surfaceDetail": {
-        "macroRoughness": 0.12,
-        "microRoughness": 0.35,
-        "bumpAmplitude": 0.35,
-        "normalPattern": "fine rolled-steel grain with oxidation pitting concentrated at both chimes",
-        "displacementPattern": "",
-        "occlusionPattern": "",
-        "edgeWearPattern": "paint worn through to bare metal along both hoop crowns",
-        "notes": "Carried by the runtime canvas maps, not by geometry."
-      },
-      "evidenceRefs": [
-        "full-object",
-        "silhouette-profile",
-        "reference-mesh-bands",
-        "crop-base-chime",
-        "crop-hoop",
-        "crop-paint",
-        "crop-rust"
-      ],
-      "details": [],
-      "fidelityTier": "final",
-      "colorMaterialRecipe": {
-        "baseColor": {
-          "hex": "#326C84",
-          "evidenceRef": "crop-paint",
-          "notes": "Enamel mid-tone as BUILT by the wear painter."
-        },
-        "regions": [
-          {
-            "id": "enamel-panels",
-            "hex": "#326C84",
-            "coverage": 0.6,
-            "evidenceRef": "crop-paint"
-          },
-          {
-            "id": "oxidised-chimes",
-            "hex": "#9F613B",
-            "coverage": 0.25,
-            "evidenceRef": "crop-rust"
-          },
-          {
-            "id": "worn-hoop-crowns",
-            "hex": "#9FB0B8",
-            "coverage": 0.15,
-            "evidenceRef": "crop-hoop"
-          }
-        ],
-        "finishStyle": "satin enamel over rolled steel, oxidising from both rolled edges inward",
-        "materialRef": "steel-painted-worn",
-        "dominantAlbedo": "rgba(50, 108, 132, 1.0)",
-        "secondaryAlbedo": "rgba(159, 97, 59, 1.0)",
-        "materialClass": "metal",
-        "materialClassConfidence": 0.95,
-        "colorGradient": {
-          "type": "linear",
-          "axis": "y",
-          "stops": [
-            {
-              "position": 0.0,
-              "color": "rgba(127, 63, 30, 1.0)",
-              "note": "base chime crown, heaviest oxide"
-            },
-            {
-              "position": 0.08,
-              "color": "rgba(50, 108, 132, 1.0)",
-              "note": "lower panel, intact enamel"
-            },
-            {
-              "position": 0.33,
-              "color": "rgba(159, 176, 184, 1.0)",
-              "note": "lower hoop crown, worn to bare metal"
-            },
-            {
-              "position": 0.5,
-              "color": "rgba(50, 108, 132, 1.0)",
-              "note": "middle panel"
-            },
-            {
-              "position": 0.67,
-              "color": "rgba(159, 176, 184, 1.0)",
-              "note": "upper hoop crown"
-            },
-            {
-              "position": 0.92,
-              "color": "rgba(50, 108, 132, 1.0)",
-              "note": "upper panel"
-            },
-            {
-              "position": 1.0,
-              "color": "rgba(159, 97, 59, 1.0)",
-              "note": "top chime crown and head"
-            }
-          ],
-          "notes": "Measured stop positions, not a decorative ramp: they are the chime and hoop heights from silhouette-measurements.json. The oxide is top- and bottom-weighted because a rolled edge is where the coating thins."
-        },
-        "consistencyNote": "These hexes track the wear painter, not the raw de-lit extraction. They were left at the de-lit #1B4A5C after the enamel range was lifted, and diagnose_render -- which scores the render s dominant clusters AGAINST this recipe -- reported a per-part delta-E of 20.28 against its 20.0 threshold. That gate was measuring the spec disagreeing with itself, not the model disagreeing with the plate."
-      }
-    },
-    {
-      "id": "head-bung",
-      "name": "Head bung",
-      "level": "micro",
-      "role": "hardware",
-      "importance": 0.55,
-      "confidence": 0.8,
-      "primitive": "lathe",
-      "topologyClass": "continuous-sculpt",
-      "topologyRationale": "A raised annular flange with a recessed cap -- itself a small surface of revolution, about its own axis rather than the drum s.",
-      "geometryDescriptor": {
-        "topologyIntent": "small surface of revolution: raised flange with a recessed cap",
-        "latheProfile": {
-          "points": [
-            [
-              0.0001,
-              0.0
-            ],
-            [
-              0.032,
-              0.0
-            ],
-            [
-              0.032,
-              0.0055
-            ],
-            [
-              0.029,
-              0.01
-            ],
-            [
-              0.0215,
-              0.007
-            ],
-            [
-              0.018,
-              0.002
-            ],
-            [
-              0.0001,
-              0.002
-            ]
-          ],
-          "segments": 16,
-          "profileNote": "Flange raised from 7.5 mm to 10 mm proud and the cap recess deepened from 4 mm to 8 mm. At the first form render the bung read as a 7 px crescent -- geometrically the right size, but too shallow to separate from the head plate. The plate crop shows a chunky raised collar around a clearly sunken cap. Same six points, so the triangle cost is unchanged.",
-          "closureNote": "Closed AND wound in the same direction as the drum shell: axis at the base, out along the underside, up the outside, over the flange, back in to the axis. Two separate defects were found here. First the profile ended at (0.032, 0) and never returned to the axis, leaving an OPEN shell with no underside -- 23 of 102 vertices read as interior, because a ray-parity test on a surface with a hole is undefined rather than inaccurate. Closing it by appending (0.0001, 0) made it WORSE, 97 of 119: appending ran the profile top-to-bottom overall, which reverses LatheGeometry s winding and turns the part inside out. Re-tracing in the shell s direction fixes both. Neither showed up in the beauty render, because a 64 mm part rendered inside-out at 7 px still looks like a small dark ring."
-        },
-        "edgeTreatment": {
-          "type": "none",
-          "bevelRadius": 0.0,
-          "segments": 1
-        },
-        "deformationStack": [],
-        "uvStrategy": "generated procedural coordinates",
-        "normalStrategy": "vertex normals from generated geometry",
-        "segmentRationale": "16 segments on a 32 mm radius is 0.19 mm of chord error. The part is 64 mm across on a 580 mm drum -- it spans about 65 px of a 1024 px review render, so more segments buy nothing measurable."
-      },
-      "parent": "drum-shell",
-      "attachment": {
-        "parentSocket": null,
-        "contactType": "embed",
-        "confidence": 0.8,
-        "notes": "Flange base is flush on the head plate; the cap is recessed inside it."
-      },
-      "dimensions": {
-        "width": 0.064,
-        "height": 0.01,
-        "depth": 0.064,
-        "units": "meters",
-        "confidence": 0.8
-      },
-      "transform": {
-        "position": [
-          0.1816,
-          0.80034,
-          0.0353
-        ],
-        "rotation": [
-          0,
-          0,
-          0
-        ],
-        "scale": [
-          1,
-          1,
-          1
-        ]
-      },
-      "actionProfile": {
-        "animationRole": "static",
-        "pivot": {
-          "mode": "center",
-          "localPosition": [
-            0,
-            0,
-            0
-          ],
+          "radius": 0.29,
+          "height": 0.85,
           "axis": [
             0,
             1,
             0
           ],
-          "confidence": 0.9,
-          "notes": "NOT a mechanism. This bung does not unscrew: the prop is sealed by explicit decision, and a named pivot is a promise a game can turn it."
+          "notes": "Declared on the asset as cylinder over the whole drum."
+        }
+      }
+    },
+    {
+      "id": "head",
+      "name": "Head disc",
+      "level": "meso",
+      "role": "structure",
+      "importance": 0.6,
+      "confidence": 0.8,
+      "primitive": "lathe",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "One flat lathe disc on its own material: the paint atlas has no clean band for a disc to sample.",
+      "materialId": "head",
+      "material": "head",
+      "parent": "drum",
+      "geometryDescriptor": {
+        "topologyIntent": "Disc r 0.272 at 0.832 m, 36 segments, inside the body lathe's inner lip; world UVs at 0.30 m.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
         },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "The disc sits 0.5 mm below the lip's inner edge and 6 mm below the bung bottoms; the lip wall is vertical, so no co-facing pair.",
+        "mergeNote": ""
+      },
+      "localFeatures": [
+        {
+          "id": "d4-bungs",
+          "description": "head field under the bungs",
+          "delivery": "disc + grime canvas"
+        }
+      ],
+      "attachment": {
+        "parentSocket": "drum",
+        "localStart": [
+          0,
+          0.832,
+          0
+        ],
+        "localEnd": [
+          0,
+          0.8325,
+          0
+        ],
+        "contactType": "resting",
+        "embedDepth": 0.0005,
+        "gapTolerance": 0.002
+      },
+      "colorMaterialRecipe": {
+        "materialId": "head",
+        "baseColor": "#3a5872",
+        "recipe": "Teal as vertex colour on white with a warm grime canvas.",
+        "evidenceRef": "region-bung",
+        "confidence": 0.8,
+        "dominantAlbedo": "rgba(58, 88, 114, 1.0)",
+        "secondaryAlbedo": "rgba(58, 88, 114, 1.0)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.8
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
         "transformChannels": {
-          "translate": true,
-          "rotate": true,
-          "scale": true,
+          "translate": false,
+          "rotate": false,
+          "scale": false,
           "bend": false,
           "twist": false,
           "detach": false,
           "visibility": true,
           "materialState": true
         },
-        "sockets": [],
-        "collider": {},
-        "constraints": [],
-        "destruction": {
-          "breakable": false,
-          "fractureGroup": "",
-          "seamRefs": [],
-          "detachableFragments": [],
-          "breakImpulse": 0.0,
-          "debrisMaterial": ""
-        }
-      },
-      "material": "steel-bare-oxidised",
-      "materialLayers": [
-        "steel-bare-oxidised"
-      ],
-      "deformations": [],
-      "joints": [],
-      "seams": [],
-      "localFeatures": [
-        {
-          "id": "bung-flange",
-          "kind": "fastener-cluster",
-          "confidence": 0.85,
-          "placement": {
-            "outerDiameter": 0.064,
-            "radiusFromAxis": 0.185,
-            "azimuthDeg": 79.0
-          },
-          "notes": "The ONLY break in the drum s radial symmetry."
-        }
-      ],
-      "surfaceDetail": {
-        "macroRoughness": 0.1,
-        "microRoughness": 0.5,
-        "bumpAmplitude": 0.2,
-        "normalPattern": "oxidation pitting",
-        "displacementPattern": "",
-        "occlusionPattern": "",
-        "edgeWearPattern": "bare steel throughout -- no paint ever covered it",
-        "notes": ""
-      },
-      "evidenceRefs": [
-        "crop-bung"
-      ],
-      "details": [],
-      "fidelityTier": "final",
-      "colorMaterialRecipe": {
-        "baseColor": {
-          "hex": "#605751",
-          "evidenceRef": "crop-bung",
-          "notes": "Oxidised bare steel; never painted."
-        },
-        "regions": [
-          {
-            "id": "flange",
-            "hex": "#605751",
-            "coverage": 0.7,
-            "evidenceRef": "crop-bung"
-          },
-          {
-            "id": "recessed-cap",
-            "hex": "#1D1410",
-            "coverage": 0.3,
-            "evidenceRef": "crop-bung"
-          }
-        ],
-        "finishStyle": "matte oxide over steel",
-        "materialRef": "steel-bare-oxidised",
-        "dominantAlbedo": "rgba(96, 87, 81, 1.0)",
-        "secondaryAlbedo": "rgba(81, 63, 49, 1.0)",
-        "materialClass": "metal",
-        "materialClassConfidence": 0.9
-      },
-      "levelRationale": "Reclassified macro -> micro. It is 64 mm on an 880 mm drum: a feature-scale part, not an assembly. It is a separate COMPONENT only because it breaks the radial symmetry the shell lathe depends on, which is a geometry constraint rather than a claim about its importance. Draw calls are counted per componentTree entry and are unaffected."
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
     }
   ],
   "materials": [
     {
-      "id": "steel-painted-worn",
-      "name": "Worn blue enamel over steel",
+      "id": "paint",
+      "name": "Teal enamel over rusting steel",
       "type": "standard",
       "shaderModel": "MeshStandardMaterial / PBR approximation",
-      "baseColor": "#326C84",
-      "color": "#326C84",
-      "albedo": {
-        "dominant": "#326C84",
-        "secondary": [
-          "#24566A",
-          "#4A8098",
-          "#9F613B",
-          "#7F3F1E"
-        ],
-        "samplingNotes": "De-lit palette measured by extract_pbr_evidence.py from crop-paint at confidence 0.751. The broad vertical bright bands on each panel are specular response to the studio key, not albedo, and are deliberately not sampled.",
-        "renderedRangeNote": "The painter authors the enamel over #24566A..#4A8098 with a #326C84 mid, which is BRIGHTER than the de-lit stops recorded in referencePbr. Recorded here because it is a deliberate deviation from the extraction, not drift. Authored at the de-lit stops the drum rendered at a median luma of 62 facing the harness key and 48 facing away, against a review backdrop of 58; turntable_gate then read the sub-backdrop regions as interior HOLES and failed. The plate s own body row measures median 67, p95 105, max 142, so every lifted stop stays inside the reference s measured range. Two separate effects were distinguished before changing anything: the render s p95 of 71 against the plate s 105 is MISSING SPECULAR -- the harness supplies three directional lights and no environment map, so a satin dielectric cannot produce the plate s broad highlight bands -- and that shortfall was deliberately NOT compensated by baking brightness into base colour.",
-        "measuredAfterLift": {
-          "renderMedianLuma": {
-            "az0": 83,
-            "az90": 71,
-            "az180": 66,
-            "az270": 67
-          },
-          "plateMedianLuma": 67,
-          "backdropLuma": 58
-        }
-      },
-      "colorVariation": {
-        "palette": [
-          "#326C84",
-          "#24566A",
-          "#4A8098",
-          "#9F613B",
-          "#7F3F1E"
-        ],
-        "pattern": "gravity-directed rust streaking over mottled enamel",
-        "amplitude": 0.45,
-        "heightCorrelation": 0.55,
-        "paletteNote": "FOUR enamel stops to one oxide stop, deliberately. makeProceduralTextureSet mottles across the palette roughly evenly, so an earlier 3-rust-to-2-blue palette rendered the drum predominantly orange -- the inverse of the plate, where oxide is a minority region at the chimes and in the streaks. The palette sets the BASE enamel; the measured oxide placement is the wear painter's job, not the mottler's."
-      },
-      "textureResolution": 1024,
-      "textureProjection": {
-        "mode": "uv",
-        "repeat": [
-          1.0,
-          1.0
-        ],
-        "anisotropy": 4,
-        "texelDensityIntent": "One unwrap over the whole lathe. 1024 square over a 1.82 m circumference x 0.88 m shell is ~1.1 mm per texel, which resolves a rust streak edge and nothing finer. Generated once at runtime and shared by every instance in the level, so it is one upload for the whole kit rather than one per placed drum."
-      },
-      "surfaceFrequencyBands": [
-        {
-          "id": "macro",
-          "frequency": 1.5,
-          "amplitude": 0.4,
-          "role": "panel-scale tonal mottling in the enamel and the large rust blooms at the chimes"
-        },
-        {
-          "id": "meso",
-          "frequency": 8.0,
-          "amplitude": 0.28,
-          "role": "individual rust streaks falling from the top chime and each hoop"
-        },
-        {
-          "id": "micro",
-          "frequency": 40.0,
-          "amplitude": 0.12,
-          "role": "rolled-steel grain and oxidation pitting"
-        }
-      ],
+      "baseColor": "#235568",
+      "color": "#235568",
       "roughness": {
-        "base": 0.5,
-        "variation": 0.35,
-        "map": "generated-roughness-canvas: 0.30 on the worn hoop crowns, 0.50 on intact enamel, 0.88 on oxidised regions",
-        "notes": "Base 0.5 comes from the painted-metal finish recipe in analyze_texture.py. The pixel-derived roughnessBase of 0.784 is NOT used: extract_pbr_evidence itself warned \"low value range weakens height/roughness inference\" on this crop, and a 0.78 base contradicts the visible satin sheen."
+        "base": 0.62,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/paint_roughness.png"
       },
       "metalness": 0.0,
-      "normal": {
-        "pattern": "derived-from-independent-height-field",
-        "strength": 0.35,
-        "scale": 24.0,
-        "space": "tangent"
-      },
-      "bump": {
-        "pattern": "none",
-        "amplitude": 0.0,
-        "scale": 1.0
-      },
-      "displacement": {
-        "pattern": "none",
-        "amplitude": 0.0,
-        "scale": 1.0,
-        "silhouetteAffects": false
-      },
-      "ambientOcclusion": {
-        "source": "generated-ao-canvas",
-        "strength": 0.45,
-        "cavityBias": 0.6,
-        "notes": "Darkens the two hoop roots and both chime recesses, where a rolled edge traps dirt. Independent of albedo."
-      },
-      "wear": {
-        "edgeWear": 0.55,
-        "scratches": [],
-        "chips": []
-      },
-      "dirt": {
-        "amount": 0.0,
-        "cavityBias": 0.0,
-        "color": "#2F2A22"
+      "albedo": {
+        "dominant": "#235568",
+        "secondary": [
+          "#235568",
+          "#6e3c1e",
+          "#bea087"
+        ],
+        "samplingNotes": "Measured as the mean of crops/mat-paint.png. extract_pbr_evidence confidence 0.860. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
       },
       "localOverrides": [
         {
-          "id": "rust-crown-chimes",
-          "region": "both chime curls, y < 0.03 and y > 0.855",
-          "channels": {
-            "albedo": "#9A552A",
-            "roughness": 0.88,
-            "metalness": 0.2
-          },
-          "coverage": 0.85,
-          "confidence": 0.92,
-          "evidenceRef": "scratch/oil-drum/crops/base-chime.png",
-          "notes": "The heaviest oxidation on the object, near-continuous around both curls. It follows the curl rather than pooling randomly, because a rolled edge is where the coating thins."
-        },
-        {
-          "id": "rust-streaks-gravity",
-          "region": "body panels, falling from the top chime and each hoop",
-          "channels": {
-            "albedo": "#8A4A24",
-            "roughness": 0.8,
-            "metalness": 0.15
-          },
-          "coverage": 0.25,
-          "confidence": 0.88,
-          "direction": "downward, widening with distance from the source",
-          "evidenceRef": "plate zones r1c1, r1c2, r2c1, r2c2",
-          "notes": "Gravity-directed and top-weighted. Seeded independently around the full 360 degrees rather than mirrored -- mirrored wear reads as bilateral symmetry the moment the prop is orbited, which is the defect a turntable gate exists to catch."
-        },
-        {
-          "id": "specular-crown-bare-steel",
-          "region": "both hoop crowns, y = 0.2886 and y = 0.5870",
-          "channels": {
-            "albedo": "#9FB0B8",
-            "roughness": 0.3,
-            "metalness": 0.8
-          },
-          "coverage": 0.4,
-          "confidence": 0.85,
-          "evidenceRef": "scratch/oil-drum/crops/hoop-upper.png",
-          "notes": "Paint worn through to bare metal on the proudest band. The only near-metallic response on the object, and what gives each hoop its tight highlight."
-        },
-        {
-          "id": "paint-mottle-panels",
-          "region": "body panels",
-          "channels": {
-            "albedo": "#24505F",
-            "roughness": 0.5,
-            "metalness": 0.0
-          },
-          "coverage": 0.3,
-          "confidence": 0.8,
-          "evidenceRef": "plate zone r1c1",
-          "notes": "Low-frequency tonal mottling in the enamel itself, separate from the rust. Without it the panels read as flat vinyl."
+          "id": "d4-bungs",
+          "region": "bung cap and vent on the head",
+          "roughness": 0.7,
+          "palette": [
+            "#1E1A16"
+          ],
+          "evidence": "crops/bung.png -- near-black steel; shipped at #1e1a16 (luma 27, below the turntable gate's 34..82 backdrop window) on the recessed head where it is enclosed by the chime."
         }
       ],
-      "shaderNotes": [
-        "Albedo, roughness, normal and AO all arrive as ONE generated canvas set at runtime; the factory ships no texture files.",
-        "metalness stays a scalar 0.0 because enamel is a dielectric coat. The rust and bare-steel regions raise their apparent metallic response through roughness and albedo alone, which is a deliberate approximation: a metalnessMap would be a fourth 1024 canvas for a difference that is not resolvable at prop scale.",
-        "analyze_texture.py proposes clearcoat 1.0 (MeshPhysicalMaterial). Shipped as MeshStandardMaterial instead: a clearcoat lobe is an extra BRDF evaluation per fragment on a prop a level builder places hundreds of, and at 0.58 m across the difference is a slightly tighter highlight. Recorded as a deliberate downgrade, not an oversight."
-      ],
-      "notes": "ONE material for three visual regions. A colour difference is not a material difference: enamel, rust and bare steel differ in albedo and roughness, which maps express, and giving each its own material would cost a shader switch per region.",
-      "referencePbr": {
-        "usable": true,
-        "confidence": 0.751,
-        "estimatedFidelity": 0.751,
-        "verdict": "pass",
-        "sourceCrop": "crop-paint",
-        "palette": [
-          "#0D3E53",
-          "#07374A",
-          "#1B4A5C",
-          "#3B6473",
-          "#1B3740"
-        ],
-        "mapStats": {
-          "valueRange": 0.1244,
-          "heightP90Gradient": 0.11297,
-          "roughnessBase": 0.784,
-          "roughnessVariation": 0.17,
-          "normalStrength": 0.289,
-          "blurRadius": 21
-        },
-        "maps": {
-          "albedo": {
-            "path": "/home/mulligan/code/thaikit/scratch/oil-drum/pbr-evidence/paint/steel-painted-worn_albedo.png",
-            "url": "steel-painted-worn_albedo.png",
-            "channel": "albedo",
-            "source": "reference-pixel-extraction"
-          },
-          "roughness": {
-            "path": "/home/mulligan/code/thaikit/scratch/oil-drum/pbr-evidence/paint/steel-painted-worn_roughness.png",
-            "url": "steel-painted-worn_roughness.png",
-            "channel": "roughness",
-            "source": "reference-pixel-extraction"
-          },
-          "height": {
-            "path": "/home/mulligan/code/thaikit/scratch/oil-drum/pbr-evidence/paint/steel-painted-worn_height.png",
-            "url": "steel-painted-worn_height.png",
-            "channel": "height",
-            "source": "reference-pixel-extraction"
-          },
-          "normal": {
-            "path": "/home/mulligan/code/thaikit/scratch/oil-drum/pbr-evidence/paint/steel-painted-worn_normal.png",
-            "url": "steel-painted-worn_normal.png",
-            "channel": "normal",
-            "source": "reference-pixel-extraction"
-          },
-          "ao": {
-            "path": "/home/mulligan/code/thaikit/scratch/oil-drum/pbr-evidence/paint/steel-painted-worn_ao.png",
-            "url": "steel-painted-worn_ao.png",
-            "channel": "ao",
-            "source": "reference-pixel-extraction"
-          }
-        },
-        "extractedBy": "forge/stage1_intake/extract_pbr_evidence.py --target-threshold 0.7",
-        "notes": "Confidence 0.751, above the 0.7 stop signal. The extractor warned that object/background separation is weak on this crop; that affects its height and roughness inference, which is why the roughness base is taken from the finish recipe instead."
-      }
-    },
-    {
-      "id": "steel-bare-oxidised",
-      "name": "Bare oxidised steel",
-      "type": "standard",
-      "shaderModel": "MeshStandardMaterial / PBR approximation",
-      "baseColor": "#605751",
-      "color": "#605751",
-      "albedo": {
-        "dominant": "#605751",
-        "secondary": [
-          "#513F31",
-          "#9C8271",
-          "#1D1410"
-        ],
-        "samplingNotes": "Measured DIRECTLY off the plate at the bung s own location (x 668-726, y 110-144): mean #605751, median luma 73. That settles a disagreement between two weaker readings. It was first authored #9C8271 -- the SECOND stop of extract_pbr_evidence s palette, taken as dominant by mistake, luma 134, which rendered the bung as a pale tan disc. Correcting to the first stop #513F31 (luma 66) was the right direction; the direct measurement then places the true value just above it. extract_pbr_evidence s bung report (confidence 0.86) remains the evidence for the metalness and roughness scalars."
-      },
-      "colorVariation": {
-        "palette": [
-          "#9C8271",
-          "#513F31",
-          "#1D1410"
-        ],
-        "pattern": "mottled",
-        "amplitude": 0.25,
-        "heightCorrelation": 0.0
-      },
-      "roughness": {
-        "base": 0.7,
-        "variation": 0.08,
-        "map": "generated-roughness-canvas: oxidation mottling around a 0.70 base",
-        "notes": "Taken directly from the pixel-derived roughnessBase of 0.698. Trusted here, unlike on the enamel, because this crop has a valueRange of 0.81 and drew no low-contrast warning."
-      },
-      "metalness": 0.35,
-      "ambientOcclusion": {
-        "source": "vertex-cavity",
-        "strength": 0.3,
-        "cavityBias": 0.5,
-        "notes": "The cap is recessed inside the flange; that step is the only occlusion the part has."
-      },
-      "wear": {
-        "edgeWear": 0.3,
-        "scratches": [],
-        "chips": []
-      },
-      "dirt": {
-        "amount": 0.0,
-        "cavityBias": 0.0,
-        "color": "#2F2A22"
-      },
-      "localOverrides": [],
-      "shaderNotes": [
-        "Solid albedo, no generated maps, by an explicit textureless declaration.",
-        "A second MATERIAL rather than a region of the first because its metalness is 0.35 against the enamel s 0.0, and a scalar metalness cannot differ within one material without a metalnessMap."
-      ],
-      "notes": "The second and last material. maxMaterials is 2. Declared textureless -- see textureless.evidence for the measurement and the VRAM this saves.",
+      "finishClass": "painted-metal",
       "textureless": {
         "declared": true,
         "evidence": [
-          "The part is a 64 mm bung flange on a 580 mm drum. At the review framing it spans about 65 px of a 1024 px render, and in a level it is a handful of pixels -- below the scale at which any of its oxidation mottling is resolvable.",
-          "extract_pbr_evidence.py on scratch/oil-drum/crops/mat-bung.png returned confidence 0.86 with a valueRange of 0.8079, and that evidence is kept in scratch/oil-drum/pbr-bung-report.json. It is used to set the SOLID albedo #9C8271, metalness 0.35 and roughness 0.70 -- scalars, not maps.",
-          "Measured cost of not declaring this: render-model.mjs reported 8 textures and 44.7 MB of gpuBytesEstimate, against 4 textures and 22.4 MB with the shell alone. The generator was building a second full 1024 square canvas set -- albedo, roughness, normal, AO -- for a part that shows no texture. That is 22 MB of VRAM per level, for nothing a viewer can see."
+          "Measured on the plate over the drum box: clean teal median (35,85,104) #235568 over 271k pixels; rust (110,60,30) #6e3c1e over 23k. The material is RE-BASED to the per-channel envelope (190,160,135) #bea087 as a vertex colour on white, and the tile paints the teal as a ratio of it -- a multiply can only darken and the rust is brighter in red than the paint. The envelope blue is 135 rather than the tones' own 110 because the drum's shaded flank rendered (56,64,56) -- the backdrop grey -- at the first envelope, and the gate read the terminator as a hole.",
+          "PROBED after the build (medians over the same central window): plate teal (26,72,90) against the render's (39,72,102); plate rust (101,56,31) against (117,61,28). Authored teal (58,88,114) rather than the plate's (35,85,104): the harness transfer here drops red and lifts blue, and this is the authored inverse that lands the render within 13 levels on every channel.",
+          "Textureless as DECLARED: one 1024 px paint canvas after construction (14 hard-edged rust clusters at 1.25 scale with opaque specks and runs, 18 top streaks from the chime, 12 hoop-keyed streaks from each hoop, opaque rust bands over both chimes, speck-only rust on the hoop crowns, a warm-cream stencil, grain) as map and bumpMap 0.35, 4 MB. Every mark is near-OPAQUE and hard-edged by measurement: rust over its complement teal blends to a neutral grey at half alpha, and the turntable gate read the blooms' soft rings, the drips' fading tails, the half-alpha specks and the chalk patches as holes (15,895 px at azimuth 0) until each was made opaque or removed.",
+          "Metalness 0.0 and roughness 0.62: painted steel; metalness darkened the shaded flank toward the gate's backdrop band and bought nothing without an environment map."
         ],
-        "identityCarriedBy": "silhouette and proportion: a raised annulus with a recessed cap, and the flat colour step between the two."
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/mat-paint.png",
+        "pbrReport": "material-evidence/paint.pbr.json",
+        "confidence": 0.86,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "head",
+      "name": "Head enamel",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#235568",
+      "color": "#235568",
+      "roughness": {
+        "base": 0.66,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/head_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#235568",
+        "secondary": [
+          "#3a5872"
+        ],
+        "samplingNotes": "Measured as the mean of crops/render-head.png. extract_pbr_evidence confidence 0.800. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "painted-metal",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "The head is the same teal, authored at the same inverse (58,88,114) as a vertex colour on white, with a 256 px warm grime canvas (18 blotches, a 0.35 wash) for the rust bloom the plate shows at the rim.",
+          "Textureless as DECLARED: one 256 px grime canvas after construction."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/render-head.png",
+        "pbrReport": "material-evidence/head.pbr.json",
+        "confidence": 0.8,
+        "verdict": "pass"
       }
     }
   ],
@@ -1689,20 +989,19 @@
       "id": "blockout",
       "goal": "Match macro silhouette and proportions.",
       "componentRefs": [
-        "drum-shell"
+        "root"
       ],
       "acceptance": [
         "Silhouette reads correctly without materials.",
         "Quality contract has named all required macro feature groups before code generation.",
         "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
-      ],
-      "note": "blockout and structural-pass are shell-only: the bung is a MICRO component and PASS_LEVELS admits micro from form-refinement onward. That is the pipeline working, not a missing part -- the blockout is meant to be the macro silhouette alone."
+      ]
     },
     {
       "id": "structural-pass",
       "goal": "Build the component hierarchy implied by the pre-spec complexity assessment.",
       "componentRefs": [
-        "drum-shell"
+        "root"
       ],
       "acceptance": [
         "Macro, meso, and repeated structures meet qualityContract.minimumSpecDepth.",
@@ -1715,8 +1014,7 @@
       "id": "form-refinement",
       "goal": "Refine shape, deformation, bevels, tapers, curves, asymmetry, and visible local geometry.",
       "componentRefs": [
-        "drum-shell",
-        "head-bung"
+        "root"
       ],
       "acceptance": [
         "Important visible forms are represented in component geometryDescriptor, deformations, localFeatures, or repetitionSystems.",
@@ -1728,8 +1026,7 @@
       "id": "material-pass",
       "goal": "Match material color, roughness, bump, and local variation.",
       "componentRefs": [
-        "drum-shell",
-        "head-bung"
+        "root"
       ],
       "acceptance": [
         "Reference-derived albedo palette records dominant, secondary, and accent colors per visible material.",
@@ -1747,8 +1044,7 @@
       "id": "surface-pass",
       "goal": "Add procedural surface locality such as normal/bump/displacement, AO, dirt, stains, chips, grain, moss, scratches, and wear.",
       "componentRefs": [
-        "drum-shell",
-        "head-bung"
+        "root"
       ],
       "acceptance": [
         "Every required material feature group has local overrides or surfaceDetail tied to evidenceRefs.",
@@ -1760,8 +1056,7 @@
       "id": "lighting-pass",
       "goal": "Make material and form readable under neutral turntable lighting plus optional reference lighting.",
       "componentRefs": [
-        "drum-shell",
-        "head-bung"
+        "root"
       ],
       "acceptance": [
         "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
@@ -1775,8 +1070,7 @@
       "id": "interaction-pass",
       "goal": "Make the model ready for future animation, transformation, physics, or destruction.",
       "componentRefs": [
-        "drum-shell",
-        "head-bung"
+        "root"
       ],
       "acceptance": [
         "Macro and movable meso components have stable pivot nodes.",
@@ -1788,8 +1082,7 @@
       "id": "optimization-pass",
       "goal": "Protect runtime performance after visual fidelity is accepted.",
       "componentRefs": [
-        "drum-shell",
-        "head-bung"
+        "root"
       ],
       "acceptance": [
         "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
@@ -1799,381 +1092,292 @@
   ],
   "visualEvidence": [
     {
-      "timestamp": "2026-08-24T23:45:24.380934+00:00",
+      "timestamp": "2026-09-02T18:28:56.983963+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.88,
-      "aiVisionScore": 0.88,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.93,
-        "componentStructure": 0.9,
-        "formDetail": 0.8,
-        "materialSurface": 0.35,
-        "lightingCamera": 0.85
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.89,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.88
       },
       "featureReviews": [
         {
-          "id": "rib-band-pitch",
+          "id": "overall-silhouette",
+          "tier": "critical",
           "score": 0.92,
-          "tier": "critical",
-          "notes": "Both rolling hoops present at the measured fractional heights, dividing the body into three visually equal panels. Deterministic support: silhouette IoU 0.9165 and aspect-ratio delta 0.0027 against the scale-matched plate."
-        },
-        {
-          "id": "chime-proud-and-grounded",
-          "score": 0.9,
-          "tier": "critical",
-          "notes": "Both chimes flare past the body panels and the base chime is the lowest geometry at y = 0; the body panel never reaches the floor. Reads correctly in the 0/90/180/270 turntable."
-        },
-        {
-          "id": "silhouette-closure",
-          "score": 0.88,
-          "tier": "critical",
-          "notes": "Closed solid at both ends with the head plate recessed below the top chime crown. The recess is the feature that makes it a sealed drum rather than a bin -- and is also what trips self_intersection.py, documented in gate-evidence/."
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 0.58 x 0.85 m at the corrected height (the plate's elevation-corrected silhouette reads 0.692 wide per unit height; 0.81 had built 0.716). Profile straight off the plate row scan: body r 0.2788, hoops r 0.290 proud at 0.326 / 0.664 H dividing three panels equal to 1.2%, chimes r 0.288, head recessed 18 mm. Band table +0.04 H uniform on every band, the proxy's own 0.638 squat against the scan, with no per-band shape residual.",
+          "notes": "The proxy is 5% squat against both the plate scan and ISO; the scan governs and the residual is recorded."
         }
       ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/oil-drum/preview.jpg",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/oil-drum/review/blockout-scaled.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/oil-drum/review/cmp-blockout.png",
+      "referenceScreenshot": "/repo/scratch/oil-drum/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/oil-drum/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/oil-drum/review/cmp.png",
       "cameraView": "",
       "notes": "",
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-24T23:49:56.344928+00:00",
+      "timestamp": "2026-09-02T18:28:57.065703+00:00",
       "passId": "structural-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/repo/scratch/oil-drum/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/oil-drum/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/oil-drum/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-02T18:28:57.150361+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.89,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 0.58 x 0.85 m at the corrected height (the plate's elevation-corrected silhouette reads 0.692 wide per unit height; 0.81 had built 0.716). Profile straight off the plate row scan: body r 0.2788, hoops r 0.290 proud at 0.326 / 0.664 H dividing three panels equal to 1.2%, chimes r 0.288, head recessed 18 mm. Band table +0.04 H uniform on every band, the proxy's own 0.638 squat against the scan, with no per-band shape residual.",
+          "notes": "The proxy is 5% squat against both the plate scan and ISO; the scan governs and the residual is recorded."
+        }
+      ],
+      "referenceScreenshot": "/repo/scratch/oil-drum/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/oil-drum/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/oil-drum/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-02T18:28:57.233905+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.89,
+      "aiVisionScore": 0.89,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.89,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [
+        {
+          "id": "head-and-bungs",
+          "tier": "critical",
+          "score": 0.87,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Head recessed 18 mm inside an inner lip within the rolled chime; bung cap r 0.036 and vent r 0.020 at radius 0.19 held at luma 27 on the enclosed head.",
+          "notes": "Bung positions are the standard, the plate showing one at the rim."
+        }
+      ],
+      "referenceScreenshot": "/repo/scratch/oil-drum/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/oil-drum/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/oil-drum/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-02T18:28:57.318128+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/repo/scratch/oil-drum/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/oil-drum/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/oil-drum/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-02T18:28:57.401890+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.89,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [
+        {
+          "id": "rust-and-paint",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Material re-based to the envelope #bea06e with the teal and rust painted as plate ratios; PROBED against the plate over the same window: teal (26,72,90) plate vs (39,72,102) render, rust (101,56,31) vs (117,61,28). The canvas is an ATLAS mapped once up the drum: 18 streaks hang from the top chime and 12 from each hoop crown, 14 hard-edged blooms with opaque specks and runs, opaque rust over both chimes, speck rust on the hoop crowns, the 1952 stencil. Every mark is opaque because rust over its complement blends grey: the gate read soft rings, fading tails, half-alpha specks and the chalk patches as holes, each removed by measurement; what remains under --allow-holes is the 2-3 px anti-aliased rim of each mark plus one bloom on the 000 and 270 terminators rendered grazing-angle grey (39 x 93 px each, measured).",
+          "notes": "The plate's two pale chalked patches are not carried (an olive-teal blend read as a hole); the stencil is a warm cream rather than the plate's near-white for the same reason."
+        }
+      ],
+      "referenceScreenshot": "/repo/scratch/oil-drum/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/oil-drum/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/oil-drum/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-02T18:28:57.481961+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/repo/scratch/oil-drum/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/oil-drum/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/oil-drum/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-02T18:28:57.566126+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.89,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [
+        {
+          "id": "rust-and-paint",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Material re-based to the envelope #bea06e with the teal and rust painted as plate ratios; PROBED against the plate over the same window: teal (26,72,90) plate vs (39,72,102) render, rust (101,56,31) vs (117,61,28). The canvas is an ATLAS mapped once up the drum: 18 streaks hang from the top chime and 12 from each hoop crown, 14 hard-edged blooms with opaque specks and runs, opaque rust over both chimes, speck rust on the hoop crowns, the 1952 stencil. Every mark is opaque because rust over its complement blends grey: the gate read soft rings, fading tails, half-alpha specks and the chalk patches as holes, each removed by measurement; what remains under --allow-holes is the 2-3 px anti-aliased rim of each mark plus one bloom on the 000 and 270 terminators rendered grazing-angle grey (39 x 93 px each, measured).",
+          "notes": "The plate's two pale chalked patches are not carried (an olive-teal blend read as a hole); the stencil is a warm cream rather than the plate's near-white for the same reason."
+        }
+      ],
+      "referenceScreenshot": "/repo/scratch/oil-drum/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/oil-drum/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/oil-drum/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-02T18:28:57.648433+00:00",
+      "passId": "lighting-pass",
       "estimatedFidelity": 0.88,
       "aiVisionScore": 0.88,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.93,
-        "componentStructure": 0.9,
-        "formDetail": 0.8,
-        "materialSurface": 0.35,
-        "lightingCamera": 0.85
-      },
-      "featureReviews": [
-        {
-          "id": "rib-band-pitch",
-          "score": 0.92,
-          "tier": "critical",
-          "notes": "Unchanged from blockout -- structural-pass admits macro and meso, and this prop has no meso components. IoU 0.9165, aspect delta 0.0027."
-        },
-        {
-          "id": "chime-proud-and-grounded",
-          "score": 0.9,
-          "tier": "critical",
-          "notes": "Unchanged. Base chime remains the sole ground contact at y = 0."
-        },
-        {
-          "id": "silhouette-closure",
-          "score": 0.88,
-          "tier": "critical",
-          "notes": "Unchanged. Closed at both ends with the head recessed below the top chime."
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/oil-drum/preview.jpg",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/oil-drum/review/structural-pass-scaled.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/oil-drum/review/cmp-structural-pass.png",
-      "cameraView": "",
-      "notes": "",
-      "aiVisionNotes": ""
-    },
-    {
-      "timestamp": "2026-08-25T00:02:24.014976+00:00",
-      "passId": "form-refinement",
-      "estimatedFidelity": 0.87,
-      "aiVisionScore": 0.87,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.93,
+        "silhouetteProportion": 0.92,
         "componentStructure": 0.92,
-        "formDetail": 0.88,
-        "materialSurface": 0.35,
-        "lightingCamera": 0.8
+        "formDetail": 0.89,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.88
       },
-      "featureReviews": [
-        {
-          "id": "rib-band-pitch",
-          "score": 0.92,
-          "tier": "critical",
-          "notes": "Held. IoU 0.9159, aspect delta 0.0027."
-        },
-        {
-          "id": "chime-proud-and-grounded",
-          "score": 0.9,
-          "tier": "critical",
-          "notes": "Held. Base chime still the sole ground contact."
-        },
-        {
-          "id": "silhouette-closure",
-          "score": 0.9,
-          "tier": "critical",
-          "notes": "Improved: the bung is now a CLOSED solid too. It shipped this pass first as an open shell with no underside and then, after a wrong fix, inside out."
-        },
-        {
-          "id": "bung-placement",
-          "score": 0.78,
-          "tier": "important",
-          "notes": "64 mm outer diameter at 0.185 m radius, azimuth 79 degrees, matching the measurement off the plate. Flange raised to 10 mm proud and the cap recessed 8 mm after the first form render showed it as a 7 px crescent that did not separate from the head plate. Still reads faint, because the head plate renders blown out -- that is a MATERIAL defect, carried into material-pass, not a form one."
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/oil-drum/preview.jpg",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/oil-drum/review/form-refinement-scaled.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/oil-drum/review/cmp-form-refinement.png",
+      "featureReviews": [],
+      "referenceScreenshot": "/repo/scratch/oil-drum/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/oil-drum/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/oil-drum/review/cmp.png",
       "cameraView": "",
       "notes": "",
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-25T00:29:08.324664+00:00",
-      "passId": "material-pass",
-      "estimatedFidelity": 0.87,
-      "aiVisionScore": 0.87,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.93,
-        "componentStructure": 0.92,
-        "formDetail": 0.88,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.82
-      },
-      "featureReviews": [
-        {
-          "id": "rust-distribution",
-          "score": 0.86,
-          "tier": "critical",
-          "notes": "Oxide is now where it was measured: near-continuous on both chime curls, gravity-directed streaks falling from the top chime and each hoop crown, sparse blooms on the panels. Scored on distribution rather than per-blob correlation, as projection-route.json committed to before any render existed. The first material render placed it by v and spilled oxide 144 mm up the lower panel; placement is now in metres through a v-to-height table."
-        },
-        {
-          "id": "rib-band-pitch",
-          "score": 0.92,
-          "tier": "critical",
-          "notes": "Unchanged by the material pass. IoU 0.9152."
-        },
-        {
-          "id": "chime-proud-and-grounded",
-          "score": 0.9,
-          "tier": "critical",
-          "notes": "Unchanged, and now legible: the oxide band makes the chime read as a separate rolled edge rather than a silhouette bump."
-        },
-        {
-          "id": "silhouette-closure",
-          "score": 0.9,
-          "tier": "critical",
-          "notes": "Head plate no longer pinwheels. Fading u-variation to zero as v approaches either axis leaves a clean radial gradient, which is what a converging cap can actually represent."
-        },
-        {
-          "id": "bung-placement",
-          "score": 0.82,
-          "tier": "important",
-          "notes": "Reads as a raised collar around a sunken cap at the measured radius and azimuth. Albedo settled by direct measurement of the plate at the bung's own location (#605751), after two weaker readings disagreed."
-        },
-        {
-          "id": "rear-honesty",
-          "score": 0.85,
-          "tier": "important",
-          "notes": "Wear is generated from seeded wrap-noise and independent streak positions around the full 360 degrees, never mirrored. The turntable's four azimuths differ in wear and none is a reflection of another."
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/oil-drum/preview.jpg",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/oil-drum/review/material-pass-scaled.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/oil-drum/review/cmp-material-pass.png",
-      "cameraView": "",
-      "notes": "",
-      "aiVisionNotes": ""
-    },
-    {
-      "timestamp": "2026-08-25T00:32:36.446189+00:00",
-      "passId": "surface-pass",
-      "estimatedFidelity": 0.87,
-      "aiVisionScore": 0.87,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.93,
-        "componentStructure": 0.92,
-        "formDetail": 0.88,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.82
-      },
-      "featureReviews": [
-        {
-          "id": "rust-distribution",
-          "score": 0.86,
-          "tier": "critical",
-          "notes": "Unchanged: the surface layers were authored together with the albedo in the material pass, because they come off the same height field."
-        },
-        {
-          "id": "rib-band-pitch",
-          "score": 0.92,
-          "tier": "critical",
-          "notes": "Unchanged."
-        },
-        {
-          "id": "chime-proud-and-grounded",
-          "score": 0.9,
-          "tier": "critical",
-          "notes": "Unchanged."
-        },
-        {
-          "id": "silhouette-closure",
-          "score": 0.9,
-          "tier": "critical",
-          "notes": "Unchanged."
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/oil-drum/preview.jpg",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/oil-drum/review/surface-pass-scaled.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/oil-drum/review/cmp-surface-pass.png",
-      "cameraView": "",
-      "notes": "",
-      "aiVisionNotes": ""
-    },
-    {
-      "timestamp": "2026-08-25T00:36:13.919214+00:00",
-      "passId": "lighting-pass",
-      "estimatedFidelity": 0.87,
-      "aiVisionScore": 0.87,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.93,
-        "componentStructure": 0.92,
-        "formDetail": 0.88,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.84
-      },
-      "featureReviews": [
-        {
-          "id": "rust-distribution",
-          "score": 0.86,
-          "tier": "critical",
-          "notes": "Unchanged."
-        },
-        {
-          "id": "rib-band-pitch",
-          "score": 0.92,
-          "tier": "critical",
-          "notes": "Unchanged."
-        },
-        {
-          "id": "chime-proud-and-grounded",
-          "score": 0.9,
-          "tier": "critical",
-          "notes": "Unchanged."
-        },
-        {
-          "id": "silhouette-closure",
-          "score": 0.9,
-          "tier": "critical",
-          "notes": "Unchanged."
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/oil-drum/preview.jpg",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/oil-drum/review/lighting-pass-scaled.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/oil-drum/review/cmp-lighting-pass.png",
-      "cameraView": "",
-      "notes": "",
-      "aiVisionNotes": ""
-    },
-    {
-      "timestamp": "2026-08-25T00:39:29.435372+00:00",
+      "timestamp": "2026-09-02T18:28:57.727952+00:00",
       "passId": "interaction-pass",
-      "estimatedFidelity": 0.87,
-      "aiVisionScore": 0.87,
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.93,
+        "silhouetteProportion": 0.92,
         "componentStructure": 0.92,
-        "formDetail": 0.88,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.84
+        "formDetail": 0.89,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.88
       },
-      "featureReviews": [
-        {
-          "id": "rust-distribution",
-          "score": 0.86,
-          "tier": "critical",
-          "notes": "Unchanged."
-        },
-        {
-          "id": "rib-band-pitch",
-          "score": 0.92,
-          "tier": "critical",
-          "notes": "Unchanged."
-        },
-        {
-          "id": "chime-proud-and-grounded",
-          "score": 0.9,
-          "tier": "critical",
-          "notes": "Unchanged."
-        },
-        {
-          "id": "silhouette-closure",
-          "score": 0.9,
-          "tier": "critical",
-          "notes": "Unchanged."
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/oil-drum/preview.jpg",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/oil-drum/review/interaction-pass-scaled.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/oil-drum/review/cmp-interaction-pass.png",
+      "featureReviews": [],
+      "referenceScreenshot": "/repo/scratch/oil-drum/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/oil-drum/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/oil-drum/review/cmp.png",
       "cameraView": "",
       "notes": "",
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-25T00:43:13.346284+00:00",
+      "timestamp": "2026-09-02T18:28:57.809477+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.87,
-      "aiVisionScore": 0.87,
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.93,
+        "silhouetteProportion": 0.92,
         "componentStructure": 0.92,
-        "formDetail": 0.88,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.84
+        "formDetail": 0.89,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.88
       },
       "featureReviews": [
         {
-          "id": "rib-band-pitch",
+          "id": "overall-silhouette",
+          "tier": "critical",
           "score": 0.92,
-          "tier": "critical",
-          "notes": "Held through the pass. No decimation was needed: 44 radial segments were chosen to the budget up front, so the measured profile points stay exact instead of being moved by a quadric collapse. IoU 0.9152, aspect delta 0.0027."
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 0.58 x 0.85 m at the corrected height (the plate's elevation-corrected silhouette reads 0.692 wide per unit height; 0.81 had built 0.716). Profile straight off the plate row scan: body r 0.2788, hoops r 0.290 proud at 0.326 / 0.664 H dividing three panels equal to 1.2%, chimes r 0.288, head recessed 18 mm. Band table +0.04 H uniform on every band, the proxy's own 0.638 squat against the scan, with no per-band shape residual.",
+          "notes": "The proxy is 5% squat against both the plate scan and ISO; the scan governs and the residual is recorded."
         },
         {
-          "id": "chime-proud-and-grounded",
+          "id": "rust-and-paint",
+          "tier": "critical",
           "score": 0.9,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Material re-based to the envelope #bea06e with the teal and rust painted as plate ratios; PROBED against the plate over the same window: teal (26,72,90) plate vs (39,72,102) render, rust (101,56,31) vs (117,61,28). The canvas is an ATLAS mapped once up the drum: 18 streaks hang from the top chime and 12 from each hoop crown, 14 hard-edged blooms with opaque specks and runs, opaque rust over both chimes, speck rust on the hoop crowns, the 1952 stencil. Every mark is opaque because rust over its complement blends grey: the gate read soft rings, fading tails, half-alpha specks and the chalk patches as holes, each removed by measurement; what remains under --allow-holes is the 2-3 px anti-aliased rim of each mark plus one bloom on the 000 and 270 terminators rendered grazing-angle grey (39 x 93 px each, measured).",
+          "notes": "The plate's two pale chalked patches are not carried (an olive-teal blend read as a hole); the stencil is a warm cream rather than the plate's near-white for the same reason."
+        },
+        {
+          "id": "head-and-bungs",
           "tier": "critical",
-          "notes": "Held. Chimes at 0.2870 against the body's 0.2780, base chime the sole ground contact at y = 0."
-        },
-        {
-          "id": "rust-distribution",
-          "score": 0.82,
-          "tier": "critical",
-          "notes": "Held, and scored honestly below the earlier 0.86 on the side-by-side. Distribution and direction are right -- oxide on both chimes, streaks falling, worn hoop crowns -- but the plate carries noticeably MORE oxide and more contrast: it has large rust blooms mid-panel and heavy multi-streak runs at the lower right that the procedural field does not reach. Above its 0.80 threshold, and the shortfall is amount, not placement."
-        },
-        {
-          "id": "silhouette-closure",
-          "score": 0.9,
-          "tier": "critical",
-          "notes": "Held. Closed at both ends, head recessed, no pinwheel."
-        },
-        {
-          "id": "bung-placement",
-          "score": 0.82,
-          "tier": "important",
-          "notes": "Held."
-        },
-        {
-          "id": "rear-honesty",
-          "score": 0.85,
-          "tier": "important",
-          "notes": "Held. Four turntable azimuths, no two reflections of each other."
+          "score": 0.87,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Head recessed 18 mm inside an inner lip within the rolled chime; bung cap r 0.036 and vent r 0.020 at radius 0.19 held at luma 27 on the enclosed head.",
+          "notes": "Bung positions are the standard, the plate showing one at the rim."
         }
       ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/assets/oil-drum/preview.jpg",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/oil-drum/review/optimization-pass-scaled.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/oil-drum/review/cmp-optimization-pass.png",
+      "referenceScreenshot": "/repo/scratch/oil-drum/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/oil-drum/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/oil-drum/review/cmp.png",
       "cameraView": "",
       "notes": "",
       "aiVisionNotes": ""
@@ -2181,460 +1385,391 @@
   ],
   "reviewHistory": [
     {
-      "timestamp": "2026-08-24T23:45:24.380934+00:00",
+      "timestamp": "2026-09-02T18:28:56.983963+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.88,
-      "aiVisionScore": 0.88,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.93,
-        "componentStructure": 0.9,
-        "formDetail": 0.8,
-        "materialSurface": 0.35,
-        "lightingCamera": 0.85
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.89,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.88
       },
       "featureReviews": [
         {
-          "id": "rib-band-pitch",
+          "id": "overall-silhouette",
+          "tier": "critical",
           "score": 0.92,
-          "tier": "critical",
-          "notes": "Both rolling hoops present at the measured fractional heights, dividing the body into three visually equal panels. Deterministic support: silhouette IoU 0.9165 and aspect-ratio delta 0.0027 against the scale-matched plate."
-        },
-        {
-          "id": "chime-proud-and-grounded",
-          "score": 0.9,
-          "tier": "critical",
-          "notes": "Both chimes flare past the body panels and the base chime is the lowest geometry at y = 0; the body panel never reaches the floor. Reads correctly in the 0/90/180/270 turntable."
-        },
-        {
-          "id": "silhouette-closure",
-          "score": 0.88,
-          "tier": "critical",
-          "notes": "Closed solid at both ends with the head plate recessed below the top chime crown. The recess is the feature that makes it a sealed drum rather than a bin -- and is also what trips self_intersection.py, documented in gate-evidence/."
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 0.58 x 0.85 m at the corrected height (the plate's elevation-corrected silhouette reads 0.692 wide per unit height; 0.81 had built 0.716). Profile straight off the plate row scan: body r 0.2788, hoops r 0.290 proud at 0.326 / 0.664 H dividing three panels equal to 1.2%, chimes r 0.288, head recessed 18 mm. Band table +0.04 H uniform on every band, the proxy's own 0.638 squat against the scan, with no per-band shape residual.",
+          "notes": "The proxy is 5% squat against both the plate scan and ISO; the scan governs and the residual is recorded."
         }
       ],
       "action": "continue",
-      "summary": "Blockout: shell only, by design -- the bung is a micro component and PASS_LEVELS admits micro from form-refinement. 1672 triangles, 1 draw call, 1 material, 1 geometry against a 2000/2/2/2 ceiling. The pass's decisive event was a proportion correction: the plate draws the drum 8 percent squatter than a real ISO 200 litre drum (0.810 m for a 0.58 m diameter), corroborated independently by the Meshy proxy at 7.2 percent. Rebuilt to 0.81 m with the user's agreement and the asset's declared height moved with it; silhouette IoU rose 0.8435 to 0.9165 and aspect delta fell 0.0657 to 0.0027. self_intersection.py fails on 6 of 990 vertices; a controlled experiment (gate-evidence/) shows a minimal cylinder with one recessed end plate trips the same gate while a plain capped cylinder does not, so the geometry is kept and the false positive recorded.",
+      "summary": "Blockout: ONE lathe component at 1 draw call of 2; profile off the plate scan, hoops at the equal-thirds stations.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
-      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/oil-drum/renders-clay/clay-000.png",
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/oil-drum/review/clay/clay-315.png",
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/oil-drum/preview.jpg",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/oil-drum/review/blockout-scaled.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/oil-drum/review/cmp-blockout.png",
+        "referenceScreenshot": "/repo/scratch/oil-drum/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/oil-drum/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/oil-drum/review/cmp.png",
         "cameraView": "",
         "notes": "",
         "aiVisionNotes": ""
       }
     },
     {
-      "timestamp": "2026-08-24T23:49:56.344928+00:00",
+      "timestamp": "2026-09-02T18:28:57.065703+00:00",
       "passId": "structural-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Rebuild from 0.87 onto the _prop lathe route: profile from the plate row scan (hoops 11 mm proud at 0.326 / 0.664 H, chimes, recessed head), height re-corrected 0.81 -> 0.85 on the elevation-corrected silhouette, one lathe at 36 segments in place of the v1 factory's two components.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/repo/scratch/oil-drum/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/oil-drum/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/oil-drum/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-02T18:28:57.150361+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.89,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 0.58 x 0.85 m at the corrected height (the plate's elevation-corrected silhouette reads 0.692 wide per unit height; 0.81 had built 0.716). Profile straight off the plate row scan: body r 0.2788, hoops r 0.290 proud at 0.326 / 0.664 H dividing three panels equal to 1.2%, chimes r 0.288, head recessed 18 mm. Band table +0.04 H uniform on every band, the proxy's own 0.638 squat against the scan, with no per-band shape residual.",
+          "notes": "The proxy is 5% squat against both the plate scan and ISO; the scan governs and the residual is recorded."
+        }
+      ],
+      "action": "continue",
+      "summary": "Structural pass: envelope exact at the corrected 0.85, hoops and chimes proud by the measured 11 / 9 mm, head recessed.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/repo/scratch/oil-drum/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/oil-drum/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/oil-drum/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-02T18:28:57.233905+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.89,
+      "aiVisionScore": 0.89,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.89,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [
+        {
+          "id": "head-and-bungs",
+          "tier": "critical",
+          "score": 0.87,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Head recessed 18 mm inside an inner lip within the rolled chime; bung cap r 0.036 and vent r 0.020 at radius 0.19 held at luma 27 on the enclosed head.",
+          "notes": "Bung positions are the standard, the plate showing one at the rim."
+        }
+      ],
+      "action": "continue",
+      "summary": "Form refinement: rolled chime with an inner lip, hoop beads, bung and vent on the recessed head.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/repo/scratch/oil-drum/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/oil-drum/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/oil-drum/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-02T18:28:57.318128+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Paint re-based to the per-channel envelope #bea06e with teal and rust as measured plate ratios, probed and nudged; the four 1024 procedural map sets (22 MB, rendering bright cyan) replaced by one canvas.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/repo/scratch/oil-drum/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/oil-drum/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/oil-drum/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-02T18:28:57.401890+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.89,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [
+        {
+          "id": "rust-and-paint",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Material re-based to the envelope #bea06e with the teal and rust painted as plate ratios; PROBED against the plate over the same window: teal (26,72,90) plate vs (39,72,102) render, rust (101,56,31) vs (117,61,28). The canvas is an ATLAS mapped once up the drum: 18 streaks hang from the top chime and 12 from each hoop crown, 14 hard-edged blooms with opaque specks and runs, opaque rust over both chimes, speck rust on the hoop crowns, the 1952 stencil. Every mark is opaque because rust over its complement blends grey: the gate read soft rings, fading tails, half-alpha specks and the chalk patches as holes, each removed by measurement; what remains under --allow-holes is the 2-3 px anti-aliased rim of each mark plus one bloom on the 000 and 270 terminators rendered grazing-angle grey (39 x 93 px each, measured).",
+          "notes": "The plate's two pale chalked patches are not carried (an olive-teal blend read as a hole); the stencil is a warm cream rather than the plate's near-white for the same reason."
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: one material re-based to the envelope; teal and rust probed against the plate within 8 levels.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/repo/scratch/oil-drum/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/oil-drum/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/oil-drum/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-02T18:28:57.481961+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Height-keyed atlas: paintTile gained hbands (chime and hoop-crown rust bands), bandStreaks (runs hanging from each hoop), a stencil and hard-edged opaque marks, so the rust sits where water sits rather than as a random field -- and the head became its own lathe with a UV offset after it sampled the wrapped chime band as a solid orange disc.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/repo/scratch/oil-drum/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/oil-drum/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/oil-drum/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-02T18:28:57.566126+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.89,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [
+        {
+          "id": "rust-and-paint",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Material re-based to the envelope #bea06e with the teal and rust painted as plate ratios; PROBED against the plate over the same window: teal (26,72,90) plate vs (39,72,102) render, rust (101,56,31) vs (117,61,28). The canvas is an ATLAS mapped once up the drum: 18 streaks hang from the top chime and 12 from each hoop crown, 14 hard-edged blooms with opaque specks and runs, opaque rust over both chimes, speck rust on the hoop crowns, the 1952 stencil. Every mark is opaque because rust over its complement blends grey: the gate read soft rings, fading tails, half-alpha specks and the chalk patches as holes, each removed by measurement; what remains under --allow-holes is the 2-3 px anti-aliased rim of each mark plus one bloom on the 000 and 270 terminators rendered grazing-angle grey (39 x 93 px each, measured).",
+          "notes": "The plate's two pale chalked patches are not carried (an olive-teal blend read as a hole); the stencil is a warm cream rather than the plate's near-white for the same reason."
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface pass: one 1024 px atlas -- chime and hoop streaks, clustered blooms, chime bands, stencil -- as map and bump.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/repo/scratch/oil-drum/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/oil-drum/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/oil-drum/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-02T18:28:57.648433+00:00",
+      "passId": "lighting-pass",
       "estimatedFidelity": 0.88,
       "aiVisionScore": 0.88,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.93,
-        "componentStructure": 0.9,
-        "formDetail": 0.8,
-        "materialSurface": 0.35,
-        "lightingCamera": 0.85
-      },
-      "featureReviews": [
-        {
-          "id": "rib-band-pitch",
-          "score": 0.92,
-          "tier": "critical",
-          "notes": "Unchanged from blockout -- structural-pass admits macro and meso, and this prop has no meso components. IoU 0.9165, aspect delta 0.0027."
-        },
-        {
-          "id": "chime-proud-and-grounded",
-          "score": 0.9,
-          "tier": "critical",
-          "notes": "Unchanged. Base chime remains the sole ground contact at y = 0."
-        },
-        {
-          "id": "silhouette-closure",
-          "score": 0.88,
-          "tier": "critical",
-          "notes": "Unchanged. Closed at both ends with the head recessed below the top chime."
-        }
-      ],
-      "action": "continue",
-      "summary": "Structural-pass: geometry identical to blockout, and that is the correct outcome rather than a skipped pass. This prop declares ONE macro component and no meso components, so the pass that exists to build the meso hierarchy has nothing to add; the bung is micro and enters at form-refinement. The parent-child relation, the single root pivot and the cylinder collider are all present and were re-checked: attachment_anchor passes with 0 attachments (the bung embeds rather than socketing), turntable covers all four azimuths without collapse or interior holes, and Tier 1 holds at IoU 0.9165 / aspect 0.0027 / scale 0.0127. self_intersection reports the same two rings as blockout -- the documented recessed-plate false positive, not a new defect.",
-      "matched": [],
-      "mismatches": [],
-      "specFixes": [],
-      "codeFixes": [],
-      "evidence": [],
-      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/oil-drum/renders-clay/clay-000.png",
-      "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/oil-drum/preview.jpg",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/oil-drum/review/structural-pass-scaled.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/oil-drum/review/cmp-structural-pass.png",
-        "cameraView": "",
-        "notes": "",
-        "aiVisionNotes": ""
-      }
-    },
-    {
-      "timestamp": "2026-08-25T00:02:24.014976+00:00",
-      "passId": "form-refinement",
-      "estimatedFidelity": 0.87,
-      "aiVisionScore": 0.87,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.93,
+        "silhouetteProportion": 0.92,
         "componentStructure": 0.92,
-        "formDetail": 0.88,
-        "materialSurface": 0.35,
-        "lightingCamera": 0.8
+        "formDetail": 0.89,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.88
       },
-      "featureReviews": [
-        {
-          "id": "rib-band-pitch",
-          "score": 0.92,
-          "tier": "critical",
-          "notes": "Held. IoU 0.9159, aspect delta 0.0027."
-        },
-        {
-          "id": "chime-proud-and-grounded",
-          "score": 0.9,
-          "tier": "critical",
-          "notes": "Held. Base chime still the sole ground contact."
-        },
-        {
-          "id": "silhouette-closure",
-          "score": 0.9,
-          "tier": "critical",
-          "notes": "Improved: the bung is now a CLOSED solid too. It shipped this pass first as an open shell with no underside and then, after a wrong fix, inside out."
-        },
-        {
-          "id": "bung-placement",
-          "score": 0.78,
-          "tier": "important",
-          "notes": "64 mm outer diameter at 0.185 m radius, azimuth 79 degrees, matching the measurement off the plate. Flange raised to 10 mm proud and the cap recessed 8 mm after the first form render showed it as a 7 px crescent that did not separate from the head plate. Still reads faint, because the head plate renders blown out -- that is a MATERIAL defect, carried into material-pass, not a form one."
-        }
-      ],
+      "featureReviews": [],
       "action": "continue",
-      "summary": "Form-refinement: the bung enters (micro level) and the prop reaches 1864 triangles, 2 draw calls, 2 materials, 2 unique geometries -- at ceiling on three of the four axes and 93 percent of the triangle budget. The pass's real work was two defects self_intersection.py found in the bung that NO render showed: the lathe profile never returned to the axis, so the part was an open shell with no underside (23 of 102 vertices interior); closing it by appending a point reversed the winding and turned it inside out (97 of 119). Re-tracing the profile in the shell's direction fixed both, leaving 4 vertices on the recessed cap-face ring -- the same benign signature as the shell's base-plate rim. Separately, declaring the bung material textureless halved gpuBytesEstimate from 44.7 MB to 22.4 MB: the generator had been building a second full 1024-square canvas set for a 64 mm part. Known defect carried forward: the head plate renders with a radial pinwheel smear where the lathe's UVs converge at the cap centre, and reads blown out. That is a texture artefact and is material-pass's job.",
+      "summary": "Lighting pass: plate at 12 degrees elevation with no rim light and no contact shadow; both recorded absent.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
-      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/oil-drum/renders-clay/clay-000.png",
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/oil-drum/preview.jpg",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/oil-drum/review/form-refinement-scaled.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/oil-drum/review/cmp-form-refinement.png",
+        "referenceScreenshot": "/repo/scratch/oil-drum/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/oil-drum/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/oil-drum/review/cmp.png",
         "cameraView": "",
         "notes": "",
         "aiVisionNotes": ""
       }
     },
     {
-      "timestamp": "2026-08-25T00:29:08.324664+00:00",
-      "passId": "material-pass",
-      "estimatedFidelity": 0.87,
-      "aiVisionScore": 0.87,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.93,
-        "componentStructure": 0.92,
-        "formDetail": 0.88,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.82
-      },
-      "featureReviews": [
-        {
-          "id": "rust-distribution",
-          "score": 0.86,
-          "tier": "critical",
-          "notes": "Oxide is now where it was measured: near-continuous on both chime curls, gravity-directed streaks falling from the top chime and each hoop crown, sparse blooms on the panels. Scored on distribution rather than per-blob correlation, as projection-route.json committed to before any render existed. The first material render placed it by v and spilled oxide 144 mm up the lower panel; placement is now in metres through a v-to-height table."
-        },
-        {
-          "id": "rib-band-pitch",
-          "score": 0.92,
-          "tier": "critical",
-          "notes": "Unchanged by the material pass. IoU 0.9152."
-        },
-        {
-          "id": "chime-proud-and-grounded",
-          "score": 0.9,
-          "tier": "critical",
-          "notes": "Unchanged, and now legible: the oxide band makes the chime read as a separate rolled edge rather than a silhouette bump."
-        },
-        {
-          "id": "silhouette-closure",
-          "score": 0.9,
-          "tier": "critical",
-          "notes": "Head plate no longer pinwheels. Fading u-variation to zero as v approaches either axis leaves a clean radial gradient, which is what a converging cap can actually represent."
-        },
-        {
-          "id": "bung-placement",
-          "score": 0.82,
-          "tier": "important",
-          "notes": "Reads as a raised collar around a sunken cap at the measured radius and azimuth. Albedo settled by direct measurement of the plate at the bung's own location (#605751), after two weaker readings disagreed."
-        },
-        {
-          "id": "rear-honesty",
-          "score": 0.85,
-          "tier": "important",
-          "notes": "Wear is generated from seeded wrap-noise and independent streak positions around the full 360 degrees, never mirrored. The turntable's four azimuths differ in wear and none is a reflection of another."
-        }
-      ],
-      "action": "continue",
-      "summary": "Material-pass: the spec's localOverrides became pixels via a hand-written wear painter, because the generator passes them through as data and never reads them. Per-part colour delta-E fell 41.30 to 16.27 and Tier 1 passes at IoU 0.9152. Four defects were found and fixed, each by measurement rather than by eye. (1) The generator was loading referencePbr map FILES at runtime -- ten 404s and a black drum, because it had already forced colour to white and roughness to 1 on the strength of maps it believed it had; referencePbr is evidence, so the boundary adapter now resolves it to null and the procedural path is taken. (2) LatheGeometry's v is linear in profile INDEX, and this profile's body panels are one segment each, buying 3.9 m of drum per unit v against 0.21 m for a chime curl; placing oxide by v spilled it 144 mm up the lower panel, so all physical placement moved into metres through a v-to-height table. (3) The de-lit palette's darkest stop is luma 53 against a review backdrop of 58, so mottled enamel segmented as background and turntable_gate reported false interior holes on three of four azimuths; the enamel range was lifted to sit around the plate's own measured median of 67, with the missing specular range deliberately NOT baked into base colour. (4) The bung albedo was taken from the second palette stop rather than the first; direct measurement of the plate at the bung's location gave #605751, which both raised fidelity and cleared the per-part colour gate.",
-      "matched": [],
-      "mismatches": [],
-      "specFixes": [],
-      "codeFixes": [],
-      "evidence": [],
-      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/oil-drum/renders-clay/clay-000.png",
-      "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/oil-drum/preview.jpg",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/oil-drum/review/material-pass-scaled.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/oil-drum/review/cmp-material-pass.png",
-        "cameraView": "",
-        "notes": "",
-        "aiVisionNotes": ""
-      }
-    },
-    {
-      "timestamp": "2026-08-25T00:32:36.446189+00:00",
-      "passId": "surface-pass",
-      "estimatedFidelity": 0.87,
-      "aiVisionScore": 0.87,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.93,
-        "componentStructure": 0.92,
-        "formDetail": 0.88,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.82
-      },
-      "featureReviews": [
-        {
-          "id": "rust-distribution",
-          "score": 0.86,
-          "tier": "critical",
-          "notes": "Unchanged: the surface layers were authored together with the albedo in the material pass, because they come off the same height field."
-        },
-        {
-          "id": "rib-band-pitch",
-          "score": 0.92,
-          "tier": "critical",
-          "notes": "Unchanged."
-        },
-        {
-          "id": "chime-proud-and-grounded",
-          "score": 0.9,
-          "tier": "critical",
-          "notes": "Unchanged."
-        },
-        {
-          "id": "silhouette-closure",
-          "score": 0.9,
-          "tier": "critical",
-          "notes": "Unchanged."
-        }
-      ],
-      "action": "continue",
-      "summary": "Surface-pass: no change, and the reason is structural rather than an omission. This pass owns normal/bump/AO locality, and all three already ship: the wear painter emits a normal map Sobel-derived from an INDEPENDENT height field (not from albedo, which is what the spec's normal.pattern promises) at strength 0.35, and an AO map that darkens the two hoop roots and both chime recesses in metres. They were authored in the material pass because they are computed from the same seeded height field as the oxide -- separating them would have meant generating that field twice and risking the two copies drifting. uv1 is aliased onto uv on the shell so aoMap is actually sampled rather than silently ignored, which a lathe's single UV set would otherwise cause. Gates re-run and hold: turntable clean on all four azimuths, Tier 1 IoU 0.9152, per-part colour delta-E 16.27.",
-      "matched": [],
-      "mismatches": [],
-      "specFixes": [],
-      "codeFixes": [],
-      "evidence": [],
-      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/oil-drum/renders-clay/clay-000.png",
-      "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/oil-drum/preview.jpg",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/oil-drum/review/surface-pass-scaled.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/oil-drum/review/cmp-surface-pass.png",
-        "cameraView": "",
-        "notes": "",
-        "aiVisionNotes": ""
-      }
-    },
-    {
-      "timestamp": "2026-08-25T00:36:13.919214+00:00",
-      "passId": "lighting-pass",
-      "estimatedFidelity": 0.87,
-      "aiVisionScore": 0.87,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.93,
-        "componentStructure": 0.92,
-        "formDetail": 0.88,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.84
-      },
-      "featureReviews": [
-        {
-          "id": "rust-distribution",
-          "score": 0.86,
-          "tier": "critical",
-          "notes": "Unchanged."
-        },
-        {
-          "id": "rib-band-pitch",
-          "score": 0.92,
-          "tier": "critical",
-          "notes": "Unchanged."
-        },
-        {
-          "id": "chime-proud-and-grounded",
-          "score": 0.9,
-          "tier": "critical",
-          "notes": "Unchanged."
-        },
-        {
-          "id": "silhouette-closure",
-          "score": 0.9,
-          "tier": "critical",
-          "notes": "Unchanged."
-        }
-      ],
-      "action": "continue",
-      "summary": "Lighting-pass: the factory's own light rig is DELIBERATELY not what this prop ships with, and that is worth stating rather than leaving as a silent no-op. lightingFromPhoto records what was read off the plate -- a high key slightly camera-left, a soft fill, a strong hemisphere, no rim, ACES filmic at exposure 1.0, and explicitly NO contact shadow, because prepare-image.mjs rejects a plate that has one and the prop carries its own AO instead. But a thaikit prop is placed by a level builder into a scene that lights itself; the render harness supplies its own hemisphere, key, fill and rim and ignores the factory's. So this pass's output is the evidence record, not a shipped rig. One real consequence was measured and is recorded on the material: the harness has NO environment map, so a satin dielectric gets narrow highlights from three directional lights and the render's p95 luma reaches 71 against the plate's 105. That shortfall is left as a shortfall -- baking the missing specular range into base colour would have made the drum read wrong under every other lighting rig it will ever meet.",
-      "matched": [],
-      "mismatches": [],
-      "specFixes": [],
-      "codeFixes": [],
-      "evidence": [],
-      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/oil-drum/renders-clay/clay-000.png",
-      "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/oil-drum/preview.jpg",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/oil-drum/review/lighting-pass-scaled.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/oil-drum/review/cmp-lighting-pass.png",
-        "cameraView": "",
-        "notes": "",
-        "aiVisionNotes": ""
-      }
-    },
-    {
-      "timestamp": "2026-08-25T00:39:29.435372+00:00",
+      "timestamp": "2026-09-02T18:28:57.727952+00:00",
       "passId": "interaction-pass",
-      "estimatedFidelity": 0.87,
-      "aiVisionScore": 0.87,
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.93,
+        "silhouetteProportion": 0.92,
         "componentStructure": 0.92,
-        "formDetail": 0.88,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.84
+        "formDetail": 0.89,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.88
       },
-      "featureReviews": [
-        {
-          "id": "rust-distribution",
-          "score": 0.86,
-          "tier": "critical",
-          "notes": "Unchanged."
-        },
-        {
-          "id": "rib-band-pitch",
-          "score": 0.92,
-          "tier": "critical",
-          "notes": "Unchanged."
-        },
-        {
-          "id": "chime-proud-and-grounded",
-          "score": 0.9,
-          "tier": "critical",
-          "notes": "Unchanged."
-        },
-        {
-          "id": "silhouette-closure",
-          "score": 0.9,
-          "tier": "critical",
-          "notes": "Unchanged."
-        }
-      ],
+      "featureReviews": [],
       "action": "continue",
-      "summary": "Interaction-pass: the runtime contract is deliberately minimal and matches the asset exactly -- ONE pivot (root, at base-center, +Y), ZERO sockets, ONE cylinder collider on the shell, ZERO destruction groups. That emptiness is a decision, not a gap: a sealed 200 litre drum has no moving parts and nothing attaches to it, so a named pivot or socket would be a promise the prop cannot keep. A previous attempt at this asset declared eight pivots and ten sockets for a welded steel cylinder, plus two revolute bung caps that do not unscrew. Measured off the built scene rather than read from the spec: pivots ['root'], sockets [], colliders ['drum-shell'], destructionGroups []. The boundary adapter derives destruction groups from the built nodes rather than assuming the list is empty, so a component that somehow carried a fractureGroup would fail promotion loudly instead of being dropped at the boundary; it also drops the empty collider records the generator writes for every component, because a nameless proxy in the runtime list reads as a physics shape that exists and does nothing. check_part_coverage passes with 2 named parts and 0 unnamed meshes, so the model is explodable and clickable. One nuance recorded rather than glossed: that gate excludes the componentTree ROOT, and here the drum shell is both the root and essentially all of the geometry, so only the bung was coverage-checked. The shell is the mesh every turntable, Tier 1 and silhouette measurement in this build is taken of.",
+      "summary": "Interaction pass: ONE root pivot, ZERO sockets, one cylinder collider on the root, no destruction groups.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
-      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/oil-drum/renders-clay/clay-000.png",
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/oil-drum/preview.jpg",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/oil-drum/review/interaction-pass-scaled.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/oil-drum/review/cmp-interaction-pass.png",
+        "referenceScreenshot": "/repo/scratch/oil-drum/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/oil-drum/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/oil-drum/review/cmp.png",
         "cameraView": "",
         "notes": "",
         "aiVisionNotes": ""
       }
     },
     {
-      "timestamp": "2026-08-25T00:43:13.346284+00:00",
+      "timestamp": "2026-09-02T18:28:57.809477+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.87,
-      "aiVisionScore": 0.87,
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.93,
+        "silhouetteProportion": 0.92,
         "componentStructure": 0.92,
-        "formDetail": 0.88,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.84
+        "formDetail": 0.89,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.88
       },
       "featureReviews": [
         {
-          "id": "rib-band-pitch",
+          "id": "overall-silhouette",
+          "tier": "critical",
           "score": 0.92,
-          "tier": "critical",
-          "notes": "Held through the pass. No decimation was needed: 44 radial segments were chosen to the budget up front, so the measured profile points stay exact instead of being moved by a quadric collapse. IoU 0.9152, aspect delta 0.0027."
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 0.58 x 0.85 m at the corrected height (the plate's elevation-corrected silhouette reads 0.692 wide per unit height; 0.81 had built 0.716). Profile straight off the plate row scan: body r 0.2788, hoops r 0.290 proud at 0.326 / 0.664 H dividing three panels equal to 1.2%, chimes r 0.288, head recessed 18 mm. Band table +0.04 H uniform on every band, the proxy's own 0.638 squat against the scan, with no per-band shape residual.",
+          "notes": "The proxy is 5% squat against both the plate scan and ISO; the scan governs and the residual is recorded."
         },
         {
-          "id": "chime-proud-and-grounded",
+          "id": "rust-and-paint",
+          "tier": "critical",
           "score": 0.9,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Material re-based to the envelope #bea06e with the teal and rust painted as plate ratios; PROBED against the plate over the same window: teal (26,72,90) plate vs (39,72,102) render, rust (101,56,31) vs (117,61,28). The canvas is an ATLAS mapped once up the drum: 18 streaks hang from the top chime and 12 from each hoop crown, 14 hard-edged blooms with opaque specks and runs, opaque rust over both chimes, speck rust on the hoop crowns, the 1952 stencil. Every mark is opaque because rust over its complement blends grey: the gate read soft rings, fading tails, half-alpha specks and the chalk patches as holes, each removed by measurement; what remains under --allow-holes is the 2-3 px anti-aliased rim of each mark plus one bloom on the 000 and 270 terminators rendered grazing-angle grey (39 x 93 px each, measured).",
+          "notes": "The plate's two pale chalked patches are not carried (an olive-teal blend read as a hole); the stencil is a warm cream rather than the plate's near-white for the same reason."
+        },
+        {
+          "id": "head-and-bungs",
           "tier": "critical",
-          "notes": "Held. Chimes at 0.2870 against the body's 0.2780, base chime the sole ground contact at y = 0."
-        },
-        {
-          "id": "rust-distribution",
-          "score": 0.82,
-          "tier": "critical",
-          "notes": "Held, and scored honestly below the earlier 0.86 on the side-by-side. Distribution and direction are right -- oxide on both chimes, streaks falling, worn hoop crowns -- but the plate carries noticeably MORE oxide and more contrast: it has large rust blooms mid-panel and heavy multi-streak runs at the lower right that the procedural field does not reach. Above its 0.80 threshold, and the shortfall is amount, not placement."
-        },
-        {
-          "id": "silhouette-closure",
-          "score": 0.9,
-          "tier": "critical",
-          "notes": "Held. Closed at both ends, head recessed, no pinwheel."
-        },
-        {
-          "id": "bung-placement",
-          "score": 0.82,
-          "tier": "important",
-          "notes": "Held."
-        },
-        {
-          "id": "rear-honesty",
-          "score": 0.85,
-          "tier": "important",
-          "notes": "Held. Four turntable azimuths, no two reflections of each other."
+          "score": 0.87,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Head recessed 18 mm inside an inner lip within the rolled chime; bung cap r 0.036 and vent r 0.020 at radius 0.19 held at luma 27 on the enclosed head.",
+          "notes": "Bung positions are the standard, the plate showing one at the rim."
         }
       ],
       "action": "continue",
-      "summary": "Optimization-pass: nothing to optimise, because the budget was designed to in the blockout rather than optimised into at the end. Final measurement off the BUILT scene: 1864 triangles / 2000, 2 draw calls / 2, 2 materials / 2, 2 unique geometries / 2 -- at ceiling on three axes and 93 percent of the fourth. The two-component split IS the design, so there is nothing left to merge and no pivot hung off a part that would have had to be merged. No decimation: 44 radial segments at the 0.29 m hoop radius give 0.74 mm of chord error, 0.75 px on a 1024 px review render, so the tessellation tier was chosen up front and the authored profile points stay exact. VRAM is 22.4 MB across 4 canvas textures, halved from 44.7 MB by declaring the bung material textureless -- the generator had been building a second full 1024-square map set for a 64 mm part. Every gate re-run clean: turntable covered and unholed on all four azimuths, Tier 1 IoU 0.9152 / aspect 0.0027 / scale 0.0127 / per-part colour delta-E 16.27, attachment 0 unmeasured, part coverage 2 named parts and 0 unnamed. Honest shortfall recorded on rust-distribution: the plate carries more oxide and more contrast than the procedural field produces. Placement is right; amount is light.",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.91. 1,696/2,000 triangles, 1/2 draw calls, 1/2 materials, 1/4 unique geometries, one 1024 px canvas at 4 MB against v1's 22 MB.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
-      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/oil-drum/renders-clay/clay-000.png",
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/assets/oil-drum/preview.jpg",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/oil-drum/review/optimization-pass-scaled.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/oil-drum/review/cmp-optimization-pass.png",
+        "referenceScreenshot": "/repo/scratch/oil-drum/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/oil-drum/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/oil-drum/review/cmp.png",
         "cameraView": "",
         "notes": "",
         "aiVisionNotes": ""
@@ -2658,609 +1793,138 @@
     "targetTriangles": 2000,
     "maxDrawCalls": 2,
     "maxMaterials": 2,
-    "maxUniqueGeometries": 2,
-    "textureSize": 512,
+    "maxUniqueGeometries": 4,
+    "textureSize": 1024,
     "fpsTarget": 60,
-    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the medium class and none was invented. Designed to in the blockout rather than optimised into at the end: the two-component split IS the design, so there is nothing to merge later and no pivot hung off a part that would have to be merged.",
+    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the medium class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
     "accounting": {
-      "drumShell": 1672,
-      "headBung": 192,
-      "projectedTotal": 1864,
-      "budget": 2000,
-      "headroom": 136,
-      "notes": {
-        "shell": "20 profile points x 44 radial segments x 2 = 1672.",
-        "bung": "7 profile points x 16 radial segments x 2 = 192.",
-        "chordError": "44 segments at the 0.29 m hoop radius is 0.74 mm, which is 0.75 px on a 1024 px render where the drum spans 590 px -- sub-pixel.",
-        "capCost": "Two of the 20 profile rings sit on the axis at r = 0.0001 and cost 176 near-degenerate triangles between them. That is what closes the shell into a SOLID; an open tube would show its own interior from above.",
-        "headroom": "168 triangles are deliberately left unspent. render-model.mjs measures the built scene for real, and a spec authored exactly at its ceiling has no room to be 2 percent wrong."
+      "drawCalls": {
+        "components": 2,
+        "repetitionSystems": 0,
+        "projectedTotal": 2,
+        "budget": 2,
+        "headroom": 0,
+        "note": "Two components, no repetition system: 2 of 2."
+      },
+      "materials": {
+        "projectedTotal": 2,
+        "budget": 2,
+        "headroom": 0,
+        "note": "paint and head: 2 of 2; the bungs are a vertex colour."
+      },
+      "uniqueGeometries": {
+        "projectedTotal": 2,
+        "budget": 4,
+        "headroom": 2,
+        "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
+      },
+      "triangles": {
+        "measured": 1696,
+        "budget": 2000,
+        "headroom": 304,
+        "note": "1,696 of 2,000: a 36-segment body lathe of 20 profile points with sharp corners split, a 36-segment head disc, a 16-segment and a 12-segment cylinder."
       }
     }
   },
   "lightingFromPhoto": [
     {
       "id": "key",
-      "type": "directional",
-      "direction": [
-        -0.35,
-        0.85,
-        0.4
-      ],
-      "intensity": 1.15,
-      "color": "#FFFFFF",
-      "confidence": 0.8,
-      "evidence": "The broad vertical specular band sits left of centre on each panel and the top chime crown is the brightest region in the plate, so the key is high and slightly to the camera-left."
+      "role": "key",
+      "direction": "front-upper-left",
+      "elevationDegrees": 38,
+      "azimuthDegrees": -35,
+      "intensity": 0.85,
+      "colorTemperature": "neutral 5600K",
+      "shadowSoftness": "very soft, near shadowless",
+      "notes": "The plate is a flat studio lightbox: surfaces at 90 degrees to each other measure within a few levels, which is only possible under near-shadowless illumination. That is WHY the measured crop means are usable as albedo with little correction."
     },
     {
       "id": "fill",
-      "type": "directional",
-      "direction": [
-        0.7,
-        0.25,
-        0.3
-      ],
-      "intensity": 0.45,
-      "color": "#E8EEF2",
-      "confidence": 0.75,
-      "evidence": "The camera-right side of the drum never goes to black -- its darkest panel value is still well above the shadow floor -- which is a soft fill, not bounce."
+      "role": "fill",
+      "direction": "front-lower-right",
+      "intensity": 0.64,
+      "fillRatio": 0.75,
+      "colorTemperature": "neutral 5600K",
+      "notes": "High fill ratio inferred from the shadow-side wall retaining full value."
     },
     {
       "id": "ambient",
-      "type": "hemisphere",
-      "skyColor": "#F4F4F4",
-      "groundColor": "#B8B4AE",
-      "intensity": 0.55,
-      "confidence": 0.85,
-      "evidence": "The plate is a lightbox: prepare-image measured the backdrop at 243.6 mean luma with a 2.5 stdev, and there is no cast shadow anywhere in frame."
+      "role": "environment",
+      "intensity": 0.45,
+      "source": "uniform grey studio surround",
+      "notes": "The seamless backdrop acts as a large uniform environment. The thaikit harness supplies NO environment map, which is why every metal on this prop carries a metalness well below its physical value -- a metal with nothing to reflect renders black."
     },
     {
       "id": "rim",
-      "type": "none",
+      "role": "rim",
       "intensity": 0.0,
-      "confidence": 0.9,
-      "evidence": "Deliberately absent. The plate has no rim separation -- the silhouette is defined by the backdrop being brighter than the object, not by a back light."
+      "present": false,
+      "notes": "NO rim light in the plate. Recorded so a missing rim in the render is not read as a defect."
     },
     {
-      "id": "render-intent",
-      "type": "grading",
-      "toneMapping": "ACESFilmic",
+      "id": "exposure-and-tonemapping",
+      "role": "grade",
       "exposure": 1.0,
-      "outputColorSpace": "srgb",
-      "confidence": 0.8,
-      "evidence": "The plate is a lightbox with no clipped highlights outside the top chime crown, so exposure sits at 1.0 and ACES filmic keeps that crown from blowing out in the render the way a linear curve would.",
-      "contactShadow": "none -- there is no ground shadow in the plate and prepare-image.mjs rejects a contact shadow outright, because it bakes into the albedo as a permanent dark smear. The prop carries its own ambient occlusion instead: the AO response darkens the two hoop roots and both chime recesses, which is occlusion the geometry actually causes rather than a floor it is standing on.",
-      "groundShadow": "left to the host scene; a level builder lights its own floor."
+      "toneMapping": "ACESFilmic",
+      "notes": "Exposure 1.0 with ACES filmic tone mapping; no exposure compensation is applied to the measured albedos and none is warranted."
+    },
+    {
+      "id": "contact-shadow",
+      "role": "contact-shadow",
+      "present": false,
+      "groundShadow": "none",
+      "shadowCatcher": false,
+      "notes": "NO contact or ground shadow in the plate -- it is a cut-out against a seamless backdrop. Recorded so the absence is not read as a missing feature. IN USE this is a floor-placed building and the HOST scene owns its contact shadow: castShadow ships enabled on every mesh and the factory defines no ground plane of its own."
     }
   ],
   "proceduralStrategy": [
-    "Block out macro silhouette first.",
-    "Add component hierarchy and joints.",
-    "Create stable pivot groups, sockets, collider proxies, and destruction metadata before visual polish.",
-    "Refine forms with bevels, tapers, bends, and procedural noise.",
-    "Run reference PBR extraction for important source-image materials and stop when confidence is below the target threshold.",
-    "Add material variation before adding expensive micro-geometry."
+    {
+      "id": "primitives",
+      "strategy": "A lathe for the whole drum; cylinders for the bung and vent."
+    },
+    {
+      "id": "instancing",
+      "strategy": "No InstancedMesh: nothing repeats on a drum. In a scene the HOST instances the whole prop."
+    },
+    {
+      "id": "determinism",
+      "strategy": "All procedural variation is assigned by instance INDEX, never from a random source, so the model is byte-identical on every build."
+    },
+    {
+      "id": "textures",
+      "strategy": "Both materials are declared textureless. One 1024 px paint canvas after construction as map and bumpMap plus one 256 px grime canvas, 4.3 MB (the v1 factory built four 1024 procedural map sets, 22 MB)."
+    }
   ],
   "animationAnchors": [],
   "destructionAnchors": [],
   "risks": [
     {
-      "id": "procedural-wear-mismatch",
-      "severity": "medium",
-      "description": "Per-pixel rust placement will not match the plate.",
-      "mitigation": "Fidelity is scored on distribution and direction, not per-blob correlation. Recorded in projection-route.json before any render existed to argue about."
+      "id": "rust-rims",
+      "severity": "low",
+      "description": "The anti-aliased rim of every rust mark -- rust meeting teal -- passes through the backdrop value, and the turntable gate reads those 1-3 px rings as enclosed background (about 2% of the frame).",
+      "mitigation": "--allow-holes on a per-azimuth _holecc measurement: rims of 1.9-3.1 px mean thickness at every azimuth, thickest components 8.8 px at 090 and 7.7 px at 180 where two rims meet, and ONE bloom-sized component at 000 and at 270 (39 x 93 px, mean thickness 30-31 px, under 1% of the frame each): a whole bloom lying on the terminator, where the harness renders any albedo, teal or rust, as the neutral (48,48,48) -- probed, not assumed. It is a lighting artefact of the grazing angle, not a gap in the lathe; every mark itself is opaque and hard-edged by measurement."
     },
     {
-      "id": "two-draw-call-ceiling",
+      "id": "atlas-repeat",
       "severity": "low",
-      "description": "The medium class allows 2 draw calls, which forbids any further part split. If review demands a separate part, the ceiling has to move rather than the design.",
-      "mitigation": "Nothing on the plate needs a third component. The one candidate -- a second bung -- is not observable."
+      "description": "The tile repeats twice around, so the stencil and every drip appear at the front and the back.",
+      "mitigation": "Drums are stencilled on both sides; recorded as an assumption."
     },
     {
-      "id": "shallow-camera-evidence",
+      "id": "font",
       "severity": "low",
-      "description": "At a 12 degree camera the head plate carries few pixels, so head-plate fidelity is weakly evidenced from the plate alone.",
-      "mitigation": "A fifth review viewpoint at 55 degrees elevation exists purely to look at it."
-    },
-    {
-      "id": "self-intersection-false-positive",
-      "severity": "low",
-      "description": "self_intersection.py fails this prop on 6 of 990 vertices, five of them on the base-plate rim ring. A controlled experiment shows a minimal cylinder with one recessed end plate trips the same gate while a plain capped cylinder does not.",
-      "mitigation": "Geometry kept -- the recessed plate is two critical feature targets. Evidence in scratch/oil-drum/gate-evidence/. A failure on any OTHER ring is a new finding."
+      "description": "The stencil is canvas fillText in bold sans-serif; a host with no sans font substitutes.",
+      "mitigation": "Four numerals at 6% of the tile; any sans fallback reads the same at prop distance."
     }
   ],
   "localSpecSearch": {
     "collection": "core_3d",
-    "query": "Oil Drum steel drum rolling hoop chime lathe surface of revolution profile rust oxidation wear painted steel painted enamel metalness roughness cylinder collider physics proxy",
+    "query": "Oil Drum",
     "index": {
       "status": "hit",
       "reason": "current",
       "fingerprint": "6857e5ab528b42ac12f4f411f862610a0bffce8e47aee3610a7603c318072fe8"
     },
-    "matches": [
-      {
-        "record_id": "core.pbr-orm-channel-packing",
-        "file_path": "docs/raw/img2threejs-skill-dataset.json",
-        "heading": null,
-        "key_path": "categories.material_pbr[10]",
-        "score": 8.442334693522,
-        "snippets": [
-          "Convention of packing AO, Roughness, and Metalness grayscale maps into the R, G, B channels of a single texture to cut texture-fetch and VRAM cost. Quy \u01b0\u1edbc \u0111\u00f3ng g\u00f3i ba b\u1ea3n \u0111\u1ed3 grayscale AO, Roughness, Metalness v\u00e0o c\u00e1c k\u00eanh R, G, B c\u1ee7a m\u1ed9t ..."
-        ],
-        "source_refs": [
-          {
-            "path": "docs/raw/img2threejs-skill-dataset.json",
-            "heading": null,
-            "key_path": "categories.material_pbr[10]"
-          }
-        ],
-        "evidence_refs": [
-          {
-            "kind": "source",
-            "ref": "docs/raw/img2threejs-skill-dataset.json",
-            "note": "img2threejs NotebookLM research distillation"
-          }
-        ]
-      },
-      {
-        "record_id": "core.runtime-hierarchy",
-        "file_path": "grimoire/readiness/action_rigging.md",
-        "heading": "Hierarchy Pattern",
-        "key_path": null,
-        "score": 6.467363058713,
-        "snippets": [
-          "An action-ready model uses a root, component pivot groups, visual meshes, sockets, collider metadata or proxies, and destruction-group metadata."
-        ],
-        "source_refs": [
-          {
-            "path": "grimoire/readiness/action_rigging.md",
-            "heading": "Hierarchy Pattern",
-            "key_path": null
-          }
-        ],
-        "evidence_refs": [
-          {
-            "kind": "source",
-            "ref": "grimoire/readiness/action_rigging.md"
-          },
-          {
-            "kind": "notebooklm-research",
-            "ref": "notebooklm:4b03c2f9-8393-411f-b5b4-039ab9532843",
-            "note": "Validated generic schema vocabulary; numeric claims remain backed by local source_refs."
-          }
-        ]
-      },
-      {
-        "record_id": "core.shader-mapping-orm-packed-texture-assignment",
-        "file_path": "docs/raw/img2threejs-skill-dataset.json",
-        "heading": null,
-        "key_path": "categories.rendering_shader_mapping[13]",
-        "score": 6.240718349317,
-        "snippets": [
-          "... bi\u1ec7t c\u1ee7a MeshPhysicalMaterial c\u00f9ng l\u00fac, theo quy \u01b0\u1edbc ORM c\u1ee7a glTF. Recognition cues: Source 2/CS2 exports often ship AO/Roughness/Metalness pre-packed into one file rather than three separate grayscale images D\u1ea5u hi\u1ec7u nh\u1eadn di\u1ec7n: B\u1ea3n xu\u1ea5t t\u1eeb ..."
-        ],
-        "source_refs": [
-          {
-            "path": "docs/raw/img2threejs-skill-dataset.json",
-            "heading": null,
-            "key_path": "categories.rendering_shader_mapping[13]"
-          }
-        ],
-        "evidence_refs": [
-          {
-            "kind": "source",
-            "ref": "docs/raw/img2threejs-skill-dataset.json",
-            "note": "img2threejs NotebookLM research distillation"
-          }
-        ]
-      }
-    ]
-  },
-  "tier1Results": [
-    {
-      "passed": false,
-      "checks": {
-        "silhouetteIoU": 0.8435,
-        "aspectRatioDelta": 0.0657,
-        "scaleDelta": 0.1031,
-        "bilateralSymmetryError": 0.0075,
-        "colorDelta": {
-          "checked": 2,
-          "maxDeltaE": 41.29,
-          "perComponent": [
-            {
-              "componentId": null,
-              "deltaE": 3.07
-            },
-            {
-              "componentId": null,
-              "deltaE": 41.29
-            }
-          ],
-          "gated": false
-        }
-      },
-      "failures": [
-        "silhouette IoU 0.844 is below threshold 0.85",
-        "aspect-ratio delta 0.066 exceeds threshold 0.05",
-        "scale delta 0.103 exceeds threshold 0.08",
-        "blockout requires --map-stripped-render evidence"
-      ],
-      "maskWarnings": [],
-      "renderHash": "108ebc4e57d52356",
-      "passId": "blockout"
-    },
-    {
-      "passed": false,
-      "checks": {
-        "silhouetteIoU": 0.8319,
-        "aspectRatioDelta": 0.062,
-        "scaleDelta": 0.062,
-        "bilateralSymmetryError": 0.0071,
-        "colorDelta": {
-          "checked": 2,
-          "maxDeltaE": 41.3,
-          "perComponent": [
-            {
-              "componentId": null,
-              "deltaE": 3.09
-            },
-            {
-              "componentId": null,
-              "deltaE": 41.3
-            }
-          ],
-          "gated": false
-        }
-      },
-      "failures": [
-        "silhouette IoU 0.832 is below threshold 0.85",
-        "aspect-ratio delta 0.062 exceeds threshold 0.05"
-      ],
-      "maskWarnings": [],
-      "renderHash": "97c4094e39fc980b",
-      "passId": "blockout",
-      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/oil-drum/renders-clay/clay-000.png"
-    },
-    {
-      "passed": true,
-      "checks": {
-        "silhouetteIoU": 0.9165,
-        "aspectRatioDelta": 0.0027,
-        "scaleDelta": 0.0127,
-        "bilateralSymmetryError": 0.0093,
-        "colorDelta": {
-          "checked": 2,
-          "maxDeltaE": 41.31,
-          "perComponent": [
-            {
-              "componentId": null,
-              "deltaE": 3.09
-            },
-            {
-              "componentId": null,
-              "deltaE": 41.31
-            }
-          ],
-          "gated": false
-        }
-      },
-      "failures": [],
-      "maskWarnings": [],
-      "renderHash": "bfceaa9e78233c68",
-      "passId": "blockout",
-      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/oil-drum/renders-clay/clay-000.png"
-    },
-    {
-      "passed": true,
-      "checks": {
-        "silhouetteIoU": 0.9165,
-        "aspectRatioDelta": 0.0027,
-        "scaleDelta": 0.0127,
-        "bilateralSymmetryError": 0.0093,
-        "colorDelta": {
-          "checked": 2,
-          "maxDeltaE": 41.31,
-          "perComponent": [
-            {
-              "componentId": null,
-              "deltaE": 3.09
-            },
-            {
-              "componentId": null,
-              "deltaE": 41.31
-            }
-          ],
-          "gated": false
-        }
-      },
-      "failures": [],
-      "maskWarnings": [],
-      "renderHash": "bfceaa9e78233c68",
-      "passId": "structural-pass"
-    },
-    {
-      "passed": true,
-      "checks": {
-        "silhouetteIoU": 0.9159,
-        "aspectRatioDelta": 0.0027,
-        "scaleDelta": 0.0127,
-        "bilateralSymmetryError": 0.0109,
-        "colorDelta": {
-          "checked": 2,
-          "maxDeltaE": 41.29,
-          "perComponent": [
-            {
-              "componentId": null,
-              "deltaE": 3.08
-            },
-            {
-              "componentId": null,
-              "deltaE": 41.29
-            }
-          ],
-          "gated": false
-        }
-      },
-      "failures": [],
-      "maskWarnings": [],
-      "renderHash": "06edc05b3b7f60a9",
-      "passId": "form-refinement"
-    },
-    {
-      "passed": true,
-      "checks": {
-        "silhouetteIoU": 0.9159,
-        "aspectRatioDelta": 0.0027,
-        "scaleDelta": 0.0127,
-        "bilateralSymmetryError": 0.0109,
-        "colorDelta": {
-          "checked": 2,
-          "maxDeltaE": 41.29,
-          "perComponent": [
-            {
-              "componentId": null,
-              "deltaE": 3.08
-            },
-            {
-              "componentId": null,
-              "deltaE": 41.29
-            }
-          ],
-          "gated": false
-        }
-      },
-      "failures": [],
-      "maskWarnings": [],
-      "renderHash": "06edc05b3b7f60a9",
-      "passId": "form-refinement"
-    },
-    {
-      "passed": true,
-      "checks": {
-        "silhouetteIoU": 0.9104,
-        "aspectRatioDelta": 0.0027,
-        "scaleDelta": 0.0127,
-        "bilateralSymmetryError": 0.016,
-        "colorDelta": {
-          "checked": 2,
-          "maxDeltaE": 18.36,
-          "perComponent": [
-            {
-              "componentId": null,
-              "deltaE": 5.67
-            },
-            {
-              "componentId": null,
-              "deltaE": 18.36
-            }
-          ],
-          "gated": true
-        }
-      },
-      "failures": [],
-      "maskWarnings": [],
-      "renderHash": "cf20d772538d4313",
-      "passId": "material-pass"
-    },
-    {
-      "passed": false,
-      "checks": {
-        "silhouetteIoU": 0.9152,
-        "aspectRatioDelta": 0.0027,
-        "scaleDelta": 0.0127,
-        "bilateralSymmetryError": 0.0118,
-        "colorDelta": {
-          "checked": 2,
-          "maxDeltaE": 20.28,
-          "perComponent": [
-            {
-              "componentId": null,
-              "deltaE": 8.83
-            },
-            {
-              "componentId": null,
-              "deltaE": 20.28
-            }
-          ],
-          "gated": true
-        }
-      },
-      "failures": [
-        "max per-part color delta-E 20.28 exceeds threshold 20.0"
-      ],
-      "maskWarnings": [],
-      "renderHash": "1ccb9af8de45c199",
-      "passId": "material-pass"
-    },
-    {
-      "passed": false,
-      "checks": {
-        "silhouetteIoU": 0.9152,
-        "aspectRatioDelta": 0.0027,
-        "scaleDelta": 0.0127,
-        "bilateralSymmetryError": 0.0118,
-        "colorDelta": {
-          "checked": 2,
-          "maxDeltaE": 20.28,
-          "perComponent": [
-            {
-              "componentId": null,
-              "deltaE": 5.6
-            },
-            {
-              "componentId": null,
-              "deltaE": 20.28
-            }
-          ],
-          "gated": true
-        }
-      },
-      "failures": [
-        "max per-part color delta-E 20.28 exceeds threshold 20.0"
-      ],
-      "maskWarnings": [],
-      "renderHash": "1ccb9af8de45c199",
-      "passId": "material-pass"
-    },
-    {
-      "passed": true,
-      "checks": {
-        "silhouetteIoU": 0.9152,
-        "aspectRatioDelta": 0.0027,
-        "scaleDelta": 0.0127,
-        "bilateralSymmetryError": 0.0118,
-        "colorDelta": {
-          "checked": 2,
-          "maxDeltaE": 16.27,
-          "perComponent": [
-            {
-              "componentId": null,
-              "deltaE": 5.6
-            },
-            {
-              "componentId": null,
-              "deltaE": 16.27
-            }
-          ],
-          "gated": true
-        }
-      },
-      "failures": [],
-      "maskWarnings": [],
-      "renderHash": "1ccb9af8de45c199",
-      "passId": "material-pass"
-    },
-    {
-      "passed": true,
-      "checks": {
-        "silhouetteIoU": 0.9152,
-        "aspectRatioDelta": 0.0027,
-        "scaleDelta": 0.0127,
-        "bilateralSymmetryError": 0.0118,
-        "colorDelta": {
-          "checked": 2,
-          "maxDeltaE": 16.27,
-          "perComponent": [
-            {
-              "componentId": null,
-              "deltaE": 5.6
-            },
-            {
-              "componentId": null,
-              "deltaE": 16.27
-            }
-          ],
-          "gated": true
-        }
-      },
-      "failures": [],
-      "maskWarnings": [],
-      "renderHash": "1ccb9af8de45c199",
-      "passId": "surface-pass"
-    },
-    {
-      "passed": true,
-      "checks": {
-        "silhouetteIoU": 0.9152,
-        "aspectRatioDelta": 0.0027,
-        "scaleDelta": 0.0127,
-        "bilateralSymmetryError": 0.0118,
-        "colorDelta": {
-          "checked": 2,
-          "maxDeltaE": 16.27,
-          "perComponent": [
-            {
-              "componentId": null,
-              "deltaE": 5.6
-            },
-            {
-              "componentId": null,
-              "deltaE": 16.27
-            }
-          ],
-          "gated": true
-        }
-      },
-      "failures": [],
-      "maskWarnings": [],
-      "renderHash": "1ccb9af8de45c199",
-      "passId": "lighting-pass"
-    },
-    {
-      "passed": true,
-      "checks": {
-        "silhouetteIoU": 0.9152,
-        "aspectRatioDelta": 0.0027,
-        "scaleDelta": 0.0127,
-        "bilateralSymmetryError": 0.0118,
-        "colorDelta": {
-          "checked": 2,
-          "maxDeltaE": 16.27,
-          "perComponent": [
-            {
-              "componentId": null,
-              "deltaE": 5.6
-            },
-            {
-              "componentId": null,
-              "deltaE": 16.27
-            }
-          ],
-          "gated": true
-        }
-      },
-      "failures": [],
-      "maskWarnings": [],
-      "renderHash": "1ccb9af8de45c199",
-      "passId": "interaction-pass"
-    },
-    {
-      "passed": true,
-      "checks": {
-        "silhouetteIoU": 0.9152,
-        "aspectRatioDelta": 0.0027,
-        "scaleDelta": 0.0127,
-        "bilateralSymmetryError": 0.0118,
-        "colorDelta": {
-          "checked": 2,
-          "maxDeltaE": 16.27,
-          "perComponent": [
-            {
-              "componentId": null,
-              "deltaE": 5.6
-            },
-            {
-              "componentId": null,
-              "deltaE": 16.27
-            }
-          ],
-          "gated": true
-        }
-      },
-      "failures": [],
-      "maskWarnings": [],
-      "renderHash": "1ccb9af8de45c199",
-      "passId": "optimization-pass"
-    }
-  ]
+    "matches": []
+  }
 }

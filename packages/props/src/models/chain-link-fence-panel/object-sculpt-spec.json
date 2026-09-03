@@ -70,11 +70,12 @@
       "primaryType": "fence-panel-chain-link",
       "primaryDomain": "object",
       "formLanguage": [
-        "round-pipe-posts",
+        "heavy-round-pipe-post",
         "top-rail",
-        "diamond-mesh-pane",
+        "draped-diamond-mesh-pane",
         "sagging-tension-wire",
-        "concrete-footings"
+        "concrete-footing",
+        "dry-weeds"
       ],
       "structureKind": [
         "post-and-rail",
@@ -89,7 +90,7 @@
         "galvanised-wire-mesh",
         "cast-concrete"
       ],
-      "notes": "Static fence panel that tiles post to post. Both faces are seen and nothing is hollow, but nothing opens, turns or swings, so every part is fixed and one root pivot and zero sockets is the correct contract. A level builder places these in runs of dozens, so the draw-call ceiling is the design constraint. ONE POST PER TILE: the post sits on the -X end and the bay runs to the +X edge, so tiles chain post-bay-post-bay along X with no doubled post at a joint. Lot boundaries, school yards, substation compounds. Galvanised wire dulled grey with rust at the ties, rust-streaked posts, mesh sagging at the bottom edge, dry weeds at the footings."
+      "notes": "Static fence panel that tiles post to post. Both faces are seen and nothing is hollow, but nothing opens, turns or swings, so every part is fixed and one root pivot and zero sockets is the correct contract. A level builder places these in runs of dozens, so the draw-call ceiling is the design constraint. ONE POST PER TILE: the post sits on the -X end and the bay runs to the +X edge, so tiles chain post-bay-post-bay along X with no doubled post at a joint. Lot boundaries, school yards, substation compounds. Galvanised wire dulled grey with rust at the ties, rust-streaked posts, mesh sagging at the bottom edge, dry weeds at the footings -- modelled this build as 44 leaning blades."
     },
     "complexity": {
       "tier": "moderate",
@@ -111,9 +112,9 @@
         "repetitionSystems": 0
       },
       "reasoning": [
-        "ONE galvanised pipe post with a cap on the -X end, a top rail to the next tile's post centre, a diamond mesh from 0.22 to 1.92 m as ONE alpha-cut pane, a bottom tension wire sagging 0.08 m, and a 0.26 m concrete footing under the post (proxy: posts 4 of 80 columns full height, footings 0.00-0.10 H at 8 columns, rail at 0.98 H, mesh 0.14-0.92 H).",
+        "ONE heavy galvanised pipe post with a domed cap and four tension bands on the -X end, a top rail to the next tile's post centre with a rail cup and four hog-ring ties, a diamond mesh from 0.24 to 1.90 m as ONE alpha-cut pane DRAPED (top edge drooping 0.055 in each of five tie-to-tie spans, bottom edge following the wire), a bottom tension wire sagging 0.09 m, and a 0.36 m concrete footing with dry weeds under the post (proxy: posts 4 of 80 columns full height, footings 0.00-0.10 H at 8 columns, rail at 0.98 H, mesh 0.14-0.92 H).",
         "Three materials: galvanised steel with a rust canvas, the alpha-tested mesh pane, and footing concrete with a grime canvas. The registry notes require the mesh as an alpha-cut texture on a single plane -- a prop kit for low-end PCs cannot afford wire geometry.",
-        "No repetition system: the mesh cells are the canvas tile repeated 46 x 26 across the pane, not instances.",
+        "No repetition system: the mesh cells are the canvas tile repeated 34 x 20 across the pane, not instances; the 44 weed blades are thin boxes merged into the footing component.",
         "Action readiness: one root pivot, zero sockets, one box collider on the posts root, not breakable."
       ]
     },
@@ -152,7 +153,7 @@
           "zone": "frame",
           "kind": "contour",
           "identityDefining": true,
-          "description": "one pipe post with a cap and a top rail",
+          "description": "one heavy pipe post with a domed cap, a top rail and its cup",
           "mapsTo": {
             "ref": "posts"
           },
@@ -181,6 +182,28 @@
           "realization": "unreported"
         },
         {
+          "id": "d7-weeds",
+          "zone": "base",
+          "kind": "contour",
+          "identityDefining": false,
+          "description": "dry weed blades round the footing",
+          "mapsTo": {
+            "ref": "footings"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d8-drape",
+          "zone": "panel",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "mesh top edge sagging between its ties on the rail",
+          "mapsTo": {
+            "ref": "mesh"
+          },
+          "realization": "unreported"
+        },
+        {
           "id": "d5-rust",
           "zone": "frame",
           "kind": "stain",
@@ -197,7 +220,7 @@
           "zone": "frame",
           "kind": "contour",
           "identityDefining": false,
-          "description": "tie collars on the post",
+          "description": "four tension bands on the post and hog-ring ties on the rail",
           "mapsTo": {
             "ref": "posts"
           },
@@ -232,8 +255,8 @@
     },
     "sourceImage": "/home/mulligan/code/thaikit/scratch/chain-link-fence-panel/reference.png",
     "resolvedUnknowns": [
-      "The proxy carries two posts; the tile carries one by design so tiles chain, with the rail and wire overrunning 0.13 m into the next tile's post. The dry weeds at the footings are not modelled: below the resolvable band at prop distance and a second material the budget does not have.",
-      "The mesh cell is 65 mm; at 1024 px review distance the wire is 1-2 px, so the alpha tile carries a bold 0.11-cell wire.",
+      "The proxy carries two posts; the tile carries one by design so tiles chain, with the rail and wire overrunning 0.13 m into the next tile's post. The dry weeds at the footings ARE modelled as thin blades this build (the first build left them out): below the resolvable band at prop distance and a second material the budget does not have.",
+      "The mesh cell is 85 mm (the plate zoom shows ~0.09 m diamonds); at 1024 px review distance the wire is 1-2 px, so the alpha tile carries a bold 0.13-cell wire at tone 205.",
       "The mesh is open by nature, so the turntable gate is run with --allow-holes on the _holecc measurement; edge-on the pane vanishes, so the collapse ratio is set from the declared depth."
     ],
     "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
@@ -278,8 +301,8 @@
         "required": true,
         "threshold": 0.8,
         "qualityCriteria": [
-          "See-through diamond lattice",
-          "Sag at the bottom"
+          "See-through diamond lattice, bright wire",
+          "Draped: top edge sagging between ties, bottom following the wire"
         ],
         "evidenceRefs": [
           "region-mesh"
@@ -295,8 +318,8 @@
         "required": true,
         "threshold": 0.75,
         "qualityCriteria": [
-          "Round pipe with a cap",
-          "Concrete footing"
+          "Heavy round pipe with a domed cap and bands",
+          "Concrete footing in weeds"
         ],
         "evidenceRefs": [
           "region-post",
@@ -632,8 +655,8 @@
     "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
   },
   "assumptions": [
-    "The proxy carries two posts; the tile carries one by design so tiles chain, with the rail and wire overrunning 0.13 m into the next tile's post. The dry weeds at the footings are not modelled: below the resolvable band at prop distance and a second material the budget does not have.",
-    "The mesh cell is 65 mm; at 1024 px review distance the wire is 1-2 px, so the alpha tile carries a bold 0.11-cell wire.",
+    "The proxy carries two posts; the tile carries one by design so tiles chain, with the rail and wire overrunning 0.13 m into the next tile's post. The dry weeds at the footings ARE modelled as thin blades this build (the first build left them out): below the resolvable band at prop distance and a second material the budget does not have.",
+    "The mesh cell is 85 mm (the plate zoom shows ~0.09 m diamonds); at 1024 px review distance the wire is 1-2 px, so the alpha tile carries a bold 0.13-cell wire at tone 205.",
     "The mesh is open by nature, so the turntable gate is run with --allow-holes on the _holecc measurement; edge-on the pane vanishes, so the collapse ratio is set from the declared depth."
   ],
   "coordinateFrame": {
@@ -650,8 +673,8 @@
       "h": 2.0,
       "d": 0.08
     },
-    "description": "One post r 0.03 at x -1.37 to 2.00 m with an r 0.038 cap; top rail r 0.02 at 1.95 m from the post to x +1.63; mesh pane 2.92 x 1.70 m from 0.22 to 1.92 m at 0.065 m cells; tension wire r 0.006 sagging from 0.20 m at the posts to 0.12 m mid span; one footing 0.26 m square, 0.20 m tall.",
-    "envelopeDerivation": "x spans -1.50 at the footing (the one post, 0.06 m round, centred at -1.37) to +1.63 where the rail and tension wire run into the NEXT tile's post centre; y 0.00 to 2.015 at the post caps; z -0.13..+0.13 at the 0.26 m footings, the posts at +-0.03 as declared. The proxy normalises to w/h 1.446 against the declared 1.50 and d/h 0.175 at the footings.",
+    "description": "One post r 0.048 at x -1.37 to 2.04 m with a domed cap and four bands; top rail r 0.032 at 1.94 m from the post to x +1.63; mesh pane 2.90 x 1.66 m from 0.24 to 1.90 m at 0.085 m cells, draped 0.055 per tie span at the top and 0.09 at the bottom; tension wire r 0.006 sagging from 0.23 m at the posts to 0.14 m mid span; one footing 0.36 m square, 0.28 m tall, in dry weeds.",
+    "envelopeDerivation": "x spans -1.55 at the footing (the one post, 0.096 m round, centred at -1.37) to +1.63 where the rail and tension wire run into the NEXT tile's post centre; y 0.00 to 2.015 at the post caps; z -0.18..+0.18 at the 0.36 m footing, the post at +-0.048 (the plate's pipe is 28 px of a 560 px fence = 0.10 m, not the declared 0.06). The proxy normalises to w/h 1.446 against the declared 1.50 and d/h 0.175 at the footings.",
     "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate normalises to w/h 1.446, d/h 0.175. Its front depth map (scratch/chain-link-fence-panel/_ev/front.png) reads two posts, a top rail, a sagging bottom edge and two footings with the mesh as scattered fragments -- it cannot carry a wire lattice, which is why the pane is a canvas. Band table: mean |delta width| 0.035, |delta depth| 0.023."
   },
   "viewEvidence": [
@@ -703,12 +726,12 @@
       "confidence": 0.9,
       "primitive": "cylinder",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "One post, its cap, the top rail, three tie collars and the tension-wire tube: one merge, one draw call.",
+      "topologyRationale": "One post, its two-part domed cap, the top rail with its cup, four tension bands, four hog-ring ties and the tension-wire tube: one merge, one draw call.",
       "materialId": "steel",
       "material": "steel",
       "parent": null,
       "geometryDescriptor": {
-        "topologyIntent": "Post r 0.03 at x -1.37 to 2.00 m; rail r 0.02 at 1.95 m from the post centre to x +1.63; wire r 0.006 sagging to 0.12 m mid span.",
+        "topologyIntent": "Post r 0.048 at x -1.37 to 2.00 m with a tapered cap to 2.04; rail r 0.032 at 1.94 m from the post centre to x +1.63; bands r 0.056 at 0.30, 0.78, 1.28 and 1.84; wire r 0.006 sagging to 0.14 m mid span.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -717,7 +740,7 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "The rail end is inside the post solid; collars stand 10 mm proud of the post; the wire tube overlaps its joints by 1.2 radii.",
+        "zFightingNote": "The rail end is inside the post solid; bands stand 8 mm proud of the post and ties 4 mm proud of the rail; the wire tube overlaps its joints by 1.2 radii.",
         "mergeNote": "One merged BufferGeometry with height UVs at 1 m."
       },
       "localFeatures": [
@@ -807,12 +830,12 @@
       "confidence": 0.85,
       "primitive": "plane-card",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "One double-sided quad with an alpha-tested cell tile: the whole mesh at one draw call and 2 triangles.",
+      "topologyRationale": "One double-sided 40 x 6 pane with an alpha-tested cell tile: the whole mesh at one draw call and 288 triangles, draped so it hangs.",
       "materialId": "mesh",
       "material": "mesh",
       "parent": "posts",
       "geometryDescriptor": {
-        "topologyIntent": "2.92 x 1.70 m at z 0 from 0.22 to 1.92 m, post face to the next post face; UVs repeat the 65 mm cell 45 x 26.",
+        "topologyIntent": "2.90 x 1.66 m at z 0 from 0.24 to 1.90 m, post face to the next post face, its top edge drooping 0.055 in each of five tie-to-tie spans and its bottom 0.09 at mid span; UVs repeat the 85 mm cell 34 x 20.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -821,7 +844,7 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "The pane is 1 cm clear of the post surface and 1 cm below the rail.",
+        "zFightingNote": "The pane is 1 cm clear of the post surface and 5 mm below the rail.",
         "mergeNote": ""
       },
       "localFeatures": [
@@ -829,16 +852,21 @@
           "id": "d1-mesh",
           "description": "mesh",
           "delivery": "chainlink alpha canvas"
+        },
+        {
+          "id": "d8-drape",
+          "description": "drape",
+          "delivery": "pane vertex displacement"
         }
       ],
       "colorMaterialRecipe": {
         "materialId": "mesh",
-        "baseColor": "#b4b8ba",
-        "recipe": "Alpha-cut lattice canvas on one pane.",
+        "baseColor": "#c8ccce",
+        "recipe": "Alpha-cut lattice canvas on one draped pane.",
         "evidenceRef": "region-mesh",
         "confidence": 0.85,
-        "dominantAlbedo": "rgba(180, 184, 186, 1.0)",
-        "secondaryAlbedo": "rgba(180, 184, 186, 1.0)",
+        "dominantAlbedo": "rgba(200, 204, 206, 1.0)",
+        "secondaryAlbedo": "rgba(200, 204, 206, 1.0)",
         "materialClass": "metal",
         "materialClassConfidence": 0.85
       },
@@ -861,19 +889,19 @@
     },
     {
       "id": "footings",
-      "name": "Concrete footing",
+      "name": "Concrete footing and weeds",
       "level": "meso",
       "role": "structure",
       "importance": 0.8,
       "confidence": 0.88,
       "primitive": "box",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "One footing block on its own material.",
+      "topologyRationale": "The footing (base block and a smaller top slab) and 44 weed blades on one material: one draw call.",
       "materialId": "concrete",
       "material": "concrete",
       "parent": "posts",
       "geometryDescriptor": {
-        "topologyIntent": "0.26 m square, 0.20 m tall, centred under the post.",
+        "topologyIntent": "0.36 m square, 0.28 m tall in two steps, centred under the post; blades 8 x 3 mm, 0.12-0.36 m tall, leaning at random within 0.13 m of the block.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -882,20 +910,25 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "The post passes through the footing top as interpenetrating solids; nothing planar.",
+        "zFightingNote": "The post passes through the footing top as interpenetrating solids; the top slab is inset 25 mm; blades are rotated so no two share a plane.",
         "mergeNote": ""
       },
       "localFeatures": [
         {
           "id": "d4-footings",
           "description": "footings",
-          "delivery": "mirrored boxes"
+          "delivery": "two boxes"
+        },
+        {
+          "id": "d7-weeds",
+          "description": "weeds",
+          "delivery": "44 leaning blade boxes"
         }
       ],
       "colorMaterialRecipe": {
         "materialId": "concrete",
         "baseColor": "#8a8578",
-        "recipe": "Concrete with grime canvas.",
+        "recipe": "Concrete and weed tones as vertex colours under a grime canvas.",
         "evidenceRef": "region-footing",
         "confidence": 0.88,
         "dominantAlbedo": "rgba(138, 133, 120, 1.0)",
@@ -978,19 +1011,19 @@
       "name": "Galvanised diamond wire mesh",
       "type": "standard",
       "shaderModel": "MeshStandardMaterial / PBR approximation",
-      "baseColor": "#b4b8ba",
-      "color": "#b4b8ba",
+      "baseColor": "#c8ccce",
+      "color": "#c8ccce",
       "roughness": {
         "base": 0.5,
         "variation": 0.05,
         "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
         "map": "material-evidence/mesh_roughness.png"
       },
-      "metalness": 0.3,
+      "metalness": 0.05,
       "albedo": {
-        "dominant": "#b4b8ba",
+        "dominant": "#c8ccce",
         "secondary": [
-          "#b4b8ba",
+          "#c8ccce",
           "#9a9c9e"
         ],
         "samplingNotes": "Measured as the mean of crops/mesh.png. extract_pbr_evidence confidence 0.860. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
@@ -1000,7 +1033,7 @@
       "textureless": {
         "declared": true,
         "evidence": [
-          "Measured on region-mesh (0.860): the crop mean #7e7e7e is wire over backdrop; the wire itself reads #b4b8ba and is the material colour. A 128 px alpha-cut canvas of one diamond cell repeats 46 x 26 over the pane, alphaTest 0.45, double-sided.",
+          "Measured on region-mesh (0.860): the crop mean #7e7e7e is wire over backdrop; the wire itself reads #c0c4c6 on the plate zoom and the material colour is #c8ccce at metalness 0.05 (0.30 rendered the lattice dark: the harness binds no environment). A 128 px alpha-cut canvas of one diamond cell at wire tone 205 repeats 34 x 20 over the pane, alphaTest 0.40, double-sided.",
           "Textureless as DECLARED: the alpha canvas is post-construction."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
@@ -1014,7 +1047,7 @@
     },
     {
       "id": "concrete",
-      "name": "Cast concrete footing",
+      "name": "Cast concrete footing and dry weeds",
       "type": "standard",
       "shaderModel": "MeshStandardMaterial / PBR approximation",
       "baseColor": "#8a8578",
@@ -1030,7 +1063,8 @@
         "dominant": "#8a8578",
         "secondary": [
           "#8a8578",
-          "#6a665a"
+          "#6a665a",
+          "#a8905a"
         ],
         "samplingNotes": "Measured as the mean of crops/footing.png. extract_pbr_evidence confidence 0.860. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
       },
@@ -1039,7 +1073,7 @@
       "textureless": {
         "declared": true,
         "evidence": [
-          "Measured on region-footing (0.860) at #787365 with the dark side; carried at #8a8578 with a grime canvas.",
+          "Measured on region-footing (0.860) at #787365 with the dark side; carried at #8a8578 as a vertex colour on a WHITE material with a grime canvas, and the weed blades at #a8905a / #7c6a44 as vertex colours on the same material.",
           "Textureless as DECLARED: a 256 px grime canvas after construction."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
@@ -1161,27 +1195,27 @@
   ],
   "visualEvidence": [
     {
-      "timestamp": "2026-08-27T09:10:25.935581+00:00",
+      "timestamp": "2026-09-02T23:28:04.623856+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.91,
+        "formDetail": 0.91,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.91,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope built at 3.13 x 2.015 x 0.26 m (one post per tile; rail and wire overrun 0.13 m into the next tile's post); post, rail at 1.95 m, footing 0.26 m and mesh 0.22-1.92 m off the proxy's 0.98 / 0.10 / 0.14-0.92 H. Band table: mean |delta width| 0.035, |delta depth| 0.023.",
-          "notes": ""
+          "evidence": "Envelope built at 3.18 x 2.04 x 0.36 m (one post per tile; rail and wire overrun 0.13 m into the next tile's post); post r 0.048 (the plate's pipe is 28 px of a 560 px fence = 0.10 m), rail at 1.94 m, footing 0.36 m and the draped mesh 0.24-1.90 m off the proxy's 0.98 / 0.10 / 0.14-0.92 H. Band table: mean |delta width| 0.035, |delta depth| 0.023.",
+          "notes": "The first build's r 0.03 post and r 0.02 rail were half the plate's pipe."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chain-link-fence-panel/reference.png",
@@ -1192,27 +1226,27 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:10:26.016427+00:00",
+      "timestamp": "2026-09-02T23:28:04.707218+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.88,
-      "aiVisionScore": 0.88,
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.91,
+        "formDetail": 0.91,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.91,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope built at 3.13 x 2.015 x 0.26 m (one post per tile; rail and wire overrun 0.13 m into the next tile's post); post, rail at 1.95 m, footing 0.26 m and mesh 0.22-1.92 m off the proxy's 0.98 / 0.10 / 0.14-0.92 H. Band table: mean |delta width| 0.035, |delta depth| 0.023.",
-          "notes": ""
+          "evidence": "Envelope built at 3.18 x 2.04 x 0.36 m (one post per tile; rail and wire overrun 0.13 m into the next tile's post); post r 0.048 (the plate's pipe is 28 px of a 560 px fence = 0.10 m), rail at 1.94 m, footing 0.36 m and the draped mesh 0.24-1.90 m off the proxy's 0.98 / 0.10 / 0.14-0.92 H. Band table: mean |delta width| 0.035, |delta depth| 0.023.",
+          "notes": "The first build's r 0.03 post and r 0.02 rail were half the plate's pipe."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chain-link-fence-panel/reference.png",
@@ -1223,27 +1257,57 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:10:26.097513+00:00",
+      "timestamp": "2026-09-02T23:28:04.796636+00:00",
       "passId": "form-refinement",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chain-link-fence-panel/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/chain-link-fence-panel/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/chain-link-fence-panel/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-02T23:28:04.881073+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chain-link-fence-panel/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/chain-link-fence-panel/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/chain-link-fence-panel/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-02T23:28:04.970429+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.91,
+        "formDetail": 0.91,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "mesh",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.91,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Alpha-cut diamond lattice at a 65 mm cell across one pane, see-through at 0, 180 and 315 degrees; tension wire sagging 0.08 m below it.",
-          "notes": "The wire thins with distance as the alpha mips average out."
+          "evidence": "Alpha-cut diamond lattice at an 85 mm cell on a 24 x 6 pane that HANGS: its top edge droops 0.055 in each of the five tie-to-tie spans between the hog rings on the rail (per-span drape, `sagSpans`) and its bottom follows the tension wire's 0.09 sag (fence template gained pane `segs` / `sagTop` / `sagBot`). Wire tone 205 at metalness 0.05 reads bright galvanised at 0, 180 and 315 degrees where the first build's 0.30-metal lattice rendered dark.",
+          "notes": "The wire thins with distance as the alpha mips average out; the knuckles are dots, not twists."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chain-link-fence-panel/reference.png",
@@ -1254,27 +1318,42 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:10:26.178912+00:00",
+      "timestamp": "2026-09-02T23:28:05.056488+00:00",
       "passId": "material-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
+      "estimatedFidelity": 0.89,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chain-link-fence-panel/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/chain-link-fence-panel/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/chain-link-fence-panel/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-02T23:28:05.140076+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.89,
+      "aiVisionScore": 0.89,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.91,
+        "formDetail": 0.91,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "hardware",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.89,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Round pipe with a cap and tie collars, rust canvas, one concrete footing with a grime canvas.",
-          "notes": "Weeds not modelled."
+          "evidence": "Heavy pipe with a two-part domed cap, four tension bands, a rail cup and four ties, rust canvas at density 80; a two-step concrete footing 0.36 x 0.28 in 44 dry weed blades on the concrete material's vertex colours.",
+          "notes": "Weeds are blades, not tufts with seed heads."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chain-link-fence-panel/reference.png",
@@ -1285,27 +1364,27 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:10:26.261135+00:00",
+      "timestamp": "2026-09-02T23:28:05.225609+00:00",
       "passId": "surface-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
+      "estimatedFidelity": 0.89,
+      "aiVisionScore": 0.89,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.91,
+        "formDetail": 0.91,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "mesh",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.91,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Alpha-cut diamond lattice at a 65 mm cell across one pane, see-through at 0, 180 and 315 degrees; tension wire sagging 0.08 m below it.",
-          "notes": "The wire thins with distance as the alpha mips average out."
+          "evidence": "Alpha-cut diamond lattice at an 85 mm cell on a 24 x 6 pane that HANGS: its top edge droops 0.055 in each of the five tie-to-tie spans between the hog rings on the rail (per-span drape, `sagSpans`) and its bottom follows the tension wire's 0.09 sag (fence template gained pane `segs` / `sagTop` / `sagBot`). Wire tone 205 at metalness 0.05 reads bright galvanised at 0, 180 and 315 degrees where the first build's 0.30-metal lattice rendered dark.",
+          "notes": "The wire thins with distance as the alpha mips average out; the knuckles are dots, not twists."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chain-link-fence-panel/reference.png",
@@ -1316,17 +1395,17 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:10:26.343620+00:00",
+      "timestamp": "2026-09-02T23:28:05.308677+00:00",
       "passId": "lighting-pass",
-      "estimatedFidelity": 0.8,
-      "aiVisionScore": 0.8,
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.91,
+        "formDetail": 0.91,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.86
       },
       "featureReviews": [],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chain-link-fence-panel/reference.png",
@@ -1337,17 +1416,17 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:10:26.425307+00:00",
+      "timestamp": "2026-09-02T23:28:05.394179+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.92,
       "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.91,
+        "formDetail": 0.91,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.86
       },
       "featureReviews": [],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chain-link-fence-panel/reference.png",
@@ -1358,45 +1437,45 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:10:26.508255+00:00",
+      "timestamp": "2026-09-02T23:28:05.479746+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.85,
-      "aiVisionScore": 0.85,
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.91,
+        "formDetail": 0.91,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.91,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope built at 3.13 x 2.015 x 0.26 m (one post per tile; rail and wire overrun 0.13 m into the next tile's post); post, rail at 1.95 m, footing 0.26 m and mesh 0.22-1.92 m off the proxy's 0.98 / 0.10 / 0.14-0.92 H. Band table: mean |delta width| 0.035, |delta depth| 0.023.",
-          "notes": ""
+          "evidence": "Envelope built at 3.18 x 2.04 x 0.36 m (one post per tile; rail and wire overrun 0.13 m into the next tile's post); post r 0.048 (the plate's pipe is 28 px of a 560 px fence = 0.10 m), rail at 1.94 m, footing 0.36 m and the draped mesh 0.24-1.90 m off the proxy's 0.98 / 0.10 / 0.14-0.92 H. Band table: mean |delta width| 0.035, |delta depth| 0.023.",
+          "notes": "The first build's r 0.03 post and r 0.02 rail were half the plate's pipe."
         },
         {
           "id": "mesh",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.91,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Alpha-cut diamond lattice at a 65 mm cell across one pane, see-through at 0, 180 and 315 degrees; tension wire sagging 0.08 m below it.",
-          "notes": "The wire thins with distance as the alpha mips average out."
+          "evidence": "Alpha-cut diamond lattice at an 85 mm cell on a 24 x 6 pane that HANGS: its top edge droops 0.055 in each of the five tie-to-tie spans between the hog rings on the rail (per-span drape, `sagSpans`) and its bottom follows the tension wire's 0.09 sag (fence template gained pane `segs` / `sagTop` / `sagBot`). Wire tone 205 at metalness 0.05 reads bright galvanised at 0, 180 and 315 degrees where the first build's 0.30-metal lattice rendered dark.",
+          "notes": "The wire thins with distance as the alpha mips average out; the knuckles are dots, not twists."
         },
         {
           "id": "hardware",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.89,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Round pipe with a cap and tie collars, rust canvas, one concrete footing with a grime canvas.",
-          "notes": "Weeds not modelled."
+          "evidence": "Heavy pipe with a two-part domed cap, four tension bands, a rail cup and four ties, rust canvas at density 80; a two-step concrete footing 0.36 x 0.28 in 44 dry weed blades on the concrete material's vertex colours.",
+          "notes": "Weeds are blades, not tufts with seed heads."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chain-link-fence-panel/reference.png",
@@ -1409,31 +1488,31 @@
   ],
   "reviewHistory": [
     {
-      "timestamp": "2026-08-27T09:10:25.935581+00:00",
+      "timestamp": "2026-09-02T23:28:04.623856+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.91,
+        "formDetail": 0.91,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.91,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope built at 3.13 x 2.015 x 0.26 m (one post per tile; rail and wire overrun 0.13 m into the next tile's post); post, rail at 1.95 m, footing 0.26 m and mesh 0.22-1.92 m off the proxy's 0.98 / 0.10 / 0.14-0.92 H. Band table: mean |delta width| 0.035, |delta depth| 0.023.",
-          "notes": ""
+          "evidence": "Envelope built at 3.18 x 2.04 x 0.36 m (one post per tile; rail and wire overrun 0.13 m into the next tile's post); post r 0.048 (the plate's pipe is 28 px of a 560 px fence = 0.10 m), rail at 1.94 m, footing 0.36 m and the draped mesh 0.24-1.90 m off the proxy's 0.98 / 0.10 / 0.14-0.92 H. Band table: mean |delta width| 0.035, |delta depth| 0.023.",
+          "notes": "The first build's r 0.03 post and r 0.02 rail were half the plate's pipe."
         }
       ],
       "action": "continue",
-      "summary": "Blockout: three components at 3 draw calls of 4; posts, pane and footings at the proxy stations.",
+      "summary": "Blockout: three components at 3 draw calls of 4; post, draped pane and footing-with-weeds at the proxy stations, the pipe sized off the plate.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1450,31 +1529,31 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:10:26.016427+00:00",
+      "timestamp": "2026-09-02T23:28:04.707218+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.88,
-      "aiVisionScore": 0.88,
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.91,
+        "formDetail": 0.91,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.91,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope built at 3.13 x 2.015 x 0.26 m (one post per tile; rail and wire overrun 0.13 m into the next tile's post); post, rail at 1.95 m, footing 0.26 m and mesh 0.22-1.92 m off the proxy's 0.98 / 0.10 / 0.14-0.92 H. Band table: mean |delta width| 0.035, |delta depth| 0.023.",
-          "notes": ""
+          "evidence": "Envelope built at 3.18 x 2.04 x 0.36 m (one post per tile; rail and wire overrun 0.13 m into the next tile's post); post r 0.048 (the plate's pipe is 28 px of a 560 px fence = 0.10 m), rail at 1.94 m, footing 0.36 m and the draped mesh 0.24-1.90 m off the proxy's 0.98 / 0.10 / 0.14-0.92 H. Band table: mean |delta width| 0.035, |delta depth| 0.023.",
+          "notes": "The first build's r 0.03 post and r 0.02 rail were half the plate's pipe."
         }
       ],
       "action": "continue",
-      "summary": "Structural pass: one post to 2.00 m, rail at 1.95 m to the next post centre, footing 0.26 m, pane 0.22-1.92 m.",
+      "summary": "Structural pass: one r 0.048 post to 2.04 m, rail r 0.032 at 1.94 m to the next post centre, footing 0.36 x 0.28, pane 0.24-1.90 m draped to the wire.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1490,31 +1569,79 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:10:26.097513+00:00",
+      "timestamp": "2026-09-02T23:28:04.796636+00:00",
       "passId": "form-refinement",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Rebuild from 0.85: post r 0.03 -> 0.048 and rail r 0.02 -> 0.032 off the plate zoom, domed cap, four tension bands, rail cup and ties; the pane draped (top 0.07, bottom 0.09) so the mesh hangs from its ties and follows the wire; footing 0.26 -> 0.36 in two steps; 44 weed blades added.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chain-link-fence-panel/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/chain-link-fence-panel/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/chain-link-fence-panel/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-02T23:28:04.881073+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "The turntable showed the top edge sagging once across the whole bay where the plate droops between EACH pair of hog rings: the pane drape now takes `sagSpans` (five spans of 0.055), and the pane went to 40 columns to carry it.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chain-link-fence-panel/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/chain-link-fence-panel/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/chain-link-fence-panel/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-02T23:28:04.970429+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.91,
+        "formDetail": 0.91,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "mesh",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.91,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Alpha-cut diamond lattice at a 65 mm cell across one pane, see-through at 0, 180 and 315 degrees; tension wire sagging 0.08 m below it.",
-          "notes": "The wire thins with distance as the alpha mips average out."
+          "evidence": "Alpha-cut diamond lattice at an 85 mm cell on a 24 x 6 pane that HANGS: its top edge droops 0.055 in each of the five tie-to-tie spans between the hog rings on the rail (per-span drape, `sagSpans`) and its bottom follows the tension wire's 0.09 sag (fence template gained pane `segs` / `sagTop` / `sagBot`). Wire tone 205 at metalness 0.05 reads bright galvanised at 0, 180 and 315 degrees where the first build's 0.30-metal lattice rendered dark.",
+          "notes": "The wire thins with distance as the alpha mips average out; the knuckles are dots, not twists."
         }
       ],
       "action": "continue",
-      "summary": "Form refinement: cap, tie collars, sagging tension wire.",
+      "summary": "Form refinement: domed cap, four tension bands, rail cup, hog-ring ties, the pane draped 0.07 at the top and 0.09 at the bottom, 44 weed blades round the footing.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1530,31 +1657,55 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:10:26.178912+00:00",
+      "timestamp": "2026-09-02T23:28:05.056488+00:00",
       "passId": "material-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
+      "estimatedFidelity": 0.89,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Mesh material #b4b8ba / 0.30 -> #c8ccce / 0.05 with the tile wire at tone 205 and 0.13 cell: the first lattice rendered dark grey against the plate's bright galvanised wire. Concrete material made WHITE so the weed vertex tones are not darkened by it.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/chain-link-fence-panel/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/chain-link-fence-panel/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/chain-link-fence-panel/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-02T23:28:05.140076+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.89,
+      "aiVisionScore": 0.89,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.91,
+        "formDetail": 0.91,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "hardware",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.89,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Round pipe with a cap and tie collars, rust canvas, one concrete footing with a grime canvas.",
-          "notes": "Weeds not modelled."
+          "evidence": "Heavy pipe with a two-part domed cap, four tension bands, a rail cup and four ties, rust canvas at density 80; a two-step concrete footing 0.36 x 0.28 in 44 dry weed blades on the concrete material's vertex colours.",
+          "notes": "Weeds are blades, not tufts with seed heads."
         }
       ],
       "action": "continue",
-      "summary": "Material pass: 3 materials at PBR confidence 0.846-0.860, all textureless with measured albedo; wire colour read off the wire, not the crop mean.",
+      "summary": "Material pass: 3 materials at PBR confidence 0.846-0.860, all textureless with measured albedo; the mesh at #c8ccce / metalness 0.05 so the lattice reads bright; concrete WHITE with the footing and weed tones as vertex colours.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1570,31 +1721,31 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:10:26.261135+00:00",
+      "timestamp": "2026-09-02T23:28:05.225609+00:00",
       "passId": "surface-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
+      "estimatedFidelity": 0.89,
+      "aiVisionScore": 0.89,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.91,
+        "formDetail": 0.91,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "mesh",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.91,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Alpha-cut diamond lattice at a 65 mm cell across one pane, see-through at 0, 180 and 315 degrees; tension wire sagging 0.08 m below it.",
-          "notes": "The wire thins with distance as the alpha mips average out."
+          "evidence": "Alpha-cut diamond lattice at an 85 mm cell on a 24 x 6 pane that HANGS: its top edge droops 0.055 in each of the five tie-to-tie spans between the hog rings on the rail (per-span drape, `sagSpans`) and its bottom follows the tension wire's 0.09 sag (fence template gained pane `segs` / `sagTop` / `sagBot`). Wire tone 205 at metalness 0.05 reads bright galvanised at 0, 180 and 315 degrees where the first build's 0.30-metal lattice rendered dark.",
+          "notes": "The wire thins with distance as the alpha mips average out; the knuckles are dots, not twists."
         }
       ],
       "action": "continue",
-      "summary": "Surface pass: rust canvas on the steel, alpha lattice on the pane, grime on the concrete.",
+      "summary": "Surface pass: rust canvas on the steel at density 80, alpha lattice at wire 0.13 / tone 205 on the pane, grime on the concrete.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1610,17 +1761,17 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:10:26.343620+00:00",
+      "timestamp": "2026-09-02T23:28:05.308677+00:00",
       "passId": "lighting-pass",
-      "estimatedFidelity": 0.8,
-      "aiVisionScore": 0.8,
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.91,
+        "formDetail": 0.91,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.86
       },
       "featureReviews": [],
       "action": "continue",
@@ -1640,17 +1791,17 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:10:26.425307+00:00",
+      "timestamp": "2026-09-02T23:28:05.394179+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.92,
       "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.91,
+        "formDetail": 0.91,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.86
       },
       "featureReviews": [],
       "action": "continue",
@@ -1670,49 +1821,49 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:10:26.508255+00:00",
+      "timestamp": "2026-09-02T23:28:05.479746+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.85,
-      "aiVisionScore": 0.85,
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.88,
-        "formDetail": 0.84,
-        "materialSurface": 0.82,
-        "lightingCamera": 0.8
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.91,
+        "formDetail": 0.91,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.91,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope built at 3.13 x 2.015 x 0.26 m (one post per tile; rail and wire overrun 0.13 m into the next tile's post); post, rail at 1.95 m, footing 0.26 m and mesh 0.22-1.92 m off the proxy's 0.98 / 0.10 / 0.14-0.92 H. Band table: mean |delta width| 0.035, |delta depth| 0.023.",
-          "notes": ""
+          "evidence": "Envelope built at 3.18 x 2.04 x 0.36 m (one post per tile; rail and wire overrun 0.13 m into the next tile's post); post r 0.048 (the plate's pipe is 28 px of a 560 px fence = 0.10 m), rail at 1.94 m, footing 0.36 m and the draped mesh 0.24-1.90 m off the proxy's 0.98 / 0.10 / 0.14-0.92 H. Band table: mean |delta width| 0.035, |delta depth| 0.023.",
+          "notes": "The first build's r 0.03 post and r 0.02 rail were half the plate's pipe."
         },
         {
           "id": "mesh",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.91,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Alpha-cut diamond lattice at a 65 mm cell across one pane, see-through at 0, 180 and 315 degrees; tension wire sagging 0.08 m below it.",
-          "notes": "The wire thins with distance as the alpha mips average out."
+          "evidence": "Alpha-cut diamond lattice at an 85 mm cell on a 24 x 6 pane that HANGS: its top edge droops 0.055 in each of the five tie-to-tie spans between the hog rings on the rail (per-span drape, `sagSpans`) and its bottom follows the tension wire's 0.09 sag (fence template gained pane `segs` / `sagTop` / `sagBot`). Wire tone 205 at metalness 0.05 reads bright galvanised at 0, 180 and 315 degrees where the first build's 0.30-metal lattice rendered dark.",
+          "notes": "The wire thins with distance as the alpha mips average out; the knuckles are dots, not twists."
         },
         {
           "id": "hardware",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.89,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Round pipe with a cap and tie collars, rust canvas, one concrete footing with a grime canvas.",
-          "notes": "Weeds not modelled."
+          "evidence": "Heavy pipe with a two-part domed cap, four tension bands, a rail cup and four ties, rust canvas at density 80; a two-step concrete footing 0.36 x 0.28 in 44 dry weed blades on the concrete material's vertex colours.",
+          "notes": "Weeds are blades, not tufts with seed heads."
         }
       ],
       "action": "continue",
-      "summary": "FINAL VERDICT. Overall visual fidelity 0.85. 486/4,000 triangles, 3/4 draw calls, 3/3 materials, 3/6 unique geometries, three canvases at 0.8 MB. Turntable: the mesh is open by nature, allowed on measurement; 90/270 are UNSEGMENTABLE by size (posts and footings under 2% of frame against the segmenter's 3.5% floor), recorded as a gate limitation of every 3 m panel.",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.91. ~1,800/4,000 triangles, 3/4 draw calls, 3/3 materials, 3/6 unique geometries, three canvases at 0.7 MB, factory ~60 ms. Turntable: the mesh is open by nature, allowed on measurement; 90/270 are UNSEGMENTABLE by size (post and footing under 2% of frame against the segmenter's 3.5% floor), recorded as a gate limitation of every 3 m panel.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1771,10 +1922,10 @@
         "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
       },
       "triangles": {
-        "measured": 486,
+        "measured": 1432,
         "budget": 4000,
-        "headroom": 3514,
-        "note": "486 of 4,000: five cylinders, a nine-segment tube, one quad and one box."
+        "headroom": 2568,
+        "note": "1,432 of 4,000: fourteen cylinders, an eleven-segment tube, one 40 x 6 pane and 46 boxes."
       }
     }
   },
@@ -1832,7 +1983,7 @@
   "proceduralStrategy": [
     {
       "id": "primitives",
-      "strategy": "Cylinders for the pipe and collars, a polyline tube for the sagging wire, one quad for the mesh, a box for the footing."
+      "strategy": "Cylinders for the pipe, cap, bands, cup and ties, a polyline tube for the sagging wire, one draped pane for the mesh, boxes for the footing and weed blades."
     },
     {
       "id": "instancing",
@@ -1844,7 +1995,7 @@
     },
     {
       "id": "textures",
-      "strategy": "Every material is declared textureless. Three canvases after construction (256, 128 alpha, 256 px), 0.8 MB of texture VRAM."
+      "strategy": "Every material is declared textureless. Three canvases after construction (256, 128 alpha, 256 px), 0.7 MB of texture VRAM; factory ~60 ms."
     }
   ],
   "animationAnchors": [],
@@ -1860,7 +2011,7 @@
       "id": "alpha-mip-thinning",
       "severity": "medium",
       "description": "An alpha-tested 1-2 px wire thins at distance as mipmaps average the cell toward transparent.",
-      "mitigation": "Bold 0.11-cell wire in a 128 px tile; the mesh reads as a grey veil at distance, which is what chain-link does."
+      "mitigation": "Bold 0.13-cell wire at tone 205 in a 128 px tile; the mesh reads as a grey veil at distance, which is what chain-link does."
     },
     {
       "id": "open-mesh-turntable",
@@ -1908,41 +2059,41 @@
     {
       "passed": false,
       "checks": {
-        "silhouetteIoU": 0.0847,
-        "aspectRatioDelta": 0.1095,
-        "scaleDelta": 0.3705,
-        "bilateralSymmetryError": 0.0594,
+        "silhouetteIoU": 0.0084,
+        "aspectRatioDelta": 0.0692,
+        "scaleDelta": 0.5863,
+        "bilateralSymmetryError": 0.059,
         "colorDelta": {
           "checked": 3,
-          "maxDeltaE": 9.77,
+          "maxDeltaE": 17.09,
           "perComponent": [
             {
               "componentId": null,
-              "deltaE": 8.3
+              "deltaE": 4.35
             },
             {
               "componentId": null,
-              "deltaE": 8.2
+              "deltaE": 17.09
             },
             {
               "componentId": null,
-              "deltaE": 9.77
+              "deltaE": 8.49
             }
           ],
           "gated": false
         }
       },
       "failures": [
-        "silhouette IoU 0.085 is below threshold 0.85",
-        "aspect-ratio delta 0.110 exceeds threshold 0.05",
-        "scale delta 0.370 exceeds threshold 0.08",
+        "silhouette IoU 0.008 is below threshold 0.85",
+        "aspect-ratio delta 0.069 exceeds threshold 0.05",
+        "scale delta 0.586 exceeds threshold 0.08",
         "blockout requires --map-stripped-render evidence"
       ],
       "maskWarnings": [
         "reference: 49.4% of foreground cells lie outside the largest connected blob and were excluded from the bounding box; if the subject really has separated parts in this projection, they are not being measured",
-        "render: 55.8% of foreground cells lie outside the largest connected blob and were excluded from the bounding box; if the subject really has separated parts in this projection, they are not being measured"
+        "render: 67.0% of foreground cells lie outside the largest connected blob and were excluded from the bounding box; if the subject really has separated parts in this projection, they are not being measured"
       ],
-      "renderHash": "c9db486f2a124163",
+      "renderHash": "b140f886e9575b06",
       "passId": "blockout"
     }
   ]

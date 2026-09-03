@@ -38,7 +38,7 @@
     ],
     "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
   },
-  "sourceImage": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/reference.png",
+  "sourceImage": "/app/scratch/steel-picket-property-fence/reference.png",
   "referenceCamera": {
     "solved": false,
     "fovDegrees": 40.0,
@@ -106,12 +106,12 @@
         "macroComponents": 3,
         "mesoComponents": 5,
         "microFeatureGroups": 3,
-        "materialLayers": 2,
+        "materialLayers": 3,
         "repetitionSystems": 1
       },
       "reasoning": [
-        "A 0.60 m rendered wall from ONE 0.28 m rendered pier with a plinth-and-pyramid cap to the +X edge, and fourteen square steel pickets with spear finials on two rails across the bay (proxy: wall full width to 0.33 H, rails at 0.33 and 0.80 H, tips at 0.92 H, pickets at a 5-column 0.19 m pitch, piers 9 columns with caps 11 wide).",
-        "Two materials: the cream render with a mildew canvas, and a white vertex-coloured steel carrying the dark green as a vertex colour with a rust canvas. A colour difference is not a material difference.",
+        "A 0.60 m rendered wall from ONE 0.32 m rendered pier with a slab-and-pyramid cap to the +X edge, and fourteen 0.038 m square steel pickets with diamond spear finials on two 0.06 m flat-bar rails across the bay (proxy: wall full width to 0.33 H, rails at 0.33 and 0.80 H, tips at 0.92 H, pickets at a 5-column 0.19 m pitch, piers 9 columns with caps 11 wide).",
+        "Three materials: the wall render with a clustered-mildew canvas, the pier render with a cap-streak canvas (a different STAIN, not a different colour), and a steel whose vertex colour is the rust ENVELOPE under a paint canvas carrying the green as a ratio -- rust is brighter than green and a tile only darkens.",
         "One repetition system: the fourteen pickets as one InstancedMesh.",
         "Action readiness: one root pivot, zero sockets, one box collider on the masonry root, not breakable."
       ]
@@ -173,9 +173,32 @@
           "zone": "piers",
           "kind": "contour",
           "identityDefining": true,
-          "description": "plinth-and-pyramid pier cap",
+          "description": "overhanging slab-and-pyramid pier cap",
           "mapsTo": {
-            "ref": "masonry"
+            "ref": "pier"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d7-streaks",
+          "zone": "piers",
+          "kind": "stain",
+          "identityDefining": true,
+          "description": "black rain streaks down the pier from the cap",
+          "mapsTo": {
+            "ref": "d7-streaks"
+          },
+          "onMaterial": "pier",
+          "realization": "unreported"
+        },
+        {
+          "id": "d8-spears",
+          "zone": "panel",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "diamond spear finials flaring over a collar",
+          "mapsTo": {
+            "ref": "pickets"
           },
           "realization": "unreported"
         },
@@ -195,11 +218,12 @@
           "id": "d6-rust",
           "zone": "panel",
           "kind": "stain",
-          "identityDefining": false,
-          "description": "enamel chipped to rust at the rails",
+          "identityDefining": true,
+          "description": "enamel chipped to orange rust at the rails and welds",
           "mapsTo": {
-            "ref": "rails"
+            "ref": "d6-rust"
           },
+          "onMaterial": "steel",
           "realization": "unreported"
         }
       ]
@@ -229,11 +253,11 @@
       "confidence": 0.0,
       "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
     },
-    "sourceImage": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/reference.png",
+    "sourceImage": "/app/scratch/steel-picket-property-fence/reference.png",
     "resolvedUnknowns": [
       "The back face mirrors the front; the mildew canvas is height-keyed so it lands at the base on both faces.",
       "The proxy carries two piers; the tile carries one by design so tiles chain, and the band table's right-hand residual is that difference. Fourteen pickets fill the 2.68 m bay at the proxy's 0.19 m pitch; the cracked cap is not modelled as a crack.",
-      "Cap overhang 0.32 m against the declared 0.30 m depth; the proxy reads 0.38 m, so the residual is the declared aspect."
+      "Cap overhang 0.38 m against the declared 0.30 m depth, which is the proxy's own reading; the residual is the declared aspect."
     ],
     "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
   },
@@ -247,10 +271,10 @@
       "Every material declares textureless with named evidence."
     ],
     "minimumSpecDepth": {
-      "macroComponents": 1,
+      "macroComponents": 2,
       "mesoComponents": 2,
       "microFeatureGroups": 3,
-      "materialLayers": 2,
+      "materialLayers": 3,
       "repetitionSystems": 1,
       "reviewViewpoints": 4
     },
@@ -278,14 +302,16 @@
         "required": true,
         "threshold": 0.8,
         "qualityCriteria": [
-          "Fourteen pickets with spear points",
-          "Two rails"
+          "Fourteen 38 mm pickets with diamond spear points",
+          "Two flat-bar rails behind them",
+          "Orange rust at the welds"
         ],
         "evidenceRefs": [
           "region-picket"
         ],
         "failureModes": [
-          "a flat green panel"
+          "a flat green panel",
+          "wire-thin pickets"
         ]
       },
       {
@@ -295,14 +321,16 @@
         "threshold": 0.75,
         "qualityCriteria": [
           "Cream render",
-          "Mildew at the base"
+          "Hard black mildew colonies low on the wall",
+          "Streaks down the pier from the cap"
         ],
         "evidenceRefs": [
           "region-render",
           "region-mildew"
         ],
         "failureModes": [
-          "clean white"
+          "clean white",
+          "a soft grey wash"
         ]
       }
     ],
@@ -493,7 +521,8 @@
       "minimumScore": 0.75,
       "mustPass": true,
       "componentRefs": [
-        "masonry"
+        "masonry",
+        "pier"
       ],
       "evidenceRefs": [
         "region-render",
@@ -597,7 +626,7 @@
   "actionReadiness": {
     "explodable": true,
     "clickable": true,
-    "partCount": 4,
+    "partCount": 5,
     "pivotInventory": [
       {
         "name": "root",
@@ -632,7 +661,7 @@
   "assumptions": [
     "The back face mirrors the front; the mildew canvas is height-keyed so it lands at the base on both faces.",
     "The proxy carries two piers; the tile carries one by design so tiles chain, and the band table's right-hand residual is that difference. Fourteen pickets fill the 2.68 m bay at the proxy's 0.19 m pitch; the cracked cap is not modelled as a crack.",
-    "Cap overhang 0.32 m against the declared 0.30 m depth; the proxy reads 0.38 m, so the residual is the declared aspect."
+    "Cap overhang 0.38 m against the declared 0.30 m depth, which is the proxy's own reading; the residual is the declared aspect."
   ],
   "coordinateFrame": {
     "up": "+Y",
@@ -648,8 +677,8 @@
       "h": 1.8,
       "d": 0.3
     },
-    "description": "Wall 2.72 x 0.60 x 0.20 m from the pier to 0.02 m past the tile edge; one pier 0.28 m square to 1.66 m at x -1.34 with a 0.32 m cap and a 0.10 m pyramid to 1.80 m; rails 35 mm at 0.70 and 1.44 m; fourteen 22 mm pickets from 0.62 m to spear tips at 1.66 m at a 0.191 m pitch.",
-    "envelopeDerivation": "x spans -1.50 at the one pier cap (pier 0.28 m square centred at -1.34) to +1.52 where the wall and rails run 0.02 m past the tile edge into the next tile's pier; y 0.00 to 1.80 at the cap apex; z -0.16..+0.16 at the caps, the wall at +-0.10. The proxy normalises to w/h 1.627 against the declared 1.667 and d/h 0.213 (0.38 m at the caps, over the declared 0.30 -- the caps are built at 0.32).",
+    "description": "Wall 2.70 x 0.60 x 0.22 m from the pier to 0.02 m past the tile edge; one pier 0.32 m square to 1.64 m at x -1.31 with a 0.38 x 0.06 m cap slab and a 0.10 m pyramid to 1.80 m; flat-bar rails 0.06 x 0.018 m at 0.70 and 1.44 m; fourteen 38 mm pickets from the wall top to diamond spear tips at 1.65 m at a 0.191 m pitch.",
+    "envelopeDerivation": "x spans -1.50 at the one pier cap (pier 0.32 m square centred at -1.31, cap 0.38) to +1.52 where the wall and rails run 0.02 m past the tile edge into the next tile's pier; y 0.00 to 1.80 at the cap apex; z -0.19..+0.19 at the cap, the wall at +-0.11. The proxy normalises to w/h 1.627 against the declared 1.667 and d/h 0.213 (0.38 m at the caps, over the declared 0.30 -- the cap is built at 0.38, the proxy's own reading).",
     "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate normalises to w/h 1.627, d/h 0.213. Its front depth map (scratch/steel-picket-property-fence/_ev/front.png) shows the wall to 0.33 H, two rails at 0.33 and 0.80 H and spear tips at 0.92 H; the band table against the built model reads mean |delta width| 0.044 and |delta depth| 0.020 of height."
   },
   "viewEvidence": [
@@ -688,25 +717,25 @@
       "viewpoint": "rear",
       "path": null,
       "confidence": 0.85,
-      "note": "NOT DIRECTLY OBSERVED. Confidence 0.85: the fence is symmetric front to back; the pickets sit 2 cm behind the rail axis on both faces."
+      "note": "NOT DIRECTLY OBSERVED. Confidence 0.85: the fence is symmetric front to back; the rails sit 14 mm behind the picket axis, so the back reads rail-in-front."
     }
   ],
   "componentTree": [
     {
       "id": "masonry",
-      "name": "Rendered wall and pier",
+      "name": "Rendered wall",
       "level": "macro",
       "role": "structure",
       "importance": 1.0,
       "confidence": 0.9,
       "primitive": "box",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "Wall, one pier shaft, one cap plinth and one pyramid: one merge, one draw call.",
+      "topologyRationale": "The wall alone: it carries a different stain from the pier, so it is its own material and its own draw call.",
       "materialId": "render",
       "material": "render",
       "parent": null,
       "geometryDescriptor": {
-        "topologyIntent": "Wall 2.72 x 0.60 x 0.20 m, 2 cm into the pier and 2 cm past the tile edge; pier 0.28 m square to 1.66 m at x -1.34; plinth 0.32 x 0.04 m; pyramid 0.30 m base, 0.10 m high.",
+        "topologyIntent": "Wall 2.70 x 0.60 x 0.22 m, 2 cm into the pier and 2 cm past the tile edge.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -715,19 +744,14 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "Wall faces at z +-0.10 against pier faces at +-0.14; wall ends inside the pier solids; plinths sit on the shafts as opposed butts and overhang on every side.",
-        "mergeNote": "One merged BufferGeometry with panel UVs at 1.8 m per tile."
+        "zFightingNote": "Wall faces at z +-0.11 against pier faces at +-0.16; the wall ends inside the pier solid.",
+        "mergeNote": "One box with height UVs at 1.36 m per tile, so the wall top lands at v 0.441 where the tile hangs its drips."
       },
       "localFeatures": [
         {
           "id": "d3-wall",
           "description": "wall",
           "delivery": "box"
-        },
-        {
-          "id": "d4-caps",
-          "description": "caps",
-          "delivery": "plinth box and spike()"
         },
         {
           "id": "d5-mildew",
@@ -738,7 +762,7 @@
       "colorMaterialRecipe": {
         "materialId": "render",
         "baseColor": "#cfc6b0",
-        "recipe": "Cream render as vertex white under the mildew canvas.",
+        "recipe": "Cream render as vertex white under the clustered-mildew canvas.",
         "evidenceRef": "region-render",
         "confidence": 0.9,
         "dominantAlbedo": "rgba(207, 198, 176, 1.0)",
@@ -792,8 +816,74 @@
       }
     },
     {
+      "id": "pier",
+      "name": "Rendered pier and cap",
+      "level": "macro",
+      "role": "structure",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Pier shaft, cap slab and pyramid: one merge, one draw call, on the pier material.",
+      "materialId": "pier",
+      "material": "pier",
+      "parent": "masonry",
+      "geometryDescriptor": {
+        "topologyIntent": "Pier 0.32 m square to 1.64 m at x -1.31; cap slab 0.38 x 0.06 m; pyramid 0.36 m base, 0.10 m high to 1.80 m.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "The slab sits on the shaft as an opposed butt and overhangs 3 cm on every side; the pyramid base is 1 cm inside the slab.",
+        "mergeNote": "One merged BufferGeometry with height UVs at 1.8 m per tile, so the streaks start at the cap."
+      },
+      "localFeatures": [
+        {
+          "id": "d4-caps",
+          "description": "cap",
+          "delivery": "slab box and spike()"
+        },
+        {
+          "id": "d7-streaks",
+          "description": "streaks",
+          "delivery": "grime canvas"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "pier",
+        "baseColor": "#cdc4ae",
+        "recipe": "Cream render as vertex white under the cap-streak canvas.",
+        "evidenceRef": "region-render",
+        "confidence": 0.9,
+        "dominantAlbedo": "rgba(205, 196, 174, 1.0)",
+        "secondaryAlbedo": "rgba(205, 196, 174, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.9
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
       "id": "rails",
-      "name": "Rails",
+      "name": "Flat-bar rails",
       "level": "meso",
       "role": "structure",
       "importance": 0.9,
@@ -805,7 +895,7 @@
       "material": "steel",
       "parent": "masonry",
       "geometryDescriptor": {
-        "topologyIntent": "35 mm square, 2.72 m long, 2 cm into the pier and 2 cm past the tile edge, at 0.70 and 1.44 m, 12 mm forward of the picket axis.",
+        "topologyIntent": "Flat bar 0.06 x 0.018 m, 2.72 m long, 2 cm into the pier and 2 cm past the tile edge, at 0.70 and 1.44 m, 14 mm behind the picket axis.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -814,7 +904,7 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "Rail ends are inside the pier solids; pickets pass 2 cm behind the rail axis so rail and picket faces overlap as solids, never as coplanar faces.",
+        "zFightingNote": "Rail ends are inside the pier solid; the rail front face at z -0.005 is 14 mm inside the picket backs at -0.019, so rail and picket overlap as solids, never as coplanar faces.",
         "mergeNote": ""
       },
       "localFeatures": [
@@ -826,17 +916,17 @@
         {
           "id": "d6-rust",
           "description": "rust",
-          "delivery": "rust canvas"
+          "delivery": "paint canvas"
         }
       ],
       "colorMaterialRecipe": {
         "materialId": "steel",
-        "baseColor": "#4a5a4e",
-        "recipe": "Dark green vertex colour on white steel with rust canvas.",
+        "baseColor": "#465c4c",
+        "recipe": "Rust-envelope vertex colour under the green paint canvas.",
         "evidenceRef": "region-picket",
         "confidence": 0.88,
-        "dominantAlbedo": "rgba(74, 90, 78, 1.0)",
-        "secondaryAlbedo": "rgba(74, 90, 78, 1.0)",
+        "dominantAlbedo": "rgba(70, 92, 76, 1.0)",
+        "secondaryAlbedo": "rgba(70, 92, 76, 1.0)",
         "materialClass": "metal",
         "materialClassConfidence": 0.88
       },
@@ -866,12 +956,12 @@
       "confidence": 0.88,
       "primitive": "box",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "One picket (shaft, collar, spear) as an InstancedMesh with fourteen instances.",
+      "topologyRationale": "One picket (bar, collar, diamond flare, diamond point) as an InstancedMesh with fourteen instances.",
       "materialId": "steel",
       "material": "steel",
       "parent": "rails",
       "geometryDescriptor": {
-        "topologyIntent": "22 mm shaft from 0.62 to 1.56 m, 34 mm collar, 44 mm spear to 1.66 m; pitch 0.191 m.",
+        "topologyIntent": "38 mm square bar from 2 cm inside the wall top to a 50 mm collar at 1.49 m; a 4-sided diamond flaring to 62 mm over 40 mm, then a 4-sided point 110 mm to the tip at 1.65 m; pitch 0.191 m.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -880,7 +970,7 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "Closed solids; the spear base sits on the collar top as an opposed butt.",
+        "zFightingNote": "Closed solids; the collar sits on the bar and the flare on the collar as opposed butts; the bar foot is buried in the wall.",
         "mergeNote": ""
       },
       "localFeatures": [
@@ -888,16 +978,21 @@
           "id": "d1-pickets",
           "description": "pickets",
           "delivery": "repetitionSystems.pickets"
+        },
+        {
+          "id": "d8-spears",
+          "description": "spears",
+          "delivery": "two flat-shaded 4-segment cylinders"
         }
       ],
       "colorMaterialRecipe": {
         "materialId": "steel",
-        "baseColor": "#4a5a4e",
-        "recipe": "Dark green vertex colour.",
+        "baseColor": "#465c4c",
+        "recipe": "Rust-envelope vertex colour under the green paint canvas.",
         "evidenceRef": "region-picket",
         "confidence": 0.88,
-        "dominantAlbedo": "rgba(74, 90, 78, 1.0)",
-        "secondaryAlbedo": "rgba(74, 90, 78, 1.0)",
+        "dominantAlbedo": "rgba(70, 92, 76, 1.0)",
+        "secondaryAlbedo": "rgba(70, 92, 76, 1.0)",
         "materialClass": "metal",
         "materialClassConfidence": 0.88
       },
@@ -946,13 +1041,13 @@
       "localOverrides": [
         {
           "id": "d5-mildew",
-          "region": "bottom 0.5 m of the wall and piers",
+          "region": "bottom 0.5 m of the wall and its top edge under the pickets",
           "roughness": 0.95,
           "palette": [
             "#CFC6B0",
-            "#3A3A36"
+            "#2A2A28"
           ],
-          "evidence": "Black mildew and rain streaks at the base in the plate (region-mildew); a 0.75 wash over the bottom 0.30 of a 1.8 m tile with streaks from above."
+          "evidence": "Hard black mildew colonies in the plate (region-mildew, luma 20-45): ten clusters of 300 blotches at alpha 0.35-0.85 over a 0.8 ground wash, and black drips hanging off the wall top under the picket feet (joint band at v 0.441 of a 1.36 m tile)."
         }
       ],
       "finishClass": "plastic",
@@ -972,12 +1067,63 @@
       }
     },
     {
-      "id": "steel",
-      "name": "Dark green enamelled steel",
+      "id": "pier",
+      "name": "Cream cement render, pier",
       "type": "standard",
       "shaderModel": "MeshStandardMaterial / PBR approximation",
-      "baseColor": "#4a5a4e",
-      "color": "#4a5a4e",
+      "baseColor": "#cdc4ae",
+      "color": "#cdc4ae",
+      "roughness": {
+        "base": 0.9,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/pier_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#cdc4ae",
+        "secondary": [
+          "#cdc4ae",
+          "#d3cbb8",
+          "#3a3a36"
+        ],
+        "samplingNotes": "Measured as the mean of crops/pier.png. extract_pbr_evidence confidence 0.831. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d7-streaks",
+          "region": "pier shaft and cap",
+          "roughness": 0.95,
+          "palette": [
+            "#CDC4AE",
+            "#2A2A28"
+          ],
+          "evidence": "Black streaks down the pier from the cap in the plate (region-render); 34 streaks at alpha 0.2-0.6, 1-8 cm wide, a 0.7 wash over the bottom 0.45 m."
+        }
+      ],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-render (0.831) at #cdc4ae. Its own material because it carries a DIFFERENT stain from the wall: rain streaks from the cap edges and a dark base, no mildew colonies.",
+          "Textureless as DECLARED: one 512 px grime canvas after construction, 1.8 m tall so the streaks start at the cap."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/pier.png",
+        "pbrReport": "material-evidence/pier.pbr.json",
+        "confidence": 0.831,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "steel",
+      "name": "Dark green enamelled steel over rust",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#465c4c",
+      "color": "#465c4c",
       "roughness": {
         "base": 0.5,
         "variation": 0.05,
@@ -986,21 +1132,32 @@
       },
       "metalness": 0.2,
       "albedo": {
-        "dominant": "#4a5a4e",
+        "dominant": "#465c4c",
         "secondary": [
-          "#4a5a4e",
-          "#6a5a48",
+          "#465c4c",
+          "#96604e",
           "#2e3a32"
         ],
         "samplingNotes": "Measured as the mean of crops/picket.png. extract_pbr_evidence confidence 0.827. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
       },
-      "localOverrides": [],
+      "localOverrides": [
+        {
+          "id": "d6-rust",
+          "region": "rails and picket welds",
+          "roughness": 0.75,
+          "palette": [
+            "#465C4C",
+            "#96604E"
+          ],
+          "evidence": "Orange-brown rust at every rail-to-picket weld and along the rail tops in the plate (region-picket); hard-edged clusters at alpha 0.55-0.95 with runs below."
+        }
+      ],
       "finishClass": "metal",
       "textureless": {
         "declared": true,
         "evidence": [
-          "Measured on region-picket (0.827) at #435147, luma 76; carried at #4a5a4e as a vertex colour on a WHITE material with a rust canvas.",
-          "Textureless as DECLARED: a 256 px rust canvas after construction."
+          "Measured on region-picket (0.827) at #435147, luma 76, carried at #465c4c. The rust (#8a5230 on the rails) is BRIGHTER than the green and a canvas only darkens, so the vertex colour is the rust ENVELOPE #96604e and a paint canvas carries the green as the ratio [0.467, 0.958, 0.974], leaving the envelope exposed at 18 hard-edged rust clusters with runs.",
+          "Textureless as DECLARED: a 256 px paint canvas after construction."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
       },
@@ -1023,15 +1180,15 @@
       "sharedGeometry": "picket-with-spear",
       "placement": {
         "mode": "linear",
-        "note": "x from -1.08 to +1.40 at a 0.191 m pitch, z -0.02."
+        "note": "x from -1.05 to +1.40 at a 0.191 m pitch, z 0."
       },
       "instanceDimensions": {
-        "width": 0.044,
-        "height": 1.04,
-        "depth": 0.044
+        "width": 0.062,
+        "height": 1.07,
+        "depth": 0.062
       },
       "rationale": "Fourteen identical pickets at one geometry and one draw call.",
-      "zFightingNote": "Instances are 0.14 m apart on a 0.044 m envelope."
+      "zFightingNote": "Instances are 0.13 m apart on a 0.062 m envelope."
     }
   ],
   "buildPasses": [
@@ -1142,61 +1299,30 @@
   ],
   "visualEvidence": [
     {
-      "timestamp": "2026-08-27T09:08:40.764381+00:00",
+      "timestamp": "2026-09-03T00:19:12.512940+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.88,
-      "aiVisionScore": 0.88,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.9,
-        "formDetail": 0.88,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.82
-      },
-      "featureReviews": [
-        {
-          "id": "overall-silhouette",
-          "tier": "critical",
-          "score": 0.9,
-          "threshold": 0.85,
-          "passed": true,
-          "evidence": "Envelope built at 3.02 x 1.80 x 0.32 m (one pier per tile, wall and rails 0.02 m past the edge); wall 0.60 m, rails 0.70/1.44 m, tips 1.66 m off the proxy's 0.33/0.80/0.92 H. Band table: mean |delta width| 0.044, |delta depth| 0.020.",
-          "notes": ""
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/cmp.png",
-      "cameraView": "",
-      "notes": "",
-      "aiVisionNotes": ""
-    },
-    {
-      "timestamp": "2026-08-27T09:08:40.846517+00:00",
-      "passId": "structural-pass",
       "estimatedFidelity": 0.9,
       "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.9,
-        "formDetail": 0.88,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.91,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.9,
+          "score": 0.91,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope built at 3.02 x 1.80 x 0.32 m (one pier per tile, wall and rails 0.02 m past the edge); wall 0.60 m, rails 0.70/1.44 m, tips 1.66 m off the proxy's 0.33/0.80/0.92 H. Band table: mean |delta width| 0.044, |delta depth| 0.020.",
-          "notes": ""
+          "evidence": "Envelope built at 3.02 x 1.80 x 0.38 m (one pier per tile, wall and rails 0.02 m past the edge); wall 0.60 m, rails 0.70/1.44 m, tips 1.65 m off the proxy's 0.33/0.78/0.92 H; the pier 0.32 m and its cap 0.38 m are the proxy's 9 and 11 columns of 80. Band table: mean |delta width| 0.044, |delta depth| 0.020.",
+          "notes": "The cap's 0.38 m is the proxy's reading over the declared 0.30 m depth; the residual is the declaration."
         }
       ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/reference.png",
+      "referenceScreenshot": "/app/scratch/steel-picket-property-fence/reference.png",
       "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/beauty-315.png",
       "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/cmp.png",
       "cameraView": "",
@@ -1204,30 +1330,76 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:08:40.926625+00:00",
-      "passId": "form-refinement",
-      "estimatedFidelity": 0.88,
-      "aiVisionScore": 0.88,
+      "timestamp": "2026-09-03T00:19:12.619328+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.9,
-        "formDetail": 0.88,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.91,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope built at 3.02 x 1.80 x 0.38 m (one pier per tile, wall and rails 0.02 m past the edge); wall 0.60 m, rails 0.70/1.44 m, tips 1.65 m off the proxy's 0.33/0.78/0.92 H; the pier 0.32 m and its cap 0.38 m are the proxy's 9 and 11 columns of 80. Band table: mean |delta width| 0.044, |delta depth| 0.020.",
+          "notes": "The cap's 0.38 m is the proxy's reading over the declared 0.30 m depth; the residual is the declaration."
+        }
+      ],
+      "referenceScreenshot": "/app/scratch/steel-picket-property-fence/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-03T00:19:12.725193+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/app/scratch/steel-picket-property-fence/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-03T00:19:12.832510+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.91,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "pickets",
           "tier": "critical",
-          "score": 0.9,
+          "score": 0.91,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Fourteen instanced pickets with collars and four-sided spear points on two rails across the 2.68 m bay; pitch 0.191 m against the proxy's 0.19.",
-          "notes": ""
+          "evidence": "Fourteen instanced 38 mm square-bar pickets (the plate's 28 px of a 120 px pitch at 207 px/m, the proxy's one column) running from the wall top through the lower rail to a collar and a DIAMOND spear that flares to 62 mm and tapers 110 mm to the tip, flat-shaded (4-segment cylinders un-indexed so they facet instead of shading round); 0.06 m flat-bar rails BEHIND the pickets, 14 mm back. Pitch 0.191 m against the proxy's 0.19. Orange rust at the welds and along the rails from a paint canvas over a rust-envelope vertex colour.",
+          "notes": "The first build's 22 mm pickets and 35 mm square rails were half the plate's bar; its rust multiplied INTO the green and rendered as black spots."
         }
       ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/reference.png",
+      "referenceScreenshot": "/app/scratch/steel-picket-property-fence/reference.png",
       "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/beauty-315.png",
       "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/cmp.png",
       "cameraView": "",
@@ -1235,30 +1407,14 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:08:41.008417+00:00",
+      "timestamp": "2026-09-03T00:19:12.933237+00:00",
       "passId": "material-pass",
-      "estimatedFidelity": 0.8,
-      "aiVisionScore": 0.8,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.9,
-        "formDetail": 0.88,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.82
-      },
-      "featureReviews": [
-        {
-          "id": "render-weathering",
-          "tier": "critical",
-          "score": 0.8,
-          "threshold": 0.75,
-          "passed": true,
-          "evidence": "Cream render at the measured #cfc6b0 with a height-keyed mildew wash at the base, streaks from above and rust on the rails.",
-          "notes": "The mildew is a soft wash rather than the plate's hard black drips."
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/reference.png",
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/app/scratch/steel-picket-property-fence/reference.png",
       "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/beauty-315.png",
       "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/cmp.png",
       "cameraView": "",
@@ -1266,30 +1422,45 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:08:41.089833+00:00",
+      "timestamp": "2026-09-03T00:19:13.044476+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.91,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "render-weathering",
+          "tier": "critical",
+          "score": 0.89,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Cream render at the measured #cfc6b0 on the wall and #cdc4ae on the pier, each on its own material because each carries a different stain: the wall's HARD black mildew as ten colonies of 300 blotches at alpha 0.35-0.85 over a 0.8 ground wash (the plate's colonies at luma 20-45), with black drips hanging off the wall top under the picket feet from the grime tile's joint band at v 0.441; the pier's 34 black rain streaks 1-8 cm wide from the cap edges over a dark base wash.",
+          "notes": "The first build's mildew was a 0.32 grey wash of soft dots. The cap slab's flat top smears the streak tile into faint stripes under height UVs; the plate's cracked cap is not modelled as a crack."
+        }
+      ],
+      "referenceScreenshot": "/app/scratch/steel-picket-property-fence/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-03T00:19:13.144665+00:00",
       "passId": "surface-pass",
-      "estimatedFidelity": 0.8,
-      "aiVisionScore": 0.8,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.9,
-        "formDetail": 0.88,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.82
-      },
-      "featureReviews": [
-        {
-          "id": "render-weathering",
-          "tier": "critical",
-          "score": 0.8,
-          "threshold": 0.75,
-          "passed": true,
-          "evidence": "Cream render at the measured #cfc6b0 with a height-keyed mildew wash at the base, streaks from above and rust on the rails.",
-          "notes": "The mildew is a soft wash rather than the plate's hard black drips."
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/reference.png",
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/app/scratch/steel-picket-property-fence/reference.png",
       "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/beauty-315.png",
       "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/cmp.png",
       "cameraView": "",
@@ -1297,20 +1468,51 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:08:41.171215+00:00",
-      "passId": "lighting-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
+      "timestamp": "2026-09-03T00:19:13.251891+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.9,
-        "formDetail": 0.88,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.91,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "render-weathering",
+          "tier": "critical",
+          "score": 0.89,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Cream render at the measured #cfc6b0 on the wall and #cdc4ae on the pier, each on its own material because each carries a different stain: the wall's HARD black mildew as ten colonies of 300 blotches at alpha 0.35-0.85 over a 0.8 ground wash (the plate's colonies at luma 20-45), with black drips hanging off the wall top under the picket feet from the grime tile's joint band at v 0.441; the pier's 34 black rain streaks 1-8 cm wide from the cap edges over a dark base wash.",
+          "notes": "The first build's mildew was a 0.32 grey wash of soft dots. The cap slab's flat top smears the streak tile into faint stripes under height UVs; the plate's cracked cap is not modelled as a crack."
+        }
+      ],
+      "referenceScreenshot": "/app/scratch/steel-picket-property-fence/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-03T00:19:13.363924+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.91,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.86
       },
       "featureReviews": [],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/reference.png",
+      "referenceScreenshot": "/app/scratch/steel-picket-property-fence/reference.png",
       "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/beauty-315.png",
       "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/cmp.png",
       "cameraView": "",
@@ -1318,20 +1520,20 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:08:41.256675+00:00",
+      "timestamp": "2026-09-03T00:19:13.479345+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.92,
       "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.9,
-        "formDetail": 0.88,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.91,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.86
       },
       "featureReviews": [],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/reference.png",
+      "referenceScreenshot": "/app/scratch/steel-picket-property-fence/reference.png",
       "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/beauty-315.png",
       "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/cmp.png",
       "cameraView": "",
@@ -1339,48 +1541,48 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-27T09:08:41.345825+00:00",
+      "timestamp": "2026-09-03T00:19:13.579014+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.9,
-        "formDetail": 0.88,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.91,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.9,
+          "score": 0.91,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope built at 3.02 x 1.80 x 0.32 m (one pier per tile, wall and rails 0.02 m past the edge); wall 0.60 m, rails 0.70/1.44 m, tips 1.66 m off the proxy's 0.33/0.80/0.92 H. Band table: mean |delta width| 0.044, |delta depth| 0.020.",
-          "notes": ""
+          "evidence": "Envelope built at 3.02 x 1.80 x 0.38 m (one pier per tile, wall and rails 0.02 m past the edge); wall 0.60 m, rails 0.70/1.44 m, tips 1.65 m off the proxy's 0.33/0.78/0.92 H; the pier 0.32 m and its cap 0.38 m are the proxy's 9 and 11 columns of 80. Band table: mean |delta width| 0.044, |delta depth| 0.020.",
+          "notes": "The cap's 0.38 m is the proxy's reading over the declared 0.30 m depth; the residual is the declaration."
         },
         {
           "id": "pickets",
           "tier": "critical",
-          "score": 0.9,
+          "score": 0.91,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Fourteen instanced pickets with collars and four-sided spear points on two rails across the 2.68 m bay; pitch 0.191 m against the proxy's 0.19.",
-          "notes": ""
+          "evidence": "Fourteen instanced 38 mm square-bar pickets (the plate's 28 px of a 120 px pitch at 207 px/m, the proxy's one column) running from the wall top through the lower rail to a collar and a DIAMOND spear that flares to 62 mm and tapers 110 mm to the tip, flat-shaded (4-segment cylinders un-indexed so they facet instead of shading round); 0.06 m flat-bar rails BEHIND the pickets, 14 mm back. Pitch 0.191 m against the proxy's 0.19. Orange rust at the welds and along the rails from a paint canvas over a rust-envelope vertex colour.",
+          "notes": "The first build's 22 mm pickets and 35 mm square rails were half the plate's bar; its rust multiplied INTO the green and rendered as black spots."
         },
         {
           "id": "render-weathering",
           "tier": "critical",
-          "score": 0.8,
+          "score": 0.89,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Cream render at the measured #cfc6b0 with a height-keyed mildew wash at the base, streaks from above and rust on the rails.",
-          "notes": "The mildew is a soft wash rather than the plate's hard black drips."
+          "evidence": "Cream render at the measured #cfc6b0 on the wall and #cdc4ae on the pier, each on its own material because each carries a different stain: the wall's HARD black mildew as ten colonies of 300 blotches at alpha 0.35-0.85 over a 0.8 ground wash (the plate's colonies at luma 20-45), with black drips hanging off the wall top under the picket feet from the grime tile's joint band at v 0.441; the pier's 34 black rain streaks 1-8 cm wide from the cap edges over a dark base wash.",
+          "notes": "The first build's mildew was a 0.32 grey wash of soft dots. The cap slab's flat top smears the streak tile into faint stripes under height UVs; the plate's cracked cap is not modelled as a crack."
         }
       ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/reference.png",
+      "referenceScreenshot": "/app/scratch/steel-picket-property-fence/reference.png",
       "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/beauty-315.png",
       "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/cmp.png",
       "cameraView": "",
@@ -1390,31 +1592,31 @@
   ],
   "reviewHistory": [
     {
-      "timestamp": "2026-08-27T09:08:40.764381+00:00",
+      "timestamp": "2026-09-03T00:19:12.512940+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.88,
-      "aiVisionScore": 0.88,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.9,
-        "formDetail": 0.88,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.91,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.9,
+          "score": 0.91,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope built at 3.02 x 1.80 x 0.32 m (one pier per tile, wall and rails 0.02 m past the edge); wall 0.60 m, rails 0.70/1.44 m, tips 1.66 m off the proxy's 0.33/0.80/0.92 H. Band table: mean |delta width| 0.044, |delta depth| 0.020.",
-          "notes": ""
+          "evidence": "Envelope built at 3.02 x 1.80 x 0.38 m (one pier per tile, wall and rails 0.02 m past the edge); wall 0.60 m, rails 0.70/1.44 m, tips 1.65 m off the proxy's 0.33/0.78/0.92 H; the pier 0.32 m and its cap 0.38 m are the proxy's 9 and 11 columns of 80. Band table: mean |delta width| 0.044, |delta depth| 0.020.",
+          "notes": "The cap's 0.38 m is the proxy's reading over the declared 0.30 m depth; the residual is the declaration."
         }
       ],
       "action": "continue",
-      "summary": "Blockout: two components and one InstancedMesh at 3 draw calls of 4.",
+      "summary": "Blockout: three components and one InstancedMesh at 4 draw calls of 4; wall, pier, rails and pickets at the proxy stations, the bar and rail sections read off the plate zooms.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1422,7 +1624,7 @@
       "evidence": [],
       "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/clay/clay-315.png",
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/reference.png",
+        "referenceScreenshot": "/app/scratch/steel-picket-property-fence/reference.png",
         "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/beauty-315.png",
         "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/cmp.png",
         "cameraView": "",
@@ -1431,38 +1633,38 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:08:40.846517+00:00",
+      "timestamp": "2026-09-03T00:19:12.619328+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.9,
-      "aiVisionScore": 0.9,
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.9,
-        "formDetail": 0.88,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.91,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.9,
+          "score": 0.91,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope built at 3.02 x 1.80 x 0.32 m (one pier per tile, wall and rails 0.02 m past the edge); wall 0.60 m, rails 0.70/1.44 m, tips 1.66 m off the proxy's 0.33/0.80/0.92 H. Band table: mean |delta width| 0.044, |delta depth| 0.020.",
-          "notes": ""
+          "evidence": "Envelope built at 3.02 x 1.80 x 0.38 m (one pier per tile, wall and rails 0.02 m past the edge); wall 0.60 m, rails 0.70/1.44 m, tips 1.65 m off the proxy's 0.33/0.78/0.92 H; the pier 0.32 m and its cap 0.38 m are the proxy's 9 and 11 columns of 80. Band table: mean |delta width| 0.044, |delta depth| 0.020.",
+          "notes": "The cap's 0.38 m is the proxy's reading over the declared 0.30 m depth; the residual is the declaration."
         }
       ],
       "action": "continue",
-      "summary": "Structural pass: wall, one pier and cap, rails and pickets at the proxy stations.",
+      "summary": "Structural pass: wall 2.70 x 0.60 x 0.22, one 0.32 m pier to 1.64 m under a 0.38 x 0.06 cap slab and a 0.10 m pyramid, two 0.06 m flat-bar rails behind fourteen 38 mm pickets that run from the wall top to the spears.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/reference.png",
+        "referenceScreenshot": "/app/scratch/steel-picket-property-fence/reference.png",
         "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/beauty-315.png",
         "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/cmp.png",
         "cameraView": "",
@@ -1471,38 +1673,62 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:08:40.926625+00:00",
+      "timestamp": "2026-09-03T00:19:12.725193+00:00",
       "passId": "form-refinement",
-      "estimatedFidelity": 0.88,
-      "aiVisionScore": 0.88,
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Rebuild from 0.86 off the plate zooms: pickets 22 -> 38 mm square bar with a collar, a 62 mm diamond flare and a 110 mm diamond point (flat-shaded, the template's cyl gained `flat`); rails 35 mm square -> 0.06 x 0.018 flat bar moved BEHIND the pickets; pickets extended down through the lower rail to the wall top; pier 0.28 -> 0.32 with a 0.38 x 0.06 cap slab; wall 0.20 -> 0.22 deep.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/app/scratch/steel-picket-property-fence/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-03T00:19:12.832510+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.9,
-        "formDetail": 0.88,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.91,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "pickets",
           "tier": "critical",
-          "score": 0.9,
+          "score": 0.91,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Fourteen instanced pickets with collars and four-sided spear points on two rails across the 2.68 m bay; pitch 0.191 m against the proxy's 0.19.",
-          "notes": ""
+          "evidence": "Fourteen instanced 38 mm square-bar pickets (the plate's 28 px of a 120 px pitch at 207 px/m, the proxy's one column) running from the wall top through the lower rail to a collar and a DIAMOND spear that flares to 62 mm and tapers 110 mm to the tip, flat-shaded (4-segment cylinders un-indexed so they facet instead of shading round); 0.06 m flat-bar rails BEHIND the pickets, 14 mm back. Pitch 0.191 m against the proxy's 0.19. Orange rust at the welds and along the rails from a paint canvas over a rust-envelope vertex colour.",
+          "notes": "The first build's 22 mm pickets and 35 mm square rails were half the plate's bar; its rust multiplied INTO the green and rendered as black spots."
         }
       ],
       "action": "continue",
-      "summary": "Form refinement: spear points with collars, a pyramid cap on its plinth.",
+      "summary": "Form refinement: diamond spears flaring over a collar and tapering to the tip, flat-shaded; pickets pass through the lower rail to the wall; the cap slab overhangs 3 cm on every side.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/reference.png",
+        "referenceScreenshot": "/app/scratch/steel-picket-property-fence/reference.png",
         "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/beauty-315.png",
         "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/cmp.png",
         "cameraView": "",
@@ -1511,38 +1737,22 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:08:41.008417+00:00",
+      "timestamp": "2026-09-03T00:19:12.933237+00:00",
       "passId": "material-pass",
-      "estimatedFidelity": 0.8,
-      "aiVisionScore": 0.8,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.9,
-        "formDetail": 0.88,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.82
-      },
-      "featureReviews": [
-        {
-          "id": "render-weathering",
-          "tier": "critical",
-          "score": 0.8,
-          "threshold": 0.75,
-          "passed": true,
-          "evidence": "Cream render at the measured #cfc6b0 with a height-keyed mildew wash at the base, streaks from above and rust on the rails.",
-          "notes": "The mildew is a soft wash rather than the plate's hard black drips."
-        }
-      ],
-      "action": "continue",
-      "summary": "Material pass: 2 materials at PBR confidence 0.827-0.860, both textureless with measured albedo.",
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Rust rendered as black spots because the rust tile multiplied into the green: the steel vertex colour is now the rust envelope #96604e and a paint canvas carries the green as the ratio [0.467, 0.958, 0.974], exposing orange rust at 18 hard-edged clusters with runs. Picket UV scale 2.4 m because every instance samples the same strip.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/reference.png",
+        "referenceScreenshot": "/app/scratch/steel-picket-property-fence/reference.png",
         "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/beauty-315.png",
         "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/cmp.png",
         "cameraView": "",
@@ -1551,38 +1761,62 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:08:41.089833+00:00",
+      "timestamp": "2026-09-03T00:19:13.044476+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.91,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "render-weathering",
+          "tier": "critical",
+          "score": 0.89,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Cream render at the measured #cfc6b0 on the wall and #cdc4ae on the pier, each on its own material because each carries a different stain: the wall's HARD black mildew as ten colonies of 300 blotches at alpha 0.35-0.85 over a 0.8 ground wash (the plate's colonies at luma 20-45), with black drips hanging off the wall top under the picket feet from the grime tile's joint band at v 0.441; the pier's 34 black rain streaks 1-8 cm wide from the cap edges over a dark base wash.",
+          "notes": "The first build's mildew was a 0.32 grey wash of soft dots. The cap slab's flat top smears the streak tile into faint stripes under height UVs; the plate's cracked cap is not modelled as a crack."
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: 3 materials at PBR confidence 0.827-0.860, all textureless with measured albedo; the steel re-based on a rust ENVELOPE (#96604e) with the green carried as a ratio in the paint canvas, because rust is brighter than green and a canvas only darkens.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/app/scratch/steel-picket-property-fence/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-03T00:19:13.144665+00:00",
       "passId": "surface-pass",
-      "estimatedFidelity": 0.8,
-      "aiVisionScore": 0.8,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.9,
-        "formDetail": 0.88,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.82
-      },
-      "featureReviews": [
-        {
-          "id": "render-weathering",
-          "tier": "critical",
-          "score": 0.8,
-          "threshold": 0.75,
-          "passed": true,
-          "evidence": "Cream render at the measured #cfc6b0 with a height-keyed mildew wash at the base, streaks from above and rust on the rails.",
-          "notes": "The mildew is a soft wash rather than the plate's hard black drips."
-        }
-      ],
-      "action": "continue",
-      "summary": "Surface pass: mildew canvas on the render, rust canvas on the steel.",
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "The mildew was a 0.32 grey wash of soft dots against the plate's hard black colonies: the wall took its own material and a grime tile with `clusters` (10), `blotchAlpha` 0.35-0.85 and `blotchR` 0.6-3.6% over a 0.8 ground wash, plus a joint band at the wall top hanging drips under the picket feet (first pass at 60 streaks read as a comb; 14 now). The pier took a third material with 34 cap streaks at `streakAlpha` 0.2-0.6 and `streakW` 0.03.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/reference.png",
+        "referenceScreenshot": "/app/scratch/steel-picket-property-fence/reference.png",
         "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/beauty-315.png",
         "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/cmp.png",
         "cameraView": "",
@@ -1591,17 +1825,57 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:08:41.171215+00:00",
-      "passId": "lighting-pass",
-      "estimatedFidelity": 0.82,
-      "aiVisionScore": 0.82,
+      "timestamp": "2026-09-03T00:19:13.251891+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.9,
-        "formDetail": 0.88,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.91,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.86
+      },
+      "featureReviews": [
+        {
+          "id": "render-weathering",
+          "tier": "critical",
+          "score": 0.89,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Cream render at the measured #cfc6b0 on the wall and #cdc4ae on the pier, each on its own material because each carries a different stain: the wall's HARD black mildew as ten colonies of 300 blotches at alpha 0.35-0.85 over a 0.8 ground wash (the plate's colonies at luma 20-45), with black drips hanging off the wall top under the picket feet from the grime tile's joint band at v 0.441; the pier's 34 black rain streaks 1-8 cm wide from the cap edges over a dark base wash.",
+          "notes": "The first build's mildew was a 0.32 grey wash of soft dots. The cap slab's flat top smears the streak tile into faint stripes under height UVs; the plate's cracked cap is not modelled as a crack."
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface pass: clustered hard mildew and picket-foot drips on the wall canvas (grime tile gained clusters / blotchAlpha / blotchR), cap streaks on the pier canvas (streakAlpha / streakW), hard-edged rust clusters with runs on the steel paint canvas.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/app/scratch/steel-picket-property-fence/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-03T00:19:13.363924+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.91,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.86
       },
       "featureReviews": [],
       "action": "continue",
@@ -1612,7 +1886,7 @@
       "codeFixes": [],
       "evidence": [],
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/reference.png",
+        "referenceScreenshot": "/app/scratch/steel-picket-property-fence/reference.png",
         "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/beauty-315.png",
         "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/cmp.png",
         "cameraView": "",
@@ -1621,28 +1895,28 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:08:41.256675+00:00",
+      "timestamp": "2026-09-03T00:19:13.479345+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.92,
       "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.9,
-        "formDetail": 0.88,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.91,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.86
       },
       "featureReviews": [],
       "action": "continue",
-      "summary": "Interaction pass: ONE root pivot, ZERO sockets, one BOX collider on the masonry root, no destruction groups.",
+      "summary": "Interaction pass: ONE root pivot, ZERO sockets, one BOX collider on the masonry root, no destruction groups; derived compound 8 boxes, coverage 0.955, overshoot 0.09.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/reference.png",
+        "referenceScreenshot": "/app/scratch/steel-picket-property-fence/reference.png",
         "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/beauty-315.png",
         "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/cmp.png",
         "cameraView": "",
@@ -1651,56 +1925,56 @@
       }
     },
     {
-      "timestamp": "2026-08-27T09:08:41.345825+00:00",
+      "timestamp": "2026-09-03T00:19:13.579014+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.9,
-        "componentStructure": 0.9,
-        "formDetail": 0.88,
-        "materialSurface": 0.8,
-        "lightingCamera": 0.82
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.91,
+        "formDetail": 0.91,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.86
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.9,
+          "score": 0.91,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope built at 3.02 x 1.80 x 0.32 m (one pier per tile, wall and rails 0.02 m past the edge); wall 0.60 m, rails 0.70/1.44 m, tips 1.66 m off the proxy's 0.33/0.80/0.92 H. Band table: mean |delta width| 0.044, |delta depth| 0.020.",
-          "notes": ""
+          "evidence": "Envelope built at 3.02 x 1.80 x 0.38 m (one pier per tile, wall and rails 0.02 m past the edge); wall 0.60 m, rails 0.70/1.44 m, tips 1.65 m off the proxy's 0.33/0.78/0.92 H; the pier 0.32 m and its cap 0.38 m are the proxy's 9 and 11 columns of 80. Band table: mean |delta width| 0.044, |delta depth| 0.020.",
+          "notes": "The cap's 0.38 m is the proxy's reading over the declared 0.30 m depth; the residual is the declaration."
         },
         {
           "id": "pickets",
           "tier": "critical",
-          "score": 0.9,
+          "score": 0.91,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Fourteen instanced pickets with collars and four-sided spear points on two rails across the 2.68 m bay; pitch 0.191 m against the proxy's 0.19.",
-          "notes": ""
+          "evidence": "Fourteen instanced 38 mm square-bar pickets (the plate's 28 px of a 120 px pitch at 207 px/m, the proxy's one column) running from the wall top through the lower rail to a collar and a DIAMOND spear that flares to 62 mm and tapers 110 mm to the tip, flat-shaded (4-segment cylinders un-indexed so they facet instead of shading round); 0.06 m flat-bar rails BEHIND the pickets, 14 mm back. Pitch 0.191 m against the proxy's 0.19. Orange rust at the welds and along the rails from a paint canvas over a rust-envelope vertex colour.",
+          "notes": "The first build's 22 mm pickets and 35 mm square rails were half the plate's bar; its rust multiplied INTO the green and rendered as black spots."
         },
         {
           "id": "render-weathering",
           "tier": "critical",
-          "score": 0.8,
+          "score": 0.89,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Cream render at the measured #cfc6b0 with a height-keyed mildew wash at the base, streaks from above and rust on the rails.",
-          "notes": "The mildew is a soft wash rather than the plate's hard black drips."
+          "evidence": "Cream render at the measured #cfc6b0 on the wall and #cdc4ae on the pier, each on its own material because each carries a different stain: the wall's HARD black mildew as ten colonies of 300 blotches at alpha 0.35-0.85 over a 0.8 ground wash (the plate's colonies at luma 20-45), with black drips hanging off the wall top under the picket feet from the grime tile's joint band at v 0.441; the pier's 34 black rain streaks 1-8 cm wide from the cap edges over a dark base wash.",
+          "notes": "The first build's mildew was a 0.32 grey wash of soft dots. The cap slab's flat top smears the streak tile into faint stripes under height UVs; the plate's cracked cap is not modelled as a crack."
         }
       ],
       "action": "continue",
-      "summary": "FINAL VERDICT. Overall visual fidelity 0.86. 516/4,000 triangles, 3/4 draw calls, 2/3 materials, 3/6 unique geometries, two canvases at 1.7 MB.",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.91. 852/4,000 triangles, 4/4 draw calls, 3/3 materials, 4/6 unique geometries, three canvases at 3.0 MB, factory ~60 ms. Turntable: the picket bay is open by nature, allowed on measurement; 90/270 are UNSEGMENTABLE by size (pier under the segmenter's 3.5% floor), recorded as a gate limitation of every 3 m panel.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
       "codeFixes": [],
       "evidence": [],
       "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/reference.png",
+        "referenceScreenshot": "/app/scratch/steel-picket-property-fence/reference.png",
         "renderScreenshot": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/beauty-315.png",
         "comparisonImage": "/home/mulligan/code/thaikit/scratch/steel-picket-property-fence/review/cmp.png",
         "cameraView": "",
@@ -1732,30 +2006,30 @@
     "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the large class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
     "accounting": {
       "drawCalls": {
-        "components": 3,
+        "components": 4,
         "repetitionSystems": 1,
-        "projectedTotal": 4,
+        "projectedTotal": 5,
         "budget": 4,
-        "headroom": 0,
-        "note": "Two components and one repetition system: 3 of 4."
+        "headroom": -1,
+        "note": "Three components and one repetition system: 4 of 4."
       },
       "materials": {
-        "projectedTotal": 2,
+        "projectedTotal": 3,
         "budget": 3,
-        "headroom": 1,
-        "note": "render and steel: 2 of 3."
+        "headroom": 0,
+        "note": "render, pier and steel: 3 of 3."
       },
       "uniqueGeometries": {
-        "projectedTotal": 4,
+        "projectedTotal": 5,
         "budget": 6,
-        "headroom": 2,
+        "headroom": 1,
         "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
       },
       "triangles": {
-        "measured": 516,
+        "measured": 852,
         "budget": 4000,
-        "headroom": 3484,
-        "note": "516 of 4,000: boxes, two spikes and fourteen instances of one picket."
+        "headroom": 3148,
+        "note": "852 of 4,000: boxes, one spike and fourteen instances of one 56-triangle picket."
       }
     }
   },
@@ -1813,7 +2087,7 @@
   "proceduralStrategy": [
     {
       "id": "primitives",
-      "strategy": "Tinted boxes for the masonry and rails, four-sided cones for the pier caps and spear points, one InstancedMesh for the pickets."
+      "strategy": "Tinted boxes for the masonry and rails, a four-sided cone for the pier cap, two flat-shaded 4-segment cylinders for each diamond spear, one InstancedMesh for the pickets."
     },
     {
       "id": "instancing",
@@ -1825,7 +2099,7 @@
     },
     {
       "id": "textures",
-      "strategy": "Every material is declared textureless. Two canvases after construction (512 and 256 px), 1.7 MB of texture VRAM."
+      "strategy": "Every material is declared textureless. Three canvases after construction (512, 512 and 256 px), 3.0 MB of texture VRAM, factory ~60 ms."
     }
   ],
   "animationAnchors": [],
@@ -1834,8 +2108,14 @@
     {
       "id": "cap-depth",
       "severity": "low",
-      "description": "Caps at 0.32 m against the declared 0.30 m depth.",
-      "mitigation": "Proxy reads 0.38 m; reported as the declared aspect."
+      "description": "Cap at 0.38 m against the declared 0.30 m depth.",
+      "mitigation": "The proxy reads 0.38 m; reported as the declared aspect."
+    },
+    {
+      "id": "instanced-rust",
+      "severity": "low",
+      "description": "Every picket instance samples the same strip of the paint canvas, so its chips repeat across the bay.",
+      "mitigation": "Picket UV scale 2.4 m so the shared strip carries few clusters; the rails carry the rust."
     },
     {
       "id": "open-panel-turntable",
@@ -1931,38 +2211,41 @@
     {
       "passed": false,
       "checks": {
-        "silhouetteIoU": 0.4858,
-        "aspectRatioDelta": 0.0525,
-        "scaleDelta": 0.264,
-        "bilateralSymmetryError": 0.3244,
+        "silhouetteIoU": 0.3591,
+        "aspectRatioDelta": 0.0389,
+        "scaleDelta": 0.4735,
+        "bilateralSymmetryError": 0.2182,
         "colorDelta": {
-          "checked": 3,
-          "maxDeltaE": 11.27,
+          "checked": 4,
+          "maxDeltaE": 12.17,
           "perComponent": [
             {
               "componentId": null,
-              "deltaE": 5.08
+              "deltaE": 5.24
             },
             {
               "componentId": null,
-              "deltaE": 11.27
+              "deltaE": 4.93
             },
             {
               "componentId": null,
-              "deltaE": 11.27
+              "deltaE": 12.17
+            },
+            {
+              "componentId": null,
+              "deltaE": 12.17
             }
           ],
           "gated": false
         }
       },
       "failures": [
-        "silhouette IoU 0.486 is below threshold 0.85",
-        "aspect-ratio delta 0.052 exceeds threshold 0.05",
-        "scale delta 0.264 exceeds threshold 0.08",
+        "silhouette IoU 0.359 is below threshold 0.85",
+        "scale delta 0.473 exceeds threshold 0.08",
         "blockout requires --map-stripped-render evidence"
       ],
       "maskWarnings": [],
-      "renderHash": "f48dadff5d88fa98",
+      "renderHash": "c6bb29e4f7e16468",
       "passId": "blockout"
     }
   ]

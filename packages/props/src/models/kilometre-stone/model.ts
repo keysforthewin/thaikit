@@ -7,18 +7,20 @@
  * The model itself is in ./createObjectModel, unmodified.
  */
 import {
+  Box3,
   Color,
+  DirectionalLight,
   Group,
+  HemisphereLight,
   Object3D,
   PerspectiveCamera,
   Scene,
+  Vector3,
 } from 'three';
 import type { Material, Mesh, Texture } from 'three';
 
 import {
   createModel as createBaseModel,
-  createKilometreStoneLookDevLights,
-  frameKilometreStoneCamera,
   type ProceduralModelOptions,
 } from './createObjectModel';
 
@@ -58,6 +60,43 @@ export interface PreviewOptions extends ProceduralModelOptions {
   margin?: number;
 }
 
+/** This prop's factory exports no look-dev rig, so the preview brings a neutral one. */
+function defaultLookDevLights(): Group {
+  const lights = new Group();
+  lights.name = 'preview lights';
+  lights.userData.excludeFromExport = true;
+  lights.add(new HemisphereLight(0xf2f4ff, 0x363b42, 0.85));
+  const key = new DirectionalLight(0xfff4e8, 2.15);
+  key.position.set(4, 6, 5);
+  lights.add(key);
+  return lights;
+}
+
+/** This prop's factory exports no framing helper, so the preview frames it here. */
+function defaultFrameCamera(
+  camera: PerspectiveCamera,
+  object: Object3D,
+  options: { margin?: number; azimuthDeg?: number; elevationDeg?: number } = {},
+): void {
+  const box = new Box3().setFromObject(object);
+  if (box.isEmpty()) return;
+  const size = box.getSize(new Vector3());
+  const center = box.getCenter(new Vector3());
+  const maxDim = Math.max(size.x, size.y, size.z) * (options.margin ?? 1.15);
+  const fov = (camera.fov * Math.PI) / 180;
+  const distance = maxDim / 2 / Math.tan(fov / 2);
+  const az = ((options.azimuthDeg ?? 0) * Math.PI) / 180;
+  const el = ((options.elevationDeg ?? 0) * Math.PI) / 180;
+  camera.position.copy(center).addScaledVector(
+    new Vector3(Math.sin(az) * Math.cos(el), Math.sin(el), Math.cos(az) * Math.cos(el)),
+    distance,
+  );
+  camera.near = Math.max(0.01, distance - maxDim);
+  camera.far = distance + maxDim * 2;
+  camera.lookAt(center);
+  camera.updateProjectionMatrix();
+}
+
 /**
  * A preview scene for the docs gallery. Everything it adds is preview-only and
  * never reaches the installed model root.
@@ -85,14 +124,14 @@ export function createPreview(options: PreviewOptions = {}): ModelPreview {
   scene.background = new Color(lookDev?.backgroundColor ?? '#3A3A3A');
   scene.add(root);
 
-  const lights = createKilometreStoneLookDevLights('neutral');
+  const lights = defaultLookDevLights();
   lights.userData.excludeFromExport = true;
   scene.add(lights);
 
   const camera = new PerspectiveCamera(35, aspect, 0.01, 1000);
   let elapsed = time;
   const aim = () => {
-    frameKilometreStoneCamera(camera, root, {
+    defaultFrameCamera(camera, root, {
       margin,
       elevationDeg,
       azimuthDeg: 35 + elapsed * degreesPerSecond,

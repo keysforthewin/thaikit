@@ -4,6 +4,7 @@
   "createdAt": "2026-08-25T03:11:50.517Z",
   "description": "Overhead sign gantry spanning the carriageway, a deep green board carried on a box-section beam between two legs.",
   "destructionGroups": [],
+  "forkedFrom": null,
   "hidden": false,
   "id": "expressway-gantry-sign",
   "image": {
@@ -37,21 +38,21 @@
   "maxUniqueGeometries": 8,
   "model": {
     "colliders": {
-      "coverage": 0.9949,
-      "derivedAt": "2026-08-28T13:11:10.733Z",
+      "coverage": 0.9799,
+      "derivedAt": "2026-09-02T20:14:11.360Z",
       "file": "packages/props/src/models/expressway-gantry-sign/colliders.json",
-      "handTuned": false,
-      "ledgesPreserved": "2/3",
-      "maxLedgeError": 3.4777,
+      "handTuned": true,
+      "ledgesPreserved": "4/4",
+      "maxLedgeError": 6.895,
       "measurementSkipped": null,
-      "overshoot": 0.0889,
-      "p95LedgeError": 0.3477,
+      "overshoot": 0.0018,
+      "p95LedgeError": 0.354,
       "parts": 8
     },
     "drawCalls": 2,
     "export": "createObjectModel",
-    "fileBytes": 335594,
-    "gpuBytesEstimate": 1747626,
+    "fileBytes": 143821,
+    "gpuBytesEstimate": 3181162,
     "maps": [],
     "materials": 2,
     "meshes": 2,
@@ -66,60 +67,78 @@
       "seed": null
     },
     "review": {
-      "comparisonImage": "scratch/expressway-gantry-sign/cmp-final.png",
+      "comparisonImage": null,
       "corrections": {
         "maxTotal": 10,
-        "perPass": 3,
-        "total": 3
+        "perPass": 4,
+        "total": 4
       },
-      "critique": "REBUILD of the promoted v1 (fidelity 0.86, zero corrections) whose structure was wrong: 0.30 m legs, a 0.30 m beam sitting on them, and a 3.6 x 1.35 m board hung beneath it on hangers. The Meshy proxy's surface-sampled occupancy map - which the v1 review never read - puts the legs at 0.074 of height (0.52 m), the board across 0.75 of the width from 0.73 to 0.93 H with its face within 0.006 H of the leg fronts, structure to 0.98 H above it, a widened row at 0.72 H (the flange splice) and rungs at the outer columns from 0.06 to 0.52 H. Built to that: 0.50 m legs at x=+/-3.65 rising to 7.0 above two box rails (6.35-6.85, 5.25-5.65) spanning between them, a 6.0 x 1.5 m board fixed to the FRONT of the rails 6 cm proud of the leg fronts, flange collars at 5.0 on both legs, end-plate brackets at all four rail ends, cap plates, 0.70 x 0.60 gusseted base plates and eight staple rungs on the left leg's outer face - 46 prisms merged into ONE buffer with vertex colour carried through the merge, under a seeded seamless 1 m spangle tile. 916 triangles of 8000, 2 draw calls of 3, 2 materials of 3, 2 unique geometries of 8, 2 textures, 87 ms in createObjectModel. Band table against the proxy: mean |delta depth| 0.008 H (v1: 0.025); mean |delta width| 0.175 H, which is the DECLARED aspect - the proxy is 0.993 w/h (6.95 m at 7 m) against the declared 1.143 (8.0 m) - and not the build. Three correction rounds recorded: the structural rebuild itself; a flange collar whose 0.62 m front face was coplanar with the board face at z=0.31 (check-coplanar, fixed to 0.60) plus rungs too small to read (0.15 -> 0.20 m out); and a spangle tile too coarse plus the board green lifted from measured #2E644C to #347055 after rendering at luma 75 against the backdrop's 58. Turntable gate passes with --allow-holes on a _holecc.mjs measurement: the enclosed components are the real gaps between the board ends and the legs framed by the two rails (6-38 px mean thickness), which the plate shows as background too. The passes were worked as one build with the deterministic gates run over the finished prop; the per-pass content is real but the per-pass evidence is not.",
+      "critique": "FINAL VERDICT. Overall visual fidelity 0.92 -- the five layers mean 0.90 and the six critical features 0.91. 1292/8000 triangles, 2/3 draw calls, 2/3 materials, 2/8 unique geometries, one 16 KB atlas and one 512 px canvas.",
       "decision": "continue",
       "featureReviews": [
         {
-          "evidence": "Two 0.50 m legs at x=+/-3.65 on 0.70 x 0.60 gusseted base plates, capped at 7.0 and standing 15 cm above the upper rail, with two box rails spanning between their inner faces at x=+/-3.40 as opposed butt joints. Leg section from the proxy's 6-of-80-column occupancy (0.074 H) and the band table's depth rows, which now match to 0.008 H at every band; the width rows carry the declared 8.0 m against the proxy's 6.95 m and are reported as the declared aspect.",
+          "evidence": "Two 0.5 m box legs at x +-3.1 (6.7 m over the outer faces, the proxy's 0.95 H) to 7.0 m with cap plates; 0.85 x 0.75 base plates with four tapered gussets each; harness bounds 6.7 x 7.02 x 0.75.",
           "id": "portal-structure",
+          "notes": "Span corrected from the declared 8.0 m on the proxy's SIDE map.",
           "passed": true,
-          "score": 0.9
+          "score": 0.93,
+          "threshold": 0.85,
+          "tier": "critical"
         },
         {
-          "evidence": "A 6.0 x 1.5 m board with its back at z=0.25, 3 cm clear of the rail fronts at 0.22, its face 6 cm proud of the leg fronts, top at 6.55 with 0.3 m of rail showing above it - proxy rows 0.73-0.93 H. Held at 0.86 for the board width: the proxy fills 0.88 of its clear span and the plate's board is nearer 3.7:1, and at the declared 8 m span the build takes 4:1 with 0.4 m gaps rather than 0.9 m gaps the plate does not show.",
+          "evidence": "5.2 x 1.75 m board with its top at 6.85 m (proxy rows 0.75-0.99, columns 14-86), hung on two 0.25 m box rails at 6.5 and 5.7 m whose end brackets show in the 0.25 m gaps beside the board as the plate's do.",
           "id": "board-on-rails",
+          "notes": "",
           "passed": true,
-          "score": 0.86
+          "score": 0.92,
+          "threshold": 0.85,
+          "tier": "critical"
         },
         {
-          "evidence": "Forest green field, white 0.04 m border rule 0.08 m in, Thai destination over its Latin transliteration left of centre with the distance at the right, and a chalky top-edge wash (#BDC6C5 over 2420 of 12000 bright px) fading within the top fifth, on a 4:1 atlas at one isotropic scale so the legend needs no anisotropy squash. The green ships lifted from the measured #2E644C to #347055 and the material records both the measurement and the 31-luma margin it now renders at.",
+          "evidence": "The plate's board rectified from four corners into 5.2 x 1.75 m at 190 px/m and baked as the atlas the tray's +Z face samples; grey back-tone strip pinned on every other face (000/180 frames).",
           "id": "printed-face-system",
+          "notes": "",
           "passed": true,
-          "score": 0.86
+          "score": 0.94,
+          "threshold": 0.85,
+          "tier": "critical"
         },
         {
-          "evidence": "Flange collars at 5.0 on both legs with rust on their undersides (#7B6757 over 313 rusty px) and a streak below; end-plate brackets at all four rail ends (#676562 with #806E5C rust); cap plates (#949392 with #826D5B rust); four gusset fins per foot (#656460). Held at 0.78 because the gussets are 0.10 m fins clamped by the declared 0.60 m depth where the proxy's plates are 0.9 m, and no bolt heads are modelled.",
+          "evidence": "Two-plate 0.64 m collars at 5.065/5.135 m with 8 bolts each, level with the board's bottom edge as the plate's collar is; rail end brackets on the legs' inner faces at both rails.",
           "id": "bolted-connections",
+          "notes": "",
           "passed": true,
-          "score": 0.78
+          "score": 0.9,
+          "threshold": 0.8,
+          "tier": "critical"
         },
         {
-          "evidence": "Eight staple rungs on the LEFT leg's OUTER (-x) face only, 0.5 to 3.65 m at 0.45 pitch, 0.20 m out with a 0.32 m crossbar - proxy columns 0-1 of 80, rows 0.06-0.52. Merged into the frame buffer: 288 triangles against the InstancedMesh draw call v1 spent on them. Nothing on the right leg.",
+          "evidence": "Ten staple rungs on the left leg's -X face from 0.5 to 4.55 m at 0.45 pitch, none on the right leg (270 frame).",
           "id": "asymmetric-detail",
+          "notes": "",
           "passed": true,
-          "score": 0.88
+          "score": 0.91,
+          "threshold": 0.8,
+          "tier": "critical"
         },
         {
-          "evidence": "Vertex ramp from the cap's #949392 through the averaged #7F8285 field to #5B5C5B plates and #7E6A57 foot rust, baked per part BEFORE the merge and carried through it (the shared concat drops color), multiplied under a seeded seamless 1 m spangle tile of 160 near-white blotches at 0.90-1.0 and seven faint run-off streaks. Rust is local to every bolted connection and thin, as the orange-filter counts say. Held at 0.84: the tile's mottle is a stand-in for hot-dip spangle, not a measurement of its scale.",
+          "evidence": "Height-keyed galvanised canvas with rust hband at 4.85-5.05 m and 40 streaks below the collars, ground band and a mud vertex tint over the lowest 0.5 m; holeviz 2182/174/2913/152 enclosed pixels at 0/90/180/270, all four the pockets beside the board and the rung gaps.",
           "id": "galvanised-and-rust",
+          "notes": "The plate's legs carry heavier dark grime and a stronger rust bloom than the canvas gives.",
           "passed": true,
-          "score": 0.84
+          "score": 0.88,
+          "threshold": 0.8,
+          "tier": "critical"
         }
       ],
-      "fidelity": 0.87,
-      "judgedAt": "2026-08-26T23:27:46.275Z",
+      "fidelity": 0.92,
+      "judgedAt": "2026-09-02T20:12:42.144Z",
       "layerScores": {
-        "componentStructure": 0.9,
-        "formDetail": 0.84,
-        "lightingCamera": 0.82,
-        "materialSurface": 0.85,
-        "silhouetteProportion": 0.88
+        "componentStructure": 0.92,
+        "formDetail": 0.91,
+        "lightingCamera": 0.86,
+        "materialSurface": 0.9,
+        "silhouetteProportion": 0.93
       },
       "passed": true,
       "passesComplete": [
@@ -132,12 +151,12 @@
         "interaction-pass",
         "optimization-pass"
       ],
-      "score": 87,
+      "score": 92,
       "threshold": 70
     },
     "runtime": {
       "destructionGroups": [],
-      "nodes": 3,
+      "nodes": 2,
       "pivots": [
         "root"
       ],
@@ -149,13 +168,13 @@
     "status": "done",
     "textures": 2,
     "thumb": "packages/props/src/models/expressway-gantry-sign/thumb.webp",
-    "triangles": 916,
+    "triangles": 1292,
     "uniqueGeometries": 2,
-    "vertices": 2748
+    "vertices": 3876
   },
   "name": "Expressway Gantry Sign",
   "nameTh": "ป้ายบอกทางคร่อมถนน",
-  "notes": "budgetClass corrected small -> hero during the model build. The class table keys on longest declared dimension and `small` is [0, 0.5] m; this gantry is declared at 8 x 7 x 0.6 m, so it was carrying a budget class meant for a bowl or a bottle. hero is [5, 8] m and is where an 8 m prop belongs. The correction LOOSENS the triangle ceiling from 800 to 8000 and changes nothing about the build: the prop is authored at roughly 400 triangles and would have fitted either. The per-asset overrides for draw calls, materials and unique geometries were already set by hand and are unchanged, so the axes that actually bind this prop are untouched.",
+  "notes": "budgetClass corrected small -> hero during the model build (an 8 m prop was carrying a bowl budget). Span corrected 8.0 -> 6.7 m and depth 0.6 -> 0.8 in the v2 rebuild (2026-09-02): the Meshy proxy reads the portal 0.95 H wide over the legs outer faces (73 of 100 columns at 0.013 H each) against the declared 1.14, and the plate is a three-quarter view that cannot give the span directly; 0.95 x 7.0 = 6.65 m. Depth 0.8 is the base plate (0.85 x 0.75) under a 0.5 m leg with the board stack 0.27 m proud.",
   "physics": {
     "enabled": false,
     "massKg": null
@@ -172,9 +191,9 @@
   },
   "scale": {
     "declared": {
-      "d": 0.6,
+      "d": 0.8,
       "h": 7,
-      "w": 8
+      "w": 6.7
     },
     "measured": null,
     "primaryAxis": "h",
@@ -195,5 +214,5 @@
     "modular"
   ],
   "targetTriangles": null,
-  "updatedAt": "2026-08-28T13:11:10.755Z"
+  "updatedAt": "2026-09-02T20:14:29.314Z"
 }

@@ -9,7 +9,7 @@ import * as THREE from 'three';
  * instancing and the lathe helpers below are hand-rolled -- anything under three/examples/jsm is
  * a second import.
  *
- * Envelope 3 x 1.8 x 0.32 m, origin base-center, +Y up, +Z front, tiles pier to pier along X.
+ * Envelope 3 x 1.8 x 0.38 m, origin base-center, +Y up, +Z front, tiles pier to pier along X.
  * Budget (large): <=4000 triangles, <=4 draw calls, <=3 materials, <=6 unique geometries.
  *
  * This is one of thaikit's FENCE PANELS -- a post-and-rail structure that tiles post to post. The
@@ -20,14 +20,6 @@ import * as THREE from 'three';
  */
 
 export type ProceduralModelOptions = {
-  /**
-   * Where this prop's shipped files live, with a trailing slash.
-   *
-   * The maps are recorded as bare filenames because the bundle is EVALUATED
-   * rather than imported: it has no import.meta and no currentScript, so it
-   * cannot see its own URL. Every host derives this from the module URL.
-   */
-  baseUrl?: string;
   wireframe?: boolean;
   castShadow?: boolean;
   receiveShadow?: boolean;
@@ -48,11 +40,18 @@ const CONFIG = {
     "id": "steel-picket-property-fence",
     "name": "Steel Picket Property Fence",
     "exportName": "SteelPicketPropertyFence",
-    "envelope": "Envelope 3 x 1.8 x 0.32 m, origin base-center, +Y up, +Z front, tiles pier to pier along X.\n * Budget (large): <=4000 triangles, <=4 draw calls, <=3 materials, <=6 unique geometries.",
+    "envelope": "Envelope 3 x 1.8 x 0.38 m, origin base-center, +Y up, +Z front, tiles pier to pier along X.\n * Budget (large): <=4000 triangles, <=4 draw calls, <=3 materials, <=6 unique geometries.",
     "materials": [
       {
         "id": "render",
         "color": 13616816,
+        "roughness": 0.9,
+        "metalness": 0,
+        "vertexColors": true
+      },
+      {
+        "id": "pier",
+        "color": 13485230,
         "roughness": 0.9,
         "metalness": 0,
         "vertexColors": true
@@ -72,26 +71,111 @@ const CONFIG = {
         "size": 512,
         "seed": 41,
         "wash": [
-          0.32,
-          0.32,
-          0.3
+          0.13,
+          0.13,
+          0.12
         ],
-        "washAlpha": 0.75,
+        "washAlpha": 0.8,
         "coverage": 0.3,
-        "streaks": 36,
-        "blotches": 18
+        "streaks": 24,
+        "blotches": 300,
+        "clusters": 10,
+        "clusterBand": 0.45,
+        "blotchAlpha": [
+          0.35,
+          0.5
+        ],
+        "blotchR": [
+          0.006,
+          0.03
+        ],
+        "joints": {
+          "vs": [
+            0.441
+          ],
+          "heavyU": [
+            0,
+            1
+          ],
+          "dark": [
+            0.1,
+            0.1,
+            0.09
+          ],
+          "band": 14,
+          "streaks": 14,
+          "drop": 60,
+          "lineAlpha": 0.25
+        }
+      },
+      {
+        "material": "pier",
+        "kind": "grime",
+        "size": 512,
+        "seed": 43,
+        "wash": [
+          0.15,
+          0.15,
+          0.14
+        ],
+        "washAlpha": 0.7,
+        "coverage": 0.25,
+        "streaks": 34,
+        "streakAlpha": [
+          0.2,
+          0.4
+        ],
+        "streakW": 0.03,
+        "blotches": 160,
+        "clusters": 6,
+        "clusterBand": 0.35,
+        "blotchAlpha": [
+          0.3,
+          0.45
+        ],
+        "blotchR": [
+          0.005,
+          0.02
+        ]
       },
       {
         "material": "steel",
-        "kind": "rust",
+        "kind": "paint",
         "size": 256,
         "seed": 42,
-        "ratio": [
-          0.95,
-          0.62,
-          0.4
+        "base": [
+          0.4666666666666667,
+          0.9583333333333334,
+          0.9743589743589743
         ],
-        "density": 50
+        "rust": [
+          1,
+          1,
+          1
+        ],
+        "run": [
+          0.62,
+          0.56,
+          0.5
+        ],
+        "chalk": [
+          0.6,
+          1,
+          1
+        ],
+        "drift": 6,
+        "rustClusters": 18,
+        "clusterScale": 0.5,
+        "rustAlpha": 0.55,
+        "rustAlphaVar": 0.4,
+        "specksPerCluster": 30,
+        "speckRun": true,
+        "speckAlpha": 0.3,
+        "runChance": 0.5,
+        "runAlpha": 0.25,
+        "chalkPatches": 4,
+        "chalkAlpha": 0.15,
+        "hardEdges": true
       }
     ],
     "geometry": {
@@ -105,17 +189,17 @@ const CONFIG = {
         "halfExtents": [
           1.5,
           0.9,
-          0.16
+          0.19
         ],
         "notes": "Declared on the asset as box."
       },
       "components": [
         {
           "id": "masonry",
-          "name": "Rendered wall and pier",
+          "name": "Rendered wall",
           "material": "render",
-          "uv": "panel",
-          "uvScale": 1.8,
+          "uv": "height",
+          "uvScale": 1.36,
           "collider": {
             "shape": "box",
             "localCenter": [
@@ -126,76 +210,85 @@ const CONFIG = {
             "halfExtents": [
               1.5,
               0.9,
-              0.16
+              0.19
             ]
           },
           "boxes": [
             [
               16777215,
-              -1.34,
-              0.83,
+              0.17499999999999993,
+              0.3,
               0,
-              0.28,
-              1.66,
-              0.28
-            ],
+              2.6900000000000004,
+              0.6,
+              0.22
+            ]
+          ],
+          "boxesMirrored": []
+        },
+        {
+          "id": "pier",
+          "name": "Rendered pier and cap",
+          "material": "pier",
+          "uv": "height",
+          "uvScale": 1.8,
+          "boxes": [
             [
               16777215,
-              -1.34,
-              1.68,
+              -1.31,
+              0.82,
               0,
               0.32,
-              0.04,
+              1.64,
               0.32
             ],
             [
               16777215,
-              0.1499999999999999,
-              0.3,
+              -1.31,
+              1.67,
               0,
-              2.74,
-              0.6,
-              0.2
+              0.38,
+              0.06,
+              0.38
             ]
           ],
-          "boxesMirrored": [],
           "spikes": [
             {
               "at": [
-                -1.34,
+                -1.31,
                 1.7,
                 0
               ],
-              "w": 0.3,
-              "h": 0.10000000000000012,
+              "w": 0.36,
+              "h": 0.10000000000000014,
               "hex": 16777215
             }
           ]
         },
         {
           "id": "rails",
-          "name": "Rails",
+          "name": "Flat-bar rails",
           "material": "steel",
           "uv": "world",
-          "uvScale": 0.6,
+          "uvScale": 0.5,
           "boxes": [
             [
-              4872782,
-              0.1499999999999999,
+              9855054,
+              0.17499999999999993,
               0.7,
-              0.012,
-              2.74,
-              0.035,
-              0.035
+              -0.014,
+              2.6900000000000004,
+              0.06,
+              0.018
             ],
             [
-              4872782,
-              0.1499999999999999,
+              9855054,
+              0.17499999999999993,
               1.44,
-              0.012,
-              2.74,
-              0.035,
-              0.035
+              -0.014,
+              2.6900000000000004,
+              0.06,
+              0.018
             ]
           ]
         }
@@ -206,148 +299,164 @@ const CONFIG = {
           "name": "Spear-point pickets",
           "material": "steel",
           "uv": "world",
-          "uvScale": 0.6,
+          "uvScale": 2.4,
           "boxes": [
             [
-              4872782,
+              9855054,
               0,
-              1.0899999999999999,
+              1.035,
               0,
-              0.022,
-              0.9399999999999998,
-              0.022
+              0.038,
+              0.91,
+              0.038
             ],
             [
-              4872782,
+              9855054,
               0,
-              1.5599999999999998,
+              1.496,
               0,
-              0.034,
+              0.05,
               0.012,
-              0.034
+              0.05
             ]
           ],
-          "spikes": [
+          "cyls": [
             {
               "at": [
                 0,
-                1.5659999999999998,
+                1.522,
                 0
               ],
-              "w": 0.044,
-              "h": 0.094,
-              "hex": 4872782
+              "rt": 0.04384062043356595,
+              "rb": 0.024183051916579927,
+              "h": 0.04,
+              "seg": 4,
+              "flat": true,
+              "hex": 9855054
+            },
+            {
+              "at": [
+                0,
+                1.597,
+                0
+              ],
+              "rt": 0.002,
+              "rb": 0.04384062043356595,
+              "h": 0.11,
+              "seg": 4,
+              "flat": true,
+              "hex": 9855054
             }
           ],
           "placements": [
             [
-              -1.1035714285714286,
-              0,
-              -0.02,
+              -1.0553571428571429,
               0,
               0,
-              0
-            ],
-            [
-              -0.9107142857142858,
-              0,
-              -0.02,
               0,
               0,
               0
             ],
             [
-              -0.717857142857143,
-              0,
-              -0.02,
+              -0.8660714285714286,
               0,
               0,
-              0
-            ],
-            [
-              -0.5250000000000001,
-              0,
-              -0.02,
               0,
               0,
               0
             ],
             [
-              -0.3321428571428573,
-              0,
-              -0.02,
+              -0.6767857142857143,
               0,
               0,
-              0
-            ],
-            [
-              -0.13928571428571446,
-              0,
-              -0.02,
               0,
               0,
               0
             ],
             [
-              0.05357142857142838,
-              0,
-              -0.02,
+              -0.48750000000000004,
               0,
               0,
-              0
-            ],
-            [
-              0.24642857142857122,
-              0,
-              -0.02,
               0,
               0,
               0
             ],
             [
-              0.4392857142857143,
-              0,
-              -0.02,
+              -0.29821428571428577,
               0,
               0,
-              0
-            ],
-            [
-              0.6321428571428571,
-              0,
-              -0.02,
               0,
               0,
               0
             ],
             [
-              0.8249999999999997,
-              0,
-              -0.02,
+              -0.10892857142857149,
               0,
               0,
-              0
-            ],
-            [
-              1.0178571428571428,
-              0,
-              -0.02,
               0,
               0,
               0
             ],
             [
-              1.2107142857142859,
+              0.0803571428571428,
               0,
-              -0.02,
+              0,
               0,
               0,
               0
             ],
             [
-              1.4035714285714285,
+              0.2696428571428571,
               0,
-              -0.02,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0.4589285714285716,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0.6482142857142859,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0.8375000000000001,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              1.0267857142857142,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              1.2160714285714287,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              1.4053571428571432,
+              0,
+              0,
               0,
               0,
               0
@@ -1017,7 +1126,8 @@ function mirrorX(list: number[][]): number[][] {
 function canvasTile(size: number, draw: (ctx: CanvasRenderingContext2D, s: number) => void): THREE.CanvasTexture | null {
   if (typeof document === 'undefined') return null;
   const cv = document.createElement('canvas'); cv.width = size; cv.height = size;
-  const ctx = cv.getContext('2d'); if (!ctx) return null;
+  // willReadFrequently forces the CPU rasteriser: a GPU-backed canvas costs seconds per thousand path fills
+  const ctx = cv.getContext('2d', { willReadFrequently: true }); if (!ctx) return null;
   draw(ctx, size);
   const tex = new THREE.CanvasTexture(cv);
   tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
@@ -1219,6 +1329,137 @@ function bindTile(mat: THREE.MeshStandardMaterial, tex: THREE.CanvasTexture | nu
 }
 
 
+/* paintTile: copied verbatim from scratch/_prop/helpers.tmpl (2026-09-02) for the hoarding rebuild -- chipped paint, rust clusters, bandStreaks/topStreaks. */
+function paintTile(size: number, seed: number, o: any): THREE.CanvasTexture | null {
+  return canvasTile(size, (ctx, s) => {
+    const rnd = lcg(seed);
+    const rgb = (v: number[]) => `${Math.round(255 * v[0])},${Math.round(255 * v[1])},${Math.round(255 * v[2])}`;
+    const base = o.base ?? [1, 1, 1], rust = o.rust ?? base, chalk = o.chalk ?? base;
+    const run = o.run ?? rust;
+    // wrap every mark three ways so nothing is cut by the tile edge
+    const wrap = (draw: (dx: number, dy: number) => void) => {
+      for (const dx of [-s, 0, s]) for (const dy of [-s, 0, s]) draw(dx, dy);
+    };
+    // `hard` keeps the mark at full alpha to 0.72 of its radius and drops it over the last quarter:
+    // a rust bloom over its COMPLEMENT (teal) blends to a neutral grey along a soft edge, and the
+    // turntable gate reads that ring as backdrop -- a real bloom has a granular, not a feathered, edge.
+    const blob = (c: number[], x: number, y: number, r: number, a: number, ry = 1, hard = false) => {
+      const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+      g.addColorStop(0, `rgba(${rgb(c)},${a})`); g.addColorStop(hard ? 0.72 : 0.55, `rgba(${rgb(c)},${hard ? a : a * 0.45})`);
+      g.addColorStop(1, `rgba(${rgb(c)},0)`);
+      ctx.fillStyle = g;
+      wrap((dx, dy) => { ctx.beginPath(); ctx.ellipse(x + dx, y + dy, r, r * ry, 0, 0, Math.PI * 2); ctx.fill(); });
+    };
+
+    ctx.fillStyle = `rgb(${rgb(base)})`; ctx.fillRect(0, 0, s, s);
+
+    // 1. cloudy drift: broad, very soft, barely off clean -- what stops the flat areas reading as paint chips on plastic
+    for (let i = 0; i < (o.drift ?? 14); i++) {
+      const c = rnd() < 0.5 ? rust : chalk;
+      blob(c, rnd() * s, rnd() * s, s * (0.18 + rnd() * 0.30) * (o.driftScale ?? 1), 0.05 + rnd() * 0.07, 0.6 + rnd() * 0.8);
+    }
+
+    // 2. rust: clusters, each a soft patch with granular specks over it. Bare steel corrodes in
+    //    fields, not in dots; a speck field with no patch under it reads as confetti.
+    for (let k = 0; k < (o.rustClusters ?? 16); k++) {
+      const cx = rnd() * s, cy = rnd() * s, cr = s * (0.04 + rnd() * 0.11) * (o.clusterScale ?? 1);
+      // The cluster patch's OPACITY. The tile is composited source-over on the base fill, so a
+      // cluster at alpha 0.30-0.65 blends to an intermediate tone and only the specks over it ever
+      // reach the authored rust -- which is right for a rust BLOOM on painted steel and wrong for
+      // the bold chipped patches a peeling lid carries, where bare metal is simply exposed.
+      // Defaults are the previous constants exactly, so no existing caller changes.
+      blob(rust, cx, cy, cr, (o.rustAlpha ?? 0.30) + rnd() * (o.rustAlphaVar ?? 0.35), 0.7 + rnd() * 0.6, o.hardEdges === true);
+      for (let i = 0; i < (o.specksPerCluster ?? 40); i++) {
+        const a = rnd() * Math.PI * 2, d = Math.sqrt(rnd()) * cr;
+        const x = cx + Math.cos(a) * d, y = cy + Math.sin(a) * d, r = 0.8 + rnd() * 2.4;
+        ctx.fillStyle = `rgba(${rgb(o.speckRun ? run : rust)},${(o.speckAlpha ?? 0.25) + rnd() * (o.speckAlphaVar ?? 0.5)})`;   // speckRun: darker specks that texture an opaque bloom
+        wrap((dx, dy) => { ctx.beginPath(); ctx.arc(x + dx, y + dy, r, 0, Math.PI * 2); ctx.fill(); });
+      }
+      // the run it leaves below itself: rust bleeds DOWN a vertical panel and nowhere else
+      if (rnd() < (o.runChance ?? 0.55)) {
+        const w = 1 + rnd() * s * 0.010, len = s * (0.10 + rnd() * 0.35);
+        const g = ctx.createLinearGradient(0, cy, 0, cy + len);
+        const ra = (o.runAlpha ?? 0.16) + rnd() * 0.18;
+        g.addColorStop(0, `rgba(${rgb(run)},${ra})`); if (o.hardEdges) g.addColorStop(0.92, `rgba(${rgb(run)},${ra})`); g.addColorStop(1, `rgba(${rgb(run)},0)`);
+        ctx.fillStyle = g;
+        wrap((dx) => ctx.fillRect(cx + dx + (rnd() - 0.5) * cr, cy, w, len));
+      }
+    }
+
+    // 3. chalk bloom: large, very soft, low-contrast. It is the tone the tile was re-based for.
+    const cscale = o.chalkScale ?? 1, calpha = o.chalkAlpha ?? 0.35;
+    for (let k = 0; k < (o.chalkPatches ?? 9); k++) {
+      const cx = rnd() * s, cy = rnd() * s, cr = s * (0.05 + rnd() * 0.10) * cscale;
+      blob(chalk, cx, cy, cr, calpha + rnd() * 0.30, 0.5 + rnd() * 0.7);
+      for (let i = 0; i < 26; i++) {
+        const a = rnd() * Math.PI * 2, d = Math.sqrt(rnd()) * cr * 1.25;
+        const x = cx + Math.cos(a) * d, y = cy + Math.sin(a) * d * 0.7, r = 1 + rnd() * 3;
+        ctx.fillStyle = `rgba(${rgb(chalk)},${0.2 + rnd() * 0.4})`;
+        wrap((dx, dy) => { ctx.beginPath(); ctx.arc(x + dx, y + dy, r, 0, Math.PI * 2); ctx.fill(); });
+      }
+    }
+
+    // 4. the two marks that only make sense once the tile is HEIGHT-keyed: long runs bleeding down
+    //    from the top edge (the top rail is where water sits and the paint goes first) and a dirt
+    //    band along the bottom. Both are no-ops on a world-space tile, where there is no up.
+    for (let i = 0; i < (o.topStreaks ?? 0); i++) {
+      const x = rnd() * s, w = 1 + rnd() * s * (o.streakWidth ?? 0.014), len = s * (0.25 + rnd() * 0.55);
+      const a = (o.streakAlpha ?? 0.10) + rnd() * 0.22;
+      const g = ctx.createLinearGradient(0, 0, 0, len);
+      g.addColorStop(0, `rgba(${rgb(run)},${a})`); g.addColorStop(o.hardEdges ? 0.92 : 0.25, `rgba(${rgb(rust)},${o.hardEdges ? a : a * 0.8})`);
+      g.addColorStop(1, `rgba(${rgb(rust)},0)`);
+      ctx.fillStyle = g;
+      for (const dx of [-s, 0, s]) ctx.fillRect(x + dx, 0, w, len);
+    }
+    // 4b. ATLAS marks for a tile mapped ONCE up a prop (cylUV with the tile height = the prop height):
+    //     `hbands` paints a tone across a horizontal band of v (a rusted chime, a worn hoop crown),
+    //     `bandStreaks` hangs runs from a given v (water sits on a rolling hoop and bleeds down from it,
+    //     exactly as it does from the top edge), and `stencil` a painted mark at (u, v). v is up.
+    for (const hb of (o.hbands ?? []) as any[]) {
+      const y0 = s * (1 - hb.v1), y1 = s * (1 - hb.v0), tone = hb.tone ?? rust;
+      ctx.fillStyle = `rgba(${rgb(tone)},${hb.alpha ?? 0.8})`; ctx.fillRect(0, y0, s, y1 - y0);
+      for (let i = 0; i < (hb.specks ?? 0); i++) {
+        const x = rnd() * s, y = y0 + rnd() * (y1 - y0), r = 0.8 + rnd() * 2.2;
+        ctx.fillStyle = `rgba(${rgb(rnd() < 0.5 ? run : base)},${0.2 + rnd() * 0.5})`;
+        for (const dx of [-s, 0, s]) { ctx.beginPath(); ctx.arc(x + dx, y, r, 0, Math.PI * 2); ctx.fill(); }
+      }
+    }
+    for (const bs of (o.bandStreaks ?? []) as any[]) {
+      const y0 = s * (1 - bs.v);
+      for (let i = 0; i < (bs.count ?? 12); i++) {
+        const x = rnd() * s, w = 1 + rnd() * s * (bs.width ?? 0.012), len = s * ((bs.len ?? 0.12) + rnd() * (bs.lenVar ?? 0.25));
+        const a = (bs.alpha ?? 0.14) + rnd() * 0.22;
+        const g = ctx.createLinearGradient(0, y0, 0, y0 + len);
+        g.addColorStop(0, `rgba(${rgb(run)},${a})`); g.addColorStop(o.hardEdges ? 0.92 : 0.3, `rgba(${rgb(rust)},${o.hardEdges ? a : a * 0.8})`);
+        g.addColorStop(1, `rgba(${rgb(rust)},0)`);
+        ctx.fillStyle = g;
+        for (const dx of [-s, 0, s]) ctx.fillRect(x + dx, y0 - 2, w, len);
+      }
+    }
+    if (o.stencil) {
+      const st = o.stencil, px = s * (st.size ?? 0.06);
+      ctx.font = `bold ${px}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillStyle = `rgba(${rgb(st.tone ?? chalk)},${st.alpha ?? 0.85})`;
+      for (const dx of [-s, 0, s]) ctx.fillText(st.text, s * (st.u ?? 0.5) + dx, s * (1 - (st.v ?? 0.5)));
+    }
+    if (o.groundBand) {
+      const b = o.groundBand, g = ctx.createLinearGradient(0, s, 0, s * (1 - (o.groundHeight ?? 0.22)));
+      g.addColorStop(0, `rgba(${rgb(run)},${b})`); g.addColorStop(0.45, `rgba(${rgb(run)},${b * 0.4})`);
+      g.addColorStop(1, `rgba(${rgb(run)},0)`);
+      ctx.fillStyle = g; ctx.fillRect(0, 0, s, s);
+    }
+
+    // 5. fine grain: the tooth of a brush-rolled industrial paint. Multiply, so it only darkens.
+    ctx.globalCompositeOperation = 'multiply';
+    for (let i = 0; i < (o.grain ?? 1800); i++) {
+      const x = rnd() * s, y = rnd() * s, r = 0.5 + rnd() * 1.3, a = 0.03 + rnd() * 0.07;
+      ctx.fillStyle = `rgba(150,140,130,${a})`;
+      ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.globalCompositeOperation = 'source-over';
+  });
+}
+
 /* ------------------------------------------------------------------ fence helpers */
 
 /** Panel UVs: u along world X over `scale` metres, v world HEIGHT over the same, regardless of the
@@ -1263,7 +1504,7 @@ function grimeTile(size: number, seed: number, o: any): THREE.CanvasTexture | nu
     ctx.globalCompositeOperation = 'multiply';
     // rain streaks from the top
     for (let i = 0; i < (o.streaks ?? 26); i++) {
-      const x = rnd() * s, w = 1 + rnd() * s * 0.012, len = s * (0.15 + rnd() * 0.6), a = 0.05 + rnd() * 0.12;
+      const x = rnd() * s, w = 1 + rnd() * s * (o.streakW ?? 0.012), len = s * (0.15 + rnd() * 0.6), a = (o.streakAlpha ?? [0.05, 0.12])[0] + rnd() * (o.streakAlpha ?? [0.05, 0.12])[1];   // `streakAlpha` [min, add]
       const g2 = ctx.createLinearGradient(0, 0, 0, len);
       g2.addColorStop(0, `rgba(${rgb(wash)},${a})`); g2.addColorStop(1, `rgba(${rgb(wash)},0)`);
       ctx.fillStyle = g2; ctx.fillRect(x, 0, w, len); ctx.fillRect(x - s, 0, w, len);
@@ -1273,15 +1514,118 @@ function grimeTile(size: number, seed: number, o: any): THREE.CanvasTexture | nu
     grad.addColorStop(0, `rgba(${rgb(wash)},${washA})`); grad.addColorStop(0.5, `rgba(${rgb(wash)},${washA * 0.45})`); grad.addColorStop(1, `rgba(${rgb(wash)},0)`);
     ctx.fillStyle = grad; ctx.fillRect(0, 0, s, s);
     // blotches
+    // `clusters` masses the blotches round a few centres low on the tile (the plate's mildew is a
+    // handful of hard black colonies, not an even scatter); `blotchAlpha` [min, add] and `blotchR`
+    // [min, add] (tile fractions) override the soft defaults. All three default to the old behaviour.
+    const cc: number[][] = [];
+    for (let i = 0; i < (o.clusters ?? 0); i++) cc.push([rnd() * s, s - Math.pow(rnd(), 1.8) * s * (o.clusterBand ?? 0.5), s * (0.04 + rnd() * 0.10)]);
+    const bA = o.blotchAlpha ?? [0.08, 0.3], bR = o.blotchR ?? [3 / s, 0.06];
     for (let i = 0; i < (o.blotches ?? 40); i++) {
-      const x = rnd() * s, y = s - Math.pow(rnd(), 1.6) * s, r = 3 + rnd() * s * 0.06, a = 0.08 + rnd() * 0.3;
+      let x = rnd() * s, y = s - Math.pow(rnd(), 1.6) * s;
+      if (cc.length) { const c = cc[Math.floor(rnd() * cc.length)]; const ang = rnd() * Math.PI * 2, d = Math.sqrt(rnd()) * c[2]; x = c[0] + Math.cos(ang) * d * 1.4; y = c[1] + Math.sin(ang) * d; }
+      const r = s * (bR[0] + rnd() * bR[1]), a = bA[0] + rnd() * bA[1];
       const g2 = ctx.createRadialGradient(x, y, 0, x, y, r);
       g2.addColorStop(0, `rgba(${rgb(wash)},${a})`); g2.addColorStop(1, `rgba(${rgb(wash)},0)`);
       ctx.fillStyle = g2;
       for (const dx of [-s, 0, s]) { ctx.beginPath(); ctx.arc(x + dx, y, r, 0, Math.PI * 2); ctx.fill(); }
     }
-    // moss / algae in the bottom band: clustered specks, brighter-than-wash green
-    if (o.moss) {
+    // joint streaks: black algae hanging below each horizontal joint (the plate's precast panel reads
+    // luma 20-60 in bands 0.05-0.07 m tall under every course, heaviest at the post end and fading
+    // along the bay). `joints.vs` are the tile-v stations of the joint lines, `heavyU` the u range
+    // (as tile fractions) where they are three times denser.
+    if (o.joints) {
+      const J = o.joints, dark = J.dark ?? [0.16, 0.17, 0.14];
+      const heavy = (u: number) => J.heavyU && u >= J.heavyU[0] && u <= J.heavyU[1];
+      for (const v of J.vs as number[]) {
+        const y = s * (1 - v);
+        ctx.fillStyle = `rgba(${rgb(dark)},${J.lineAlpha ?? 0.4})`; ctx.fillRect(0, y - 1, s, 2);
+        // a soft band under the joint whose strength varies along u (heavy end, then patches)
+        for (let cx = 0; cx < s; cx += 4) {
+          const u = cx / s, base = heavy(u) ? 0.45 : 0.12, a = base * (0.4 + rnd() * 0.9) * (0.6 + 0.4 * Math.sin(u * 19 + v * 40));
+          const h = (J.band ?? 10) * (0.5 + rnd());
+          const g2 = ctx.createLinearGradient(0, y, 0, y + h);
+          g2.addColorStop(0, `rgba(${rgb(dark)},${a})`); g2.addColorStop(1, `rgba(${rgb(dark)},0)`);
+          ctx.fillStyle = g2; ctx.fillRect(cx, y, 4, h);
+        }
+        // narrow irregular drips, mostly at the heavy end
+        const n = J.streaks ?? 40;
+        for (let i = 0; i < n * 3; i++) {
+          const u = rnd(), w = 1 + rnd() * rnd() * 4, h = 4 + Math.pow(rnd(), 1.5) * (J.drop ?? 24), a = 0.2 + rnd() * 0.5;
+          if (!heavy(u) && rnd() < 0.7) continue;
+          const g2 = ctx.createLinearGradient(0, y, 0, y + h);
+          g2.addColorStop(0, `rgba(${rgb(dark)},${a})`); g2.addColorStop(0.5, `rgba(${rgb(dark)},${a * 0.5})`); g2.addColorStop(1, `rgba(${rgb(dark)},0)`);
+          ctx.fillStyle = g2;
+          for (const dx of [-s, 0, s]) ctx.fillRect(u * s + dx, y, w, h);
+        }
+      }
+    }
+    // paint chips: the render flaked off to grey concrete in hard-edged patches, mostly low down
+    if (o.chips) {
+      const grey = o.chipGrey ?? [0.66, 0.67, 0.62];
+      for (let k = 0; k < o.chips; k++) {
+        const cx = rnd() * s, cy = s - Math.pow(rnd(), 1.4) * s * (o.chipBand ?? 0.5), n = 14, R = s * (0.008 + rnd() * 0.022);
+        // one ragged outline (same jitter for every wrap copy), a mottled interior so it reads as bare
+        // concrete rather than a sticker
+        const rr: number[] = []; for (let i = 0; i < n; i++) rr.push(R * (0.35 + rnd() * 1.0));
+        ctx.fillStyle = `rgba(${rgb(grey)},${0.45 + rnd() * 0.3})`;
+        for (const dx of [-s, 0, s]) {
+          ctx.beginPath();
+          for (let i = 0; i < n; i++) { const a = i / n * Math.PI * 2; const x = cx + dx + Math.cos(a) * rr[i] * 1.3, y = cy + Math.sin(a) * rr[i]; i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
+          ctx.closePath(); ctx.fill();
+        }
+        for (let i = 0; i < 40; i++) {
+          const a = rnd() * Math.PI * 2, d = Math.sqrt(rnd()) * R * 0.8, v = 0.5 + rnd() * 0.35;
+          ctx.fillStyle = `rgba(${rgb([v * grey[0], v * grey[1], v * grey[2]])},${0.3 + rnd() * 0.4})`;
+          for (const dx of [-s, 0, s]) ctx.fillRect(cx + dx + Math.cos(a) * d * 1.3, cy + Math.sin(a) * d, 1 + rnd() * 2, 1 + rnd());
+        }
+      }
+    }
+    // moss / algae in the bottom band
+    if (o.moss && o.mossCarpet) {
+      // A CARPET, not clusters: the plate's moss is a continuous mottled mat (olive tufts at about half
+      // coverage over grey-green dirt) whose top edge is a cloud line climbing up to 0.35 of the band
+      // above its mean, denser and darker toward the ground. Density is a per-column ragged boundary
+      // (three seamless sines + a random walk) feeding a rejection sampler of small square tufts.
+      const m = o.moss, band = o.mossBand ?? 0.30, dens = o.mossDensity ?? 0.5;
+      const ph = [rnd() * 6.28, rnd() * 6.28, rnd() * 6.28];
+      const walk: number[] = []; let wv = 0;
+      for (let x = 0; x <= s; x++) { wv += (rnd() - 0.5) * 0.012; wv *= 0.97; walk.push(wv); }
+      const edge = (x: number) => {  // top of the carpet as a tile-v fraction at column x
+        const u = x / s * Math.PI * 2;
+        const nz = 0.55 * Math.sin(u + ph[0]) + 0.30 * Math.sin(3 * u + ph[1]) + 0.15 * Math.sin(7 * u + ph[2]);
+        return band * (0.75 + 0.35 * nz + 2.5 * walk[Math.max(0, Math.min(s, Math.round(x)))]);
+      };
+      // dirt under the mat: a grey-green wash that darkens to the ground
+      const dg = ctx.createLinearGradient(0, s * (1 - band * 1.15), 0, s);
+      const dirt = o.mossDirt ?? [0.68, 0.69, 0.62];
+      dg.addColorStop(0, `rgba(${rgb(dirt)},0)`); dg.addColorStop(0.5, `rgba(${rgb(dirt)},0.35)`); dg.addColorStop(1, `rgba(${rgb(dirt)},0.6)`);
+      ctx.fillStyle = dg; ctx.fillRect(0, 0, s, s);
+      // the mat itself: a moss wash per column up to 0.7 of that column's edge, so the carpet is
+      // continuous at the ground and the tufts only have to draw its ragged top and its texture
+      for (let cx = 0; cx < s; cx += 2) {
+        const e = edge(cx), top = s * (1 - e * 0.75);
+        const mg = ctx.createLinearGradient(0, top, 0, s);
+        mg.addColorStop(0, `rgba(${rgb(m)},0)`); mg.addColorStop(0.35, `rgba(${rgb(m)},${(o.mossWash ?? 0.55) * 0.8})`); mg.addColorStop(1, `rgba(${rgb(m)},${o.mossWash ?? 0.55})`);
+        ctx.fillStyle = mg; ctx.fillRect(cx, top, 2, s - top);
+      }
+      // tufts
+      const N = o.mossTufts ?? 9000;
+      for (let i = 0; i < N; i++) {
+        const x = rnd() * s, v = Math.pow(rnd(), 1.3) * band * 1.15, e = edge(x);
+        // density: full below 0.55 of the edge, fading to nothing 0.12 above it, with a few strays beyond
+        // solid mat below 0.7 of the column's edge, a steep ragged falloff to 1.05 of it, a stray beyond
+        const t = (e * 1.05 - v) / (e * 0.35 + 1e-3);
+        const d = v > e * 1.05 ? 0.01 : Math.min(1, Math.max(0, t));
+        if (rnd() > d * dens * 1.6) continue;
+        const y = s * (1 - v);
+        const big = rnd() < 0.25, sz = big ? 3 + rnd() * 4 : 1 + rnd() * 1.6;
+        const k = 0.65 + rnd() * 0.6;                               // per-tuft brightness around the measured ratio
+        const pale = rnd() < 0.22;                                   // sun-lit lime tips, a fifth of the mat
+        const col = pale ? [Math.min(1, m[0] * 1.45), Math.min(1, m[1] * 1.4), Math.min(1, m[2] * 1.1)] : [m[0] * k, m[1] * k, m[2] * k];
+        ctx.fillStyle = `rgba(${rgb(col)},${big ? 0.18 + rnd() * 0.25 : 0.45 + rnd() * 0.45})`;
+        for (const dx of [-s, 0, s]) ctx.fillRect(x + dx, y, sz * (1 + rnd() * 0.6), sz);
+      }
+    } else if (o.moss) {
       const m = o.moss, band = o.mossBand ?? 0.22;
       // a faint green wash over the whole band first, so the carpets sit in damp ground rather than
       // as isolated dots on clean paint
@@ -1315,13 +1659,14 @@ function grimeTile(size: number, seed: number, o: any): THREE.CanvasTexture | nu
 /** CHAIN-LINK tile: a diamond wire lattice drawn opaque over a TRANSPARENT ground, bound as map
  *  on an alpha-tested material so the cells are open. One tile is one diamond cell; the pane's
  *  UVs repeat it at the real mesh pitch. `wire` is the wire width as a fraction of the cell. */
-function chainlinkTile(size: number, wire: number, seed: number): THREE.CanvasTexture | null {
+function chainlinkTile(size: number, wire: number, seed: number, tone?: number): THREE.CanvasTexture | null {
   return canvasTile(size, (ctx, s) => {
     const rnd = lcg(seed);
     ctx.clearRect(0, 0, s, s);
     ctx.lineWidth = Math.max(1.5, wire * s);
     ctx.lineCap = 'round';
-    const v = 150 + Math.round(rnd() * 30);
+    // `tone` sets the wire's grey (the material colour multiplies it); the default keeps every existing caller
+    const v = (tone ?? 150) + Math.round(rnd() * 30);
     ctx.strokeStyle = `rgb(${v},${v + 2},${v + 4})`;
     // two diagonals through the tile, offset so the wrap makes a continuous diamond lattice
     ctx.beginPath();
@@ -1336,27 +1681,172 @@ function chainlinkTile(size: number, wire: number, seed: number): THREE.CanvasTe
   });
 }
 
-/** BAMBOO STRIP tile: vertical split-bamboo strips with pale culm faces, dark joints between them
- *  and a node line or two -- a multiplier on the measured silver-grey. */
-function bambooTile(size: number, strips: number, seed: number): THREE.CanvasTexture | null {
+/** CULM UVs: u around the circumference and v along the length, both in metres over `scale`, so a
+ *  culm tile's node rings cross the culm at real spacing whichever way the cylinder is then rotated.
+ *  Apply BEFORE rotate/translate. `vOff` phases the tile along the culm so no two culms (or a cord
+ *  collar) ring at the same station. */
+function culmUV(g: THREE.BufferGeometry, r: number, h: number, scale: number, vOff = 0): THREE.BufferGeometry {
+  const uv = g.getAttribute('uv');
+  const ku = (2 * Math.PI * r) / scale, kv = h / scale;
+  for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * ku, uv.getY(i) * kv + vOff);
+  return g;
+}
+
+/** Fine longitudinal grain between y0 and y1 across a band x0..x1: many hairlines, mostly a dark
+ *  fibre tone, a few bleached, so the surface reads as fibrous bamboo rather than paint. */
+function grainLines(ctx: CanvasRenderingContext2D, rnd: () => number, x0: number, x1: number, y0: number, y1: number, n: number, dark: string, light: string, aMax: number): void {
+  for (let k = 0; k < n; k++) {
+    const x = x0 + rnd() * (x1 - x0), a = 0.04 + rnd() * aMax, w = rnd() < 0.75 ? 1 : 1.6;
+    ctx.fillStyle = `rgba(${rnd() < 0.72 ? dark : light},${a.toFixed(3)})`;
+    ctx.fillRect(x, y0, w, y1 - y0);
+  }
+}
+
+/** Soft cloudy weathering along the fibre direction: lengthwise patches of warm brown-grey (old
+ *  lignin showing through the bleach) and of near-white (sun-bleached faces), so the tone drifts
+ *  the way weathered bamboo does instead of sitting at one grey. Vertical = along the fibre. */
+function weatherPatches(ctx: CanvasRenderingContext2D, rnd: () => number, s: number, x0: number, x1: number, n: number, warmA: number, bleachA: number): void {
+  for (let k = 0; k < n; k++) {
+    const y = rnd() * s, len = s * (0.12 + rnd() * 0.45), warm = rnd() < 0.5;
+    const c = warm ? '112,100,88' : '255,255,255', a = warm ? warmA * (0.4 + rnd() * 0.6) : bleachA * (0.4 + rnd() * 0.6);
+    const g2 = ctx.createLinearGradient(0, y, 0, y + len);
+    g2.addColorStop(0, `rgba(${c},0)`); g2.addColorStop(0.35, `rgba(${c},${a})`); g2.addColorStop(0.65, `rgba(${c},${a})`); g2.addColorStop(1, `rgba(${c},0)`);
+    ctx.fillStyle = g2;
+    for (const dy of [-s, 0]) ctx.fillRect(x0, y + dy, x1 - x0, len);
+  }
+}
+
+/** Mould: clusters of small dark specks (a few dozen each), the way black mould sits on outdoor
+ *  bamboo -- dense at a few spots, absent elsewhere. Alpha capped so the darkest speck over the
+ *  measured albedo stays well clear of the hole gate's luma 58. Wraps in y. */
+function mouldClusters(ctx: CanvasRenderingContext2D, rnd: () => number, s: number, spots: number[][], rx: number, ry: number, n: number, aMax: number): void {
+  for (const [cx, cy] of spots) {
+    const g2 = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(rx, ry) * 0.8);
+    g2.addColorStop(0, `rgba(28,26,22,${(aMax * 0.9).toFixed(3)})`); g2.addColorStop(1, 'rgba(28,26,22,0)');
+    ctx.fillStyle = g2;
+    for (const dy of [-s, 0, s]) { ctx.beginPath(); ctx.ellipse(cx, cy + dy, rx, ry, 0, 0, Math.PI * 2); ctx.fill(); }
+    for (let i = 0; i < n; i++) {
+      const x = cx + (rnd() + rnd() - 1) * rx, y = cy + (rnd() + rnd() - 1) * ry;
+      ctx.fillStyle = `rgba(28,26,22,${(0.08 + rnd() * aMax).toFixed(3)})`;
+      const w = 1 + rnd() * 2, h = 1 + rnd() * 3;
+      for (const dy of [-s, 0, s]) ctx.fillRect(x, y + dy, w, h);
+    }
+  }
+}
+
+/** BAMBOO STRIP tile: narrow split-bamboo strips (~1.5 cm at 0.45 m per tile), each with its own
+ *  silver-grey or warm-grey tone, the shading of a culm's round across its width, fine longitudinal
+ *  grain, lengthwise weathering patches, a soft dark joint against its neighbour, and a plain-weave
+ *  crossing band a few times per tile that passes over every other strip. Mould speckle in
+ *  clusters. A multiplier on the measured silver-grey; the reference weave crop is the evidence. */
+function bambooTile(size: number, strips: number, seed: number, crossings = 3): THREE.CanvasTexture | null {
   return canvasTile(size, (ctx, s) => {
     const rnd = lcg(seed);
     ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, s, s);
     const sw = s / strips;
+    const DARK = '92,78,62', LIGHT = '255,255,255';
+    // strip edges: widths vary 0.7-1.3 of the mean and the last strip closes the wrap exactly
+    const edges: number[] = [0];
+    for (let b = 1; b < strips; b++) edges.push(edges[b - 1] + sw * (0.7 + rnd() * 0.6));
+    const k1 = s / (edges[strips - 1] + sw);
+    for (let b = 0; b < strips; b++) edges[b] *= k1;
+    edges.push(s);
+    // crossing bands of the weave: three per tile at staggered stations, a strip wide, each passing
+    // over a loose random half of the strips -- the plate shows a coarse weave, not a checkerboard
+    const cross: number[][] = [];
+    for (let k = 0; k < crossings; k++) cross.push([s * ((k + 0.2 + rnd() * 0.6) / Math.max(1, crossings)), sw * (0.9 + rnd() * 0.4)]);
     for (let b = 0; b < strips; b++) {
-      const tone = 0.80 + rnd() * 0.2, v = Math.round(255 * tone);
-      ctx.fillStyle = `rgb(${v},${v - 2},${v - 6})`; ctx.fillRect(b * sw, 0, sw, s);
-      ctx.fillStyle = 'rgba(50,42,34,0.6)'; ctx.fillRect(b * sw, 0, Math.max(1, s * 0.006), s);
-      // a highlight down the culm's round
-      ctx.fillStyle = 'rgba(255,255,255,0.10)'; ctx.fillRect(b * sw + sw * 0.35, 0, sw * 0.25, s);
-      // node rings
-      const n = 1 + Math.floor(rnd() * 2);
-      for (let k = 0; k < n; k++) { const y = rnd() * s; ctx.fillStyle = 'rgba(70,60,48,0.45)'; ctx.fillRect(b * sw, y, sw, Math.max(1, s * 0.008)); }
-      // fine grain lines
-      for (let k = 0; k < 6; k++) { const x = b * sw + rnd() * sw; ctx.fillStyle = `rgba(80,70,58,${0.05 + rnd() * 0.1})`; ctx.fillRect(x, 0, 1, s); }
+      const x0 = edges[b], x1 = edges[b + 1], swb = x1 - x0;
+      // base tone: silver-grey to a darker weathered grey, a quarter with a warm cast, most near the top
+      // the plate's strips run from near-white to a mid weathered grey (luma ~90..215 on a 128 backdrop),
+      // so the spread is 0.52..1.0 with a heavy pale tail, not the 0.70..1.0 of the first build
+      const warm = rnd() < 0.25, t = 0.44 + Math.pow(rnd(), 0.5) * 0.56;
+      const r = Math.round(255 * t), g = Math.round(255 * (t - (warm ? 0.025 : 0.008))), bl = Math.round(255 * (t - (warm ? 0.07 : 0.025)));
+      ctx.fillStyle = `rgb(${r},${g},${bl})`; ctx.fillRect(x0, 0, swb + 1, s);
+      // the culm's round across the strip: shade toward both joints, a soft highlight off centre
+      const gr = ctx.createLinearGradient(x0, 0, x1, 0);
+      gr.addColorStop(0, 'rgba(60,52,44,0.28)'); gr.addColorStop(0.22, 'rgba(60,52,44,0.04)');
+      gr.addColorStop(0.5, 'rgba(255,255,255,0.10)'); gr.addColorStop(0.8, 'rgba(60,52,44,0.05)'); gr.addColorStop(1, 'rgba(60,52,44,0.24)');
+      ctx.fillStyle = gr; ctx.fillRect(x0, 0, swb + 1, s);
+      weatherPatches(ctx, rnd, s, x0, x1, 3, 0.12, 0.30);
+      grainLines(ctx, rnd, x0 + 1, x1 - 1, 0, s, 14 + Math.floor(rnd() * 10), DARK, LIGHT, 0.30);
+      // joint against the neighbour: a thin dark line with a one-pixel soft edge
+      ctx.fillStyle = 'rgba(40,34,28,0.85)'; ctx.fillRect(x0, 0, 1.5, s);
+      ctx.fillStyle = 'rgba(40,34,28,0.30)'; ctx.fillRect(x0 + 1.5, 0, 1.5, s);
+      // an occasional node on a strip, never aligned with its neighbours: dark line under a pale ridge
+      if (rnd() < 0.45) {
+        const y = rnd() * s;
+        ctx.fillStyle = 'rgba(70,58,46,0.34)'; ctx.fillRect(x0, y, swb, 2);
+        ctx.fillStyle = 'rgba(255,255,255,0.10)'; ctx.fillRect(x0, y + 2, swb, 1.5);
+      }
+      // plain weave: the crossing band passes OVER every other strip
+      for (const [cy, cw] of cross) {
+        if (rnd() < 0.55) continue;                                  // a loose weave: over about half the strips, no regular bond
+        const y0 = cy - cw / 2;
+        ctx.fillStyle = `rgb(${r},${g},${bl})`; ctx.fillRect(x0, y0, swb + 1, cw);
+        const gv = ctx.createLinearGradient(0, y0, 0, y0 + cw);
+        gv.addColorStop(0, 'rgba(60,52,44,0.16)'); gv.addColorStop(0.45, 'rgba(255,255,255,0.04)'); gv.addColorStop(1, 'rgba(60,52,44,0.16)');
+        ctx.fillStyle = gv; ctx.fillRect(x0, y0, swb + 1, cw);
+        // its grain runs ACROSS the strip
+        for (let k = 0; k < 5; k++) { ctx.fillStyle = `rgba(${DARK},${(0.06 + rnd() * 0.18).toFixed(3)})`; ctx.fillRect(x0, y0 + 1 + rnd() * (cw - 2), swb + 1, 1); }
+        // and it throws a shadow onto the strips it passes over
+        ctx.fillStyle = 'rgba(30,26,22,0.20)'; ctx.fillRect(x0, y0 - 1.5, swb + 1, 1.5); ctx.fillRect(x0, y0 + cw, swb + 1, 1.5);
+      }
     }
-    // mould speckle
-    for (let i = 0; i < 300; i++) { const x = rnd() * s, y = rnd() * s; ctx.fillStyle = 'rgba(30,28,24,0.18)'; ctx.fillRect(x, y, 1 + rnd() * 2, 1 + rnd() * 2); }
+    const spots: number[][] = [];
+    for (let i = 0; i < 6; i++) spots.push([rnd() * s, rnd() * s]);
+    mouldClusters(ctx, rnd, s, spots, s * 0.10, s * 0.16, 90, 0.40);
+  });
+}
+
+/** CULM tile for the whole-bamboo post and rails: x runs AROUND the culm, y ALONG it (see culmUV),
+ *  0.6 m of culm per tile. Two node rings per tile at irregular stations -- a dark groove under a
+ *  pale raised ridge, the grain breaking at each -- with fine longitudinal grain between them, a
+ *  long drying split, lengthwise weathering patches and black mould gathered just below each node,
+ *  as in the plate's post and rail crops. A multiplier on the measured culm grey. */
+function culmTile(size: number, seed: number): THREE.CanvasTexture | null {
+  return canvasTile(size, (ctx, s) => {
+    const rnd = lcg(seed);
+    const DARK = '92,78,62', LIGHT = '255,255,255';
+    ctx.fillStyle = '#f0efec'; ctx.fillRect(0, 0, s, s);
+    // a soft tone drift around the culm, so the round is not one flat value
+    const ga = ctx.createLinearGradient(0, 0, s, 0);
+    ga.addColorStop(0, 'rgba(100,92,84,0.12)'); ga.addColorStop(0.5, 'rgba(255,255,255,0.10)'); ga.addColorStop(1, 'rgba(100,92,84,0.12)');
+    ctx.fillStyle = ga; ctx.fillRect(0, 0, s, s);
+    weatherPatches(ctx, rnd, s, 0, s, 14, 0.12, 0.30);
+    // node stations: two per tile, irregular, never within 0.18 of each other or the wrap
+    const nodes = [s * (0.20 + rnd() * 0.10), s * (0.66 + rnd() * 0.12)];
+    // grain in segments between the nodes so it breaks at each ring
+    const stations = [0, ...nodes, s];
+    for (let i = 0; i + 1 < stations.length; i++) grainLines(ctx, rnd, 0, s, stations[i], stations[i + 1], 260, DARK, LIGHT, 0.26);
+    // a couple of long drying splits along the fibre
+    for (let k = 0; k < 2; k++) {
+      const x = rnd() * s, y = rnd() * s, len = s * (0.25 + rnd() * 0.5);
+      ctx.fillStyle = 'rgba(38,32,26,0.55)';
+      for (const dy of [-s, 0]) ctx.fillRect(x, y + dy, 1.4, len);
+      ctx.fillStyle = 'rgba(255,255,255,0.18)';
+      for (const dy of [-s, 0]) ctx.fillRect(x + 1.4, y + dy, 1, len);
+    }
+    // the node rings
+    for (const y of nodes) {
+      const gs = ctx.createLinearGradient(0, y - s * 0.03, 0, y);
+      gs.addColorStop(0, 'rgba(60,50,40,0)'); gs.addColorStop(1, 'rgba(60,50,40,0.22)');
+      ctx.fillStyle = gs; ctx.fillRect(0, y - s * 0.03, s, s * 0.03);          // shade up to the ring
+      ctx.fillStyle = 'rgba(52,44,36,0.62)'; ctx.fillRect(0, y, s, 2.5);        // the groove
+      ctx.fillStyle = 'rgba(255,255,255,0.34)'; ctx.fillRect(0, y + 2.5, s, 4); // the raised sheath ridge
+      ctx.fillStyle = 'rgba(60,50,40,0.30)'; ctx.fillRect(0, y + 6.5, s, 1.5);  // its lower edge
+      const gd = ctx.createLinearGradient(0, y + 8, 0, y + s * 0.05);
+      gd.addColorStop(0, 'rgba(60,50,40,0.20)'); gd.addColorStop(1, 'rgba(60,50,40,0)');
+      ctx.fillStyle = gd; ctx.fillRect(0, y + 8, s, s * 0.05);
+    }
+    // mould gathers just below the nodes and in a couple of loose patches
+    const spots: number[][] = [];
+    for (const y of nodes) for (let i = 0; i < 2; i++) spots.push([rnd() * s, y + s * (0.02 + rnd() * 0.05)]);
+    for (let i = 0; i < 3; i++) spots.push([rnd() * s, rnd() * s]);
+    // heavier than the first build: the plate's culms carry near-black mould sheets below the joints
+    // aMax 0.60: the core multiplies at ~0.46, which on the #b8b3ac envelope renders near luma 75 -- black
+    // enough to read as the plate's mould sheets, clear of the turntable gate's backdrop band at 58
+    mouldClusters(ctx, rnd, s, spots, s * 0.16, s * 0.10, 180, 0.60);
   });
 }
 
@@ -1512,9 +2002,21 @@ export function createSteelPicketPropertyFenceModel(options: ProceduralModelOpti
     for (const b of mirrorX((c.boxesMirrored ?? []) as number[][])) gs.push(tintGeo(rbox(b.slice(1)), b[0]));
     for (const t of (c.tubes ?? []) as any[]) gs.push(tube(t.pts, t.r, t.seg ?? 8, t.hex));
     for (const cy of (c.cyls ?? []) as any[]) {
-      const g = new THREE.CylinderGeometry(cy.rt, cy.rb, cy.h, cy.seg ?? 12);
+      // `open` drops both caps (a cut culm whose hollow is a lathe of its own); `uvScale` overrides
+      // the component's tile length for this one culm, so a rail's nodes sit further apart than a post's
+      let g: THREE.BufferGeometry = new THREE.CylinderGeometry(cy.rt, cy.rb, cy.h, cy.seg ?? 12, 1, !!cy.open);
+      // `flat` un-shares the ring vertices so a 4-segment "cylinder" shades as a faceted diamond spear rather than a cone
+      if (cy.flat) { g = g.toNonIndexed(); g.computeVertexNormals(); }
+      if (c.uv === 'culm') culmUV(g, cy.rt, cy.h, cy.uvScale ?? c.uvScale ?? 1, cy.vOff ?? 0);   // around x along, before it is placed
       if (cy.rx) g.rotateX(cy.rx); if (cy.rz) g.rotateZ(cy.rz);
       g.translate(cy.at[0], cy.at[1], cy.at[2]); gs.push(tintGeo(g, cy.hex));
+    }
+    for (const t of (c.tori ?? []) as any[]) {
+      // A ring of cord: TorusGeometry lies in XY (axis Z); rx/ry/rz are applied in that order, so
+      // rx = PI/2 stands it around a vertical post and a further rz tilts it into a diagonal lash.
+      const g = new THREE.TorusGeometry(t.r, t.tube, t.tseg ?? 6, t.rseg ?? 14);
+      if (t.rx) g.rotateX(t.rx); if (t.ry) g.rotateY(t.ry); if (t.rz) g.rotateZ(t.rz);
+      g.translate(t.at[0], t.at[1], t.at[2]); gs.push(tintGeo(g, t.hex));
     }
     for (const l of (c.lathes ?? []) as any[]) {
       const g = lathe(l.pts, l.seg ?? 12); g.translate(l.at[0], l.at[1], l.at[2]); gs.push(tintGeo(g, l.hex));
@@ -1522,7 +2024,22 @@ export function createSteelPicketPropertyFenceModel(options: ProceduralModelOpti
     for (const p of (c.planes ?? []) as any[]) {
       // A PANE: a single quad in the XY plane at depth z, double-sided by its material. Its UVs run
       // 0..1 across the pane so an alpha-cut tile repeats `rep` times across and down.
-      const g = new THREE.PlaneGeometry(p.w, p.h, 1, 1);
+      // `segs: [nx, ny]` with `sagTop` / `sagBot` (metres) drape the pane: the top edge drops by
+      // sagTop * sin(pi u) between its ties and the bottom edge by sagBot, blended linearly through
+      // the height -- a chain-link mesh hangs from its rail and follows its tension wire.
+      const g = new THREE.PlaneGeometry(p.w, p.h, p.segs?.[0] ?? 1, p.segs?.[1] ?? 1);
+      if (p.sagTop || p.sagBot) {
+        const pos = g.getAttribute('position');
+        for (let i = 0; i < pos.count; i++) {
+          const u = pos.getX(i) / p.w + 0.5, v = pos.getY(i) / p.h + 0.5;
+          // `sagSpans` divides the TOP edge into that many tie-to-tie spans, each sagging on its own
+          // (a chain-link mesh is hog-ringed to the rail every 0.6 m and droops between rings); the
+          // bottom edge follows the tension wire, which sags once across the bay.
+          const top = (p.sagTop ?? 0) * Math.sin(Math.PI * (((u * (p.sagSpans ?? 1)) % 1 + 1) % 1));
+          const d = top * v + (p.sagBot ?? 0) * (1 - v) * Math.sin(Math.PI * u);
+          pos.setY(i, pos.getY(i) - d);
+        }
+      }
       g.translate(p.at[0], p.at[1], p.at[2]);
       const uv = g.getAttribute('uv');
       for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * (p.rep?.[0] ?? 1), uv.getY(i) * (p.rep?.[1] ?? 1));
@@ -1541,10 +2058,23 @@ export function createSteelPicketPropertyFenceModel(options: ProceduralModelOpti
         hp.closePath(); shape.holes.push(hp);
       }
       const g = extrudeAlongZ(shape, e.z0, e.z1);
+      // `waveTint: [crestHex, valleyHex]` writes a per-vertex colour from the profile's own y
+      // (before any rotation): a corrugated sheet whose crests chalk pale while the valleys keep
+      // their paint, which one hex cannot say and a world tile cannot align to the ribs.
+      if (e.waveTint) {
+        const pos = g.getAttribute('position'); let lo = Infinity, hi = -Infinity;
+        for (let i = 0; i < pos.count; i++) { const y = pos.getY(i); if (y < lo) lo = y; if (y > hi) hi = y; }
+        const ca = new THREE.Color(e.waveTint[0]), cb = new THREE.Color(e.waveTint[1]), col = new Float32Array(pos.count * 3);
+        for (let i = 0; i < pos.count; i++) {
+          let t = hi > lo ? (pos.getY(i) - lo) / (hi - lo) : 1; t = Math.pow(t, e.waveGamma ?? 1.6);
+          col[i * 3] = cb.r + (ca.r - cb.r) * t; col[i * 3 + 1] = cb.g + (ca.g - cb.g) * t; col[i * 3 + 2] = cb.b + (ca.b - cb.b) * t;
+        }
+        g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+      }
       if (e.rx) g.rotateX(e.rx);
       if (e.ry) g.rotateY(e.ry);
       if (e.at) g.translate(e.at[0], e.at[1], e.at[2]);
-      gs.push(tintGeo(g, e.hex));
+      gs.push(e.waveTint ? g : tintGeo(g, e.hex));
     }
     for (const s of (c.spikes ?? []) as any[]) gs.push(tintGeo(spike(s.at, s.w, s.h), s.hex));
     let g = mergeGeos(gs);
@@ -1563,7 +2093,8 @@ export function createSteelPicketPropertyFenceModel(options: ProceduralModelOpti
     for (const b of (r.boxes ?? []) as number[][]) gs.push(tintGeo(rbox(b.slice(1)), b[0]));
     for (const s of (r.spikes ?? []) as any[]) gs.push(tintGeo(spike(s.at, s.w, s.h), s.hex));
     for (const cy of (r.cyls ?? []) as any[]) {
-      const g = new THREE.CylinderGeometry(cy.rt, cy.rb, cy.h, cy.seg ?? 12);
+      let g: THREE.BufferGeometry = new THREE.CylinderGeometry(cy.rt, cy.rb, cy.h, cy.seg ?? 12);
+      if (cy.flat) { g = g.toNonIndexed(); g.computeVertexNormals(); }
       if (cy.rx) g.rotateX(cy.rx); if (cy.rz) g.rotateZ(cy.rz);
       g.translate(cy.at[0], cy.at[1], cy.at[2]); gs.push(tintGeo(g, cy.hex));
     }
@@ -1591,8 +2122,10 @@ export function createSteelPicketPropertyFenceModel(options: ProceduralModelOpti
     if (t.kind === 'rust') tex = rustTile(t.size ?? 512, t.ratio, t.seed ?? 7, t.density ?? 90);
     if (t.kind === 'corrugation') tex = corrugationTile(t.size ?? 512, t.pitch ?? 12, t.low ?? 0.7, t.seed ?? 3);
     if (t.kind === 'grime') tex = grimeTile(t.size ?? 512, t.seed ?? 11, t);
-    if (t.kind === 'chainlink') tex = chainlinkTile(t.size ?? 256, t.wire ?? 0.09, t.seed ?? 4);
-    if (t.kind === 'bamboo') tex = bambooTile(t.size ?? 512, t.strips ?? 10, t.seed ?? 6);
+    if (t.kind === 'paint') tex = paintTile(t.size ?? 512, t.seed ?? 17, t);
+    if (t.kind === 'chainlink') tex = chainlinkTile(t.size ?? 256, t.wire ?? 0.09, t.seed ?? 4, t.tone);
+    if (t.kind === 'bamboo') tex = bambooTile(t.size ?? 512, t.strips ?? 10, t.seed ?? 6, t.crossings ?? 3);
+    if (t.kind === 'culm') tex = culmTile(t.size ?? 512, t.seed ?? 9);
     if (t.kind === 'poster') tex = posterTile(t.size ?? 512, t.seed ?? 8, t.lines ?? []);
     bindTile(mat, tex, t.bump ?? 0);
   }
@@ -1671,13 +2204,9 @@ export function createObjectModel(spec?: unknown, options: ProceduralModelOption
 }
 
 /**
- * The one-argument entry point: vibe3d's contract, and img2threejs's own.
- *
- * `createObjectModel` above keeps thaikit's historical (spec, options) shape so
- * the harness, the level editor and the Node-side gates carry on unchanged.
- * `spec` has never been passed by any caller -- it is inspection data that is
- * already baked into this module -- so this is the honest signature, and it is
- * what a vibe3d consumer installs and calls.
+ * vibe3d's entry: the one-argument factory the pack's `model.ts` re-exports. thaikit's own
+ * `createObjectModel(spec, options)` keeps its historical shape for the harness and the level
+ * editor; the spec is baked into this module, so this is the honest signature.
  */
 export function createModel(options: ProceduralModelOptions = {}): THREE.Group {
   return createObjectModel(undefined, options);

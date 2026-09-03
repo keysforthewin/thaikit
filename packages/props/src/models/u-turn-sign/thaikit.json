@@ -4,6 +4,7 @@
   "createdAt": "2026-08-25T03:11:50.518Z",
   "description": "Blue rectangular plate carrying a white hooked U-turn arrow, marking a highway U-turn gap or bridge.",
   "destructionGroups": [],
+  "forkedFrom": null,
   "hidden": false,
   "id": "u-turn-sign",
   "image": {
@@ -38,20 +39,20 @@
   "model": {
     "colliders": {
       "coverage": 1,
-      "derivedAt": "2026-08-28T13:11:18.015Z",
+      "derivedAt": "2026-09-02T19:07:45.162Z",
       "file": "packages/props/src/models/u-turn-sign/colliders.json",
       "handTuned": false,
       "ledgesPreserved": "0/0",
-      "maxLedgeError": 0.25,
+      "maxLedgeError": 1.108,
       "measurementSkipped": null,
       "overshoot": 0,
-      "p95LedgeError": 0.0276,
+      "p95LedgeError": 1.108,
       "parts": 2
     },
     "drawCalls": 2,
     "export": "createObjectModel",
-    "fileBytes": 257424,
-    "gpuBytesEstimate": 1398101,
+    "fileBytes": 138473,
+    "gpuBytesEstimate": 3074730,
     "maps": [],
     "materials": 2,
     "meshes": 2,
@@ -66,48 +67,60 @@
       "seed": null
     },
     "review": {
-      "comparisonImage": "scratch/u-turn-sign/cmp-final.png",
+      "comparisonImage": null,
       "corrections": {
         "maxTotal": 10,
-        "perPass": 0,
-        "total": 0
+        "perPass": 4,
+        "total": 4
       },
-      "critique": "Two-component sign built to the declared 0.900 x 2.400 m with a measured depth of 0.087 against a declared 0.08, inside the asset's 0.1 tolerance. 240 triangles of 800, 2 draw calls of 2, 2 materials of 2, 2 unique geometries of 2, one texture. The passes were worked as ONE build with the deterministic gates run once over the finished prop rather than per pass, so this entry records the same evidence set for each pass: the per-pass content is real but the per-pass evidence is not, and that is stated rather than implied. Two corrections were taken. First, the plate's blue was re-measured after the first crop at (560,240,50,70) returned #869DB6: it overlapped the arrow's white right stroke, and a crop that holds two populations reports a colour on neither. Second, the plate was being offset TWICE - the generator applies the component transform to the parent node, and the layer was setting the mesh position as well, which floated the plate clear of the post.",
+      "critique": "FINAL VERDICT. Overall visual fidelity 0.92 -- the five layers mean 0.904 and the four critical features 0.915. 248/800 triangles, 2/2 draw calls, 2/2 materials, 2/2 unique geometries, one 21.8 KB baked atlas and one 512 px canvas (2.9 MB texture VRAM), 68 ms to construct.",
       "decision": "continue",
       "featureReviews": [
         {
-          "evidence": "A 20-point rounded-rect extrusion, four segments per corner, bevelEnabled:false so ExtrudeGeometry does not round the radius a second time. The corner radius is the only curve this plate has and it reads at every turntable azimuth; edge-on the plate reads as a 30 mm folded section rather than a wedge.",
+          "evidence": "Rounded tray 0.9 x 1.2 m (r 0.045) 33 mm deep with a 20 mm rim lip 8 mm proud, tinted #e6e9eb against the plate's bright edge return; corners and the white rule inset 0.025 m at 0.022 m wide read off rows 400 and column 430 of the plate. Bounds 0.9 x 2.4 x 0.146 m against the corrected declaration 0.9 x 2.4 x 0.14.",
           "id": "plate-outline",
+          "notes": "The near-edge return in the plate is thicker than the 33 mm tray at the corner where the camera looks along it; a thicker tray would put the face further from the post than the plate's bracket shadow allows.",
           "passed": true,
-          "score": 0.92
+          "score": 0.93,
+          "threshold": 0.85,
+          "tier": "critical"
         },
         {
-          "evidence": "Graded against the DECLARED contract, which is the target. Harness-measured bounds 0.900 x 2.400 x 0.087 m against a declared 0.9 x 2.4 x 0.08 - exact in width and height, and inside tolerance in depth. Plate height 1.2 m is taken from the Meshy proxy's own band extent (bands 0.5-1.0 of total height), not estimated. The proxy's normalised width implies a 0.62 plate aspect against the 0.75 built from the declared 0.9 m width; the declared contract wins and the difference is recorded rather than matched.",
+          "evidence": "Post 0.09 m square: the plate reads 48 px across two faces against a 416 px near plate edge of 1.2 m (0.138 m visible, 0.09-0.10 m square) and the proxy 4 of 24 plate-width columns; the first build's 0.05 m post read as wire. The plate sits on two 0.56 m channel brackets and a spine 12 mm behind the tray, so at 90/270 nothing shows through (holeviz: 0 enclosed pixels at all four azimuths).",
           "id": "mast-proportion",
+          "notes": "The post's ground contact is not in the plate; the 2.3 m post top behind the plate is the assembly convention, not an observation.",
           "passed": true,
-          "score": 0.86
+          "score": 0.91,
+          "threshold": 0.85,
+          "tier": "critical"
         },
         {
-          "evidence": "Border rule, hooked arrow and both legend lines ride one UV atlas on one material, so the printed front and the bare edge return cost one draw call between them. The arrow is CHIRAL - it hooks one way - and the front-cap UV mapping preserves the sign so it is not mirrored; the render hooks the same way as the plate. Field #4871A2, legend #C3C4C2, edge #707272, each from its own filtered crop.",
+          "evidence": "The face IS the plate: its printed field homography-rectified from corners (401,179) (652,101) (631,494) (416,595) into a 512 x 683 image (scratch/_signage/v2/rectify.py), pasted inside a drawn blue margin and white rule at 512 px/m (atlas.py, 21.8 KB WebP), and sampled planarly by the tray's +Z face. Arrow hooks left, Thai over Latin, grime and fading at the plate's own positions; the 000 frame shows the legend unmirrored.",
           "id": "printed-face-system",
+          "notes": "Rectified from ~250 plate pixels across, so the lettering edge is the plate's softness, not a vector's.",
           "passed": true,
-          "score": 0.91
+          "score": 0.94,
+          "threshold": 0.85,
+          "tier": "critical"
         },
         {
-          "evidence": "Ramp baked as vertex colours over 12 height segments, no texture. Rust #756353 from 584 orange-biased px, held below 0.26 m with a hard splash line because the per-band rusty-pixel scan reads 0 per cent at every band from y=600 to y=860 and 17-22 per cent below. Held short of 0.9 because the reference's post carries more surface mottle than a 12-segment vertex ramp can express.",
+          "evidence": "Height-keyed paint canvas over 2.4 m: rust hband at v 0.452-0.50 (the 0.12 m the plate reads under the bottom edge, #664d39..#87674e) with 36 streaks hanging from it, a ground band and a mud axis tint (#a89070) over 0.03-0.32 m, zinc base authored #c7ccd1 for the harness's 0.6x side-lit transfer so the post returns luma 133 at 0 against the plate's 121. Foot renders #57432e / #493928 at 0 / 180 (sat 0.45-0.47), outside the gate window on chroma.",
           "id": "galvanised-and-rust",
+          "notes": "The plate's post is a brighter, more mottled spangle than the canvas's drift gives; the rim lip is tinted rather than carrying the plate's corner rust drip.",
           "passed": true,
-          "score": 0.82
+          "score": 0.88,
+          "threshold": 0.8,
+          "tier": "critical"
         }
       ],
-      "fidelity": 0.88,
-      "judgedAt": "2026-08-26T03:25:54.625Z",
+      "fidelity": 0.92,
+      "judgedAt": "2026-09-02T19:07:44.084Z",
       "layerScores": {
-        "componentStructure": 0.9,
-        "formDetail": 0.9,
-        "lightingCamera": 0.83,
-        "materialSurface": 0.88,
-        "silhouetteProportion": 0.86
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "lightingCamera": 0.85,
+        "materialSurface": 0.91,
+        "silhouetteProportion": 0.92
       },
       "passed": true,
       "passesComplete": [
@@ -120,12 +133,12 @@
         "interaction-pass",
         "optimization-pass"
       ],
-      "score": 88,
+      "score": 92,
       "threshold": 70
     },
     "runtime": {
       "destructionGroups": [],
-      "nodes": 3,
+      "nodes": 2,
       "pivots": [
         "root"
       ],
@@ -135,15 +148,15 @@
     "spec": "packages/props/src/models/u-turn-sign/object-sculpt-spec.json",
     "state": "scratch/u-turn-sign/.img2threejs/state.json",
     "status": "done",
-    "textures": 1,
+    "textures": 2,
     "thumb": "packages/props/src/models/u-turn-sign/thumb.webp",
-    "triangles": 240,
+    "triangles": 248,
     "uniqueGeometries": 2,
-    "vertices": 720
+    "vertices": 744
   },
   "name": "U-Turn Sign",
   "nameTh": "ป้ายกลับรถ",
-  "notes": "Budget: maxDrawCalls raised 1 -> 2 in the blockout. Printed plate and galvanised post are different materials and cannot merge; maxMaterials=2 was already unreachable at one draw call.",
+  "notes": "Budget: maxDrawCalls raised 1 -> 2 in the blockout. Printed plate and galvanised post are different materials and cannot merge; maxMaterials=2 was already unreachable at one draw call. Depth corrected 0.08 -> 0.14 in the v2 rebuild (2026-09-02): the plate reads the post at 48 px against a 416 px near plate edge of 1.2 m (0.138 m visible across two faces of a square section, so ~0.09-0.10 m square) and the Meshy proxy at 4 of 24 plate-width columns; a 0.09 m post plus a 0.045 m tray-and-lip stack is 0.14 m, which the 0.08 could not hold.",
   "physics": {
     "enabled": false,
     "massKg": null
@@ -160,7 +173,7 @@
   },
   "scale": {
     "declared": {
-      "d": 0.08,
+      "d": 0.14,
       "h": 2.4,
       "w": 0.9
     },
@@ -182,5 +195,5 @@
     "blue-plate"
   ],
   "targetTriangles": null,
-  "updatedAt": "2026-08-28T13:11:18.035Z"
+  "updatedAt": "2026-09-02T19:07:45.876Z"
 }

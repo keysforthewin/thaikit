@@ -71,10 +71,11 @@
       "primaryDomain": "object",
       "formLanguage": [
         "thin-laminate-board",
-        "aluminium-edge-trim",
+        "rounded-corner-aluminium-trim",
         "end-plane-x-frames",
         "folding-struts",
-        "square-tube-legs"
+        "square-tube-legs",
+        "chipped-enamel"
       ],
       "structureKind": [
         "assembled-solid",
@@ -86,7 +87,7 @@
       "materialFamilies": [
         "high-pressure-laminate",
         "anodised-aluminium",
-        "painted-steel-tube"
+        "chipped-enamel-steel-tube"
       ],
       "notes": "A folding table shipped LOCKED OPEN: the legs fold in a real one, but the kit's entry describes the open silhouette and a folded-flat table would be a different prop, so nothing here articulates -- one root pivot, zero sockets. Set out by the dozen at any temple fair or market, so the draw-call ceiling is the design constraint. Every temple fair, market stall and school event; white laminate scuffed grey at the edges, an aluminium trim with two extruded grooves, dark grey square-tube legs with rubber feet."
     },
@@ -110,8 +111,8 @@
         "repetitionSystems": 0
       },
       "reasoning": [
-        "TWO components on TWO materials: the laminate TOP (one box) and the steel FRAME (four trim rails with their grooves, two apron rails, six hinge blocks, four X-legs, two struts and four feet merged). Two draw calls of two.",
-        "Two materials because a satin laminate at 0.38 and a painted steel tube at 0.50 / 0.20 do not share a response; both WHITE with the tones as vertex colours, the laminate carrying a faint scuff canvas.",
+        "TWO components on TWO materials: the TOP (the rounded-corner laminate board and its rounded aluminium trim ring as two extrudes, plus eight groove lines) and the steel FRAME (two apron rails, twelve hinge brackets and tabs, four X-legs, two flat struts and four round foot caps merged). Two draw calls of two.",
+        "Two materials because a satin laminate at 0.38 and a painted steel tube at 0.55 / 0.15 do not share a response; both WHITE with the tones as vertex colours. The TRIM rides on the laminate material (metalness 0, so its side-lit lands are not eaten to the backdrop band the way the first build's 0.20-metal trim was), and the steel carries a chipped-enamel canvas with its envelope re-based.",
         "No repetition system at two draw calls: four legs are four rotated boxes in the frame merge.",
         "Action readiness: one root pivot, zero sockets, one declared box collider, not breakable."
       ]
@@ -151,9 +152,9 @@
           "zone": "top",
           "kind": "contour",
           "identityDefining": true,
-          "description": "aluminium edge trim wrapping the board",
+          "description": "rounded aluminium edge trim wrapping the board",
           "mapsTo": {
-            "ref": "frame"
+            "ref": "top"
           },
           "realization": "unreported"
         },
@@ -164,7 +165,7 @@
           "identityDefining": false,
           "description": "two extruded grooves along the trim",
           "mapsTo": {
-            "ref": "frame"
+            "ref": "top"
           },
           "realization": "unreported"
         },
@@ -195,10 +196,22 @@
           "zone": "base",
           "kind": "contour",
           "identityDefining": false,
-          "description": "rubber feet and hinge blocks",
+          "description": "round plastic foot caps, hinge brackets and strut tabs",
           "mapsTo": {
             "ref": "frame"
           },
+          "realization": "unreported"
+        },
+        {
+          "id": "d8-chips",
+          "zone": "base",
+          "kind": "chip",
+          "identityDefining": true,
+          "description": "chipped grey enamel on the legs",
+          "mapsTo": {
+            "ref": "d8-chips"
+          },
+          "onMaterial": "steel",
           "realization": "unreported"
         },
         {
@@ -244,7 +257,8 @@
     "resolvedUnknowns": [
       "The X-frames stand in the END planes, not the long planes: the proxy holds the leg x columns constant in every row while the z range narrows to a point, which is the signature of an X seen end-on.",
       "One strut per end, on the +z leg: the proxy shows the diagonal in x at both ends; which leg of the pair it lands on is not resolvable from either source.",
-      "Legs and trim are LIFTED in tone (legs to luma 123 against the plate's 45-98, trim to 168 against 93-107) because a back-lit satin face renders at ~0.55 of its painted value and the turntable gate reads the backdrop's luma 58 +-24 as background; at the first authoring (trim 138, legs 100) the trim probed 64 at azimuth 180.",
+      "The legs ship DARK, at the plate's own value band, and hold the turntable gate on CHROMA rather than by lifting: the enamel is a cool gunmetal (#2a3248 target, the plate's #383639 is itself slightly violet) that renders #3e455b lit / #0f1422 in shade at saturation 0.26-0.32, which the gate keeps as foreground. The first build lifted them to luma 123 against the plate's 45-98. The trim, moved onto the non-metal laminate material, ships at 0x8c8a8c and renders 100-135 on its lands against the plate's 93-150.",
+      "The enamel chips are BRIGHTER than the enamel, so the steel material's vertex colour is the chip envelope (#788090) and the canvas base fill is the enamel's linear ratio to it ([0.41, 0.445, 0.515] in sRGB); a multiply tile can only darken.",
       "The declared size was corrected 1.80 x 0.75 -> 1.56 x 0.67 on the proxy before building (arithmetic in envelopeDerivation)."
     ],
     "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
@@ -292,8 +306,9 @@
         "threshold": 0.8,
         "qualityCriteria": [
           "0.030 board in a 0.042 trim",
+          "Rounded corners on board and trim",
           "Trim 2 mm proud of the laminate",
-          "Two grooves"
+          "Two grooves stopping at the corners"
         ],
         "evidenceRefs": [
           "region-laminate",
@@ -302,6 +317,7 @@
         "failureModes": [
           "a thick slab",
           "no trim",
+          "square corners",
           "trim flush with the top"
         ]
       },
@@ -311,10 +327,10 @@
         "required": true,
         "threshold": 0.75,
         "qualityCriteria": [
-          "25 mm square tube",
+          "28 mm square tube in DARK chipped enamel",
           "X in the end plane, legs passing 26 mm apart",
-          "One strut per end",
-          "Feet on the floor, nothing below y 0"
+          "One flat strut per end with a hinge tab",
+          "Round foot caps on the floor, nothing below y 0"
         ],
         "evidenceRefs": [
           "region-leg"
@@ -322,6 +338,7 @@
         "failureModes": [
           "round tube",
           "legs in one plane",
+          "legs lifted to mid grey",
           "feet dipping under the floor"
         ]
       }
@@ -650,7 +667,8 @@
   "assumptions": [
     "The X-frames stand in the END planes, not the long planes: the proxy holds the leg x columns constant in every row while the z range narrows to a point, which is the signature of an X seen end-on.",
     "One strut per end, on the +z leg: the proxy shows the diagonal in x at both ends; which leg of the pair it lands on is not resolvable from either source.",
-    "Legs and trim are LIFTED in tone (legs to luma 123 against the plate's 45-98, trim to 168 against 93-107) because a back-lit satin face renders at ~0.55 of its painted value and the turntable gate reads the backdrop's luma 58 +-24 as background; at the first authoring (trim 138, legs 100) the trim probed 64 at azimuth 180.",
+    "The legs ship DARK, at the plate's own value band, and hold the turntable gate on CHROMA rather than by lifting: the enamel is a cool gunmetal (#2a3248 target, the plate's #383639 is itself slightly violet) that renders #3e455b lit / #0f1422 in shade at saturation 0.26-0.32, which the gate keeps as foreground. The first build lifted them to luma 123 against the plate's 45-98. The trim, moved onto the non-metal laminate material, ships at 0x8c8a8c and renders 100-135 on its lands against the plate's 93-150.",
+    "The enamel chips are BRIGHTER than the enamel, so the steel material's vertex colour is the chip envelope (#788090) and the canvas base fill is the enamel's linear ratio to it ([0.41, 0.445, 0.515] in sRGB); a multiply tile can only darken.",
     "The declared size was corrected 1.80 x 0.75 -> 1.56 x 0.67 on the proxy before building (arithmetic in envelopeDerivation)."
   ],
   "coordinateFrame": {
@@ -667,7 +685,7 @@
       "h": 0.75,
       "d": 0.67
     },
-    "description": "A 1.56 x 0.03 x 0.67 board at 0.720-0.750 in a 0.042-tall aluminium trim, on two X-frames of 25 mm square tube standing in the end planes 0.633 from centre, feet 0.52 m apart and heads 0.41 m apart, crossing at 0.33 m, each held by a strut from under the board 0.33 W in down to the frame at 0.555 m.",
+    "description": "A 1.56 x 0.03 x 0.67 rounded-corner board at 0.720-0.750 in a 0.042-tall rounded aluminium trim, on two X-frames of 28 mm square tube standing in the end planes 0.633 from centre, feet 0.52 m apart and heads 0.41 m apart, crossing at 0.33 m, each held by a strut from under the board 0.21 W in down to the frame at 0.555 m.",
     "envelopeDerivation": "x +-0.791 at the trim, y 0 to 0.752 at the trim top (2 mm proud of the laminate), z +-0.346 at the trim. The LIST-TIME declaration was 1.80 x 0.75 x 0.75 (w/h 2.40, d/h 1.00). The Meshy proxy of the plate measures bbox 1.902 x 0.913 x 0.817, w/h 2.084 and d/h 0.895. Height is the trustworthy axis for a table (0.72-0.75 m dining height), so length = 0.75 x 2.084 = 1.563 -> 1.56 m and depth = 0.75 x 0.895 = 0.671 -> 0.67 m -- the 150 x 60-class Thai folding table rather than the 6-foot one; the declaration was corrected before building. Stations off the proxy: top rows 0.92-0.98 with 0.94/0.96 hollow inside (a board in a wraparound trim, 0.045 m for both); legs at columns 7-8 and 71-72 in every row from 0.00 to 0.90, i.e. 0.094 W in from each end and standing in a vertical END plane; the per-row z range narrowing from 0.10-0.79 H at the floor to 0.41-0.49 H at 0.44 H and opening to 0.18-0.72 H under the board -- an X in the end plane crossing at 0.44 H, feet 0.52 m apart, heads 0.41 m apart; and a diagonal from column 17 at 0.90 H out to column 9 at 0.74 H at each end, the folding strut. The plate shows the same X and strut.",
     "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate: bbox 1.902 x 0.913 x 0.817, w/h 2.084 and d/h 0.895, which corrected the declared 1.80 x 0.75 to 1.56 x 0.67. It also settled the leg geometry -- an X in the END plane with a strut, read from the per-row z range narrowing to a point at 0.44 H -- where the plate's three-quarter view could have been read as splayed straight legs."
   },
@@ -707,19 +725,19 @@
   "componentTree": [
     {
       "id": "top",
-      "name": "White laminate board",
+      "name": "White laminate board in its aluminium trim",
       "level": "macro",
       "role": "identity",
       "importance": 1.0,
       "confidence": 0.86,
-      "primitive": "box",
+      "primitive": "extrude",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "One box on one material: one draw call.",
+      "topologyRationale": "Board, trim ring and groove lines on one material: one draw call. The trim shares the laminate material so its side-lit lands keep their value (a 0.20-metal trim probed 64 back-lit in the first build).",
       "materialId": "laminate",
       "material": "laminate",
       "parent": null,
       "geometryDescriptor": {
-        "topologyIntent": "Box 1.56 x 0.030 x 0.67 from 0.720 to 0.750, world UVs at 0.6 m.",
+        "topologyIntent": "Board: a rounded rectangle (r 0.038) 1.56 x 0.67 extruded 0.720-0.750. Trim: a rounded ring, outer 1.588 x 0.698 at r 0.048, inner 4 mm inside the board edge at r 0.034, extruded 0.710-0.752. Eight groove lines 3 mm tall, 0.5 mm proud, stopping short of the corners. World UVs at 0.6 m.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -728,24 +746,34 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "The trim overlaps the board's edge by 4 mm and stands 2 mm above its top, so no two co-facing faces share a plane. check-coplanar clean at 0.001 m.",
-        "mergeNote": "One box with world UVs."
+        "zFightingNote": "The trim overlaps the board's edge by 4 mm and stands 2 mm above its top, so no two co-facing faces share a plane; the grooves stand 0.5 mm proud of the ring. check-coplanar clean at 0.001 m.",
+        "mergeNote": "Two extrudes and eight boxes merged with world UVs."
       },
       "localFeatures": [
         {
           "id": "d1-board",
           "description": "board",
-          "delivery": "box"
+          "delivery": "rounded extrude"
+        },
+        {
+          "id": "d2-trim",
+          "description": "trim",
+          "delivery": "rounded ring extrude"
+        },
+        {
+          "id": "d3-grooves",
+          "description": "grooves",
+          "delivery": "eight proud lines"
         }
       ],
       "colorMaterialRecipe": {
         "materialId": "laminate",
         "baseColor": "#f0ece7",
-        "recipe": "One white vertex tone with a faint scuff canvas.",
+        "recipe": "White laminate and grey trim as vertex tones with a faint scuff canvas.",
         "evidenceRef": "region-laminate",
         "confidence": 0.86,
         "dominantAlbedo": "rgba(240, 236, 231, 1.0)",
-        "secondaryAlbedo": "rgba(216, 212, 208, 1.0)",
+        "secondaryAlbedo": "rgba(140, 138, 140, 1.0)",
         "materialClass": "plastic",
         "materialClassConfidence": 0.86
       },
@@ -796,19 +824,19 @@
     },
     {
       "id": "frame",
-      "name": "Aluminium edge trim and folding steel X-frames",
+      "name": "Folding steel X-frames",
       "level": "macro",
       "role": "structure",
       "importance": 0.95,
       "confidence": 0.8,
       "primitive": "box",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "Trim, grooves, aprons, hinge blocks, legs, struts and feet merged into one geometry on one material: one draw call.",
+      "topologyRationale": "Aprons, hinge brackets, legs, struts and foot caps merged into one geometry on one material: one draw call.",
       "materialId": "steel",
       "material": "steel",
       "parent": "top",
       "geometryDescriptor": {
-        "topologyIntent": "Trim: four rails 0.014 thick and 0.042 tall around the board, top at 0.752. Legs: 25 mm square boxes 0.869 long rotated about x by +-33 degrees, from 8 mm above the floor to 10 mm into the board zone, the pair offset 26 mm in x; feet 31 mm pads; hinge blocks 50 mm under the heads; struts 18 mm square from under the board 0.33 W in to the +z leg at 0.555.",
+        "topologyIntent": "Legs: 28 mm square boxes 0.869 long rotated about x by +-33 degrees, from 10 mm above the floor to 10 mm into the board zone, the pair offset 26 mm in x; round foot caps r 18.5 mm x 40 mm on each tube axis; hinge brackets (plate plus cheek) under the heads; flat struts 22 x 10 mm from under the board 0.21 W in to the +z leg at 0.555 with a landing tab. World UVs at 0.22 m.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -817,20 +845,10 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "Legs pass one another 26 mm apart at the crossing; heads run 10 mm up into the board zone and feet start 8 mm up inside the foot pads (a rotated box's end corner would otherwise dip 7 mm below the floor); grooves stand 0.5 mm proud of the trim face. check-coplanar clean at 0.001 m.",
-        "mergeNote": "One merged BufferGeometry, no canvas."
+        "zFightingNote": "Legs pass one another 26 mm apart at the crossing; heads run 10 mm up into the board zone and the caps' lowest rim sits 2 mm above the floor (a rotated box's end corner would otherwise dip 7 mm below it); bracket cheeks stand off the leg faces. check-coplanar clean at 0.001 m.",
+        "mergeNote": "One merged BufferGeometry with the paint canvas bound after construction."
       },
       "localFeatures": [
-        {
-          "id": "d2-trim",
-          "description": "trim",
-          "delivery": "four overlapping rails"
-        },
-        {
-          "id": "d3-grooves",
-          "description": "grooves",
-          "delivery": "eight proud lines"
-        },
         {
           "id": "d4-xlegs",
           "description": "X-legs",
@@ -839,22 +857,22 @@
         {
           "id": "d5-struts",
           "description": "struts",
-          "delivery": "two doubly rotated boxes"
+          "delivery": "two doubly rotated flat bars with tabs"
         },
         {
           "id": "d6-feet",
-          "description": "feet and hinges",
-          "delivery": "pads and blocks"
+          "description": "caps and brackets",
+          "delivery": "rotated cylinders and blocks"
         }
       ],
       "colorMaterialRecipe": {
         "materialId": "steel",
-        "baseColor": "#7c7a80",
-        "recipe": "Every tone a vertex colour on one white metal material.",
+        "baseColor": "#2a3248",
+        "recipe": "Chip-envelope vertex tones under an enamel paint canvas on one white metal material.",
         "evidenceRef": "region-leg",
         "confidence": 0.8,
-        "dominantAlbedo": "rgba(124, 122, 128, 1.0)",
-        "secondaryAlbedo": "rgba(170, 168, 170, 1.0)",
+        "dominantAlbedo": "rgba(42, 50, 72, 1.0)",
+        "secondaryAlbedo": "rgba(120, 128, 144, 1.0)",
         "materialClass": "metal",
         "materialClassConfidence": 0.8
       },
@@ -929,34 +947,45 @@
     },
     {
       "id": "steel",
-      "name": "Painted steel tube and aluminium trim",
+      "name": "Chipped grey enamel on steel tube",
       "type": "standard",
       "shaderModel": "MeshStandardMaterial / PBR approximation",
-      "baseColor": "#7c7a80",
-      "color": "#7c7a80",
+      "baseColor": "#2a3248",
+      "color": "#2a3248",
       "roughness": {
-        "base": 0.5,
+        "base": 0.55,
         "variation": 0.05,
         "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
         "map": "material-evidence/steel_roughness.png"
       },
-      "metalness": 0.2,
+      "metalness": 0.15,
       "albedo": {
-        "dominant": "#7c7a80",
+        "dominant": "#2a3248",
         "secondary": [
-          "#aaa8aa",
-          "#5a585c",
-          "#4e4c50"
+          "#788090",
+          "#252a36",
+          "#1f2129"
         ],
         "samplingNotes": "Measured as the mean of crops/leg.png. extract_pbr_evidence confidence 0.776. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
       },
-      "localOverrides": [],
+      "localOverrides": [
+        {
+          "id": "d8-chips",
+          "region": "the legs and struts, densest along the tube edges",
+          "roughness": 0.6,
+          "palette": [
+            "#788090",
+            "#2a3248"
+          ],
+          "evidence": "crops/leg.png -- the plate's legs read 45-55 shaded with pale worn edges to 98; carried as the paint canvas's chip clusters over the enamel base."
+        }
+      ],
       "finishClass": "metal",
       "textureless": {
         "declared": true,
         "evidence": [
           "Measured on the plate: legs #383639 / #2e2c30 shaded and #626165 lit (45-98), analyze_texture worn-composite roughness 0.9 on the shaded leg crop; trim #605c5e / #6c6a6a (93-107) with two extruded grooves; extract_pbr_evidence palette #29282A #262427 #2D2C2F #1E1D1E #7C7A7D at confidence 0.776.",
-          "Textureless as DECLARED: legs 0x7c7a80, trim 0xaaa8aa, grooves 0x6a686b, hinge blocks and aprons 0x5a585c, rubber feet 0x4e4c50, all vertex colours on one white material at 0.50 / 0.20. Metalness is capped because the harness binds no environment map."
+          "Textureless as DECLARED (no generated texture set): the enamel is delivered as a 256 px paint canvas after construction -- base fill at the enamel-over-envelope ratio, fourteen small hard-edged chip clusters with specks at the bare-metal tone, fine grain -- over the chip-envelope vertex colour #788090 on legs and struts, #60666f on brackets and aprons, #50545c on the foot caps, all on one white material at 0.55 / 0.15. Metalness is capped because the harness binds no environment map."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
       },
@@ -1077,27 +1106,27 @@
   ],
   "visualEvidence": [
     {
-      "timestamp": "2026-09-01T00:12:37.673391+00:00",
+      "timestamp": "2026-09-02T22:09:26.772432+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.91,
-      "aiVisionScore": 0.91,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.91,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.88
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.93,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.91,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Built 1.582 x 0.752 x 0.692 m over the trim against the corrected declaration of 1.56 x 0.75 x 0.67 (corrected from 1.80 x 0.75 on the proxy's w/h 2.084 and d/h 0.895). Legs 0.633 from centre (0.094 W in from each end), X crossing at 0.33 m, feet 0.52 m and heads 0.41 m apart, struts from 0.33 W in down to 0.555 m -- every station the proxy's.",
-          "notes": "The plate's three-quarter view could be read as splayed straight legs; the proxy's per-row z range narrowing to a point at 0.44 H is what says X."
+          "evidence": "Built 1.590 x 0.752 x 0.700 m over the trim against the corrected declaration of 1.56 x 0.75 x 0.67 (corrected from 1.80 x 0.75 on the proxy's w/h 2.084 and d/h 0.895). Legs 0.633 from centre (0.094 W in from each end), X crossing at 0.33 m, feet 0.52 m and heads 0.41 m apart, struts from 0.21 W in (proxy column 17 of 80) down to 0.555 m -- every station the proxy's. The board and trim now carry the plate's rounded corners (r 0.048 outer).",
+          "notes": "The plate's three-quarter view could be read as splayed straight legs; the proxy's per-row z range narrowing to a point at 0.44 H is what says X. Tube widened 25 -> 28 mm from the plate (40 px of a 1070 px height)."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/folding-laminate-trestle-table/reference.png",
@@ -1108,27 +1137,27 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-01T00:12:37.755996+00:00",
+      "timestamp": "2026-09-02T22:09:26.853208+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.91,
-      "aiVisionScore": 0.91,
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.91,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.88
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.93,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.91,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Built 1.582 x 0.752 x 0.692 m over the trim against the corrected declaration of 1.56 x 0.75 x 0.67 (corrected from 1.80 x 0.75 on the proxy's w/h 2.084 and d/h 0.895). Legs 0.633 from centre (0.094 W in from each end), X crossing at 0.33 m, feet 0.52 m and heads 0.41 m apart, struts from 0.33 W in down to 0.555 m -- every station the proxy's.",
-          "notes": "The plate's three-quarter view could be read as splayed straight legs; the proxy's per-row z range narrowing to a point at 0.44 H is what says X."
+          "evidence": "Built 1.590 x 0.752 x 0.700 m over the trim against the corrected declaration of 1.56 x 0.75 x 0.67 (corrected from 1.80 x 0.75 on the proxy's w/h 2.084 and d/h 0.895). Legs 0.633 from centre (0.094 W in from each end), X crossing at 0.33 m, feet 0.52 m and heads 0.41 m apart, struts from 0.21 W in (proxy column 17 of 80) down to 0.555 m -- every station the proxy's. The board and trim now carry the plate's rounded corners (r 0.048 outer).",
+          "notes": "The plate's three-quarter view could be read as splayed straight legs; the proxy's per-row z range narrowing to a point at 0.44 H is what says X. Tube widened 25 -> 28 mm from the plate (40 px of a 1070 px height)."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/folding-laminate-trestle-table/reference.png",
@@ -1139,27 +1168,57 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-01T00:12:37.846793+00:00",
+      "timestamp": "2026-09-02T22:09:26.936294+00:00",
       "passId": "form-refinement",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/folding-laminate-trestle-table/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/folding-laminate-trestle-table/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/folding-laminate-trestle-table/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-02T22:09:27.019756+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/folding-laminate-trestle-table/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/folding-laminate-trestle-table/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/folding-laminate-trestle-table/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-02T22:09:27.104545+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.91,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.88
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.93,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "top",
           "tier": "critical",
-          "score": 0.9,
+          "score": 0.93,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "0.030 laminate board in a 0.042 aluminium trim standing 2 mm proud of the top with two extruded grooves; laminate probed 238 on beauty-000 against the plate's 239.",
-          "notes": ""
+          "evidence": "0.030 rounded-corner laminate board in a 0.042 rounded aluminium trim ring standing 2 mm proud of the top, two grooves stopping at the corners; laminate probed 238 against the plate's 239; trim on the non-metal material renders 100-135 on its lands against the plate's 93-150 (the first build's 0.20-metal trim had to ship at 168 to survive back-lighting).",
+          "notes": "Groove tone eased from 0x5e to 0x7e after the first render read the trim as three stacked bands; the plate's grooves are a shade under the lands, not lines."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/folding-laminate-trestle-table/reference.png",
@@ -1170,27 +1229,42 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-01T00:12:37.932087+00:00",
+      "timestamp": "2026-09-02T22:09:27.188872+00:00",
       "passId": "material-pass",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/folding-laminate-trestle-table/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/folding-laminate-trestle-table/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/folding-laminate-trestle-table/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-02T22:09:27.269630+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.91,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.88
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.93,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "frame",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.91,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "25 mm square-tube X-legs passing 26 mm apart, one strut per end on the +z leg, hinge blocks and apron rails under the board, rubber feet. Bounds min y is 0.000 after the leg feet were started 8 mm up inside their pads (a rotated box's end corner had dipped 7 mm below the floor). Trim probed 77 at azimuth 180 after the tone lift, clear of the gate's band.",
-          "notes": "Held back from higher by the strut's landing leg, which neither source resolves."
+          "evidence": "28 mm square-tube X-legs passing 26 mm apart in DARK chipped enamel at the plate's own value band -- rendered #3e455b lit, #545c72 key-lit, #0f1422 in shade (plate 45-98) -- held on chroma (sat 0.26-0.32) rather than lifted to 123 as before; round plastic foot caps on each tube axis with their lowest rim 2 mm above the floor; flat struts with hinge tabs at both ends; hinge brackets with cheeks at the heads. Chips: fourteen small hard-edged clusters per 0.22 m tile, re-based so the pale chips sit over the dark enamel on a multiply canvas.",
+          "notes": "Held back from higher by two things neither source resolves: which leg of each pair the strut lands on, and the enamel's hue -- the plate's tube is near-neutral (#383639) and the shipped enamel is a cool gunmetal so the gate keeps it as foreground."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/folding-laminate-trestle-table/reference.png",
@@ -1201,27 +1275,42 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-01T00:12:38.020346+00:00",
+      "timestamp": "2026-09-02T22:09:27.351108+00:00",
       "passId": "surface-pass",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/folding-laminate-trestle-table/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/folding-laminate-trestle-table/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/folding-laminate-trestle-table/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-02T22:09:27.432300+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.91,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.88
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.93,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "top",
           "tier": "critical",
-          "score": 0.9,
+          "score": 0.93,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "0.030 laminate board in a 0.042 aluminium trim standing 2 mm proud of the top with two extruded grooves; laminate probed 238 on beauty-000 against the plate's 239.",
-          "notes": ""
+          "evidence": "0.030 rounded-corner laminate board in a 0.042 rounded aluminium trim ring standing 2 mm proud of the top, two grooves stopping at the corners; laminate probed 238 against the plate's 239; trim on the non-metal material renders 100-135 on its lands against the plate's 93-150 (the first build's 0.20-metal trim had to ship at 168 to survive back-lighting).",
+          "notes": "Groove tone eased from 0x5e to 0x7e after the first render read the trim as three stacked bands; the plate's grooves are a shade under the lands, not lines."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/folding-laminate-trestle-table/reference.png",
@@ -1232,17 +1321,17 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-01T00:12:38.107511+00:00",
+      "timestamp": "2026-09-02T22:09:27.515763+00:00",
       "passId": "lighting-pass",
-      "estimatedFidelity": 0.88,
-      "aiVisionScore": 0.88,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.91,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.88
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.93,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/folding-laminate-trestle-table/reference.png",
@@ -1253,17 +1342,17 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-01T00:12:38.190879+00:00",
+      "timestamp": "2026-09-02T22:09:27.600354+00:00",
       "passId": "interaction-pass",
-      "estimatedFidelity": 0.91,
-      "aiVisionScore": 0.91,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.91,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.88
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.93,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/folding-laminate-trestle-table/reference.png",
@@ -1274,45 +1363,45 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-01T00:12:38.272213+00:00",
+      "timestamp": "2026-09-02T22:09:27.684167+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.88,
-      "aiVisionScore": 0.88,
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.91,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.88
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.93,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.91,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Built 1.582 x 0.752 x 0.692 m over the trim against the corrected declaration of 1.56 x 0.75 x 0.67 (corrected from 1.80 x 0.75 on the proxy's w/h 2.084 and d/h 0.895). Legs 0.633 from centre (0.094 W in from each end), X crossing at 0.33 m, feet 0.52 m and heads 0.41 m apart, struts from 0.33 W in down to 0.555 m -- every station the proxy's.",
-          "notes": "The plate's three-quarter view could be read as splayed straight legs; the proxy's per-row z range narrowing to a point at 0.44 H is what says X."
+          "evidence": "Built 1.590 x 0.752 x 0.700 m over the trim against the corrected declaration of 1.56 x 0.75 x 0.67 (corrected from 1.80 x 0.75 on the proxy's w/h 2.084 and d/h 0.895). Legs 0.633 from centre (0.094 W in from each end), X crossing at 0.33 m, feet 0.52 m and heads 0.41 m apart, struts from 0.21 W in (proxy column 17 of 80) down to 0.555 m -- every station the proxy's. The board and trim now carry the plate's rounded corners (r 0.048 outer).",
+          "notes": "The plate's three-quarter view could be read as splayed straight legs; the proxy's per-row z range narrowing to a point at 0.44 H is what says X. Tube widened 25 -> 28 mm from the plate (40 px of a 1070 px height)."
         },
         {
           "id": "top",
           "tier": "critical",
-          "score": 0.9,
+          "score": 0.93,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "0.030 laminate board in a 0.042 aluminium trim standing 2 mm proud of the top with two extruded grooves; laminate probed 238 on beauty-000 against the plate's 239.",
-          "notes": ""
+          "evidence": "0.030 rounded-corner laminate board in a 0.042 rounded aluminium trim ring standing 2 mm proud of the top, two grooves stopping at the corners; laminate probed 238 against the plate's 239; trim on the non-metal material renders 100-135 on its lands against the plate's 93-150 (the first build's 0.20-metal trim had to ship at 168 to survive back-lighting).",
+          "notes": "Groove tone eased from 0x5e to 0x7e after the first render read the trim as three stacked bands; the plate's grooves are a shade under the lands, not lines."
         },
         {
           "id": "frame",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.91,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "25 mm square-tube X-legs passing 26 mm apart, one strut per end on the +z leg, hinge blocks and apron rails under the board, rubber feet. Bounds min y is 0.000 after the leg feet were started 8 mm up inside their pads (a rotated box's end corner had dipped 7 mm below the floor). Trim probed 77 at azimuth 180 after the tone lift, clear of the gate's band.",
-          "notes": "Held back from higher by the strut's landing leg, which neither source resolves."
+          "evidence": "28 mm square-tube X-legs passing 26 mm apart in DARK chipped enamel at the plate's own value band -- rendered #3e455b lit, #545c72 key-lit, #0f1422 in shade (plate 45-98) -- held on chroma (sat 0.26-0.32) rather than lifted to 123 as before; round plastic foot caps on each tube axis with their lowest rim 2 mm above the floor; flat struts with hinge tabs at both ends; hinge brackets with cheeks at the heads. Chips: fourteen small hard-edged clusters per 0.22 m tile, re-based so the pale chips sit over the dark enamel on a multiply canvas.",
+          "notes": "Held back from higher by two things neither source resolves: which leg of each pair the strut lands on, and the enamel's hue -- the plate's tube is near-neutral (#383639) and the shipped enamel is a cool gunmetal so the gate keeps it as foreground."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/folding-laminate-trestle-table/reference.png",
@@ -1325,31 +1414,31 @@
   ],
   "reviewHistory": [
     {
-      "timestamp": "2026-09-01T00:12:37.673391+00:00",
+      "timestamp": "2026-09-02T22:09:26.772432+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.91,
-      "aiVisionScore": 0.91,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.91,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.88
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.93,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.91,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Built 1.582 x 0.752 x 0.692 m over the trim against the corrected declaration of 1.56 x 0.75 x 0.67 (corrected from 1.80 x 0.75 on the proxy's w/h 2.084 and d/h 0.895). Legs 0.633 from centre (0.094 W in from each end), X crossing at 0.33 m, feet 0.52 m and heads 0.41 m apart, struts from 0.33 W in down to 0.555 m -- every station the proxy's.",
-          "notes": "The plate's three-quarter view could be read as splayed straight legs; the proxy's per-row z range narrowing to a point at 0.44 H is what says X."
+          "evidence": "Built 1.590 x 0.752 x 0.700 m over the trim against the corrected declaration of 1.56 x 0.75 x 0.67 (corrected from 1.80 x 0.75 on the proxy's w/h 2.084 and d/h 0.895). Legs 0.633 from centre (0.094 W in from each end), X crossing at 0.33 m, feet 0.52 m and heads 0.41 m apart, struts from 0.21 W in (proxy column 17 of 80) down to 0.555 m -- every station the proxy's. The board and trim now carry the plate's rounded corners (r 0.048 outer).",
+          "notes": "The plate's three-quarter view could be read as splayed straight legs; the proxy's per-row z range narrowing to a point at 0.44 H is what says X. Tube widened 25 -> 28 mm from the plate (40 px of a 1070 px height)."
         }
       ],
       "action": "continue",
-      "summary": "Blockout: two components at 2 draw calls of 2, every station off the proxy band table; size corrected 1.80 x 0.75 -> 1.56 x 0.67 before any geometry.",
+      "summary": "Blockout: two components at 2 draw calls of 2, every station off the proxy band table; size corrected 1.80 x 0.75 -> 1.56 x 0.67 before any geometry; board and trim as rounded-rectangle extrudes.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1366,31 +1455,31 @@
       }
     },
     {
-      "timestamp": "2026-09-01T00:12:37.755996+00:00",
+      "timestamp": "2026-09-02T22:09:26.853208+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.91,
-      "aiVisionScore": 0.91,
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.91,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.88
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.93,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.91,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Built 1.582 x 0.752 x 0.692 m over the trim against the corrected declaration of 1.56 x 0.75 x 0.67 (corrected from 1.80 x 0.75 on the proxy's w/h 2.084 and d/h 0.895). Legs 0.633 from centre (0.094 W in from each end), X crossing at 0.33 m, feet 0.52 m and heads 0.41 m apart, struts from 0.33 W in down to 0.555 m -- every station the proxy's.",
-          "notes": "The plate's three-quarter view could be read as splayed straight legs; the proxy's per-row z range narrowing to a point at 0.44 H is what says X."
+          "evidence": "Built 1.590 x 0.752 x 0.700 m over the trim against the corrected declaration of 1.56 x 0.75 x 0.67 (corrected from 1.80 x 0.75 on the proxy's w/h 2.084 and d/h 0.895). Legs 0.633 from centre (0.094 W in from each end), X crossing at 0.33 m, feet 0.52 m and heads 0.41 m apart, struts from 0.21 W in (proxy column 17 of 80) down to 0.555 m -- every station the proxy's. The board and trim now carry the plate's rounded corners (r 0.048 outer).",
+          "notes": "The plate's three-quarter view could be read as splayed straight legs; the proxy's per-row z range narrowing to a point at 0.44 H is what says X. Tube widened 25 -> 28 mm from the plate (40 px of a 1070 px height)."
         }
       ],
       "action": "continue",
-      "summary": "Structural pass: board 0.720-0.750 in a 0.042 trim, X-frames in the end planes 0.633 from centre crossing at 0.33 m, struts from 0.33 W in to 0.555 m, feet on the floor.",
+      "summary": "Structural pass: board 0.720-0.750 in a 0.042 rounded trim ring, X-frames in the end planes 0.633 from centre crossing at 0.33 m, struts from 0.21 W in to 0.555 m, foot caps on the floor.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1406,31 +1495,79 @@
       }
     },
     {
-      "timestamp": "2026-09-01T00:12:37.846793+00:00",
+      "timestamp": "2026-09-02T22:09:26.936294+00:00",
       "passId": "form-refinement",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Rebuild from 0.88: board and trim as rounded-rectangle extrudes (the plate's corners are rounded), tube 25 -> 28 mm off the plate, round foot caps on the tube axes, hinge brackets with cheeks and strut landing tabs.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/folding-laminate-trestle-table/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/folding-laminate-trestle-table/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/folding-laminate-trestle-table/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-02T22:09:27.019756+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Strut head moved from 0.29 W to the proxy's own column 17 of 80 = 0.2125 W from the end: the first build's comment cited the column and its constant did not match it, so the brace ran 0.31 m along the board where the plate and proxy have 0.185 m.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/folding-laminate-trestle-table/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/folding-laminate-trestle-table/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/folding-laminate-trestle-table/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-02T22:09:27.104545+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.91,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.88
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.93,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "top",
           "tier": "critical",
-          "score": 0.9,
+          "score": 0.93,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "0.030 laminate board in a 0.042 aluminium trim standing 2 mm proud of the top with two extruded grooves; laminate probed 238 on beauty-000 against the plate's 239.",
-          "notes": ""
+          "evidence": "0.030 rounded-corner laminate board in a 0.042 rounded aluminium trim ring standing 2 mm proud of the top, two grooves stopping at the corners; laminate probed 238 against the plate's 239; trim on the non-metal material renders 100-135 on its lands against the plate's 93-150 (the first build's 0.20-metal trim had to ship at 168 to survive back-lighting).",
+          "notes": "Groove tone eased from 0x5e to 0x7e after the first render read the trim as three stacked bands; the plate's grooves are a shade under the lands, not lines."
         }
       ],
       "action": "continue",
-      "summary": "Form refinement: trim grooves, hinge blocks, apron rails, rubber foot pads, the legs offset 26 mm so they pass one another. Leg feet started 8 mm up inside the pads after the bounds check showed a 7 mm dip.",
+      "summary": "Form refinement: rounded corners on board and trim with the grooves stopping short of them, hinge brackets with cheeks, strut landing tabs, round foot caps on the tube axes, 28 mm tube, the legs offset 26 mm so they pass one another.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1446,31 +1583,55 @@
       }
     },
     {
-      "timestamp": "2026-09-01T00:12:37.932087+00:00",
+      "timestamp": "2026-09-02T22:09:27.188872+00:00",
       "passId": "material-pass",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Legs returned to the plate's dark value band and held on chroma (cool gunmetal, sat 0.26-0.32 rendered) instead of lifted to luma 123; the trim moved onto the non-metal laminate material at 0x8c8a8c; grooves eased 0x5e -> 0x7e after the first render read as three stacked bands.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/folding-laminate-trestle-table/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/folding-laminate-trestle-table/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/folding-laminate-trestle-table/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-02T22:09:27.269630+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.91,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.88
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.93,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "frame",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.91,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "25 mm square-tube X-legs passing 26 mm apart, one strut per end on the +z leg, hinge blocks and apron rails under the board, rubber feet. Bounds min y is 0.000 after the leg feet were started 8 mm up inside their pads (a rotated box's end corner had dipped 7 mm below the floor). Trim probed 77 at azimuth 180 after the tone lift, clear of the gate's band.",
-          "notes": "Held back from higher by the strut's landing leg, which neither source resolves."
+          "evidence": "28 mm square-tube X-legs passing 26 mm apart in DARK chipped enamel at the plate's own value band -- rendered #3e455b lit, #545c72 key-lit, #0f1422 in shade (plate 45-98) -- held on chroma (sat 0.26-0.32) rather than lifted to 123 as before; round plastic foot caps on each tube axis with their lowest rim 2 mm above the floor; flat struts with hinge tabs at both ends; hinge brackets with cheeks at the heads. Chips: fourteen small hard-edged clusters per 0.22 m tile, re-based so the pale chips sit over the dark enamel on a multiply canvas.",
+          "notes": "Held back from higher by two things neither source resolves: which leg of each pair the strut lands on, and the enamel's hue -- the plate's tube is near-neutral (#383639) and the shipped enamel is a cool gunmetal so the gate keeps it as foreground."
         }
       ],
       "action": "continue",
-      "summary": "Material pass: TWO materials of two -- laminate 0.38/0.0 and steel 0.50/0.20; tones vertex colours off the plate, PBR evidence 0.86 and 0.776. Metal tones lifted (legs 123, trim 168) because the first authoring probed the trim at 64 back-lit, inside the gate band.",
+      "summary": "Material pass: TWO materials of two -- laminate 0.38/0.0 carrying the board AND the trim, steel 0.55/0.15 carrying the frame; the legs ship DARK at the plate's value band and hold the gate on chroma; the trim moved off the metal material so its side-lit lands keep their value.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1486,31 +1647,55 @@
       }
     },
     {
-      "timestamp": "2026-09-01T00:12:38.020346+00:00",
+      "timestamp": "2026-09-02T22:09:27.351108+00:00",
       "passId": "surface-pass",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Chipped-enamel paint tile on the steel with the envelope re-based (vertex colour = chip tone #788090, base fill = the enamel's linear ratio); first pass at cluster scale 0.45 read as white smears, shipped at 0.22 with 14 clusters; laminate scuffing cut 20/24 -> 8/7.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/folding-laminate-trestle-table/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/folding-laminate-trestle-table/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/folding-laminate-trestle-table/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-02T22:09:27.432300+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.91,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.88
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.93,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "top",
           "tier": "critical",
-          "score": 0.9,
+          "score": 0.93,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "0.030 laminate board in a 0.042 aluminium trim standing 2 mm proud of the top with two extruded grooves; laminate probed 238 on beauty-000 against the plate's 239.",
-          "notes": ""
+          "evidence": "0.030 rounded-corner laminate board in a 0.042 rounded aluminium trim ring standing 2 mm proud of the top, two grooves stopping at the corners; laminate probed 238 against the plate's 239; trim on the non-metal material renders 100-135 on its lands against the plate's 93-150 (the first build's 0.20-metal trim had to ship at 168 to survive back-lighting).",
+          "notes": "Groove tone eased from 0x5e to 0x7e after the first render read the trim as three stacked bands; the plate's grooves are a shade under the lands, not lines."
         }
       ],
       "action": "continue",
-      "summary": "Surface pass: a faint 256 px scuff canvas on the laminate with no ground wash; the steel carries none.",
+      "summary": "Surface pass: two 256 px canvases after construction -- a faint scuff multiplier on the laminate (8 streaks, 7 blotches, no ground wash) and a chipped-enamel paint tile on the steel with its envelope re-based (vertex colour = chip tone, base fill = enamel ratio).",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1526,21 +1711,21 @@
       }
     },
     {
-      "timestamp": "2026-09-01T00:12:38.107511+00:00",
+      "timestamp": "2026-09-02T22:09:27.515763+00:00",
       "passId": "lighting-pass",
-      "estimatedFidelity": 0.88,
-      "aiVisionScore": 0.88,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.91,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.88
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.93,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [],
       "action": "continue",
-      "summary": "Lighting pass: grey seamless plate at luma 106, soft key from the upper left; the laminate lands within 1 level of the plate on the render.",
+      "summary": "Lighting pass: grey seamless plate at luma 106, soft key from the upper left; the laminate lands within 1 level of the plate on the render and the legs inside the plate's 45-98 band on every azimuth.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1556,17 +1741,17 @@
       }
     },
     {
-      "timestamp": "2026-09-01T00:12:38.190879+00:00",
+      "timestamp": "2026-09-02T22:09:27.600354+00:00",
       "passId": "interaction-pass",
-      "estimatedFidelity": 0.91,
-      "aiVisionScore": 0.91,
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.91,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.88
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.93,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [],
       "action": "continue",
@@ -1586,49 +1771,49 @@
       }
     },
     {
-      "timestamp": "2026-09-01T00:12:38.272213+00:00",
+      "timestamp": "2026-09-02T22:09:27.684167+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.88,
-      "aiVisionScore": 0.88,
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.91,
-        "componentStructure": 0.9,
-        "formDetail": 0.86,
-        "materialSurface": 0.86,
-        "lightingCamera": 0.88
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.93,
+        "formDetail": 0.93,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.9
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.91,
+          "score": 0.93,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Built 1.582 x 0.752 x 0.692 m over the trim against the corrected declaration of 1.56 x 0.75 x 0.67 (corrected from 1.80 x 0.75 on the proxy's w/h 2.084 and d/h 0.895). Legs 0.633 from centre (0.094 W in from each end), X crossing at 0.33 m, feet 0.52 m and heads 0.41 m apart, struts from 0.33 W in down to 0.555 m -- every station the proxy's.",
-          "notes": "The plate's three-quarter view could be read as splayed straight legs; the proxy's per-row z range narrowing to a point at 0.44 H is what says X."
+          "evidence": "Built 1.590 x 0.752 x 0.700 m over the trim against the corrected declaration of 1.56 x 0.75 x 0.67 (corrected from 1.80 x 0.75 on the proxy's w/h 2.084 and d/h 0.895). Legs 0.633 from centre (0.094 W in from each end), X crossing at 0.33 m, feet 0.52 m and heads 0.41 m apart, struts from 0.21 W in (proxy column 17 of 80) down to 0.555 m -- every station the proxy's. The board and trim now carry the plate's rounded corners (r 0.048 outer).",
+          "notes": "The plate's three-quarter view could be read as splayed straight legs; the proxy's per-row z range narrowing to a point at 0.44 H is what says X. Tube widened 25 -> 28 mm from the plate (40 px of a 1070 px height)."
         },
         {
           "id": "top",
           "tier": "critical",
-          "score": 0.9,
+          "score": 0.93,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "0.030 laminate board in a 0.042 aluminium trim standing 2 mm proud of the top with two extruded grooves; laminate probed 238 on beauty-000 against the plate's 239.",
-          "notes": ""
+          "evidence": "0.030 rounded-corner laminate board in a 0.042 rounded aluminium trim ring standing 2 mm proud of the top, two grooves stopping at the corners; laminate probed 238 against the plate's 239; trim on the non-metal material renders 100-135 on its lands against the plate's 93-150 (the first build's 0.20-metal trim had to ship at 168 to survive back-lighting).",
+          "notes": "Groove tone eased from 0x5e to 0x7e after the first render read the trim as three stacked bands; the plate's grooves are a shade under the lands, not lines."
         },
         {
           "id": "frame",
           "tier": "critical",
-          "score": 0.86,
+          "score": 0.91,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "25 mm square-tube X-legs passing 26 mm apart, one strut per end on the +z leg, hinge blocks and apron rails under the board, rubber feet. Bounds min y is 0.000 after the leg feet were started 8 mm up inside their pads (a rotated box's end corner had dipped 7 mm below the floor). Trim probed 77 at azimuth 180 after the tone lift, clear of the gate's band.",
-          "notes": "Held back from higher by the strut's landing leg, which neither source resolves."
+          "evidence": "28 mm square-tube X-legs passing 26 mm apart in DARK chipped enamel at the plate's own value band -- rendered #3e455b lit, #545c72 key-lit, #0f1422 in shade (plate 45-98) -- held on chroma (sat 0.26-0.32) rather than lifted to 123 as before; round plastic foot caps on each tube axis with their lowest rim 2 mm above the floor; flat struts with hinge tabs at both ends; hinge brackets with cheeks at the heads. Chips: fourteen small hard-edged clusters per 0.22 m tile, re-based so the pale chips sit over the dark enamel on a multiply canvas.",
+          "notes": "Held back from higher by two things neither source resolves: which leg of each pair the strut lands on, and the enamel's hue -- the plate's tube is near-neutral (#383639) and the shipped enamel is a cool gunmetal so the gate keeps it as foreground."
         }
       ],
       "action": "continue",
-      "summary": "FINAL VERDICT. Overall visual fidelity 0.88. 372/2000 triangles, 2/2 draw calls, 2/2 materials, 2/4 unique geometries, one canvas. Turntable with --allow-holes on the holeviz measurement: the enclosed background is the triangles between the X-legs under the board and under the strut, real openings.",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.93. 828/2000 triangles, 2/2 draw calls, 2/2 materials, 2/4 unique geometries, two canvases, factory ~60 ms. Turntable with --allow-holes on the holeviz measurement: the enclosed background is the triangles between the X-legs under the board and under the strut, real openings.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1687,10 +1872,10 @@
         "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
       },
       "triangles": {
-        "measured": 372,
+        "measured": 828,
         "budget": 2000,
-        "headroom": 1628,
-        "note": "372 of 2000: thirty-one boxes."
+        "headroom": 1172,
+        "note": "828 of 2000: two rounded extrudes (28-point profiles), four ten-segment caps and thirty boxes."
       }
     }
   },
@@ -1748,7 +1933,7 @@
   "proceduralStrategy": [
     {
       "id": "primitives",
-      "strategy": "Boxes throughout: the board, four trim rails, eight groove lines, two aprons, six hinge blocks, four rotated legs, two doubly rotated struts, four feet."
+      "strategy": "Rounded-rectangle extrudes for the board and the trim ring; boxes for the grooves, aprons, brackets, legs and struts; short cylinders for the foot caps."
     },
     {
       "id": "instancing",
@@ -1760,7 +1945,7 @@
     },
     {
       "id": "textures",
-      "strategy": "Both materials are declared textureless. One 256 px scuff canvas on the laminate after construction; the factory built in under 50 ms."
+      "strategy": "Both materials are declared textureless (no generated set). Two 256 px canvases after construction -- a scuff multiplier on the laminate and the chipped-enamel paint tile on the steel; the factory built in ~60 ms."
     }
   ],
   "animationAnchors": [],
@@ -1781,8 +1966,8 @@
     {
       "id": "dark-metal",
       "severity": "medium",
-      "description": "Legs at the plate's 45-55 and trim at 93-107 render inside the gate's backdrop band on back-lit faces.",
-      "mitigation": "Lifted to 123 and 168; recorded as an assumption."
+      "description": "Legs at the plate's 45-55 render inside the gate's backdrop band on back-lit faces.",
+      "mitigation": "Held on chroma: the enamel is a cool gunmetal rendering at saturation 0.26-0.32, which the gate keeps as foreground; it reads cooler than the plate's near-neutral tube, which is the price and is recorded as an assumption."
     }
   ],
   "localSpecSearch": {
@@ -1799,36 +1984,33 @@
     {
       "passed": false,
       "checks": {
-        "silhouetteIoU": 0.195,
-        "aspectRatioDelta": 0.127,
-        "scaleDelta": 0.2848,
-        "bilateralSymmetryError": 0.0934,
+        "silhouetteIoU": 0.2711,
+        "aspectRatioDelta": 0.349,
+        "scaleDelta": 0.0517,
+        "bilateralSymmetryError": 0.1561,
         "colorDelta": {
           "checked": 2,
-          "maxDeltaE": 4.9,
+          "maxDeltaE": 16.25,
           "perComponent": [
             {
               "componentId": null,
-              "deltaE": 4.9
+              "deltaE": 4.91
             },
             {
               "componentId": null,
-              "deltaE": 2.83
+              "deltaE": 16.25
             }
           ],
           "gated": false
         }
       },
       "failures": [
-        "silhouette IoU 0.195 is below threshold 0.85",
-        "aspect-ratio delta 0.127 exceeds threshold 0.05",
-        "scale delta 0.285 exceeds threshold 0.08",
+        "silhouette IoU 0.271 is below threshold 0.85",
+        "aspect-ratio delta 0.349 exceeds threshold 0.05",
         "blockout requires --map-stripped-render evidence"
       ],
-      "maskWarnings": [
-        "render: 4.8% of foreground cells lie outside the largest connected blob and were excluded from the bounding box; if the subject really has separated parts in this projection, they are not being measured"
-      ],
-      "renderHash": "a731d2ee4d01f2f7",
+      "maskWarnings": [],
+      "renderHash": "fd8dacaefb0d56d3",
       "passId": "blockout"
     }
   ]

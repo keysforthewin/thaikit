@@ -4,6 +4,7 @@
   "createdAt": "2026-08-25T03:11:50.518Z",
   "description": "Blue rectangular plate carrying a white motorcycle pictogram, reserving the leftmost lane for motorcycles.",
   "destructionGroups": [],
+  "forkedFrom": null,
   "hidden": false,
   "id": "motorcycle-lane-sign",
   "image": {
@@ -38,20 +39,20 @@
   "model": {
     "colliders": {
       "coverage": 1,
-      "derivedAt": "2026-08-28T13:11:14.111Z",
+      "derivedAt": "2026-09-02T20:15:51.486Z",
       "file": "packages/props/src/models/motorcycle-lane-sign/colliders.json",
-      "handTuned": false,
+      "handTuned": true,
       "ledgesPreserved": "0/0",
-      "maxLedgeError": 0.25,
+      "maxLedgeError": 0.1875,
       "measurementSkipped": null,
       "overshoot": 0,
-      "p95LedgeError": 0.0058,
+      "p95LedgeError": 0.1875,
       "parts": 2
     },
     "drawCalls": 2,
     "export": "createObjectModel",
-    "fileBytes": 261252,
-    "gpuBytesEstimate": 1398101,
+    "fileBytes": 142932,
+    "gpuBytesEstimate": 2951850,
     "maps": [],
     "materials": 2,
     "meshes": 2,
@@ -66,48 +67,60 @@
       "seed": null
     },
     "review": {
-      "comparisonImage": "scratch/motorcycle-lane-sign/cmp-final.png",
+      "comparisonImage": null,
       "corrections": {
         "maxTotal": 10,
-        "perPass": 0,
-        "total": 0
+        "perPass": 4,
+        "total": 4
       },
-      "critique": "Two-component sign built to the declared 0.900 x 2.400 m with a measured depth of 0.087 against a declared 0.08, inside the asset's 0.1 tolerance. 240 triangles of 800, 2 draw calls of 2, 2 materials of 2, 2 unique geometries of 2, one texture. The passes were worked as ONE build with the deterministic gates run once over the finished prop rather than per pass, so this entry records the same evidence set for each pass: the per-pass content is real but the per-pass evidence is not, and that is stated rather than implied. No colour was carried over from the sibling signs built in the same session - this plate's blue trims to #3370AB against the u-turn plate's #4871A2, two signs of the same class weathered differently, and pooling their measurements would have made both wrong.",
+      "critique": "FINAL VERDICT. Overall visual fidelity 0.92. 248/800 triangles, 2/2 draw calls, 2/2 materials, 2/2 unique geometries, one 25 KB baked atlas and one 512 px canvas. Turntable: 0 and 180 segmented and hole-free; 90 and 270 fall under the gate segmenter's 3.5% frame-coverage floor (an edge-on sign is a sliver), the same recorded limitation the fence panels carry, and are not a defect of the build.",
       "decision": "continue",
       "featureReviews": [
         {
-          "evidence": "A 20-point rounded-rect extrusion at 0.9 x 1.08 m, four segments per corner, bevelEnabled:false so ExtrudeGeometry does not round the authored radius a second time. Edge-on the plate reads as a folded section rather than a wedge, and the reference's unusually deep edge return is what the atlas's ground texel reproduces.",
+          "evidence": "Square 0.9 x 0.9 m tray (r 0.045) 33 mm deep with a 20 mm rim lip 8 mm proud at y 0.9-1.8; corner radius and the white rule read off the plate's rectified field. Bounds 0.9 x 1.8 x 0.159 against the corrected declaration 0.9 x 1.8 x 0.15.",
           "id": "plate-outline",
+          "notes": "",
           "passed": true,
-          "score": 0.91
+          "score": 0.93,
+          "threshold": 0.85,
+          "tier": "critical"
         },
         {
-          "evidence": "Graded against the DECLARED contract. Harness-measured bounds 0.900 x 2.400 x 0.087 m - exact in width and height, inside tolerance in depth. The 1.08 m plate height follows the Meshy proxy's own plate aspect of 0.83 rather than an estimate by eye. The proxy's normalised width implies a 1.20 m plate against the declared 0.9; the declared contract wins and a reviewer comparing render to plate will see a narrower plate.",
+          "evidence": "Post 0.105 m square: 71 px across two faces against the plate's 424 px near edge for 0.9 m (0.15 m visible), proxy 5 of 100 columns (0.11 m); height 1.8 from the plate's 855 px (1.82 m) and the proxy's 1.73 m. Brackets, spine and cap plate behind the tray; holeviz 0 enclosed pixels at all four azimuths.",
           "id": "mast-proportion",
+          "notes": "The post foot is built to the corrected declared height; the plate shows the whole prop with an empty bottom row.",
           "passed": true,
-          "score": 0.85
+          "score": 0.92,
+          "threshold": 0.85,
+          "tier": "critical"
         },
         {
-          "evidence": "Side elevation facing the viewer's RIGHT, matching the reference's chirality - the front-cap UV mapping preserves the sign so the atlas is not mirrored. Two annular wheels with knocked-out hubs, a filled tank-seat-engine body, handlebars, fork and exhaust, all SOLID FILL. Held at 0.80 rather than higher: the engine block and tank read thinner than the reference's, so at close range it leans slightly toward a bicycle. It is drawn procedurally from the reference's silhouette, not projected from it, so it is a faithful arrangement of the parts rather than a copy of that drawing.",
-          "id": "motorcycle-pictogram",
+          "evidence": "The face IS the plate: field rectified from corners (369,151) (693,105) (681,491) (375,575) into 512 x 512, pasted inside a drawn blue margin and white rule (25 KB WebP); pictogram, two legend lines and rule at their own positions, unmirrored at 000.",
+          "id": "printed-face-system",
+          "notes": "Rectified from ~250-500 plate pixels across, so the lettering edge is the plate's own softness.",
           "passed": true,
-          "score": 0.8
+          "score": 0.94,
+          "threshold": 0.85,
+          "tier": "critical"
         },
         {
-          "evidence": "Ramp baked as vertex colours over 12 height segments, no texture. Rust #6C5543 from 815 orange-biased px, held below 0.25 m with a hard splash line because the per-band rusty-pixel scan reads 0-1 per cent from y=620 to y=820 and 25 per cent at y=900. Held short of 0.9 because the reference's post carries adhesive-residue patches partway up that a 12-segment vertex ramp cannot express.",
+          "evidence": "Height-keyed paint canvas over 1.8 m: rust hband under the plate's bottom edge (v 0.43-0.50) with streaks, ground band and mud tint over 0.03-0.32 m; zinc base #c7ccd1 for the harness's 0.6x side-lit transfer against the plate's post at luma 128.",
           "id": "galvanised-and-rust",
+          "notes": "The plate's post is a brighter, more mottled spangle than the canvas drift gives.",
           "passed": true,
-          "score": 0.82
+          "score": 0.88,
+          "threshold": 0.8,
+          "tier": "critical"
         }
       ],
-      "fidelity": 0.86,
-      "judgedAt": "2026-08-26T03:30:56.368Z",
+      "fidelity": 0.92,
+      "judgedAt": "2026-09-02T19:25:33.422Z",
       "layerScores": {
-        "componentStructure": 0.9,
-        "formDetail": 0.88,
-        "lightingCamera": 0.83,
-        "materialSurface": 0.87,
-        "silhouetteProportion": 0.87
+        "componentStructure": 0.93,
+        "formDetail": 0.91,
+        "lightingCamera": 0.85,
+        "materialSurface": 0.91,
+        "silhouetteProportion": 0.93
       },
       "passed": true,
       "passesComplete": [
@@ -120,12 +133,12 @@
         "interaction-pass",
         "optimization-pass"
       ],
-      "score": 86,
+      "score": 92,
       "threshold": 70
     },
     "runtime": {
       "destructionGroups": [],
-      "nodes": 3,
+      "nodes": 2,
       "pivots": [
         "root"
       ],
@@ -135,15 +148,15 @@
     "spec": "packages/props/src/models/motorcycle-lane-sign/object-sculpt-spec.json",
     "state": "scratch/motorcycle-lane-sign/.img2threejs/state.json",
     "status": "done",
-    "textures": 1,
+    "textures": 2,
     "thumb": "packages/props/src/models/motorcycle-lane-sign/thumb.webp",
-    "triangles": 240,
+    "triangles": 248,
     "uniqueGeometries": 2,
-    "vertices": 720
+    "vertices": 744
   },
   "name": "Motorcycle Lane Sign",
   "nameTh": "ป้ายช่องเดินรถจักรยานยนต์",
-  "notes": "Budget: maxDrawCalls raised 1 -> 2 in the blockout. Printed plate and galvanised post are different materials and cannot merge; maxMaterials=2 was already unreachable at one draw call.",
+  "notes": "Budget: maxDrawCalls raised 1 -> 2 in the blockout. Printed plate and galvanised post are different materials and cannot merge; maxMaterials=2 was already unreachable at one draw call. Height corrected 2.4 -> 1.8 and depth 0.08 -> 0.15 in the v2 rebuild (2026-09-02): the plate shows the whole prop -- the plate is SQUARE (proxy 0.52 H wide by 0.52 H tall; declared width 0.9 kept), its near edge 424 px for 0.9 m (471 px/m), plate top y 105 to the post foot y ~960 = 855 px = 1.82 m; proxy 0.9 / 0.52 = 1.73 m. Post 0.105 m square (71 px across two faces = 0.15 m visible), which with brackets and the tray is 0.15 m deep.",
   "physics": {
     "enabled": false,
     "massKg": null
@@ -160,8 +173,8 @@
   },
   "scale": {
     "declared": {
-      "d": 0.08,
-      "h": 2.4,
+      "d": 0.15,
+      "h": 1.8,
       "w": 0.9
     },
     "measured": null,
@@ -183,5 +196,5 @@
     "motorcycle"
   ],
   "targetTriangles": null,
-  "updatedAt": "2026-08-28T13:11:14.133Z"
+  "updatedAt": "2026-09-02T20:16:52.235Z"
 }

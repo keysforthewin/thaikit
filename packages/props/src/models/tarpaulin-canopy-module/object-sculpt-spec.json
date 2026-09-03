@@ -75,6 +75,8 @@
         "no-top-rail",
         "four-point-tie",
         "sagging-fabric",
+        "hanging-skirt",
+        "eyelets-and-rope-ties",
         "orange-lining",
         "open-all-sides"
       ],
@@ -142,7 +144,7 @@
           "zone": "frame",
           "kind": "contour",
           "identityDefining": true,
-          "description": "four 60 mm galvanised tube posts at the module corners, full height to the tie",
+          "description": "four 105 mm galvanised tube posts at the module corners, full height to the tie",
           "mapsTo": {
             "ref": "frame"
           },
@@ -212,6 +214,28 @@
           "kind": "contour",
           "identityDefining": true,
           "description": "a rope collar and a hanging knot at each of the four post heads",
+          "mapsTo": {
+            "ref": "frame"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d8-skirt",
+          "zone": "roof",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "the tarp hanging past the frame as a skirt with vertical folds, its corners turned up over the orange lining",
+          "mapsTo": {
+            "ref": "tarp"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d9-eyelets",
+          "zone": "roof",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "grommets along every hem with rope ties hanging from every other one",
           "mapsTo": {
             "ref": "frame"
           },
@@ -754,12 +778,12 @@
       "confidence": 0.9,
       "primitive": "cylinder",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "Four posts, four rails, eight rust collars and eight rope pieces are one merge and one draw call.",
+      "topologyRationale": "Four posts, four rails, eight rust collars, eight rope pieces, twenty eyelets and ten rope ties are one merge and one draw call.",
       "materialId": "steel",
       "material": "steel",
       "parent": null,
       "geometryDescriptor": {
-        "topologyIntent": "Posts r 0.030 at x,z +-1.958 from the ground to 2.68, 20 mm under the tie so the tarp owns y = 2.700; a bottom perimeter rail r 0.030 at y 0.11 on all four sides, the two Z-axis rails passing the X-axis pair; rust collars r 0.036 at each rail joint and r 0.035 at each foot; a rope collar r 0.040 at 2.57 and a hanging knot tapering 0.016 to 0.010 at 2.48 on every post.",
+        "topologyIntent": "Posts r 0.052 (the plate's tube is ~28 px of a 560 px frame) at x,z +-1.936 from the ground to 2.68, 20 mm under the tie so the tarp owns y = 2.700; a bottom perimeter rail r 0.030 at y 0.11 on all four sides, the two Z-axis rails passing the X-axis pair; rust collars r 0.036 at each rail joint and r 0.035 at each foot; a rope collar r 0.040 at 2.57 and a hanging knot tapering 0.016 to 0.010 at 2.48 on every post.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -790,7 +814,12 @@
         {
           "id": "d5-rust",
           "description": "rust",
-          "delivery": "eight collars plus a bloom canvas"
+          "delivery": "eight collars plus a bloom canvas at density 120"
+        },
+        {
+          "id": "d9-eyelets",
+          "description": "eyelets and ties",
+          "delivery": "twenty 6-segment discs on the skirt faces and ten 4-point rope tubes"
         }
       ],
       "colorMaterialRecipe": {
@@ -837,19 +866,19 @@
     },
     {
       "id": "tarp",
-      "name": "Woven tarpaulin, blue over an orange lining",
+      "name": "Woven tarpaulin, blue over an orange lining, with its skirt",
       "level": "macro",
       "role": "surface",
       "importance": 1.0,
       "confidence": 0.9,
       "primitive": "plane-card",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "One 16 x 16 height grid is the whole roof in one draw call, and its edge strips ARE the orange rim.",
+      "topologyRationale": "One 12 x 12 height grid is the roof and eight thin extrudes are the skirt (blue outside, orange lining inside, per side), all one draw call.",
       "materialId": "tarp",
       "material": "tarp",
       "parent": null,
       "geometryDescriptor": {
-        "topologyIntent": "A 16 x 16 grid over x,z -2.00..2.00, 22 mm thick. The top surface is 2.70 at the four corners less 0.21 times max(q, r) and less 0.15 times q times r, where q and r are 1 minus the squared normalised distance across each axis -- so max(q, r) is zero ONLY at the four corners, which is the edge catenary, and q times r adds the dish in the middle. A 12 mm deterministic ripple along both axes carries the fold creases.",
+        "topologyIntent": "A 12 x 12 grid over x,z -1.985..1.985, 12 mm thick, and a SKIRT hanging 2 mm inside the cell edge on all four sides: its top follows the sheet's edge catenary, its hem 0.34 below with two sine folds, lifting 0.22 toward the corners while the orange lining 14 mm inside hangs 0.13 lower there -- the turned corner flap. The top surface is 2.70 at the four corners less 0.21 times max(q, r) and less 0.15 times q times r, where q and r are 1 minus the squared normalised distance across each axis -- so max(q, r) is zero ONLY at the four corners, which is the edge catenary, and q times r adds the dish in the middle. A 12 mm deterministic ripple along both axes carries the fold creases.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -858,7 +887,7 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "The tarp is the only thing at its heights and it owns both cell-edge planes; the rope collars sit 130 mm below the tie.",
+        "zFightingNote": "The skirt's outer face is at 1.998, the sheet stops at 1.985 behind it, the lining 14 mm inside the blue; the skirt top sits 6 mm under the sheet edge; the rope collars sit 160 mm below the tie under the skirt. check-coplanar clean at 0.001 m.",
         "mergeNote": "One merged BufferGeometry with world UVs at 1.10 m. The sheet helper writes the colour attribute itself and the component tint is SKIPPED for it -- tinting the merge overwrote both tones with one hex on the first build and shipped the tarp as a white sail."
       },
       "localFeatures": [
@@ -875,7 +904,12 @@
         {
           "id": "d6-lining",
           "description": "orange lining",
-          "delivery": "the under grid and the edge strips of the sheet"
+          "delivery": "the under grid and rim of the sheet, and the inner skirt extrudes"
+        },
+        {
+          "id": "d8-skirt",
+          "description": "skirt",
+          "delivery": "eight folded-hem extrudes"
         }
       ],
       "colorMaterialRecipe": {
@@ -1133,27 +1167,27 @@
   ],
   "visualEvidence": [
     {
-      "timestamp": "2026-08-31T12:10:25.892867+00:00",
+      "timestamp": "2026-09-02T23:53:08.080571+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.86,
-        "formDetail": 0.87,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.91,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.87
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.91,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope measured 4.000 x 2.700 x 4.000 m off the built module, the tarp owning both cell-edge planes and the frame stopping at 1.998 after the first build's rope collars crossed at 2.002. Four 60 mm tubes at +-1.958, a bottom perimeter rail at 0.11 and NO top rail -- the plate ties the tarp straight to the post heads and the proxy finds a 4.6-5.6% surface band at the bottom of the frame and none at the top.",
-          "notes": "The absence of a top rail is what makes the sag a four-point catenary rather than a dish, and it is the difference between this bay and every other one in the set."
+          "evidence": "Envelope 4.000 x 2.700 x 4.000 m off the built module, the SKIRT owning both cell-edge planes at 1.998 and the frame stopping at 1.988. Four 105 mm tubes at +-1.936 (the plate's post is ~28 px of a 560 px frame; the first build's 60 mm read as wire), a bottom perimeter rail at 0.11 and NO top rail -- the plate ties the tarp straight to the post heads and the proxy finds a 4.6-5.6% surface band at the bottom of the frame and none at the top. The tarp now hangs PAST the frame as a skirt on all four sides, which is the plate's silhouette.",
+          "notes": "The proxy's 14% overhang cannot be built on the 4 m grid; the skirt hangs 2 mm inside the cell edge, 62 mm outside the posts."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
@@ -1164,42 +1198,27 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-31T12:10:25.972525+00:00",
+      "timestamp": "2026-09-02T23:53:08.167445+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.88,
-      "aiVisionScore": null,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {},
-      "featureReviews": [],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/cmp.png",
-      "cameraView": "",
-      "notes": "",
-      "aiVisionNotes": ""
-    },
-    {
-      "timestamp": "2026-08-31T12:10:26.052529+00:00",
-      "passId": "structural-pass",
-      "estimatedFidelity": 0.88,
-      "aiVisionScore": 0.88,
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.86,
-        "formDetail": 0.87,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.91,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.87
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.91,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope measured 4.000 x 2.700 x 4.000 m off the built module, the tarp owning both cell-edge planes and the frame stopping at 1.998 after the first build's rope collars crossed at 2.002. Four 60 mm tubes at +-1.958, a bottom perimeter rail at 0.11 and NO top rail -- the plate ties the tarp straight to the post heads and the proxy finds a 4.6-5.6% surface band at the bottom of the frame and none at the top.",
-          "notes": "The absence of a top rail is what makes the sag a four-point catenary rather than a dish, and it is the difference between this bay and every other one in the set."
+          "evidence": "Envelope 4.000 x 2.700 x 4.000 m off the built module, the SKIRT owning both cell-edge planes at 1.998 and the frame stopping at 1.988. Four 105 mm tubes at +-1.936 (the plate's post is ~28 px of a 560 px frame; the first build's 60 mm read as wire), a bottom perimeter rail at 0.11 and NO top rail -- the plate ties the tarp straight to the post heads and the proxy finds a 4.6-5.6% surface band at the bottom of the frame and none at the top. The tarp now hangs PAST the frame as a skirt on all four sides, which is the plate's silhouette.",
+          "notes": "The proxy's 14% overhang cannot be built on the 4 m grid; the skirt hangs 2 mm inside the cell edge, 62 mm outside the posts."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
@@ -1210,40 +1229,9 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-31T12:10:26.131897+00:00",
+      "timestamp": "2026-09-02T23:53:08.249729+00:00",
       "passId": "form-refinement",
-      "estimatedFidelity": 0.87,
-      "aiVisionScore": 0.87,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.86,
-        "formDetail": 0.87,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.84
-      },
-      "featureReviews": [
-        {
-          "id": "tarp-sag",
-          "tier": "critical",
-          "score": 0.87,
-          "threshold": 0.8,
-          "passed": true,
-          "evidence": "A 16 x 16 height grid, 1,152 of the bay's 1,888 triangles: 2.70 at the four ties, 2.49 at the middle of each edge, 2.34 at the centre, with a deterministic fold ripple. The orange lining is the sheet's under-grid and rim colour, thickened to 22 mm so the rim reads at a camera that never sees the underside. Blue measured back at 128-135 against the plate's 118 shaded and 145 lit.",
-          "notes": "The first build shipped this as a WHITE sail: tintGeo was overwriting the sheet's own two-tone colour attribute with a single hex."
-        }
-      ],
-      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
-      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/beauty-315.png",
-      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/cmp.png",
-      "cameraView": "",
-      "notes": "",
-      "aiVisionNotes": ""
-    },
-    {
-      "timestamp": "2026-08-31T12:10:26.223337+00:00",
-      "passId": "material-pass",
-      "estimatedFidelity": 0.85,
+      "estimatedFidelity": 0.91,
       "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {},
@@ -1256,27 +1244,27 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-31T12:10:26.304132+00:00",
-      "passId": "material-pass",
-      "estimatedFidelity": 0.85,
-      "aiVisionScore": 0.85,
+      "timestamp": "2026-09-02T23:53:08.333931+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.86,
-        "formDetail": 0.87,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.91,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.87
       },
       "featureReviews": [
         {
           "id": "tarp-sag",
           "tier": "critical",
-          "score": 0.87,
+          "score": 0.91,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "A 16 x 16 height grid, 1,152 of the bay's 1,888 triangles: 2.70 at the four ties, 2.49 at the middle of each edge, 2.34 at the centre, with a deterministic fold ripple. The orange lining is the sheet's under-grid and rim colour, thickened to 22 mm so the rim reads at a camera that never sees the underside. Blue measured back at 128-135 against the plate's 118 shaded and 145 lit.",
-          "notes": "The first build shipped this as a WHITE sail: tintGeo was overwriting the sheet's own two-tone colour attribute with a single hex."
+          "evidence": "A 12 x 12 height grid: 2.70 at the four ties, 2.49 mid-edge, 2.34 at the centre, with a fold ripple; and a skirt whose top follows that edge catenary and whose hem hangs 0.34 below it with two sine folds, lifting toward the corners while the orange lining hangs lower there -- the plate's turned corner flaps. Blue measured 129 against the plate's 124 lit / 72 shaded; chalking raised (weather 34).",
+          "notes": "The skirt is thin extrudes, so the folds are in the hem and the lining, not in the plan -- a draped vertical sheet would cost the budget the top grid already spends."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
@@ -1287,27 +1275,73 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-31T12:10:26.384655+00:00",
-      "passId": "surface-pass",
-      "estimatedFidelity": 0.85,
-      "aiVisionScore": 0.85,
+      "timestamp": "2026-09-02T23:53:08.418005+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.89,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-02T23:53:08.503330+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.89,
+      "aiVisionScore": 0.89,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.86,
-        "formDetail": 0.87,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.91,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.87
+      },
+      "featureReviews": [
+        {
+          "id": "tarp-sag",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "A 12 x 12 height grid: 2.70 at the four ties, 2.49 mid-edge, 2.34 at the centre, with a fold ripple; and a skirt whose top follows that edge catenary and whose hem hangs 0.34 below it with two sine folds, lifting toward the corners while the orange lining hangs lower there -- the plate's turned corner flaps. Blue measured 129 against the plate's 124 lit / 72 shaded; chalking raised (weather 34).",
+          "notes": "The skirt is thin extrudes, so the folds are in the hem and the lining, not in the plan -- a draped vertical sheet would cost the budget the top grid already spends."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-02T23:53:08.589920+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.89,
+      "aiVisionScore": 0.89,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.91,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.87
       },
       "featureReviews": [
         {
           "id": "frame-and-materials",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.89,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Round 60 mm tube throughout, rust collars at the four rail joints and the four feet rather than over the whole frame, and a rope collar and hanging knot at each post head. Galvanised tone authored as the inverse of the probed transfer and carried with rust and rope as vertex colours on one material.",
-          "notes": ""
+          "evidence": "Round 105 mm tube throughout with a rust-bloom canvas at density 120 (the plate's speckled galvanising), rust collars at the rail joints and feet, a rope collar and knot at each post head under the skirt, twenty grommets along the hems with a rope tie hanging from every other one.",
+          "notes": "The ties are short tails, not the plate's knotted loops."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
@@ -1318,17 +1352,17 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-31T12:10:26.466519+00:00",
+      "timestamp": "2026-09-02T23:53:08.674257+00:00",
       "passId": "lighting-pass",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.86,
-        "formDetail": 0.87,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.91,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.87
       },
       "featureReviews": [],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
@@ -1339,17 +1373,17 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-31T12:10:26.548986+00:00",
+      "timestamp": "2026-09-02T23:53:08.763077+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.94,
       "aiVisionScore": 0.94,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.86,
-        "formDetail": 0.87,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.91,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.87
       },
       "featureReviews": [],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
@@ -1360,45 +1394,45 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-08-31T12:10:26.629209+00:00",
+      "timestamp": "2026-09-02T23:53:08.852640+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.87,
-      "aiVisionScore": 0.87,
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.86,
-        "formDetail": 0.87,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.91,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.87
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.91,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope measured 4.000 x 2.700 x 4.000 m off the built module, the tarp owning both cell-edge planes and the frame stopping at 1.998 after the first build's rope collars crossed at 2.002. Four 60 mm tubes at +-1.958, a bottom perimeter rail at 0.11 and NO top rail -- the plate ties the tarp straight to the post heads and the proxy finds a 4.6-5.6% surface band at the bottom of the frame and none at the top.",
-          "notes": "The absence of a top rail is what makes the sag a four-point catenary rather than a dish, and it is the difference between this bay and every other one in the set."
+          "evidence": "Envelope 4.000 x 2.700 x 4.000 m off the built module, the SKIRT owning both cell-edge planes at 1.998 and the frame stopping at 1.988. Four 105 mm tubes at +-1.936 (the plate's post is ~28 px of a 560 px frame; the first build's 60 mm read as wire), a bottom perimeter rail at 0.11 and NO top rail -- the plate ties the tarp straight to the post heads and the proxy finds a 4.6-5.6% surface band at the bottom of the frame and none at the top. The tarp now hangs PAST the frame as a skirt on all four sides, which is the plate's silhouette.",
+          "notes": "The proxy's 14% overhang cannot be built on the 4 m grid; the skirt hangs 2 mm inside the cell edge, 62 mm outside the posts."
         },
         {
           "id": "tarp-sag",
           "tier": "critical",
-          "score": 0.87,
+          "score": 0.91,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "A 16 x 16 height grid, 1,152 of the bay's 1,888 triangles: 2.70 at the four ties, 2.49 at the middle of each edge, 2.34 at the centre, with a deterministic fold ripple. The orange lining is the sheet's under-grid and rim colour, thickened to 22 mm so the rim reads at a camera that never sees the underside. Blue measured back at 128-135 against the plate's 118 shaded and 145 lit.",
-          "notes": "The first build shipped this as a WHITE sail: tintGeo was overwriting the sheet's own two-tone colour attribute with a single hex."
+          "evidence": "A 12 x 12 height grid: 2.70 at the four ties, 2.49 mid-edge, 2.34 at the centre, with a fold ripple; and a skirt whose top follows that edge catenary and whose hem hangs 0.34 below it with two sine folds, lifting toward the corners while the orange lining hangs lower there -- the plate's turned corner flaps. Blue measured 129 against the plate's 124 lit / 72 shaded; chalking raised (weather 34).",
+          "notes": "The skirt is thin extrudes, so the folds are in the hem and the lining, not in the plan -- a draped vertical sheet would cost the budget the top grid already spends."
         },
         {
           "id": "frame-and-materials",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.89,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Round 60 mm tube throughout, rust collars at the four rail joints and the four feet rather than over the whole frame, and a rope collar and hanging knot at each post head. Galvanised tone authored as the inverse of the probed transfer and carried with rust and rope as vertex colours on one material.",
-          "notes": ""
+          "evidence": "Round 105 mm tube throughout with a rust-bloom canvas at density 120 (the plate's speckled galvanising), rust collars at the rail joints and feet, a rope collar and knot at each post head under the skirt, twenty grommets along the hems with a rope tie hanging from every other one.",
+          "notes": "The ties are short tails, not the plate's knotted loops."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
@@ -1411,31 +1445,31 @@
   ],
   "reviewHistory": [
     {
-      "timestamp": "2026-08-31T12:10:25.892867+00:00",
+      "timestamp": "2026-09-02T23:53:08.080571+00:00",
       "passId": "blockout",
-      "estimatedFidelity": 0.86,
-      "aiVisionScore": 0.86,
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.86,
-        "formDetail": 0.87,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.91,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.87
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.91,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope measured 4.000 x 2.700 x 4.000 m off the built module, the tarp owning both cell-edge planes and the frame stopping at 1.998 after the first build's rope collars crossed at 2.002. Four 60 mm tubes at +-1.958, a bottom perimeter rail at 0.11 and NO top rail -- the plate ties the tarp straight to the post heads and the proxy finds a 4.6-5.6% surface band at the bottom of the frame and none at the top.",
-          "notes": "The absence of a top rail is what makes the sag a four-point catenary rather than a dish, and it is the difference between this bay and every other one in the set."
+          "evidence": "Envelope 4.000 x 2.700 x 4.000 m off the built module, the SKIRT owning both cell-edge planes at 1.998 and the frame stopping at 1.988. Four 105 mm tubes at +-1.936 (the plate's post is ~28 px of a 560 px frame; the first build's 60 mm read as wire), a bottom perimeter rail at 0.11 and NO top rail -- the plate ties the tarp straight to the post heads and the proxy finds a 4.6-5.6% surface band at the bottom of the frame and none at the top. The tarp now hangs PAST the frame as a skirt on all four sides, which is the plate's silhouette.",
+          "notes": "The proxy's 14% overhang cannot be built on the 4 m grid; the skirt hangs 2 mm inside the cell edge, 62 mm outside the posts."
         }
       ],
       "action": "continue",
-      "summary": "Blockout: two components, no repetition system, 2 draw calls of 4.",
+      "summary": "Blockout: two components, no repetition system, 2 draw calls of 4; the tarp now a sheet PLUS a skirt.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1452,55 +1486,31 @@
       }
     },
     {
-      "timestamp": "2026-08-31T12:10:25.972525+00:00",
+      "timestamp": "2026-09-02T23:53:08.167445+00:00",
       "passId": "structural-pass",
-      "estimatedFidelity": 0.88,
-      "aiVisionScore": null,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {},
-      "featureReviews": [],
-      "action": "refine-code",
-      "summary": "Posts shortened 20 mm so they stop under the tie: a post top on y = 2.700 shares that plane with the tarp corner, and check-coplanar read it as one same-facing pair of 15.97 m2. The tarp drapes over the post head anyway. Clean at 0.001 m.",
-      "matched": [],
-      "mismatches": [],
-      "specFixes": [],
-      "codeFixes": [],
-      "evidence": [],
-      "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/beauty-315.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/cmp.png",
-        "cameraView": "",
-        "notes": "",
-        "aiVisionNotes": ""
-      }
-    },
-    {
-      "timestamp": "2026-08-31T12:10:26.052529+00:00",
-      "passId": "structural-pass",
-      "estimatedFidelity": 0.88,
-      "aiVisionScore": 0.88,
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.86,
-        "formDetail": 0.87,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.91,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.87
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.91,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope measured 4.000 x 2.700 x 4.000 m off the built module, the tarp owning both cell-edge planes and the frame stopping at 1.998 after the first build's rope collars crossed at 2.002. Four 60 mm tubes at +-1.958, a bottom perimeter rail at 0.11 and NO top rail -- the plate ties the tarp straight to the post heads and the proxy finds a 4.6-5.6% surface band at the bottom of the frame and none at the top.",
-          "notes": "The absence of a top rail is what makes the sag a four-point catenary rather than a dish, and it is the difference between this bay and every other one in the set."
+          "evidence": "Envelope 4.000 x 2.700 x 4.000 m off the built module, the SKIRT owning both cell-edge planes at 1.998 and the frame stopping at 1.988. Four 105 mm tubes at +-1.936 (the plate's post is ~28 px of a 560 px frame; the first build's 60 mm read as wire), a bottom perimeter rail at 0.11 and NO top rail -- the plate ties the tarp straight to the post heads and the proxy finds a 4.6-5.6% surface band at the bottom of the frame and none at the top. The tarp now hangs PAST the frame as a skirt on all four sides, which is the plate's silhouette.",
+          "notes": "The proxy's 14% overhang cannot be built on the 4 m grid; the skirt hangs 2 mm inside the cell edge, 62 mm outside the posts."
         }
       ],
       "action": "continue",
-      "summary": "Structural pass: four tube posts, a bottom perimeter rail and NO top rail, read off the plate and confirmed by the proxy's surface bands.",
+      "summary": "Structural pass: four 105 mm tube posts, a bottom perimeter rail and NO top rail, read off the plate and confirmed by the proxy's surface bands; the skirt hanging outside the posts inside the cell edge.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1516,55 +1526,15 @@
       }
     },
     {
-      "timestamp": "2026-08-31T12:10:26.131897+00:00",
+      "timestamp": "2026-09-02T23:53:08.249729+00:00",
       "passId": "form-refinement",
-      "estimatedFidelity": 0.87,
-      "aiVisionScore": 0.87,
-      "visualAcceptanceThreshold": 0.7,
-      "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.86,
-        "formDetail": 0.87,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.84
-      },
-      "featureReviews": [
-        {
-          "id": "tarp-sag",
-          "tier": "critical",
-          "score": 0.87,
-          "threshold": 0.8,
-          "passed": true,
-          "evidence": "A 16 x 16 height grid, 1,152 of the bay's 1,888 triangles: 2.70 at the four ties, 2.49 at the middle of each edge, 2.34 at the centre, with a deterministic fold ripple. The orange lining is the sheet's under-grid and rim colour, thickened to 22 mm so the rim reads at a camera that never sees the underside. Blue measured back at 128-135 against the plate's 118 shaded and 145 lit.",
-          "notes": "The first build shipped this as a WHITE sail: tintGeo was overwriting the sheet's own two-tone colour attribute with a single hex."
-        }
-      ],
-      "action": "continue",
-      "summary": "Form refinement: the four-point catenary as real geometry -- max(q, r) is zero only at the four corners, which is the edge sag, and q times r adds the centre dish -- plus fold creases as a deterministic ripple.",
-      "matched": [],
-      "mismatches": [],
-      "specFixes": [],
-      "codeFixes": [],
-      "evidence": [],
-      "visualEvidence": {
-        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
-        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/beauty-315.png",
-        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/cmp.png",
-        "cameraView": "",
-        "notes": "",
-        "aiVisionNotes": ""
-      }
-    },
-    {
-      "timestamp": "2026-08-31T12:10:26.223337+00:00",
-      "passId": "material-pass",
-      "estimatedFidelity": 0.85,
+      "estimatedFidelity": 0.91,
       "aiVisionScore": null,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {},
       "featureReviews": [],
       "action": "refine-code",
-      "summary": "Sheet tinting fixed in the shared body template: a sheet given hexUnder writes its OWN colour attribute per grid, and tintGeo was overwriting both tones with a single hex -- the tarp shipped as a white sail. The blue top and orange rim are now the colours the material was authored for.",
+      "summary": "Rebuild from 0.87: the tarp given a SKIRT on all four sides (eight thin extrudes, blue outside and orange lining inside, hem with two sine folds, corners turned up over the lining), twenty eyelets and ten rope ties along the hems; posts 60 -> 105 mm off the plate. A 14 x 14 grid with 26-point skirts measured 4,816 triangles; cut to 12 x 12 and 16 points.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1580,31 +1550,31 @@
       }
     },
     {
-      "timestamp": "2026-08-31T12:10:26.304132+00:00",
-      "passId": "material-pass",
-      "estimatedFidelity": 0.85,
-      "aiVisionScore": 0.85,
+      "timestamp": "2026-09-02T23:53:08.333931+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.86,
-        "formDetail": 0.87,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.91,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.87
       },
       "featureReviews": [
         {
           "id": "tarp-sag",
           "tier": "critical",
-          "score": 0.87,
+          "score": 0.91,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "A 16 x 16 height grid, 1,152 of the bay's 1,888 triangles: 2.70 at the four ties, 2.49 at the middle of each edge, 2.34 at the centre, with a deterministic fold ripple. The orange lining is the sheet's under-grid and rim colour, thickened to 22 mm so the rim reads at a camera that never sees the underside. Blue measured back at 128-135 against the plate's 118 shaded and 145 lit.",
-          "notes": "The first build shipped this as a WHITE sail: tintGeo was overwriting the sheet's own two-tone colour attribute with a single hex."
+          "evidence": "A 12 x 12 height grid: 2.70 at the four ties, 2.49 mid-edge, 2.34 at the centre, with a fold ripple; and a skirt whose top follows that edge catenary and whose hem hangs 0.34 below it with two sine folds, lifting toward the corners while the orange lining hangs lower there -- the plate's turned corner flaps. Blue measured 129 against the plate's 124 lit / 72 shaded; chalking raised (weather 34).",
+          "notes": "The skirt is thin extrudes, so the folds are in the hem and the lining, not in the plan -- a draped vertical sheet would cost the budget the top grid already spends."
         }
       ],
       "action": "continue",
-      "summary": "Material pass: galvanised tube 0.90 and woven tarp 0.90, both textureless. The tarp material is WHITE and carries blue over orange as a colour attribute written per grid, which is the only way two surfaces 22 mm apart in y differ on one draw call.",
+      "summary": "Form refinement: the four-point catenary as real geometry plus a folded-hem skirt on every side whose corners turn up over the lining; twenty eyelets and ten rope ties along the hems.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1620,31 +1590,95 @@
       }
     },
     {
-      "timestamp": "2026-08-31T12:10:26.384655+00:00",
-      "passId": "surface-pass",
-      "estimatedFidelity": 0.85,
-      "aiVisionScore": 0.85,
+      "timestamp": "2026-09-02T23:53:08.418005+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.89,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Rust canvas density 52 -> 120 for the plate's speckled galvanising; tarp weather patches 14 -> 34 for its chalking.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-02T23:53:08.503330+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.89,
+      "aiVisionScore": 0.89,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.86,
-        "formDetail": 0.87,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.91,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.87
+      },
+      "featureReviews": [
+        {
+          "id": "tarp-sag",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "A 12 x 12 height grid: 2.70 at the four ties, 2.49 mid-edge, 2.34 at the centre, with a fold ripple; and a skirt whose top follows that edge catenary and whose hem hangs 0.34 below it with two sine folds, lifting toward the corners while the orange lining hangs lower there -- the plate's turned corner flaps. Blue measured 129 against the plate's 124 lit / 72 shaded; chalking raised (weather 34).",
+          "notes": "The skirt is thin extrudes, so the folds are in the hem and the lining, not in the plan -- a draped vertical sheet would cost the budget the top grid already spends."
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: galvanised tube 0.90 and woven tarp 0.90, both textureless. The tarp material is WHITE and carries blue over orange as a colour attribute; the skirt carries a slightly lighter blue for its vertical transfer.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-02T23:53:08.589920+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.89,
+      "aiVisionScore": 0.89,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.91,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.87
       },
       "featureReviews": [
         {
           "id": "frame-and-materials",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.89,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Round 60 mm tube throughout, rust collars at the four rail joints and the four feet rather than over the whole frame, and a rope collar and hanging knot at each post head. Galvanised tone authored as the inverse of the probed transfer and carried with rust and rope as vertex colours on one material.",
-          "notes": ""
+          "evidence": "Round 105 mm tube throughout with a rust-bloom canvas at density 120 (the plate's speckled galvanising), rust collars at the rail joints and feet, a rope collar and knot at each post head under the skirt, twenty grommets along the hems with a rope tie hanging from every other one.",
+          "notes": "The ties are short tails, not the plate's knotted loops."
         }
       ],
       "action": "continue",
-      "summary": "Surface pass: rust-bloom canvas on the steel; a woven-tape canvas as map and bump on the tarp. Blue authored DARKER than the plate for the up-facing transfer and orange LIGHTER for the downward-facing one, both measured.",
+      "summary": "Surface pass: rust-bloom canvas on the steel at density 120; a woven-tape canvas with 34 weather patches as map and bump on the tarp.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1660,17 +1694,17 @@
       }
     },
     {
-      "timestamp": "2026-08-31T12:10:26.466519+00:00",
+      "timestamp": "2026-09-02T23:53:08.674257+00:00",
       "passId": "lighting-pass",
-      "estimatedFidelity": 0.84,
-      "aiVisionScore": 0.84,
+      "estimatedFidelity": 0.87,
+      "aiVisionScore": 0.87,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.86,
-        "formDetail": 0.87,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.91,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.87
       },
       "featureReviews": [],
       "action": "continue",
@@ -1690,21 +1724,21 @@
       }
     },
     {
-      "timestamp": "2026-08-31T12:10:26.548986+00:00",
+      "timestamp": "2026-09-02T23:53:08.763077+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.94,
       "aiVisionScore": 0.94,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.86,
-        "formDetail": 0.87,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.91,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.87
       },
       "featureReviews": [],
       "action": "continue",
-      "summary": "Interaction pass: ONE root pivot, ZERO sockets, no declared collider shape, no destruction groups.",
+      "summary": "Interaction pass: ONE root pivot, ZERO sockets, no declared collider shape, no destruction groups; derived compound 8 parts at coverage 0.974.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1720,49 +1754,49 @@
       }
     },
     {
-      "timestamp": "2026-08-31T12:10:26.629209+00:00",
+      "timestamp": "2026-09-02T23:53:08.852640+00:00",
       "passId": "optimization-pass",
-      "estimatedFidelity": 0.87,
-      "aiVisionScore": 0.87,
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
       "visualAcceptanceThreshold": 0.7,
       "layerScores": {
-        "silhouetteProportion": 0.88,
-        "componentStructure": 0.86,
-        "formDetail": 0.87,
-        "materialSurface": 0.85,
-        "lightingCamera": 0.84
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.9,
+        "formDetail": 0.91,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.87
       },
       "featureReviews": [
         {
           "id": "overall-silhouette",
           "tier": "critical",
-          "score": 0.88,
+          "score": 0.91,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope measured 4.000 x 2.700 x 4.000 m off the built module, the tarp owning both cell-edge planes and the frame stopping at 1.998 after the first build's rope collars crossed at 2.002. Four 60 mm tubes at +-1.958, a bottom perimeter rail at 0.11 and NO top rail -- the plate ties the tarp straight to the post heads and the proxy finds a 4.6-5.6% surface band at the bottom of the frame and none at the top.",
-          "notes": "The absence of a top rail is what makes the sag a four-point catenary rather than a dish, and it is the difference between this bay and every other one in the set."
+          "evidence": "Envelope 4.000 x 2.700 x 4.000 m off the built module, the SKIRT owning both cell-edge planes at 1.998 and the frame stopping at 1.988. Four 105 mm tubes at +-1.936 (the plate's post is ~28 px of a 560 px frame; the first build's 60 mm read as wire), a bottom perimeter rail at 0.11 and NO top rail -- the plate ties the tarp straight to the post heads and the proxy finds a 4.6-5.6% surface band at the bottom of the frame and none at the top. The tarp now hangs PAST the frame as a skirt on all four sides, which is the plate's silhouette.",
+          "notes": "The proxy's 14% overhang cannot be built on the 4 m grid; the skirt hangs 2 mm inside the cell edge, 62 mm outside the posts."
         },
         {
           "id": "tarp-sag",
           "tier": "critical",
-          "score": 0.87,
+          "score": 0.91,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "A 16 x 16 height grid, 1,152 of the bay's 1,888 triangles: 2.70 at the four ties, 2.49 at the middle of each edge, 2.34 at the centre, with a deterministic fold ripple. The orange lining is the sheet's under-grid and rim colour, thickened to 22 mm so the rim reads at a camera that never sees the underside. Blue measured back at 128-135 against the plate's 118 shaded and 145 lit.",
-          "notes": "The first build shipped this as a WHITE sail: tintGeo was overwriting the sheet's own two-tone colour attribute with a single hex."
+          "evidence": "A 12 x 12 height grid: 2.70 at the four ties, 2.49 mid-edge, 2.34 at the centre, with a fold ripple; and a skirt whose top follows that edge catenary and whose hem hangs 0.34 below it with two sine folds, lifting toward the corners while the orange lining hangs lower there -- the plate's turned corner flaps. Blue measured 129 against the plate's 124 lit / 72 shaded; chalking raised (weather 34).",
+          "notes": "The skirt is thin extrudes, so the folds are in the hem and the lining, not in the plan -- a draped vertical sheet would cost the budget the top grid already spends."
         },
         {
           "id": "frame-and-materials",
           "tier": "critical",
-          "score": 0.84,
+          "score": 0.89,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Round 60 mm tube throughout, rust collars at the four rail joints and the four feet rather than over the whole frame, and a rope collar and hanging knot at each post head. Galvanised tone authored as the inverse of the probed transfer and carried with rust and rope as vertex colours on one material.",
-          "notes": ""
+          "evidence": "Round 105 mm tube throughout with a rust-bloom canvas at density 120 (the plate's speckled galvanising), rust collars at the rail joints and feet, a rope collar and knot at each post head under the skirt, twenty grommets along the hems with a rope tie hanging from every other one.",
+          "notes": "The ties are short tails, not the plate's knotted loops."
         }
       ],
       "action": "continue",
-      "summary": "FINAL VERDICT. Overall visual fidelity 0.87. 1,888/4,000 triangles, 2/4 draw calls, 2/3 materials, 2/6 unique geometries, two 512 px canvases. The largest opening in the set -- about 240,000 px of enclosed background per frame -- so the turntable runs with --allow-holes on the _holecc measurement and a holeviz read per azimuth showing the red over exactly that volume.",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.91. ~3,700/4,000 triangles, 2/4 draw calls, 2/3 materials, 2/6 unique geometries, two 512 px canvases. Open on all sides, so the turntable runs with --allow-holes on the _holecc measurement.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1821,10 +1855,10 @@
         "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
       },
       "triangles": {
-        "measured": 1888,
+        "measured": 3700,
         "budget": 4000,
-        "headroom": 2112,
-        "note": "1,888 of 4,000: 736 in the frame merge (24 cylinders at 6 or 8 segments), 1,152 in the tarp -- two 16 x 16 grids at 512 each and 128 in the wound edge strips, which are the orange rim."
+        "headroom": 300,
+        "note": "~3,700 of 4,000: ~1,500 in the frame merge (24 cylinders, 20 eyelet discs, 10 rope tubes), ~2,200 in the tarp -- two 12 x 12 grids, the wound edge strips and eight 34-point skirt extrudes. A 14 x 14 grid with 26-point skirts measured 4,816 and was cut."
       }
     }
   },
@@ -1882,7 +1916,7 @@
   "proceduralStrategy": [
     {
       "id": "primitives",
-      "strategy": "Cylinders throughout the frame; the tarp is a height grid with thickness."
+      "strategy": "Cylinders and tubes for the frame, eyelets and ropes; the tarp is a height grid with thickness plus folded-hem extrudes for the skirt."
     },
     {
       "id": "instancing",
@@ -1901,10 +1935,10 @@
   "destructionAnchors": [],
   "risks": [
     {
-      "id": "no-overhang",
+      "id": "skirt-inside-cell",
       "severity": "low",
-      "description": "The proxy's tarp overhangs its frame by 14% and the plate shows the edge hanging outside the posts; the built tarp stops on the cell edge, 42 mm outside them.",
-      "mitigation": "A 4 m grid bay that overhangs collides with its neighbour, and the posts have to sit at the cell corners for two bays to pair. The drape happens inside the cell as sag between the ties, which is the shape the notes actually name."
+      "description": "The proxy's tarp overhangs its frame by 14% and the plate shows the edge hanging outside the posts; on the 4 m grid nothing may pass +-2.00, so the skirt hangs 2 mm inside the cell edge and the posts sit 64 mm inside it.",
+      "mitigation": "The skirt is real hanging geometry with folds, eyelets and ties; the overhang is 0.06 m rather than 0.28."
     },
     {
       "id": "thick-tarp",
@@ -1958,33 +1992,33 @@
     {
       "passed": false,
       "checks": {
-        "silhouetteIoU": 0.2404,
-        "aspectRatioDelta": 0.0433,
-        "scaleDelta": 0.1395,
-        "bilateralSymmetryError": 0.019,
+        "silhouetteIoU": 0.2489,
+        "aspectRatioDelta": 0.0391,
+        "scaleDelta": 0.1707,
+        "bilateralSymmetryError": 0.0207,
         "colorDelta": {
           "checked": 2,
-          "maxDeltaE": 47.13,
+          "maxDeltaE": 50.16,
           "perComponent": [
             {
               "componentId": null,
-              "deltaE": 24.24
+              "deltaE": 26.36
             },
             {
               "componentId": null,
-              "deltaE": 47.13
+              "deltaE": 50.16
             }
           ],
           "gated": false
         }
       },
       "failures": [
-        "silhouette IoU 0.240 is below threshold 0.85",
-        "scale delta 0.140 exceeds threshold 0.08",
+        "silhouette IoU 0.249 is below threshold 0.85",
+        "scale delta 0.171 exceeds threshold 0.08",
         "blockout requires --map-stripped-render evidence"
       ],
       "maskWarnings": [],
-      "renderHash": "db90663a841f9f61",
+      "renderHash": "39d69485b5a9583f",
       "passId": "blockout"
     }
   ]

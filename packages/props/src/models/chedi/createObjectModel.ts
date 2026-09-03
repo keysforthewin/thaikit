@@ -9,7 +9,7 @@ import * as THREE from 'three';
  * instancing and the lathe helpers below are hand-rolled -- anything under three/examples/jsm is
  * a second import.
  *
- * Envelope 8.00 x 14.00 x 8.00 m, origin base-center, +Y up.
+ * Envelope 7.00 x 14.00 x 7.00 m, origin base-center, +Y up.
  * Budget (hero2x): <=16000 triangles, <=12 draw calls, <=8 materials, <=32 unique geometries.
  *
  * This is one of thaikit's MONUMENTAL buildings, and unlike the shared retail module its form is
@@ -19,14 +19,6 @@ import * as THREE from 'three';
  */
 
 export type ProceduralModelOptions = {
-  /**
-   * Where this prop's shipped files live, with a trailing slash.
-   *
-   * The maps are recorded as bare filenames because the bundle is EVALUATED
-   * rather than imported: it has no import.meta and no currentScript, so it
-   * cannot see its own URL. Every host derives this from the module URL.
-   */
-  baseUrl?: string;
   wireframe?: boolean;
   castShadow?: boolean;
   receiveShadow?: boolean;
@@ -47,31 +39,31 @@ const CONFIG = {
     "id": "chedi",
     "name": "Chedi",
     "exportName": "Chedi",
-    "envelope": "Envelope 8.00 x 14.00 x 8.00 m, origin base-center, +Y up.\n * Budget (hero2x): <=16000 triangles, <=12 draw calls, <=8 materials, <=32 unique geometries.",
+    "envelope": "Envelope 7.00 x 14.00 x 7.00 m, origin base-center, +Y up.\n * Budget (hero2x): <=16000 triangles, <=12 draw calls, <=8 materials, <=32 unique geometries.",
     "materials": [
       {
         "id": "stone",
-        "color": 10394513,
+        "color": 12368563,
         "roughness": 0.94,
         "metalness": 0,
         "vertexColors": true
       },
       {
         "id": "stucco",
-        "color": 10987425,
+        "color": 13684937,
         "roughness": 0.88,
         "metalness": 0
       },
       {
         "id": "shadow",
-        "color": 8156779,
+        "color": 9077880,
         "roughness": 0.95,
         "metalness": 0
       },
       {
         "id": "gold",
-        "color": 9732191,
-        "roughness": 0.4,
+        "color": 11046485,
+        "roughness": 0.42,
         "metalness": 0.3,
         "envMapIntensity": 1.2
       }
@@ -80,158 +72,291 @@ const CONFIG = {
       "terrace": [
         [
           0,
-          0.5,
-          4,
-          0.55
+          0.55,
+          3.5,
+          0.22
         ],
         [
-          0.5,
-          0.95,
-          3.68,
-          0.5
+          0.55,
+          0.8,
+          3.42,
+          0.26
         ],
         [
-          0.95,
-          1.35,
-          3.36,
-          0.45
+          0.8,
+          1.02,
+          3.32,
+          0.3
         ],
         [
-          1.35,
-          3.05,
+          1.02,
+          1.22,
+          3.2,
+          0.34
+        ],
+        [
+          1.22,
+          2.75,
           3,
-          0.4
+          0.37
         ],
         [
-          3.05,
-          3.5,
-          3.18,
-          0.42
-        ],
-        [
-          3.5,
-          3.85,
-          2.86,
+          2.75,
+          2.95,
+          3.12,
           0.36
+        ],
+        [
+          2.95,
+          3.12,
+          3.22,
+          0.35
+        ],
+        [
+          3.12,
+          3.3,
+          2.77,
+          0.25
         ]
       ],
+      "plinth": {
+        "r": 2.63,
+        "y0": 3.2,
+        "y1": 3.46,
+        "lip": 2.52,
+        "yTop": 3.56,
+        "seg": 40
+      },
       "niche": {
-        "radius": 3,
-        "y": 1.5,
-        "frameW": 1.45,
-        "frameH": 1.45,
-        "depth": 0.4,
-        "archR": 0.45,
-        "spring": 0.85
+        "faceR": 3,
+        "y0": 0.8,
+        "w": 1.5,
+        "archR": 0.75,
+        "spring": 1.17,
+        "depth": 0.45,
+        "sink": 0.02,
+        "hole": {
+          "r": 0.42,
+          "spring": 1.27,
+          "sill": 0.5
+        }
       },
       "bell": {
-        "y0": 3.7,
-        "seg": 32,
+        "seg": 40,
+        "foot": [
+          [
+            2.5,
+            3.45
+          ],
+          [
+            2.58,
+            3.52
+          ],
+          [
+            2.58,
+            3.76
+          ],
+          [
+            2.48,
+            3.82
+          ],
+          [
+            2.3,
+            3.86
+          ],
+          [
+            2.28,
+            3.98
+          ],
+          [
+            2.36,
+            4.06
+          ]
+        ],
         "body": [
           [
             2.36,
-            4.52
+            4.15
           ],
           [
-            2.38,
-            4.8
+            2.31,
+            4.4
           ],
           [
-            2.24,
-            5.3
+            2.16,
+            4.65
           ],
           [
-            2.1,
+            2.07,
+            4.9
+          ],
+          [
+            2.03,
+            5.15
+          ],
+          [
+            2.01,
+            5.4
+          ],
+          [
+            1.99,
+            5.65
+          ],
+          [
+            1.97,
             5.9
           ],
           [
-            1.98,
-            6.45
+            1.95,
+            6.15
+          ],
+          [
+            1.9,
+            6.4
           ]
         ],
-        "shoulder": {
-          "r": 1.98,
-          "y": 6.45,
-          "rEdge": 1.3,
-          "yTop": 7.72,
-          "steps": 12
-        },
+        "dome": [
+          [
+            1.9,
+            6.4
+          ],
+          [
+            1.84,
+            6.65
+          ],
+          [
+            1.75,
+            6.9
+          ],
+          [
+            1.58,
+            7.15
+          ],
+          [
+            1.28,
+            7.4
+          ],
+          [
+            0.93,
+            7.62
+          ],
+          [
+            0.71,
+            7.87
+          ],
+          [
+            0.6,
+            8.05
+          ]
+        ],
+        "domeSteps": 26,
         "neck": {
-          "r": 0.75,
-          "yTop": 7.9
+          "r": 0.55,
+          "yTop": 8.25
         }
       },
       "harmika": [
         [
           0,
-          8.05,
+          7.95,
           0,
-          2.1,
+          1.46,
           1,
-          2.1
+          1.46
         ],
         [
           0,
-          8.8,
+          8.51,
           0,
-          1.52,
-          0.5,
-          1.52
+          1.62,
+          0.12,
+          1.62
+        ],
+        [
+          0,
+          8.65,
+          0,
+          1.84,
+          0.16,
+          1.84
+        ],
+        [
+          0,
+          8.83,
+          0,
+          1.68,
+          0.2,
+          1.68
         ]
       ],
       "spire": {
-        "y0": 8.99,
+        "y0": 8.85,
         "y1": 12.3,
-        "r0": 0.66,
-        "r1": 0.22,
+        "r0": 0.62,
+        "r1": 0.2,
         "rings": 16,
-        "bulge": 0.07,
+        "bulge": 0.06,
         "seg": 24
-      },
-      "wear": {
-        "size": 512,
-        "tile": 3,
-        "bump": 0.035,
-        "peelLight": [
-          0.754,
-          0.738,
-          0.703
-        ],
-        "peelDark": [
-          0.62,
-          0.62,
-          0.6
-        ],
-        "drip": [
-          0.703,
-          0.709,
-          0.705
-        ],
-        "crack": [
-          0.55,
-          0.55,
-          0.53
-        ],
-        "mottle": [
-          0.9,
-          0.9,
-          0.88
-        ],
-        "crust": [
-          0.98,
-          0.99,
-          0.86
-        ],
-        "moss": [
-          0.86,
-          0.85,
-          0.72
-        ]
       },
       "finial": {
         "y0": 12.28,
         "y1": 14,
         "seg": 20
+      },
+      "wear": {
+        "size": 512,
+        "bump": 0.03,
+        "stuccoTile": 3,
+        "stoneTile": 3.3,
+        "joints": [
+          0.55,
+          0.8,
+          1.02,
+          1.22,
+          2.75,
+          2.95,
+          3.12
+        ],
+        "peel": [
+          0.79,
+          0.79,
+          0.78
+        ],
+        "core": [
+          0.7,
+          0.7,
+          0.69
+        ],
+        "rim": [
+          0.66,
+          0.66,
+          0.64
+        ],
+        "crack": [
+          0.62,
+          0.62,
+          0.6
+        ],
+        "drip": [
+          0.74,
+          0.75,
+          0.75
+        ],
+        "mottle": [
+          0.91,
+          0.91,
+          0.89
+        ],
+        "moss": [
+          0.64,
+          0.68,
+          0.5
+        ],
+        "soil": [
+          0.84,
+          0.84,
+          0.81
+        ]
       }
     }
   } as any;
@@ -545,7 +670,7 @@ function hipRoof(hx: number, hz: number, ridgeHalfZ: number, y0: number, y1: num
  * distance a village skyline is read from -- a smooth green hemisphere reads as a water tank.
  */
 function ribbedDome(profile: number[][], ribs: number, amp: number, seg: number,
-                    valley?: number[]): THREE.BufferGeometry {
+                    valley?: number[], crest = 0.55): THREE.BufferGeometry {
   const tri: number[] = [];
   const col: number[] = [];
   // The ribs are not only a shape. On the mosque's domes the crests are pale and the valleys are
@@ -558,7 +683,9 @@ function ribbedDome(profile: number[][], ribs: number, amp: number, seg: number,
     // Raised to 0.55 rather than left linear. A cosine spends half its area near each extreme, and
     // that renders a dome that is pale overall where the plate's is green overall: the crest is a
     // narrow highlight on a real rib, not half of it. The exponent widens the valley.
-    const f = Math.pow((1 - Math.cos(ribs * ((j % seg) * Math.PI * 2 / seg))) / 2, 0.55);
+    // `crest` below 0.55 narrows the pale crest further: the mosque's plate at 3x shows the pale
+    // rib as about a quarter of the pitch, which is 0.35.
+    const f = Math.pow((1 - Math.cos(ribs * ((j % seg) * Math.PI * 2 / seg))) / 2, crest);
     return [1 + (valley[0] - 1) * f, 1 + (valley[1] - 1) * f, 1 + (valley[2] - 1) * f];
   };
   const push = (a: number[], b: number[], c: number[]) => tri.push(...a, ...b, ...c);
@@ -626,23 +753,27 @@ function pointedArchShape(w: number, spring: number, apexRise: number, sill: num
  * station list itself rather than by a separate fan.
  */
 function tubeAlong(stations: number[][], seg: number): THREE.BufferGeometry {
-  const tri: number[] = [];
-  const push = (a: number[], b: number[], c: number[]) => tri.push(...a, ...b, ...c);
-  const at = (i: number, j: number) => {
+  // INDEXED, with shared ring vertices, so computeVertexNormals averages across the quads and the
+  // surface shades smooth. The first build emitted loose triangles, and a flat-shaded soft body
+  // shows every station as a crease -- a reclining figure that looked crumpled rather than draped.
+  const pos: number[] = [], idx: number[] = [];
+  for (let i = 0; i < stations.length; i++) {
     const [z, cx, cy, rx, ry] = stations[i];
-    const th = (j % seg) * Math.PI * 2 / seg;
-    return [cx + Math.sin(th) * rx, cy + Math.cos(th) * ry, z];
-  };
+    for (let j = 0; j < seg; j++) {
+      const th = j * Math.PI * 2 / seg;
+      pos.push(cx + Math.sin(th) * rx, cy + Math.cos(th) * ry, z);
+    }
+  }
   for (let i = 0; i < stations.length - 1; i++) {
     for (let j = 0; j < seg; j++) {
-      const a = at(i, j), b = at(i + 1, j), c = at(i + 1, j + 1), d = at(i, j + 1);
-      push(a, b, c);
-      push(a, c, d);
+      const a = i * seg + j, b = (i + 1) * seg + j, c = (i + 1) * seg + (j + 1) % seg, d = i * seg + (j + 1) % seg;
+      idx.push(a, b, c, a, c, d);
     }
   }
   const g = new THREE.BufferGeometry();
-  g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(tri), 3));
-  g.setAttribute('uv', new THREE.BufferAttribute(new Float32Array((tri.length / 3) * 2), 2));
+  g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(pos), 3));
+  g.setAttribute('uv', new THREE.BufferAttribute(new Float32Array((pos.length / 3) * 2), 2));
+  g.setIndex(idx);
   g.computeVertexNormals();
   return g;
 }
@@ -796,8 +927,7 @@ export function createChediModel(options: ProceduralModelOptions = {}): THREE.Gr
 
   /** Re-map a lathe's UVs to a metre-scaled tile: u keeps LatheGeometry's own seamless 0..1
    *  sweep (scaled to a whole number of repeats at the reference radius, so the seam column lands
-   *  on a tile edge), v is world height over the tile size. atan2 of position would put the
-   *  duplicated seam column back at u=0 and squeeze a whole tile into the last segment. */
+   *  on a tile edge), v is world height over the tile size. */
   function latheUv(geo: THREE.BufferGeometry, tile: number, rRef: number): void {
     const p = geo.getAttribute('position'), uv = geo.getAttribute('uv');
     const rep = Math.max(1, Math.round(2 * Math.PI * rRef / tile));
@@ -814,162 +944,177 @@ export function createChediModel(options: ProceduralModelOptions = {}): THREE.Gr
     for (let i = 0; i < p.count; i++) {
       const ax = Math.abs(n.getX(i)), ay = Math.abs(n.getY(i)), az = Math.abs(n.getZ(i));
       let u: number, v: number;
+      // Opposite and adjacent faces take different u offsets, so a box's four sides do not
+      // all show the same flake at the same height (the harmika did, mirrored, on the first
+      // emit). Only u is shifted: v stays world height, which is what the stone tile's joint
+      // bands key on.
       if (ay >= ax && ay >= az) { u = p.getX(i); v = p.getZ(i); }
-      else if (ax >= az) { u = p.getZ(i); v = p.getY(i); }
-      else { u = p.getX(i); v = p.getY(i); }
+      else if (ax >= az) { u = p.getZ(i) + (n.getX(i) < 0 ? 0.5 : 0.25) * tile; v = p.getY(i); }
+      else { u = p.getX(i) + (n.getZ(i) < 0 ? 0.5 : 0) * tile; v = p.getY(i); }
       out[i * 2] = u / tile; out[i * 2 + 1] = v / tile;
     }
     geo.setAttribute('uv', new THREE.BufferAttribute(out, 2));
   }
+  /** Multiply the existing colour attribute on every UP-facing vertex. The plate's ledge tops
+   *  read 172 against 191 on the lit pier faces, and the harness lights tops at 1.18x against
+   *  1.00x for a key-lit side, so the tops need 0.76 to land where the plate has them. A tint by
+   *  facing is legitimate here because it is <= 1 relative to what the tile carries. */
+  function tintTops(geo: THREE.BufferGeometry, rgb: number[]): void {
+    const n = geo.getAttribute('normal'), c = geo.getAttribute('color');
+    for (let i = 0; i < n.count; i++) {
+      if (n.getY(i) > 0.7) for (let k = 0; k < 3; k++) c.setComponent(i, k, c.getComponent(i, k) * rgb[k]);
+    }
+    c.needsUpdate = true;
+  }
+  /** A square plan whose corners are cut back in THREE right-angled steps. The plate's corner
+   *  piers step three times; the preamble's redentedShape steps twice. Half-width a across the
+   *  flats, r the depth of each step; the flat face spans +-(a - 3r). */
+  function redented3(a: number, r: number): THREE.Shape {
+    const q = [[a, a - 3 * r], [a - r, a - 3 * r], [a - r, a - 2 * r], [a - 2 * r, a - 2 * r],
+               [a - 2 * r, a - r], [a - 3 * r, a - r], [a - 3 * r, a]];
+    const pts: number[][] = [];
+    for (let k = 0; k < 4; k++) {
+      for (const [x, z] of q) {
+        let px = x, pz = z;
+        for (let i = 0; i < k; i++) { const t = px; px = -pz; pz = t; }
+        pts.push([px, pz]);
+      }
+    }
+    const shape = new THREE.Shape();
+    shape.moveTo(pts[0][0], pts[0][1]);
+    for (let i = 1; i < pts.length; i++) shape.lineTo(pts[i][0], pts[i][1]);
+    shape.closePath();
+    return shape;
+  }
+
   /* ---------------------------------------------------------------- stepped terrace
-   * Six redented slabs, MERGED into one component and one draw call. Each is a single extrusion
-   * of a closed redented plan rather than a wide box crossed by a deep one: crossed boxes put
-   * their top faces in the same plane facing the same way over the whole intersection, and that
-   * z-fights. Consecutive slabs meet as OPPOSED faces -- one slab's top against the next slab's
-   * bottom -- which is how solids are meant to meet and does not fight. */
+   * Eight redented slabs and the round plinth under the bell, MERGED into one component and one
+   * draw call. Each slab is a single extrusion of a closed redented plan rather than a wide box
+   * crossed by a deep one: crossed boxes put their top faces in the same plane facing the same
+   * way over the whole intersection, and that z-fights. Consecutive slabs meet as OPPOSED faces.
+   * The plinth is a lathe whose open rim runs up INSIDE the bell's stucco foot band. */
   {
-    const geo = mergeGeos(
-      (G.terrace as number[][]).map(([y0, y1, a, r]) => extrudeSlab(redentedShape(a, r), y0, y1)));
-    // Ground dirt on the lower plinth, delivered as a per-vertex tint rather than a second
-    // material. The plate measures #7F7F79 down there against #9E9B91 higher up -- two crop
-    // measurements, whose ratio (0.804, 0.819, 0.834) is the tint at y=0, fading out by y=1.60.
-    // A second material would cost a draw call and a shader switch to say that the bottom of a
-    // wall is dirtier than the top.
-    tintByHeight(geo, 0, 1.60, [0.804, 0.819, 0.834]);
-    boxUv(geo, G.wear.tile);
+    const P = G.plinth;
+    const slabs = (G.terrace as number[][]).map(([y0, y1, a, r]) => {
+      const g = extrudeSlab(redented3(a, r), y0, y1);
+      boxUv(g, G.wear.stoneTile);
+      return g;
+    });
+    const ring = lathe([[P.r, P.y0], [P.r, P.y1], [P.lip, P.y1 + 0.02], [P.lip, P.yTop]], P.seg);
+    latheUv(ring, G.wear.stoneTile, P.r);
+    const geo = mergeGeos([...slabs, ring]);
+    // Ground dirt on the lowest slab as a per-vertex tint. The plate's plinth foot reads only
+    // slightly darker than the pier above it (the moss is in the joints, not on the face), so the
+    // tint is a mild 0.92 at y=0 fading out by 1.20.
+    tintByHeight(geo, 0, 1.20, [0.92, 0.92, 0.90]);
+    tintTops(geo, [0.76, 0.76, 0.73]);
     add('terrace', 'Stepped terrace', geo, 'stone');
   }
   colliders['terrace'] = {
-    shape: 'cylinder', localCenter: [0, 7.0, 0], radius: 4.0, height: 14.0, axis: [0, 1, 0],
+    shape: 'cylinder', localCenter: [0, 7.0, 0], radius: 3.5, height: 14.0, axis: [0, 1, 0],
     notes: 'Asset declares collider "cylinder" rather than the building-part default box, because '
          + 'the bell and spire are round in plan and a box proxy would leave a player colliding '
          + 'with empty air at the corners.',
   };
 
-  /* ---------------------------------------------------------------- arched niches
+  /* ---------------------------------------------------------------- arched aedicules
    * Four, one per face, as an InstancedMesh: one geometry and one submission for the set.
    *
-   * The frame is a plate with a REAL arched aperture -- a Shape carrying a hole -- extruded 0.40 m
-   * and standing 0.30 m proud of the terrace face, and the dark back panel sits 0.23 m behind the
-   * frame's front plane. That depth is the point: a niche is a concavity, and a flat dark rectangle
-   * painted on a wall is not one. The panel stands 0.05 m proud of the wall it is set against
-   * rather than flush with it, so no two surfaces here are coplanar and co-facing. */
+   * The frame is a ROUND-HEADED plate -- the plate's aedicule is a horseshoe hoop, not a square
+   * block with an arch cut in it -- carrying a real arched aperture, extruded 0.62 m and standing
+   * 0.60 m proud of the niche storey with its back sunk 2 cm into the wall. It runs down to the
+   * second plinth step at 0.80, so under the sill it is a pedestal rather than a frame hanging
+   * over the steps. The dark back panel sits 0.52 m behind the front plane, just proud of the
+   * wall, and shows only through the aperture. */
   {
     const n = G.niche;
-    const outline = new THREE.Shape();
-    outline.moveTo(-n.frameW / 2, 0);
-    outline.lineTo(n.frameW / 2, 0);
-    outline.lineTo(n.frameW / 2, n.frameH);
-    outline.lineTo(-n.frameW / 2, n.frameH);
-    outline.closePath();
-    // Walk the aperture from the bottom of the RIGHT jamb, up it, over the head from angle 0 to
-    // PI, then down the left jamb. Written the other way -- an arc from PI to 0 -- the sweep ran
-    // through the bottom of the circle instead of over the top, and the arch head was left filled
-    // solid with the arc's own seam z-fighting across it: a square window with a ghost arch drawn
-    // on it. The direction of a half-circle is not a detail here; it is the feature.
-    const hole = new THREE.Path();
-    hole.moveTo(n.archR, 0.18);
-    hole.lineTo(n.archR, n.spring);
-    hole.absarc(0, n.spring, n.archR, 0, Math.PI, false);
-    hole.lineTo(-n.archR, 0.18);
-    hole.closePath();
-    outline.holes.push(hole);
-
-    const frame = new THREE.ExtrudeGeometry(outline, { depth: n.depth, bevelEnabled: false, curveSegments: 8 });
-    frame.translate(0, 0, -0.10);
+    const h = n.hole;
+    const shape = archedPlate(n.w, n.spring + n.archR, n.archR, n.spring,
+                              { r: h.r, spring: h.spring, sill: h.sill });
+    const frame = new THREE.ExtrudeGeometry(shape, { depth: n.depth, bevelEnabled: false, curveSegments: 10 });
     frame.computeVertexNormals();
-    boxUv(frame, G.wear.tile);
-    addInst('niche-frames', 'Arched niche frames', frame, 'stone', quad(n.radius, n.y));
+    boxUv(frame, G.wear.stoneTile);
+    addInst('niche-frames', 'Arched niche frames', frame, 'stone', quad(n.faceR - n.sink, n.y0));
 
-    const panel = boxAt(0, n.frameH / 2 - 0.06, 0.03, n.frameW - 0.42, n.frameH - 0.30, 0.06);
-    addInst('niche-panels', 'Niche back panels', panel, 'shadow', quad(n.radius + 0.02, n.y));
+    // Centred on the aperture and 0.10 m past it each way, so it stays INSIDE the frame's solid
+    // (local 0..1.92) and never shows a sliver above the arch head under the cornice.
+    const panel = boxAt(0, (h.sill + h.spring + h.r) / 2, 0.05, 2 * h.r + 0.26, h.spring + h.r - h.sill + 0.20, 0.06);
+    addInst('niche-panels', 'Niche back panels', panel, 'shadow', quad(n.faceR + 0.01, n.y0));
   }
 
   /* ---------------------------------------------------------------- bell dome
-   * One lathe carrying the moulded rings at its foot, the bell, and the drum NECK the harmika
-   * stands on, because a ring is a profile step and not a separate mesh. Its base is sunk to
-   * y=3.70, inside the terrace's top slab, and its top runs 0.15 m up INTO the harmika's lower
-   * slab: LatheGeometry is open at both ends, and an open rim meeting a surface -- or, as the
-   * first build had it, stopping 0.25 m short of one -- is a seam or a gap the turntable reads.
+   * One lathe: the stucco foot band, the near-vertical body, the dome and the neck that runs up
+   * inside the harmika. The open bottom rim (r 2.50 at 3.45) is inside the stone plinth (r 2.63
+   * to 3.46), and the open top rim is inside the cube: no open rim is ever visible.
    *
-   * The profile is the proxy's, not a guess: radius-by-height off the Meshy reference scaled to
-   * 14 m reads 2.36 at 4.1, 2.03 at 5.1, 1.90 at 6.4, then rounds over 1.3 m to a 0.72 neck at
-   * 7.9. That is a BELL -- near-vertical flanks and a domed shoulder -- and the first build's
-   * quarter-cosine from the foot was an ogive, full only at the haunch and pointed at the top. */
+   * The dome is the proxy's, not a chosen curve. The second build's quarter-ellipse to a flat
+   * 1.30 m crown was a hemisphere with a crate on it; the proxy's falloff (1.58 at 7.13, 1.28 at
+   * 7.38, 0.93 at 7.62, 0.71 at 7.87) is a domed bell, and with a 1.46 m cube seated INTO it the
+   * junction is the plate's -- the dome visibly wrapping up around the cube's foot. */
   {
     const b = G.bell;
-    const pts: number[][] = [
-      [2.70, b.y0], [2.70, 4.02], [2.54, 4.04], [2.54, 4.24], [2.70, 4.26], [2.70, 4.46],
-      ...(b.body as number[][]),
-    ];
-    // The shoulder: a quarter-ellipse from the top of the body to the crown edge, ending with a
-    // horizontal tangent; then the flat crown inward to the neck, which runs up into the block.
-    const s = b.shoulder;
-    for (let i = 1; i <= s.steps; i++) {
-      const t = i / s.steps;
-      pts.push([s.rEdge + (s.r - s.rEdge) * Math.cos(t * Math.PI / 2), s.y + (s.yTop - s.y) * Math.sin(t * Math.PI / 2)]);
-    }
-    pts.push([b.neck.r, s.yTop]);
+    const pts: number[][] = [...(b.foot as number[][]), ...(b.body as number[][])];
+    const curve = new THREE.CatmullRomCurve3(
+      (b.dome as number[][]).map((p) => new THREE.Vector3(p[0], p[1], 0)), false, 'catmullrom', 0.5);
+    const dome = curve.getPoints(b.domeSteps);
+    for (let i = 1; i < dome.length; i++) pts.push([dome[i].x, dome[i].y]);
+    pts.push([b.neck.r, dome[dome.length - 1].y + 0.05]);
     pts.push([b.neck.r, b.neck.yTop]);
     const geo = lathe(pts, b.seg);
-    latheUv(geo, G.wear.tile, 2.2);
+    latheUv(geo, G.wear.stuccoTile, 2.1);
     add('bell-dome', 'Bell dome', geo, 'stucco');
   }
 
   /* ---------------------------------------------------------------- harmika
-   * The square block between the bell and the spire, and the only orthogonal thing above the
-   * terrace. Two merged boxes standing on the bell's neck, which runs up inside the lower slab;
-   * the upper block's 1.52 m top is what caps the spire lathe's open base. */
+   * The square block between the bell and the spire: a cube seated into the dome, a fillet, a
+   * cornice stepping out, and a top slab that CAPS the spire lathe's open base. Four merged
+   * boxes, consecutive ones meeting as opposed faces. */
   {
     const geo = boxes(G.harmika as number[][]);
-    boxUv(geo, G.wear.tile);
+    boxUv(geo, G.wear.stuccoTile);
     add('harmika', 'Harmika block', geo, 'stucco');
   }
 
   /* ---------------------------------------------------------------- ringed spire
-   * Sixteen rings as ONE lathe profile, not sixteen meshes. At 24 radial segments that is 2,300
-   * triangles in a single geometry and a single draw call; the same rings as separate cylinders
-   * would be sixteen geometries against a ceiling of thirty-two, for an identical picture. */
+   * Sixteen rings as ONE lathe profile, not sixteen meshes. At 24 radial segments that is ~2,400
+   * triangles in a single geometry and a single draw call. */
   {
     const s = G.spire;
     const pts = ringedTaper(s.y0, s.y1, s.r0, s.r1, s.rings, s.bulge);
     pts.push([0, s.y1]);   // close the top on the axis; an open rim reads as a hole in silhouette
     const geo = lathe(pts, s.seg);
-    latheUv(geo, G.wear.tile, 0.5);
+    latheUv(geo, G.wear.stuccoTile, 0.5);
     add('spire', 'Ringed spire', geo, 'stucco');
   }
 
   /* ---------------------------------------------------------------- gilded finial
-   * Closed on the axis at BOTH ends. The one gold surface on the prop, and the top 1.55 m of the
-   * declared 14 m height. */
+   * Closed on the axis at BOTH ends, its 0.19 m flare inside the spire's 0.20 m cap. The one gold
+   * surface on the prop and the top 1.72 m of the declared 14 m. Proxy: 0.17 at 12.63, 0.12 at
+   * 13.13, 0.08 at 13.62. */
   {
     const f = G.finial;
     add('finial', 'Gilded finial', lathe([
-      [0, f.y0], [0.26, f.y0 + 0.05], [0.26, f.y0 + 0.28], [0.20, f.y0 + 0.66],
-      [0.13, f.y0 + 1.08], [0.055, f.y0 + 1.42],
-      // The bud. The plate's finial is a teardrop with a small bulb at its tip, not a plain cone,
-      // and at 1.7 m of a 14 m prop it is the only thing above the bell with a profile event.
-      [0.085, f.y0 + 1.50], [0.06, f.y0 + 1.60], [0, f.y1],
+      [0, f.y0], [0.19, f.y0 + 0.05], [0.19, f.y0 + 0.24], [0.165, f.y0 + 0.50],
+      [0.125, f.y0 + 0.90], [0.08, f.y0 + 1.30], [0.045, f.y0 + 1.45],
+      // The bud at the tip: a teardrop with a small bulb, the plate's finial and not a plain cone.
+      [0.075, f.y0 + 1.53], [0.05, f.y0 + 1.63], [0, f.y1],
     ], f.seg), 'gold');
   }
+
   /* ---------------------------------------------------------------- weathering
-   * The plate's whitewash is PEELING -- crazed, with patches of grey render showing through and
-   * dirt streaks running down the bell -- and the terrace carries lichen. The first build left
-   * all of it out as "wear below the resolvable band", and it read as a clean plaster model.
+   * The plate's whitewash is CRAZED -- a connected network of cells a few centimetres across
+   * over the whole bell -- with flat grey patches where it has come away and dark streaks down
+   * the body; the terrace is grey stone with moss in every horizontal joint. Delivered as two
+   * Canvas 2D tiles assigned AFTER material construction: the sculpt materials stay textureless
+   * (no five-canvas set, the measured albedo is not thrown away), and the whole of it is a few
+   * hundred path fills at 512 px. Bound as map AND bumpMap.
    *
-   * It is delivered as two Canvas 2D tiles assigned AFTER material construction, the route the
-   * retail set uses for its brand fascias: the sculpt materials stay declared textureless (no
-   * five-canvas procedural set, no per-pixel JavaScript, and the measured albedo is NOT thrown
-   * away), and the whole of it is a few hundred path fills at 512 px -- single-digit milliseconds.
-   * The canvas is a MULTIPLIER on the material colour, so every mark on it is a ratio measured on
-   * the plate against the clean surface beside it; it is bound as both map and bumpMap, which
-   * is what makes a peel patch read as a step in the surface rather than a stain.
-   *
-   * The measured dark-render patch is 0.483 of the clean whitewash and ships at 0.62: the
-   * silhouette gate classes any surface at the backdrop's luma of 58 as a HOLE, and the bell's
-   * shaded side already renders near 120, where a 0.48 patch would land at 58. The lichen tones
-   * are relative too, and a multiplier cannot brighten, so the crust's measured yellow SHIFT is
-   * carried with its blue channel at 0.86 and the pale channels held near 1.0 rather than raised.
+   * What changed from the second build, and why: the crazing was 640 short random walks and read
+   * as scratches -- it is now a jittered-grid NETWORK, because the plate's cracks enclose cells;
+   * the flakes were layered halo/core blobs that rendered as polka dots and are now flat unions
+   * with a one-pixel rim; the mottle is BLURRED (hard blotches read as camouflage on the Khmer
+   * sanctuary); and the stone tile is the terrace's exact height so its moss bands land on the
+   * real joints -- the one thing a wrapping tile can otherwise never do.
    *
    * Under Node -- the band comparison and check-coplanar both run this factory without a DOM --
    * there is no canvas, and the materials simply keep their flat measured colour. */
@@ -981,14 +1126,11 @@ export function createChediModel(options: ProceduralModelOptions = {}): THREE.Gr
       'rgba(' + Math.round(t[0] * 255) + ',' + Math.round(t[1] * 255) + ',' + Math.round(t[2] * 255) + ',' + a + ')';
     const rng = (seed: number) => () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
 
-    /** Draw one tile. kind selects the stucco recipe (peel, crazing, drips) or the stone one
-     *  (lichen crust and moss, lighter crazing). Every mark is built ONCE as a Path2D and then
-     *  filled at nine wrapped offsets, so the tile is seamless under RepeatWrapping. */
     function wearTile(kind: 'stucco' | 'stone', seed: number): HTMLCanvasElement | null {
       if (!hasDom) return null;
       const cv = document.createElement('canvas');
       cv.width = cv.height = size;
-      const ctx = cv.getContext('2d');
+      const ctx = cv.getContext('2d', { willReadFrequently: true } as any);
       if (!ctx) return null;
       const r = rng(seed);
       const S = size;
@@ -999,82 +1141,185 @@ export function createChediModel(options: ProceduralModelOptions = {}): THREE.Gr
           ctx.save(); ctx.translate(ox * S, oy * S); fn(); ctx.restore();
         }
       };
-      // An irregular patch: a random WALK of overlapping discs, filled once as a union (so the
-      // outline is ragged but the tone inside is flat, like a flake that has come away in one
-      // piece) and once more at a smaller radius for a darker core. Discs scattered about a
-      // centre were tried first and rendered as polka dots; a flake is a worm, not a spot. Every
-      // number is drawn from the seeded stream so the nine wrapped copies are identical.
-      const blotch = (tone: number[], count: number, rad: number, alpha: number) => {
+      // Soft cloudy drift: big discs under a blur, so a flat area is not flat and nothing has an
+      // edge. Blur is applied per draw in Chrome, so the filter is set inside the wrapped fill.
+      const cloud = (tone: number[], count: number, rad: number, alpha: number, blur: number) => {
         for (let i = 0; i < count; i++) {
-          const halo = new Path2D(), core = new Path2D();
-          let cx = r() * S, cy = r() * S, a = r() * Math.PI * 2;
-          const R = rad * S * (0.5 + r()), n = 8 + Math.floor(r() * 16);
-          for (let k = 0; k < n; k++) {
-            a += (r() - 0.5) * 2.2;
-            cx += Math.cos(a) * R * 0.4; cy += Math.sin(a) * R * 0.4;
-            const rr = R * (0.35 + 0.5 * r());
-            halo.moveTo(cx + rr, cy); halo.arc(cx, cy, rr, 0, Math.PI * 2);
-            core.moveTo(cx + rr * 0.6, cy); core.arc(cx, cy, rr * 0.6, 0, Math.PI * 2);
-          }
-          const al = alpha * (0.6 + 0.4 * r());
+          const x = r() * S, y = r() * S, R = rad * S * (0.5 + r()), a = alpha * (0.5 + 0.5 * r());
           wrapped(() => {
-            ctx.fillStyle = css(tone, al * 0.55); ctx.fill(halo);
-            ctx.fillStyle = css(tone, al * 0.45); ctx.fill(core);
+            ctx.filter = 'blur(' + blur + 'px)';
+            ctx.fillStyle = css(tone, a);
+            ctx.beginPath(); ctx.ellipse(x, y, R, R * (0.5 + 0.5 * r()), r() * Math.PI, 0, Math.PI * 2); ctx.fill();
+            ctx.filter = 'none';
           });
         }
       };
-      // Crazing: short random walks, stroked thin. The plate's cracks are a network of cells a
-      // few centimetres across; at 512 px over a 3 m tile one pixel is 6 mm.
-      const crazing = (tone: number[], count: number, alpha: number) => {
-        const p = new Path2D();
+      // A flake: a JAGGED POLYGON -- render comes away along the crack lines, so a flake's edge
+      // is straight-sided and angular, not lobed. Twelve to twenty vertices at irregular radii
+      // about a centre, elongated on a random axis, filled flat with a one-pixel darker rim so
+      // it reads as a step in the surface. Disc unions (the second build, and the first emit of
+      // this one) read as clouds; layered halo/core discs read as polka dots.
+      const flake = (tone: number[], count: number, rad: number, alpha: number, rim?: number[]) => {
         for (let i = 0; i < count; i++) {
-          let x = r() * S, y = r() * S;
-          p.moveTo(x, y);
-          const n = 4 + Math.floor(r() * 9), step = S * 0.016;
-          let a = r() * Math.PI * 2;
+          const p = new Path2D();
+          const cx = r() * S, cy = r() * S, R = rad * S * (0.6 + 0.8 * r());
+          const n = 12 + Math.floor(r() * 9), rot = r() * Math.PI, e = 0.45 + 0.5 * r();
           for (let k = 0; k < n; k++) {
-            a += (r() - 0.5) * 1.6;
-            x += Math.cos(a) * step * (0.5 + r()); y += Math.sin(a) * step * (0.5 + r());
-            p.lineTo(x, y);
+            const th = (k / n) * Math.PI * 2 + (r() - 0.5) * 0.3;
+            const rr = R * (0.45 + 0.75 * r());
+            const lx = Math.cos(th) * rr, ly = Math.sin(th) * rr * e;
+            const x = cx + lx * Math.cos(rot) - ly * Math.sin(rot), y = cy + lx * Math.sin(rot) + ly * Math.cos(rot);
+            if (k === 0) p.moveTo(x, y); else p.lineTo(x, y);
+          }
+          p.closePath();
+          const al = alpha * (0.75 + 0.25 * r());
+          wrapped(() => {
+            ctx.fillStyle = css(tone, al); ctx.fill(p);
+            if (rim) { ctx.strokeStyle = css(rim, al * 0.7); ctx.lineWidth = 1.2; ctx.stroke(p); }
+          });
+        }
+      };
+      // Crazing as a NETWORK: a jittered grid of nodes joined to their right and lower
+      // neighbours by slightly bent lines, with a share of the edges dropped so cells open into
+      // one another. The plate's cracks enclose polygonal cells 5-10 cm across; at 512 px over a
+      // 3 m tile one pixel is 6 mm, so a 34-cell grid is 9 cm cells.
+      const network = (tone: number[], cells: number, alpha: number, width: number, drop: number) => {
+        const step = S / cells;
+        const nodes: number[][] = [];
+        for (let j = 0; j <= cells; j++) for (let i = 0; i <= cells; i++) {
+          // Wrapped: the last row/column reuses the first, so the network is seamless.
+          const ii = i % cells, jj = j % cells;
+          const idx = jj * cells + ii;
+          if (!nodes[idx]) nodes[idx] = [(ii + 0.5 + (r() - 0.5) * 0.7) * step, (jj + 0.5 + (r() - 0.5) * 0.7) * step];
+        }
+        const at = (i: number, j: number) => {
+          const n = nodes[(j % cells) * cells + (i % cells)];
+          return [n[0] + Math.floor(i / cells) * S, n[1] + Math.floor(j / cells) * S];
+        };
+        const p = new Path2D();
+        for (let j = 0; j < cells; j++) for (let i = 0; i < cells; i++) {
+          const a = at(i, j);
+          for (const b of [at(i + 1, j), at(i, j + 1)]) {
+            if (r() < drop) continue;
+            const mx = (a[0] + b[0]) / 2 + (r() - 0.5) * step * 0.5, my = (a[1] + b[1]) / 2 + (r() - 0.5) * step * 0.5;
+            p.moveTo(a[0], a[1]); p.quadraticCurveTo(mx, my, b[0], b[1]);
           }
         }
-        wrapped(() => { ctx.strokeStyle = css(tone, alpha); ctx.lineWidth = 1.25; ctx.stroke(p); });
+        wrapped(() => { ctx.strokeStyle = css(tone, alpha); ctx.lineWidth = width; ctx.lineCap = 'round'; ctx.stroke(p); });
       };
       // Drips: vertical streaks fading downward. v is world height on every mapping used here,
-      // so "down the canvas" is down the prop.
-      const drips = (tone: number[], count: number, alpha: number) => {
+      // so "down the canvas" is down the prop (the texture is flipY, so canvas +y is world -y).
+      const drips = (tone: number[], count: number, alpha: number, lenMax: number) => {
         for (let i = 0; i < count; i++) {
-          const x = r() * S, y0 = r() * S, len = S * (0.05 + 0.22 * r()), w = 1.5 + 2.5 * r();
+          const x = r() * S, y0 = r() * S, len = S * (0.06 + lenMax * r()), w = 1 + 2.5 * r();
           const a = alpha * (0.5 + 0.5 * r());
           wrapped(() => {
-            const g = ctx.createLinearGradient(0, y0, 0, y0 - len);
+            const g = ctx.createLinearGradient(0, y0, 0, y0 + len);
             g.addColorStop(0, css(tone, a)); g.addColorStop(1, css(tone, 0));
-            ctx.fillStyle = g; ctx.fillRect(x - w / 2, y0 - len, w, len);
+            ctx.fillStyle = g; ctx.fillRect(x - w / 2, y0, w, len);
           });
         }
       };
-      // Fine grain: a scatter of near-transparent specks, so a flat area is not flat.
+      // Drips in CLUSTERS: the plate's streaks run in groups of six to ten from one wet spot,
+      // 3-8 px (2-5 cm) wide, not single hairlines scattered evenly.
+      const dripClusters = (tone: number[], clusters: number, per: number, alpha: number) => {
+        for (let c = 0; c < clusters; c++) {
+          const cx = r() * S, cy = r() * S;
+          for (let i = 0; i < per; i++) {
+            const x = cx + (r() - 0.5) * 70, y0 = cy + (r() - 0.5) * 30, len = S * (0.15 + 0.32 * r()), w = 1.5 + 2.5 * r();
+            const a = alpha * (0.5 + 0.5 * r());
+            wrapped(() => {
+              const g = ctx.createLinearGradient(0, y0, 0, y0 + len);
+              g.addColorStop(0, css(tone, a)); g.addColorStop(1, css(tone, 0));
+              ctx.fillStyle = g; ctx.fillRect(x - w / 2, y0, w, len);
+            });
+          }
+        }
+      };
+      // Zones for a denser crazing pass: a few ellipses (drawn at the nine wrapped offsets with
+      // ONE rotation each, so the clip is seamless) that the finer network is clipped to. The
+      // plate's crazing has hierarchy -- fine dense cells in patches over a coarser open net.
+      const zones = (count: number, rad: number): Path2D => {
+        const p = new Path2D();
+        for (let i = 0; i < count; i++) {
+          const x = r() * S, y = r() * S, R = rad * S * (0.6 + 0.8 * r()), rot = r() * Math.PI, e = 0.55 + 0.4 * r();
+          for (let ox = -1; ox <= 1; ox++) for (let oy = -1; oy <= 1; oy++) {
+            p.moveTo(x + ox * S + R, y + oy * S);
+            p.ellipse(x + ox * S, y + oy * S, R, R * e, rot, 0, Math.PI * 2);
+          }
+        }
+        return p;
+      };
+      // Wide soft washes: the plate's grey vertical staining under the shoulder, blurred.
+      const washes = (tone: number[], count: number, alpha: number) => {
+        for (let i = 0; i < count; i++) {
+          const x = r() * S, y0 = r() * S, len = S * (0.2 + 0.4 * r()), w = 6 + 18 * r();
+          const a = alpha * (0.5 + 0.5 * r());
+          wrapped(() => {
+            ctx.filter = 'blur(4px)';
+            const g = ctx.createLinearGradient(0, y0, 0, y0 + len);
+            g.addColorStop(0, css(tone, a)); g.addColorStop(1, css(tone, 0));
+            ctx.fillStyle = g; ctx.fillRect(x - w / 2, y0, w, len);
+            ctx.filter = 'none';
+          });
+        }
+      };
+      // Fine grain: a scatter of near-transparent specks.
       const grain = (tone: number[], count: number, alpha: number) => {
         const p = new Path2D();
         for (let i = 0; i < count; i++) { const x = r() * S, y = r() * S, d = 0.6 + r() * 1.4; p.rect(x, y, d, d); }
         wrapped(() => { ctx.fillStyle = css(tone, alpha); ctx.fill(p); });
       };
+      // Moss in a horizontal JOINT: speck clusters strung along a row just under the joint line,
+      // with gaps, and a soft soil line on the joint itself. Rows are world heights: the tile is
+      // exactly the terrace's height and flipY puts world y at canvas row (1 - y / tile) * S.
+      const jointMoss = (yWorld: number, tile: number) => {
+        const row = (1 - yWorld / tile) * S;
+        wrapped(() => {
+          ctx.filter = 'blur(2px)';
+          ctx.fillStyle = css(W.soil, 0.7);
+          ctx.fillRect(0, row - 1, S, 6);
+          ctx.filter = 'none';
+        });
+        const p = new Path2D();
+        let x = r() * 20;
+        while (x < S) {
+          if (r() > 0.35) {
+            const n = 10 + Math.floor(r() * 16), cx = x, cy = row + 3 + r() * 8;
+            for (let k = 0; k < n; k++) {
+              const px = cx + (r() - 0.5) * 30, py = cy + (r() - 0.5) * 9, rr = 1.2 + r() * 2.2;
+              p.moveTo(px + rr, py); p.arc(px, py, rr, 0, Math.PI * 2);
+            }
+          }
+          x += 10 + r() * 22;
+        }
+        wrapped(() => { ctx.fillStyle = css(W.moss, 1.0); ctx.fill(p); });
+      };
 
       if (kind === 'stucco') {
-        // Order matters: the soft mottle first, so the harder flakes and the crack network sit on
-        // top of it, and the dark render cores last.
-        blotch(W.mottle, 14, 0.13, 0.7);
-        blotch(W.peelLight, 9, 0.085, 0.8);
-        blotch(W.peelDark, 5, 0.03, 0.85);
-        crazing(W.crack, 640, 0.62);
-        drips(W.drip, 48, 0.6);
-        grain(W.crack, 1600, 0.10);
+        // The tile repeats 4.4x round the bell and 1.5x up it, so every flake here is seen
+        // five or six times: the plate's bell shows three or four big patches on its visible
+        // half, which is TWO per tile, not the eighteen the first emit drew (it read as camo).
+        cloud([0.88, 0.88, 0.86], 12, 0.16, 0.6, 9);
+        washes(W.drip, 12, 0.55);
+        flake(W.peel, 1, 0.17, 0.95, W.rim);
+        flake(W.core, 1, 0.045, 0.9, W.rim);
+        flake(W.peel, 2, 0.05, 0.9, W.rim);
+        network(W.crack, 30, 0.6, 1.1, 0.16);
+        network(W.crack, 10, 0.5, 1.6, 0.35);
+        ctx.save(); ctx.clip(zones(4, 0.16));
+        network(W.crack, 46, 0.85, 1.0, 0.08);
+        ctx.restore();
+        dripClusters(W.drip, 5, 12, 0.9);
+        drips(W.drip, 16, 0.6, 0.3);
+        grain(W.crack, 1800, 0.09);
       } else {
-        blotch(W.mottle, 12, 0.12, 0.6);
-        blotch(W.crust, 16, 0.07, 0.9);
-        blotch(W.moss, 9, 0.03, 0.8);
-        crazing(W.crack, 260, 0.38);
-        grain(W.moss, 1400, 0.12);
+        cloud(W.mottle, 14, 0.14, 0.55, 8);
+        cloud(W.soil, 10, 0.10, 0.5, 8);
+        network(W.crack, 26, 0.6, 1.0, 0.2);
+        network(W.crack, 8, 0.4, 1.4, 0.4);
+        for (const y of W.joints as number[]) jointMoss(y, W.stoneTile);
+        grain(W.moss, 1600, 0.10);
       }
       return cv;
     }
@@ -1090,8 +1335,8 @@ export function createChediModel(options: ProceduralModelOptions = {}): THREE.Gr
       mat.bumpScale = W.bump;
       mat.needsUpdate = true;
     };
-    bind(materials.stucco, wearTile('stucco', 20260826));
-    bind(materials.stone, wearTile('stone', 8261403));
+    bind(materials.stucco, wearTile('stucco', 20260902));
+    bind(materials.stone, wearTile('stone', 9021403));
   }
 
   root.userData.sculptRuntime = { nodes, meshes, sockets, colliders, destructionGroups } satisfies ProceduralModelRuntime;
@@ -1168,13 +1413,8 @@ export function createObjectModel(spec?: unknown, options: ProceduralModelOption
 }
 
 /**
- * The one-argument entry point: vibe3d's contract, and img2threejs's own.
- *
- * `createObjectModel` above keeps thaikit's historical (spec, options) shape so
- * the harness, the level editor and the Node-side gates carry on unchanged.
- * `spec` has never been passed by any caller -- it is inspection data that is
- * already baked into this module -- so this is the honest signature, and it is
- * what a vibe3d consumer installs and calls.
+ * vibe3d's one-argument entry: the same factory under the name a pack consumer installs and
+ * calls. `model.ts` beside this file re-exports it as the item's `createModel`.
  */
 export function createModel(options: ProceduralModelOptions = {}): THREE.Group {
   return createObjectModel(undefined, options);
