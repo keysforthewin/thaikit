@@ -260,12 +260,20 @@ const CONFIG = {
           1.7
         ],
         [
-          0.9771,
-          1.7719
+          0.9892,
+          1.7603
         ],
         [
-          0.941,
-          1.7928
+          0.9705,
+          1.7771
+        ],
+        [
+          0.9488,
+          1.7896
+        ],
+        [
+          0.9249,
+          1.7974
         ],
         [
           0.9,
@@ -276,16 +284,24 @@ const CONFIG = {
           1.82
         ],
         [
-          -0.6459,
-          1.7909
+          -0.6311,
+          1.7959
+        ],
+        [
+          -0.66,
+          1.7839
         ],
         [
           -0.6849,
           1.7649
         ],
         [
-          -0.7109,
-          1.7259
+          -0.7039,
+          1.74
+        ],
+        [
+          -0.7159,
+          1.7111
         ],
         [
           -0.72,
@@ -343,9 +359,9 @@ const CONFIG = {
         "steps": 14,
         "edgeBias": 0.6,
         "shoulder": {
-          "r": 0.13,
+          "r": 0.15,
           "zMin": -0.76,
-          "zMax": 1.06,
+          "zMax": 2.7,
           "fade": 0.16
         },
         "nose": {
@@ -354,7 +370,7 @@ const CONFIG = {
         "tail": {
           "r": 0.06
         },
-        "smooth": 50
+        "smooth": 60
       },
       "bodyBoxes": [
         [
@@ -440,7 +456,8 @@ const CONFIG = {
               1.68
             ]
           ],
-          "strip": 0.1
+          "strip": 0.1,
+          "proud": 0.006
         },
         {
           "poly": [
@@ -483,7 +500,8 @@ const CONFIG = {
               1.68
             ]
           ],
-          "strip": 0.1
+          "strip": 0.1,
+          "proud": 0.006
         },
         {
           "poly": [
@@ -1552,7 +1570,8 @@ type ShapeOpts = { tumble?: { belt: number, roof: number, k: number }, plan?: nu
                    curveSegments?: number, steps?: number,
                    shoulder?: { r: number, zMin?: number, zMax?: number, fade?: number },
                    nose?: { r: number }, tail?: { r: number },
-                   smooth?: number, edgeBias?: number, baseWidth?: number, topOf?: number[][] };
+                   smooth?: number, edgeBias?: number, baseWidth?: number, topOf?: number[][],
+                   crown?: { yMin: number, dy: number, fade?: number } };
 
 /** Highest y of a closed [z, y] profile on the vertical line at z -- the roof line at that
  *  station. Vertical edges count by their own top; a z outside the profile returns -Infinity. */
@@ -1653,6 +1672,15 @@ function shapeWidth(g: THREE.BufferGeometry, opts: ShapeOpts, width = 0): void {
         // which z-fights -- the Commuter van's wrapped A-pillars crumpled from exactly that.
         if (d >= r - 1e-4) { x = Math.sign(x || 1) * (cx + dx / d * r); z = end.zc + end.s * (dz / d * r); }
       }
+    }
+    if (opts.crown && y > opts.crown.yMin) {
+      // CROWN across the width: a roof is a shallow dome in BOTH axes, and a side extrusion is flat
+      // across x. Vertices above `yMin` (the roof band, never a rear wall below it) rise by
+      // dy * (1 - (x/hw)^2), faded in over `fade` metres above yMin so the band's underside and top
+      // crown together and the edge stays where the shoulder put it. Default-off.
+      const hwc = Math.max(1e-3, baseHalf * tf * pf) + extra;
+      const t = Math.min(1, Math.abs(x) / hwc), f = opts.crown.fade ? Math.min(1, (y - opts.crown.yMin) / opts.crown.fade) : 1;
+      y += opts.crown.dy * (1 - t * t) * f;
     }
     p.setXYZ(i, x, y, z);
   }
@@ -1811,6 +1839,55 @@ function steelWheelGeo(rTyre: number, rRim: number, halfW: number, seg: number,
   g.rotateZ(Math.PI / 2);
   g.computeVertexNormals();
   return g;
+}
+
+/**
+ * An ALLOY WHEEL: the steel lathe's tyre with a shallow open dish -- a dark WINDOW floor between a
+ * small centre cap and a bright rim lip -- and `spokeN` flat spoke bars laid across the dish in the
+ * lathe's own axial frame, merged BEFORE the axle rotation so they ride the same instanced geometry.
+ * The bars stand 12 mm off the floor (opposed faces, no z-fight) and read as a multi-spoke alloy at
+ * prop distance where a per-segment vertex-colour star would blur across every face. Default-off:
+ * only `wheels.style: 'alloy'` gets it. Colour classes: 0 rim, 1 window floor, 2 tyre, 3 tread.
+ */
+function alloyWheelGeo(rTyre: number, rRim: number, halfW: number, seg: number,
+                       tyreHex: number, rimHex: number, windowHex: number, lugHex: number, dish = 0.35,
+                       spokeN = 10, spokeW = 0.16): THREE.BufferGeometry {
+  const hw = halfW, d = hw * dish;
+  const pts: number[][] = [
+    [0, -d + 0.015], [rRim * 0.16, -d + 0.015], [rRim * 0.18, -d],                       // centre cap
+    [rRim * 0.20, -d], [rRim * 0.86, -d],                                                // window floor (dark)
+    [rRim * 0.88, -hw * 0.88], [rRim, -hw * 0.92], [rRim, -hw * 0.98],                   // rim lip
+    [rTyre * 0.88, -hw], [rTyre * 0.97, -hw * 0.86], [rTyre, -hw * 0.70],                // sidewall
+    [rTyre, hw * 0.70],                                                                  // tread
+    [rTyre * 0.97, hw * 0.86], [rTyre * 0.88, hw], [rRim, hw * 0.98],                    // far sidewall
+    [rRim, hw * 0.88], [rRim * 0.30, hw * 0.80], [0, hw * 0.80],                          // back of the rim
+  ];
+  const cls = [0, 0, 0, 1, 1, 0, 0, 0, 2, 2, 3, 3, 2, 2, 0, 0, 0, 0];
+  const g = new THREE.LatheGeometry(pts.map((p) => new THREE.Vector2(p[0], p[1])), seg);
+  const n = g.getAttribute('position').count;
+  const col = new Float32Array(n * 3);
+  const C = [new THREE.Color(rimHex), new THREE.Color(windowHex), new THREE.Color(tyreHex), new THREE.Color(lugHex)];
+  const ct = new THREE.Color(tyreHex);
+  for (let i = 0; i < n; i++) {
+    const j = i % pts.length, s = Math.floor(i / pts.length);
+    let c = C[cls[j]];
+    if (cls[j] === 3) c = (s % 2 === 0) ? ct : C[3];
+    col[i * 3] = c.r; col[i * 3 + 1] = c.g; col[i * 3 + 2] = c.b;
+  }
+  g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+  // spokes: flat bars from the cap to the lip, in the lathe frame (axial = y), then rotated with it
+  const bars: THREE.BufferGeometry[] = [];
+  const r0 = rRim * 0.17, r1 = rRim * 0.89, len = r1 - r0, t = 0.024;
+  for (let i = 0; i < spokeN; i++) {
+    const b = new THREE.BoxGeometry(rRim * spokeW, t, len);
+    b.translate(0, -d - 0.0115, r0 + len / 2);
+    b.rotateY((i / spokeN) * Math.PI * 2);
+    bars.push(tintGeo(b, rimHex));
+  }
+  const all = mergeGeos([g, ...bars]);
+  all.rotateZ(Math.PI / 2);
+  all.computeVertexNormals();
+  return all;
 }
 
 /** Wire-spoked wheel dressing: `n` thin boxes radiating from the hub, laced alternately to each
@@ -2540,7 +2617,9 @@ export function createToyotaHiluxModel(options: ProceduralModelOptions = {}): TH
   add('trim', 'Trim, lamps, bumpers and wheel wells', mergeGeos(trimGeos), 'trim');
 
   // 5. WHEELS: one lathe, four (or however many) instances, each a named pivot on the axle.
-  const wheelG = wh.style === 'steel'
+  const wheelG = wh.style === 'alloy'
+    ? alloyWheelGeo(wh.r, wh.rim, wh.halfW, wh.seg ?? 24, wh.tyreHex, wh.rimHex, wh.windowHex ?? 0x2a2826, wh.lugHex ?? wh.tyreHex, wh.dish ?? 0.35, wh.spokes ?? 10, wh.spokeW ?? 0.16)
+    : wh.style === 'steel'
     ? steelWheelGeo(wh.r, wh.rim, wh.halfW, wh.seg ?? 24, wh.tyreHex, wh.rimHex, wh.ventHex ?? 0x4a4842, wh.lugHex ?? wh.tyreHex, wh.dish ?? 0.50)
     : wheelGeo(wh.r, wh.rim, wh.halfW, wh.seg ?? 20, wh.tyreHex, wh.rimHex, wh.dish ?? 0.55);
   // `lugs` merges a ring of tread blocks into the SAME wheel geometry (one unique geometry, one
