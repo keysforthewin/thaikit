@@ -331,7 +331,7 @@ const CONFIG = {
               0,
               1.38,
               0.046,
-              0.558,
+              0.08,
               0.045,
               0.012000000000000004
             ],
@@ -340,7 +340,7 @@ const CONFIG = {
               0,
               1.9200000000000002,
               0.046,
-              0.558,
+              0.08,
               0.045,
               0.012000000000000004
             ],
@@ -364,286 +364,7 @@ const CONFIG = {
             ]
           ],
           "cyls": [],
-          "extrudes": [
-            {
-              "hex": 15133163,
-              "poly": [
-                [
-                  0.02121,
-                  2.07879
-                ],
-                [
-                  0.00776,
-                  2.08655
-                ],
-                [
-                  -0.00776,
-                  2.08655
-                ],
-                [
-                  -0.02121,
-                  2.07879
-                ],
-                [
-                  -0.42879,
-                  1.67121
-                ],
-                [
-                  -0.43655,
-                  1.65776
-                ],
-                [
-                  -0.43655,
-                  1.64224
-                ],
-                [
-                  -0.42879,
-                  1.62879
-                ],
-                [
-                  -0.02121,
-                  1.22121
-                ],
-                [
-                  -0.00776,
-                  1.21345
-                ],
-                [
-                  0.00776,
-                  1.21345
-                ],
-                [
-                  0.02121,
-                  1.22121
-                ],
-                [
-                  0.42879,
-                  1.62879
-                ],
-                [
-                  0.43655,
-                  1.64224
-                ],
-                [
-                  0.43655,
-                  1.65776
-                ],
-                [
-                  0.42879,
-                  1.67121
-                ]
-              ],
-              "holes": [
-                [
-                  [
-                    0.00849,
-                    2.06323
-                  ],
-                  [
-                    0.00311,
-                    2.06634
-                  ],
-                  [
-                    -0.00311,
-                    2.06634
-                  ],
-                  [
-                    -0.00849,
-                    2.06323
-                  ],
-                  [
-                    -0.41323,
-                    1.65849
-                  ],
-                  [
-                    -0.41634,
-                    1.65311
-                  ],
-                  [
-                    -0.41634,
-                    1.64689
-                  ],
-                  [
-                    -0.41323,
-                    1.64151
-                  ],
-                  [
-                    -0.00849,
-                    1.23677
-                  ],
-                  [
-                    -0.00311,
-                    1.23366
-                  ],
-                  [
-                    0.00311,
-                    1.23366
-                  ],
-                  [
-                    0.00849,
-                    1.23677
-                  ],
-                  [
-                    0.41323,
-                    1.64151
-                  ],
-                  [
-                    0.41634,
-                    1.64689
-                  ],
-                  [
-                    0.41634,
-                    1.65311
-                  ],
-                  [
-                    0.41323,
-                    1.65849
-                  ]
-                ]
-              ],
-              "z0": 0.082,
-              "z1": 0.094
-            },
-            {
-              "hex": 15133163,
-              "poly": [
-                [
-                  0.3,
-                  1.165
-                ],
-                [
-                  0.29799,
-                  1.1725
-                ],
-                [
-                  0.2925,
-                  1.17799
-                ],
-                [
-                  0.285,
-                  1.18
-                ],
-                [
-                  -0.285,
-                  1.18
-                ],
-                [
-                  -0.2925,
-                  1.17799
-                ],
-                [
-                  -0.29799,
-                  1.1725
-                ],
-                [
-                  -0.3,
-                  1.165
-                ],
-                [
-                  -0.3,
-                  0.995
-                ],
-                [
-                  -0.29799,
-                  0.9875
-                ],
-                [
-                  -0.2925,
-                  0.98201
-                ],
-                [
-                  -0.285,
-                  0.98
-                ],
-                [
-                  0.285,
-                  0.98
-                ],
-                [
-                  0.2925,
-                  0.98201
-                ],
-                [
-                  0.29799,
-                  0.9875
-                ],
-                [
-                  0.3,
-                  0.995
-                ]
-              ],
-              "holes": [
-                [
-                  [
-                    0.28,
-                    1.156
-                  ],
-                  [
-                    0.27946,
-                    1.158
-                  ],
-                  [
-                    0.278,
-                    1.15946
-                  ],
-                  [
-                    0.276,
-                    1.16
-                  ],
-                  [
-                    -0.276,
-                    1.16
-                  ],
-                  [
-                    -0.278,
-                    1.15946
-                  ],
-                  [
-                    -0.27946,
-                    1.158
-                  ],
-                  [
-                    -0.28,
-                    1.156
-                  ],
-                  [
-                    -0.28,
-                    1.004
-                  ],
-                  [
-                    -0.27946,
-                    1.002
-                  ],
-                  [
-                    -0.278,
-                    1.00054
-                  ],
-                  [
-                    -0.276,
-                    1
-                  ],
-                  [
-                    0.276,
-                    1
-                  ],
-                  [
-                    0.278,
-                    1.00054
-                  ],
-                  [
-                    0.27946,
-                    1.002
-                  ],
-                  [
-                    0.28,
-                    1.004
-                  ]
-                ]
-              ],
-              "z0": 0.082,
-              "z1": 0.094
-            }
-          ]
+          "extrudes": []
         }
       ]
     },
@@ -1005,7 +726,7 @@ function hipRoof(hx: number, hz: number, ridgeHalfZ: number, y0: number, y1: num
  * distance a village skyline is read from -- a smooth green hemisphere reads as a water tank.
  */
 function ribbedDome(profile: number[][], ribs: number, amp: number, seg: number,
-                    valley?: number[]): THREE.BufferGeometry {
+                    valley?: number[], smooth = false): THREE.BufferGeometry {
   const tri: number[] = [];
   const col: number[] = [];
   // The ribs are not only a shape. On the mosque's domes the crests are pale and the valleys are
@@ -1042,6 +763,17 @@ function ribbedDome(profile: number[][], ribs: number, amp: number, seg: number,
   g.setAttribute('uv', new THREE.BufferAttribute(new Float32Array((tri.length / 3) * 2), 2));
   if (valley) g.setAttribute('color', new THREE.BufferAttribute(new Float32Array(col), 3));
   g.computeVertexNormals();
+  // `smooth` averages the normals of every vertex sharing a position, so a low-sector flower head
+  // or pompom shades as a rounded solid rather than a cut gem. The soup is non-indexed, so the
+  // faceted default is what computeVertexNormals gives; the mosque's domes keep it.
+  if (smooth) {
+    const pos = g.getAttribute('position') as THREE.BufferAttribute, nrm = g.getAttribute('normal') as THREE.BufferAttribute;
+    const acc = new Map<string, number[]>();
+    const key = (i: number) => `${pos.getX(i).toFixed(5)},${pos.getY(i).toFixed(5)},${pos.getZ(i).toFixed(5)}`;
+    for (let i = 0; i < pos.count; i++) { const k = key(i), a = acc.get(k) ?? [0, 0, 0]; a[0] += nrm.getX(i); a[1] += nrm.getY(i); a[2] += nrm.getZ(i); acc.set(k, a); }
+    for (let i = 0; i < pos.count; i++) { const a = acc.get(key(i))!, l = Math.hypot(a[0], a[1], a[2]) || 1; nrm.setXYZ(i, a[0] / l, a[1] / l, a[2] / l); }
+    nrm.needsUpdate = true;
+  }
   return g;
 }
 
@@ -1994,7 +1726,11 @@ function frontAtlasUV(geo: THREE.BufferGeometry, a: any): THREE.BufferGeometry {
   const minNz = a.minNz ?? 0.7;
   for (let i = 0; i < p.count; i++) {
     const x = p.getX(i), y = p.getY(i);
-    const front = nrm.getZ(i) > minNz && x >= a.x0 && x <= a.x1 && y >= (a.yMin ?? a.y1) && y <= a.y0;
+    // 1e-4 tolerance: a cap vertex sitting exactly on the atlas boundary (the speed sign's disc at x = -aw/2)
+    // failed the test by float error, was pinned, and its three triangles smeared the whole atlas row down
+    // the disc's edge (2026-09-03).
+    const E = 1e-4;
+    const front = nrm.getZ(i) > minNz && x >= a.x0 - E && x <= a.x1 + E && y >= (a.yMin ?? a.y1) - E && y <= a.y0 + E;
     if (front) {
       uv[i * 2] = (x - a.x0) / (a.x1 - a.x0);
       uv[i * 2 + 1] = (y - a.y1) / (a.y0 - a.y1);
@@ -3295,7 +3031,7 @@ export function createElephantCrossingSignModel(options: ProceduralModelOptions 
     // reads as a plastic bubble -- the ribs are most of what says `glass` at prop distance. Authored
     // about +Y like a lathe, so a wall fitting lays it down with rx.
     for (const d of (c.domes ?? []) as any[]) {
-      const g = ribbedDome(d.pts, d.ribs, d.amp, d.seg ?? 24, d.valley);
+      const g = ribbedDome(d.pts, d.ribs, d.amp, d.seg ?? 24, d.valley, d.smooth === true);
       if (d.ry) g.rotateY(d.ry); if (d.rx) g.rotateX(d.rx); if (d.rz) g.rotateZ(d.rz);
       if (d.at) g.translate(d.at[0], d.at[1], d.at[2]);
       // A fluted dome writes its OWN colour attribute (the crest-to-valley multiplier), so tintGeo

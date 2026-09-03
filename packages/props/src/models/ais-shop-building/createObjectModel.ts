@@ -1,5 +1,23 @@
 import * as THREE from 'three';
 
+/**
+ * AIS Shop Building -- procedural Three.js factory.
+ *
+ * `three` is imported as a bare specifier and NOTHING else. The bundle is CommonJS with a bare
+ * require("three") and the host page injects its OWN three instance; a second copy means this
+ * file's Mesh is not the renderer's Mesh and nothing draws. That is also why geometry merging and
+ * instancing are hand-rolled below -- anything under three/examples/jsm is a second import.
+ *
+ * Envelope 8.00 x 4.60 x 7.00 m, origin base-center, +Y up, shopfront facing +Z.
+ * Budget (hero2x): <=16000 triangles, <=12 draw calls, <=8 materials, <=16 unique geometries.
+ *
+ * One of thaikit's shared retail-module buildings. The shell front face sits at z=+2.50 rather
+ * than the envelope edge so the entrance canopy can cantilever forward and still land exactly on
+ * the declared 7.0 m depth. Every surface pair on the facade is deliberately offset in depth:
+ * two surfaces in the same plane facing the same way tear into interleaved triangles as the
+ * camera moves, and authoring components flush against one another produces that by default.
+ */
+
 export type ProceduralModelOptions = {
   /**
    * Where this prop's shipped files live, with a trailing slash.
@@ -25,1386 +43,1568 @@ export type ProceduralModelRuntime = {
   destructionGroups: Record<string, THREE.Object3D[]>;
 };
 
-type SculptMaterialSpec = Record<string, any>;
-
-// bevelEnabled defaults to true on THREE.ExtrudeGeometry and rounds every
-// corner — sharp/pointed profiles (blades, fork tines, spikes) need
-// bevelEnabled: false plus lineTo()-only path segments near the tip, since a
-// curve command cannot produce a true converging point.
-function buildExtrudeShape(points: [number, number][], holes?: [number, number][][]): THREE.Shape {
-  const shape = new THREE.Shape();
-  if (points.length > 0) {
-    shape.moveTo(points[0][0], points[0][1]);
-    for (let i = 1; i < points.length; i += 1) {
-      shape.lineTo(points[i][0], points[i][1]);
-    }
-  }
-  // Cutouts (e.g. an oval wire-cutter hole) as THREE.Path added to shape.holes —
-  // dep-free boolean subtraction via the tessellator, no CSG library needed.
-  for (const loop of holes ?? []) {
-    if (loop.length < 3) continue;
-    const path = new THREE.Path();
-    path.moveTo(loop[0][0], loop[0][1]);
-    for (let i = 1; i < loop.length; i += 1) path.lineTo(loop[i][0], loop[i][1]);
-    path.closePath();
-    shape.holes.push(path);
-  }
-  return shape;
-}
-
-// Build an N-gon oval loop (for hole authoring from a compact {cx,cy,rx,ry} descriptor).
-function ovalLoop(cx: number, cy: number, rx: number, ry: number, seg = 24): [number, number][] {
-  const loop: [number, number][] = [];
-  for (let i = 0; i < seg; i += 1) {
-    const a = (i / seg) * Math.PI * 2;
-    loop.push([cx + Math.cos(a) * rx, cy + Math.sin(a) * ry]);
-  }
-  return loop;
-}
-
-function buildExtrudeGeometry(profile: { points: [number, number][]; depth: number; holes?: [number, number][][]; ovalHoles?: { cx: number; cy: number; rx: number; ry: number }[] }): THREE.ExtrudeGeometry {
-  const holes = [...(profile.holes ?? []), ...((profile.ovalHoles ?? []).map((o) => ovalLoop(o.cx, o.cy, o.rx, o.ry)))];
-  const shape = buildExtrudeShape(profile.points, holes);
-  return new THREE.ExtrudeGeometry(shape, {
-    depth: profile.depth,
-    bevelEnabled: false,
-    steps: 1,
-  });
-}
-
-function hashString(value: string): number {
-  let hash = 2166136261;
-  for (let index = 0; index < value.length; index += 1) {
-    hash ^= value.charCodeAt(index);
-    hash = Math.imul(hash, 16777619);
-  }
-  return hash >>> 0;
-}
-
-function readLayerNumber(value: unknown, keys: string[], fallback: number): number {
-  if (typeof value === 'number') return value;
-  if (value && typeof value === 'object') {
-    const record = value as Record<string, unknown>;
-    for (const key of keys) {
-      if (typeof record[key] === 'number') return record[key] as number;
-    }
-  }
-  return fallback;
-}
-
-function hexToRgb(hex: string): [number, number, number] {
-  const normalized = /^#[0-9a-f]{3}$/i.test(hex)
-    ? '#' + hex.slice(1).split('').map((part) => part + part).join('')
-    : hex;
-  const value = /^#[0-9a-f]{6}$/i.test(normalized) ? Number.parseInt(normalized.slice(1), 16) : 0x8a7a5f;
-  return [clampAlbedoChannel((value >> 16) & 255), clampAlbedoChannel((value >> 8) & 255), clampAlbedoChannel(value & 255)];
-}
-
-function materialPalette(spec: SculptMaterialSpec): string[] {
-  const palette = spec.colorVariation?.palette;
-  if (Array.isArray(palette) && palette.length > 0) return palette.filter((value) => typeof value === 'string');
-  const secondary = spec.albedo?.secondary;
-  const colors = [spec.baseColor ?? spec.color ?? spec.albedo?.dominant, ...(Array.isArray(secondary) ? secondary : [])];
-  return colors.filter((value): value is string => typeof value === 'string' && value.startsWith('#'));
-}
-
-function clamp01(value: number): number {
-  return Math.max(0, Math.min(1, value));
-}
-
-function clampAlbedoChannel(value: number): number {
-  return Math.max(30, Math.min(240, Math.round(value)));
-}
-
-function clampPbrF0(value: number): number {
-  return Math.max(0.02, Math.min(1, value));
-}
-
-function clampPbrIor(value: number): number {
-  return Math.max(1, Math.min(2.5, value));
-}
-
-function clampPbrMetalness(value: number): number {
-  return value >= 0.5 ? 1 : 0;
-}
-
-function clampedAlbedoColor(spec: SculptMaterialSpec): THREE.Color {
-  const source = typeof spec.baseColor === 'string' ? spec.baseColor : '#8A7A5F';
-  // setStyle with an explicit SRGBColorSpace, NOT the numeric constructor.
-  //
-  // `new THREE.Color(r, g, b)` treats its arguments as LINEAR working-space components,
-  // while an authored `baseColor` hex is sRGB. Feeding one to the other skipped the
-  // transfer function and lifted every dark albedo: #2e2a28, authored as a near-black
-  // vinyl, rendered at roughly sRGB 0.46 — a mid grey. The error is largest exactly where
-  // it matters most, because the transfer curve is steepest near black.
-  return new THREE.Color().setStyle(source, THREE.SRGBColorSpace);
-}
-
-function smoothCurve(value: number): number {
-  return value * value * (3 - 2 * value);
-}
-
-function periodicHash(x: number, y: number, seed: number, periodX: number, periodY: number): number {
-  const wrappedX = ((x % periodX) + periodX) % periodX;
-  const wrappedY = ((y % periodY) + periodY) % periodY;
-  let value = Math.imul(wrappedX + seed * 17, 374761393) ^ Math.imul(wrappedY + seed * 31, 668265263);
-  value = Math.imul(value ^ (value >>> 13), 1274126177);
-  return ((value ^ (value >>> 16)) >>> 0) / 4294967295;
-}
-
-function periodicValueNoise(u: number, v: number, seed: number, periodX: number, periodY: number): number {
-  const x = u * periodX;
-  const y = v * periodY;
-  const x0 = Math.floor(x);
-  const y0 = Math.floor(y);
-  const tx = smoothCurve(x - x0);
-  const ty = smoothCurve(y - y0);
-  const a = periodicHash(x0, y0, seed, periodX, periodY);
-  const b = periodicHash(x0 + 1, y0, seed, periodX, periodY);
-  const c = periodicHash(x0, y0 + 1, seed, periodX, periodY);
-  const d = periodicHash(x0 + 1, y0 + 1, seed, periodX, periodY);
-  return THREE.MathUtils.lerp(THREE.MathUtils.lerp(a, b, tx), THREE.MathUtils.lerp(c, d, tx), ty);
-}
-
-type SurfaceBand = {
-  frequency: number;
-  amplitude: number;
-  stretchX: number;
-  stretchY: number;
-  ridge: boolean;
-};
-
-function surfaceBands(spec: SculptMaterialSpec): SurfaceBand[] {
-  const source = Array.isArray(spec.surfaceFrequencyBands) ? spec.surfaceFrequencyBands : [];
-  const parsed = source.flatMap((item: unknown) => {
-    if (!item || typeof item !== 'object') return [];
-    const band = item as Record<string, unknown>;
-    const frequency = typeof band.frequency === 'number' ? band.frequency : 0;
-    const amplitude = typeof band.amplitude === 'number' ? band.amplitude : 0;
-    if (frequency <= 0 || amplitude <= 0) return [];
-    const stretch = Array.isArray(band.stretch) ? band.stretch : [1, 1];
-    const description = `${String(band.pattern ?? '')} ${String(band.role ?? '')}`.toLowerCase();
-    return [{
-      frequency,
-      amplitude,
-      stretchX: typeof stretch[0] === 'number' ? Math.max(0.1, stretch[0]) : 1,
-      stretchY: typeof stretch[1] === 'number' ? Math.max(0.1, stretch[1]) : 1,
-      ridge: /(ridge|groove|grain|fiber|striated|crack)/.test(description),
-    }];
-  });
-  return parsed.length > 0 ? parsed : [
-    { frequency: 2, amplitude: 0.42, stretchX: 1, stretchY: 1, ridge: false },
-    { frequency: 12, amplitude: 0.22, stretchX: 1, stretchY: 1, ridge: false },
-    { frequency: 56, amplitude: 0.08, stretchX: 1, stretchY: 1, ridge: false },
-  ];
-}
-
-function sampleSurface(u: number, v: number, bands: SurfaceBand[], seed: number): number {
-  let value = 0;
-  let weight = 0;
-  for (let index = 0; index < bands.length; index += 1) {
-    const band = bands[index];
-    const periodX = Math.max(1, Math.round(band.frequency * band.stretchX));
-    const periodY = Math.max(1, Math.round(band.frequency * band.stretchY));
-    let sample = periodicValueNoise(u, v, seed + index * 1013, periodX, periodY);
-    if (band.ridge) sample = 1 - Math.abs(sample * 2 - 1);
-    value += sample * band.amplitude;
-    weight += band.amplitude;
-  }
-  return weight > 0 ? clamp01(value / weight) : 0.5;
-}
-
-function mixPalette(colors: [number, number, number][], value: number): [number, number, number] {
-  if (colors.length === 1) return colors[0];
-  const scaled = clamp01(value) * (colors.length - 1);
-  const index = Math.min(colors.length - 2, Math.floor(scaled));
-  const mix = scaled - index;
-  const a = colors[index];
-  const b = colors[index + 1];
-  return [
-    Math.round(THREE.MathUtils.lerp(a[0], b[0], mix)),
-    Math.round(THREE.MathUtils.lerp(a[1], b[1], mix)),
-    Math.round(THREE.MathUtils.lerp(a[2], b[2], mix)),
-  ];
-}
-
-type ColorGradientStop = { offset: number; color: string };
-type ColorGradientSpec = {
-  type: 'linear' | 'radial';
-  axis: [number, number];
-  stops: ColorGradientStop[];
-};
-
-function parseRgba(value: string): [number, number, number] {
-  const match = /rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/.exec(value);
-  if (!match) return [138, 122, 95];
-  return [clampAlbedoChannel(Number(match[1])), clampAlbedoChannel(Number(match[2])), clampAlbedoChannel(Number(match[3]))];
-}
-
-// Analytical per-pixel gradient sample. The extraction schema's colorGradient carries
-// exact rgba(...) stop colors (see extract_part_color_recipe.py), so this samples the
-// same trend directly in JS math rather than round-tripping through a Canvas 2D
-// createLinearGradient/createRadialGradient object — same visual result, and it composes
-// directly with the existing noise/height-correlated colorVariation blend below.
-function sampleColorGradient(gradient: ColorGradientSpec, u: number, v: number): [number, number, number] {
-  const stops = gradient.stops.length >= 2 ? gradient.stops : [{ offset: 0, color: 'rgba(138,122,95,1)' }, { offset: 1, color: 'rgba(138,122,95,1)' }];
-  let t: number;
-  if (gradient.type === 'radial') {
-    const [cx, cy] = gradient.axis;
-    const dx = u - cx;
-    const dy = v - cy;
-    const maxRadius = Math.max(0.001, Math.hypot(Math.max(cx, 1 - cx), Math.max(cy, 1 - cy)));
-    t = clamp01(Math.hypot(dx, dy) / maxRadius);
-  } else {
-    const [ax, ay] = gradient.axis;
-    const projection = (u - 0.5) * ax + (v - 0.5) * ay;
-    const maxProjection = 0.5 * (Math.abs(ax) + Math.abs(ay)) || 0.5;
-    t = clamp01(projection / maxProjection + 0.5);
-  }
-  const scaled = t * (stops.length - 1);
-  const index = Math.min(stops.length - 2, Math.max(0, Math.floor(scaled)));
-  const mix = scaled - index;
-  const a = parseRgba(stops[index].color);
-  const b = parseRgba(stops[index + 1].color);
-  return [
-    THREE.MathUtils.lerp(a[0], b[0], mix),
-    THREE.MathUtils.lerp(a[1], b[1], mix),
-    THREE.MathUtils.lerp(a[2], b[2], mix),
-  ];
-}
-
-function writePixel(data: Uint8ClampedArray, offset: number, red: number, green: number, blue: number): void {
-  data[offset] = Math.max(0, Math.min(255, Math.round(red)));
-  data[offset + 1] = Math.max(0, Math.min(255, Math.round(green)));
-  data[offset + 2] = Math.max(0, Math.min(255, Math.round(blue)));
-  data[offset + 3] = 255;
-}
-
-function makeCanvas(size: number): HTMLCanvasElement {
-  const canvas = document.createElement('canvas');
-  canvas.width = size;
-  canvas.height = size;
-  return canvas;
-}
-
-function createMapTexture(
-  canvas: HTMLCanvasElement,
-  colorSpace: THREE.ColorSpace,
-  spec: SculptMaterialSpec,
-  options: ProceduralModelOptions,
-): THREE.CanvasTexture {
-  const texture = new THREE.CanvasTexture(canvas);
-  const projection = spec.textureProjection && typeof spec.textureProjection === 'object' ? spec.textureProjection : {};
-  const repeat = Array.isArray(projection.repeat) ? projection.repeat : [2, 2];
-  texture.colorSpace = colorSpace;
-  texture.wrapS = THREE.RepeatWrapping;
-  texture.wrapT = THREE.RepeatWrapping;
-  texture.repeat.set(
-    typeof repeat[0] === 'number' ? repeat[0] : 2,
-    typeof repeat[1] === 'number' ? repeat[1] : 2,
-  );
-  texture.anisotropy = Math.max(1, Math.round(options.textureAnisotropy ?? projection.anisotropy ?? 8));
-  texture.needsUpdate = true;
-  return texture;
-}
-
-type ProceduralTextureSet = {
-  albedo: THREE.Texture;
-  roughness: THREE.Texture;
-  height: THREE.Texture;
-  normal: THREE.Texture;
-  ao: THREE.Texture;
-  source: 'reference-pixel-extraction' | 'procedural';
-};
-
-function referenceMapUrl(spec: SculptMaterialSpec, channel: string): string | null {
-  const reference = spec.referencePbr;
-  if (!reference || typeof reference !== 'object') return null;
-  if (reference.usable === false) return null;
-  const confidence = typeof reference.confidence === 'number'
-    ? reference.confidence
-    : (typeof reference.estimatedFidelity === 'number' ? reference.estimatedFidelity : 0);
-  const threshold = typeof reference.targetThreshold === 'number' ? reference.targetThreshold : 0.7;
-  if (confidence < threshold) return null;
-  const maps = reference.maps;
-  if (!maps || typeof maps !== 'object') return null;
-  const map = (maps as Record<string, unknown>)[channel];
-  if (!map || typeof map !== 'object') return null;
-  const record = map as Record<string, unknown>;
-  const url = typeof record.url === 'string' && record.url.trim() ? record.url : record.path;
-  return typeof url === 'string' && url.trim() ? url : null;
-}
-
-function createLoadedMapTexture(
-  url: string,
-  colorSpace: THREE.ColorSpace,
-  spec: SculptMaterialSpec,
-  options: ProceduralModelOptions,
-): THREE.Texture {
-  const texture = new THREE.TextureLoader().load(url);
-  const projection = spec.textureProjection && typeof spec.textureProjection === 'object' ? spec.textureProjection : {};
-  const repeat = Array.isArray(projection.repeat) ? projection.repeat : [1, 1];
-  texture.colorSpace = colorSpace;
-  texture.wrapS = THREE.RepeatWrapping;
-  texture.wrapT = THREE.RepeatWrapping;
-  texture.repeat.set(
-    typeof repeat[0] === 'number' ? repeat[0] : 1,
-    typeof repeat[1] === 'number' ? repeat[1] : 1,
-  );
-  texture.anisotropy = Math.max(1, Math.round(options.textureAnisotropy ?? projection.anisotropy ?? 8));
-  texture.needsUpdate = true;
-  return texture;
-}
-
-function makeReferenceTextureSet(spec: SculptMaterialSpec, options: ProceduralModelOptions): ProceduralTextureSet | null {
-  const albedo = referenceMapUrl(spec, 'albedo');
-  const roughness = referenceMapUrl(spec, 'roughness');
-  const height = referenceMapUrl(spec, 'height');
-  const normal = referenceMapUrl(spec, 'normal');
-  const ao = referenceMapUrl(spec, 'ao');
-  if (!albedo || !roughness || !height || !normal || !ao) return null;
-  return {
-    albedo: createLoadedMapTexture(albedo, THREE.SRGBColorSpace, spec, options),
-    roughness: createLoadedMapTexture(roughness, THREE.NoColorSpace, spec, options),
-    height: createLoadedMapTexture(height, THREE.NoColorSpace, spec, options),
-    normal: createLoadedMapTexture(normal, THREE.NoColorSpace, spec, options),
-    ao: createLoadedMapTexture(ao, THREE.NoColorSpace, spec, options),
-    source: 'reference-pixel-extraction',
-  };
-}
-
-function makeProceduralTextureSet(
-  id: string,
-  spec: SculptMaterialSpec,
-  options: ProceduralModelOptions,
-): ProceduralTextureSet | null {
-  if (typeof document === 'undefined') return null;
-  const qualityFirst = (options.qualityPriority ?? 'reference-fidelity') === 'reference-fidelity';
-  const requested = options.textureSize ?? spec.textureResolution;
-  const requestedSize = typeof requested === 'number' && Number.isFinite(requested)
-    ? requested
-    : (qualityFirst ? 1024 : 512);
-  const size = Math.max(256, Math.min(2048, 2 ** Math.round(Math.log2(requestedSize))));
-  const canvases = {
-    albedo: makeCanvas(size),
-    roughness: makeCanvas(size),
-    height: makeCanvas(size),
-    normal: makeCanvas(size),
-    ao: makeCanvas(size),
-  };
-  const contexts = {
-    albedo: canvases.albedo.getContext('2d'),
-    roughness: canvases.roughness.getContext('2d'),
-    height: canvases.height.getContext('2d'),
-    normal: canvases.normal.getContext('2d'),
-    ao: canvases.ao.getContext('2d'),
-  };
-  if (!contexts.albedo || !contexts.roughness || !contexts.height || !contexts.normal || !contexts.ao) return null;
-  const images = {
-    albedo: contexts.albedo.createImageData(size, size),
-    roughness: contexts.roughness.createImageData(size, size),
-    height: contexts.height.createImageData(size, size),
-    normal: contexts.normal.createImageData(size, size),
-    ao: contexts.ao.createImageData(size, size),
-  };
-  const seed = hashString(id);
-  const bands = surfaceBands(spec);
-  const heightField = new Float32Array(size * size);
-  const roughnessField = new Float32Array(size * size);
-  const palette = materialPalette(spec);
-  const fallback = typeof spec.baseColor === 'string' ? spec.baseColor : '#8A7A5F';
-  const colors = (palette.length >= 2 ? palette : [fallback, '#6E614B', '#A08F70']).map(hexToRgb);
-  const baseRoughness = clamp01(readLayerNumber(spec.roughness, ['base'], 0.76));
-  const roughnessVariation = clamp01(readLayerNumber(spec.roughness, ['variation'], 0.18));
-  const colorAmplitude = clamp01(readLayerNumber(spec.colorVariation, ['amplitude', 'variation'], 0.18));
-  const heightCorrelation = clamp01(readLayerNumber(spec.colorVariation, ['heightCorrelation'], 0.3));
-  const colorGradient: ColorGradientSpec | undefined = spec.colorGradient;
-  for (let y = 0; y < size; y += 1) {
-    const v = y / size;
-    for (let x = 0; x < size; x += 1) {
-      const u = x / size;
-      const index = y * size + x;
-      const height = sampleSurface(u, v, bands, seed + 101);
-      const roughNoise = sampleSurface(u, v, bands, seed + 7001);
-      const colorNoise = sampleSurface(u, v, bands, seed + 15013);
-      heightField[index] = height;
-      roughnessField[index] = clamp01(baseRoughness + (roughNoise - 0.5) * roughnessVariation * 2);
-      let color: [number, number, number];
-      if (colorGradient) {
-        // Evidence-derived spatial gradient (Plan 1.3 Workstream C) takes priority
-        // over the noise-based palette blend below — it is a measured trend, not a guess.
-        color = sampleColorGradient(colorGradient, u, v);
-      } else {
-        const paletteValue = clamp01(
-          0.5 + (colorNoise - 0.5) * colorAmplitude * 2 + (height - 0.5) * heightCorrelation
-        );
-        color = mixPalette(colors, paletteValue);
+const CONFIG = {
+    "id": "ais-shop-building",
+    "name": "AIS Shop Building",
+    "exportName": "AisShopBuilding",
+    "materials": [
+      {
+        "id": "wall",
+        "color": 15127988,
+        "roughness": 0.88,
+        "metalness": 0
+      },
+      {
+        "id": "white",
+        "color": 15790059,
+        "roughness": 0.6,
+        "metalness": 0
+      },
+      {
+        "id": "deck",
+        "color": 9078918,
+        "roughness": 0.92,
+        "metalness": 0
+      },
+      {
+        "id": "fascia",
+        "color": 9422636,
+        "roughness": 0.45,
+        "metalness": 0
+      },
+      {
+        "id": "glass",
+        "color": 4939878,
+        "roughness": 0.12,
+        "metalness": 0,
+        "opacity": 0.94,
+        "envMapIntensity": 1.1
+      },
+      {
+        "id": "frame",
+        "color": 11975355,
+        "roughness": 0.45,
+        "metalness": 0.35
+      },
+      {
+        "id": "galv",
+        "color": 12040121,
+        "roughness": 0.52,
+        "metalness": 0.3
       }
-      writePixel(images.albedo.data, index * 4, color[0], color[1], color[2]);
+    ],
+    "geometry": {
+      "shellFront": 3.06,
+      "plantMaterial": "galv",
+      "shellBoxes": [
+        [
+          0.050000000000000044,
+          1.9,
+          -0.18999999999999995,
+          7.779999999999999,
+          3.8,
+          6.5
+        ],
+        [
+          -3.885,
+          1.9,
+          -3.2199999999999998,
+          0.10999999999999988,
+          3.8,
+          0.43999999999999995
+        ],
+        [
+          -3.885,
+          1.9,
+          0.68,
+          0.10999999999999988,
+          3.8,
+          4.76
+        ],
+        [
+          -3.885,
+          2.9749999999999996,
+          -2.35,
+          0.10999999999999988,
+          1.65,
+          1.3
+        ],
+        [
+          -3.875,
+          1.055,
+          -2.35,
+          0.05,
+          2.09,
+          1.26
+        ]
+      ],
+      "deckY": 3.95,
+      "fasciaWall": {
+        "cy": 4.075,
+        "cz": 2.94,
+        "h": 1.05,
+        "d": 0.36
+      },
+      "fasciaWallMaterial": "wall",
+      "parapetSides": {
+        "cy": 4.15,
+        "h": 0.9,
+        "thick": 0.24
+      },
+      "frameMaterial": "frame",
+      "fascia": {
+        "w": 6.15,
+        "h": 0.95,
+        "cy": 3.6999999999999997,
+        "cz": 3.4,
+        "boards": [
+          {
+            "w": 6.15,
+            "h": 0.95,
+            "d": 0.12,
+            "at": [
+              0,
+              3.6999999999999997,
+              3.4
+            ],
+            "face": "+Z"
+          }
+        ]
+      },
+      "frontFeature": {
+        "name": "White fascia board",
+        "material": "white",
+        "boxes": [
+          [
+            0,
+            3.69,
+            3.2,
+            7.86,
+            1.7800000000000002,
+            0.28
+          ],
+          [
+            4,
+            3.69,
+            3.05,
+            0.12,
+            1.7800000000000002,
+            0.58
+          ]
+        ]
+      },
+      "glazing": {
+        "boxes": [
+          [
+            -2.3899999999999997,
+            1.5,
+            3.0300000000000002,
+            2.78,
+            2.4000000000000004,
+            0.08
+          ],
+          [
+            2.05,
+            1.5,
+            3.0300000000000002,
+            2.5,
+            2.4000000000000004,
+            0.08
+          ],
+          [
+            -0.09999999999999998,
+            2.49,
+            3.0300000000000002,
+            1.8,
+            0.4200000000000004,
+            0.08
+          ],
+          [
+            0.35000000000000003,
+            1.225,
+            3.08,
+            0.78,
+            1.75,
+            0.04
+          ]
+        ]
+      },
+      "frame": [
+        [
+          -0.24,
+          2.75,
+          3.15,
+          7.24,
+          0.1,
+          0.14
+        ],
+        [
+          -2.3899999999999997,
+          0.3,
+          3.15,
+          2.78,
+          0.1,
+          0.14
+        ],
+        [
+          2.05,
+          0.3,
+          3.15,
+          2.5,
+          0.1,
+          0.14
+        ],
+        [
+          -2.3899999999999997,
+          2.23,
+          3.15,
+          2.78,
+          0.08,
+          0.14
+        ],
+        [
+          2.05,
+          2.23,
+          3.15,
+          2.5,
+          0.08,
+          0.14
+        ],
+        [
+          -0.09999999999999998,
+          2.2399999999999998,
+          3.15,
+          1.8,
+          0.1,
+          0.14
+        ],
+        [
+          -3.82,
+          1.5,
+          3.15,
+          0.08,
+          2.5,
+          0.14
+        ],
+        [
+          3.34,
+          1.5,
+          3.15,
+          0.08,
+          2.5,
+          0.14
+        ],
+        [
+          -1.04,
+          1.115,
+          3.15,
+          0.08,
+          2.23,
+          0.14
+        ],
+        [
+          0.8400000000000001,
+          1.115,
+          3.15,
+          0.08,
+          2.23,
+          0.14
+        ],
+        [
+          -0.07,
+          1.105,
+          3.1,
+          0.06,
+          2.15,
+          0.1
+        ],
+        [
+          0.77,
+          1.105,
+          3.1,
+          0.06,
+          2.15,
+          0.1
+        ],
+        [
+          0.35000000000000003,
+          0.19,
+          3.1,
+          0.9,
+          0.32,
+          0.1
+        ],
+        [
+          0.35000000000000003,
+          2.14,
+          3.1,
+          0.9,
+          0.08,
+          0.1
+        ],
+        [
+          0.35000000000000003,
+          1.05,
+          3.1,
+          0.9,
+          0.07,
+          0.1
+        ],
+        {
+          "cyl": [
+            0.04000000000000001,
+            1.05,
+            3.1999999999999997,
+            0.018,
+            0.4,
+            10
+          ]
+        },
+        [
+          0.04000000000000001,
+          1.22,
+          3.175,
+          0.036,
+          0.036,
+          0.1
+        ],
+        [
+          0.04000000000000001,
+          0.88,
+          3.175,
+          0.036,
+          0.036,
+          0.1
+        ],
+        [
+          -3.955,
+          1.0899999999999999,
+          -3.025,
+          0.03,
+          2.1799999999999997,
+          0.05
+        ],
+        [
+          -3.955,
+          1.0899999999999999,
+          -1.675,
+          0.03,
+          2.1799999999999997,
+          0.05
+        ],
+        [
+          -3.955,
+          2.155,
+          -2.35,
+          0.03,
+          0.05,
+          1.4000000000000001
+        ],
+        [
+          -3.915,
+          1.05,
+          -1.8499999999999999,
+          0.03,
+          0.03,
+          0.14
+        ]
+      ],
+      "mullions": {
+        "w": 0.06,
+        "h": 2.4000000000000004,
+        "cy": 1.5,
+        "cz": 3.16,
+        "x": [
+          -2.45,
+          2.05
+        ]
+      },
+      "door": {
+        "hinge": [
+          -1,
+          0,
+          3.15
+        ],
+        "w": 0.9,
+        "h": 2.15,
+        "y0": 0.03,
+        "stile": 0.06,
+        "depth": 0.1,
+        "handle": [
+          0.14,
+          1.05,
+          0.4
+        ]
+      },
+      "condenserY": 4.01,
+      "condenserParts": [
+        [
+          0,
+          0.38,
+          0,
+          0.9,
+          0.66,
+          0.34
+        ],
+        [
+          -0.12,
+          0.4,
+          0.173,
+          0.6,
+          0.58,
+          0.006
+        ],
+        {
+          "cyl": [
+            -0.12,
+            0.4,
+            0.178,
+            0.25,
+            0.008,
+            20,
+            1.5707963267948966
+          ]
+        },
+        [
+          -0.12,
+          0.2,
+          0.19,
+          0.56,
+          0.014,
+          0.012
+        ],
+        [
+          -0.12,
+          0.30000000000000004,
+          0.19,
+          0.56,
+          0.014,
+          0.012
+        ],
+        [
+          -0.12,
+          0.4,
+          0.19,
+          0.56,
+          0.014,
+          0.012
+        ],
+        [
+          -0.12,
+          0.5,
+          0.19,
+          0.56,
+          0.014,
+          0.012
+        ],
+        [
+          -0.12,
+          0.6000000000000001,
+          0.19,
+          0.56,
+          0.014,
+          0.012
+        ],
+        [
+          0,
+          0.718,
+          0,
+          0.92,
+          0.016,
+          0.36
+        ],
+        [
+          0.33,
+          0.38,
+          0.173,
+          0.16,
+          0.5,
+          0.006
+        ],
+        [
+          -0.38,
+          0.03,
+          -0.12,
+          0.08,
+          0.06,
+          0.08
+        ],
+        [
+          -0.38,
+          0.03,
+          0.12,
+          0.08,
+          0.06,
+          0.08
+        ],
+        [
+          0.38,
+          0.03,
+          -0.12,
+          0.08,
+          0.06,
+          0.08
+        ],
+        [
+          0.38,
+          0.03,
+          0.12,
+          0.08,
+          0.06,
+          0.08
+        ]
+      ],
+      "condenserTones": [
+        null,
+        4869714,
+        3488060,
+        12106944,
+        12106944,
+        12106944,
+        12106944,
+        12106944,
+        null,
+        7633020,
+        null,
+        null,
+        null,
+        null
+      ],
+      "condensers": [
+        [
+          -2.55,
+          -2.05,
+          0,
+          0.85
+        ],
+        [
+          -1.5,
+          -2.05,
+          0,
+          0.85
+        ],
+        [
+          1.65,
+          -2.05,
+          0,
+          0.85
+        ]
+      ],
+      "extraFeature": {
+        "name": "Rooftop duct run",
+        "material": "galv",
+        "boxes": [
+          [
+            0.15,
+            4.28,
+            -2.35,
+            2.1,
+            0.42,
+            0.42
+          ],
+          [
+            -1.05,
+            4.3,
+            -2.35,
+            0.5,
+            0.56,
+            0.54
+          ],
+          [
+            0.95,
+            4.28,
+            -2.35,
+            0.34,
+            0.5,
+            0.5
+          ]
+        ]
+      }
+    },
+    "graphic": {
+      "baked": "data:image/webp;base64,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",
+      "background": "#8FC72C",
+      "ops": [
+        {
+          "type": "text",
+          "text": "AIS",
+          "x0": 0.44,
+          "x1": 0.6,
+          "cy": 0.52,
+          "size": 0.55,
+          "fill": "#FFFFFF",
+          "style": "bold"
+        }
+      ],
+      "glass": {
+        "baked": "data:image/webp;base64,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",
+        "rect": [
+          -3.78,
+          0,
+          3.3,
+          2.7
+        ],
+        "roughness": 0.12,
+        "also": [
+          {
+            "id": "door-leaf-glass",
+            "off": [
+              -1,
+              0,
+              0
+            ]
+          }
+        ]
+      },
+      "wall": {
+        "meshes": [
+          "building-shell",
+          "parapet"
+        ],
+        "tile": 3.2,
+        "size": 512,
+        "seed": 47,
+        "base": 252,
+        "patches": 50,
+        "patchAmp": 7,
+        "streaks": 24,
+        "streakAmp": 7,
+        "specks": 1200,
+        "speckAmp": 7
+      },
+      "walls": [
+        {
+          "meshes": [
+            "roof-deck"
+          ],
+          "tile": 2.4,
+          "size": 512,
+          "seed": 12,
+          "base": 250,
+          "patches": 60,
+          "patchAmp": 16,
+          "streaks": 0,
+          "specks": 2500,
+          "speckAmp": 18
+        },
+        {
+          "meshes": [
+            "plant-condensers",
+            "extra-feature"
+          ],
+          "tile": 1.4,
+          "image": "data:image/webp;base64,UklGRmCTAABXRUJQVlA4IFSTAACQggKdASoAAgACPlEmjkUjoiET2c3YOAUEtKYQrNtn1D/A8FPvf97/WXWbx6uy/8P0Jv1bUVxF9VzzFuKiS7x+/+vk9/dfMlZkEQbI4J4hGE1h+Y/0A5xHDf5T/rN4GmMf0f/H+k3gDedf3X2AP1C/2H3HfBT9N8wP4Z/Rv8h9lf0Lfz7/Ieav0AvxX+h+h9/rv6h7Kf1z9gPMv+bf2D/z/473CfzL+v/+H/Df6r3oPYz/bf9gOfmf+yfP+yGlow/pNfzX+G71/zr32/sD94/kK/bMUfq/+j5m/Hj1r9sP6x/pehH+rf67/7+O/u9ua8yzydxs/d32CeL6oNeTN/4+b37j9gwCvx3+S4FLtOFMhidGWV0x61iZUrRS/wUvNSeNrSokr/QpMYJ1LDQexdxuFYDXSY/1T3W9hHAUfarh0Es1abqhiM6xhj5OE4LCeGkMXvHf+4vO0Bqt7piJ+6BKz2yUHMMr/Al9FtoTbc3r3z2qfrrmJNObwDsiosKg8HYFGKLV31LZMg+AZ1bS+ndPT+5UfD5Bj2y6Ou/bMNYChmkHvkX2/wuvHdwekLrmbKs1pPJX+kdSsfgDcu3x7KGLGUP88mW30DZ1/V+SJpGncZI4oToAWqwIfvXg3SlgFEi4KsmygwcNB+87WM3vWIJFHwSGtNPDuUa/j400pnpLiiWScxBcNkWkjCxDNbQTuofLfdZDAkeDSPloQtjch0Q6M6VqInhxAR5/hLcTNxF92F3pYGBoLwt9sM4+HB98vxlxXYMoDE3eOdXPDqK3NyW6IVptMpR2WFe2KtRSFzkhv2Tmw6VhcvLzQA3opyHilZ9ty1TgFwhOvbQwXaj5o/p/EXrb62sXxLl9kyiwU2xM3R0/Av4WwjmN/ii4Ljt9PbE4nHJsNuDIiMEzQPJDgX2X7/svJ3MeJ04393oa2RVBd5j22HGROMWLIi6snQB4TC7ZvRtb5pmy131DwXdPy4Uy/+rhKTs2kG+ny4mFoEjSWjLfJR925HfSe858HmzQMBuA+aoNI6IPGJBzw1oMx36EMYoySmKDtgkMzvEvYB0KNJTPBa/8hJSNtQXXv6SYTR4dLj2o7MIyrWjCBliZX0vqgrX/ft8/u7godNlz5b8Ch/GKU0BeoercgvyagyfrSQRBG7c13JD2eSQyiFTyvWWJKBkPUPlf7n6du35QmsMkUSGD1tIlqTG6C7QISSZO54wBMRY5/U09iKwh1E7Rie+JA9GoYSSmTKUd+cL+4DpACxIX1CRWXegsyTlBwilUyMdmn42/Lv2GLk8edDOh1UxrxoZy06kY+kpoWRr7YDK6nJZVrZeggDFfID+znbTf+G5nS+eGtxP+3lcT4FqRBB/tt9N7uIQj/Vmzz/VDecYsg11Wc/1hdtFm9QXGO3NUidiA4aSakRT+yEC03ieNNIrSsBG5jomzEo38sfrD7/EI/g7MRBExYW0qtszXwYlLwB9UQUASPSeBH21Z+TrSOy72SnpDqjsjFJTBoOQJbHXB2USEnWN2TfhsLtbI02SzuyOYMylQPSQl+eLWOJNSImKKCqlyGxL1ZyUIEjHsOcsnxxd6e6Mag+ls0eXR3/RTd4QIzVV2d1dZpDrVHJwE2KyvKl+8UTwefoIbnRmHHVdkkIPXREJ1U33+y0kBXr9IZnz3PYT221uUgt9d3Dl7r/jIKvfAjWhrRcdVHFAbbKiMGdpF1l3Fh2jTbWmLJWgIQdrT1xZm3a7lpoAdhOkdKEXnXTc/mWLz03z89bDeRLYV7jeLliKHnG/TLgb+yXnhK0qug5T/eCYBZeJwDQy/n2GxFsmZigYtjLV0OvAAfEXv3fVXMN1K0zyX4hZqGPnpiScSfM+iPpHXiMr5QMKlV/gNJ3j1W9ssXx9/LCTWRFHiTEgM2ShWha4iW3P40myt7351J0sdJVHKh0VLhyjRkVF5pxPufuLoA5B+qYNKrV6fJvMGj100OfB1aBwCR2Mcs0RxWw6c589CJ3nKQPu7/j5BBC3XAxBtJPFvoRTvb6jopizXnFTjmIiOnKXO3t1CasHZfbz4GA5UJ7owCrJ77ZDjn0Ek68yEuy4fgzDQStoVgjnLj9SI5Pvn2xfgG4cN5lPHxNgGbDufbX1bb/lv7sUhMoltPVkpJtFQtcjRphldOFx58KJSNKQlhsdIz61Cyr7mkcTl1nQ4hvMIUi5e6gaUQiTCET/RSVjI+UxZ9JzfUMkmA+XmafjCutT24HX5zILVaONakY6XrNKBVfqgud7U8HHrfENs0Pfkg+AZJKQJCIZLVS6PV4UhtOXYaRJVVDXdoCd59JTShPa90aFzPt/GGzI1q6LOjBWzemSuJKWWwiAz4Flq/8gXBVrIlKnnU1fSOORbc4hUVJlsmkyyB5osaDZ9YlfzR3o5XdUjaPx4JCLGPa2N9PyFsBdDGj7OBK4J131XyOj8KYlVapAK/B3EfFOQ1Kgmz5now4G1QutBRk9Pdh3H1cIRGmpXEM0WSuJVvxUOEPFOcV/Qxaid5oKXd8yCj59nCvMesqZOm386xtb7WK3cOQuqglaVJGikktfqnECs/KZUYRXipCqqqFsn1JvyIvnyE7GiFpYplUW4Aewtk0SurBBTfEglHqR406Sg4p4G6BCQJpxE0aBVBDFLHfdGBVPslIpxMlWPxZ2OaMjUVzpQyih7DQ0v2KtkhBg6YS5if8OF4Pjn8MIWVWjS2NhguN5fauQZ9rAD9PZvXLzhAkdr5Z2Cn5Lj1EY/dqzAwdci4B1RbYev6cEtURTrxHo0/w6nNqQNCVUnv7zyTtu0M6Nme6JNdsXZPkTX1fKTdEXEYbW3WCz3O46QxkZSAlAG/GpXI1YIrFbZdEd8y+ibhWAEDuhModiT0mSFCN2beUgQ/K6P+pbJqGSEh+L5w+Xyh6gciH59uZ+uIW35o37LEKWnPclqaezXbKSVCPT2p5aXQlNlWaka+kDGoyrlsyFBcE1J60AvG4zQo+lanOAPzwobvyItxrnXpHdnuKtnYcWJ+vcbXIMlI55ycb/Zh1hkv5ffSKC/f7AihWGAuXggBirinvpAnszKsQ6R9Igb4kL6rE5xbYOoX/ZHeWL/+jJCqofeRS3XBrnyTwCSotP8AeUsQOKv2GDtOalGy1RI0qIAMQZIrZa391Bi3eRV5hWZgBE6TYUGwChsOMlrP+q2QHKGTcvh6ebiTImy6A/KucFYRgvu/yRFSnA9Ya+IWrN8XHGLpJjAmfZk3MT8x28CEWKXz08yRUROATpp9PktkqC69JG8BneNOya5luEvnK+WWy4dZl1O7bctTp8pX1PdS9gO4ytmXzFmoHS15n9i7MgUAbAlk/4/mFzMeasbzwhJTgEO006eo0pSny0XHOZdebs1XVHhtWZRMGeN1FSFan7Syx52dPbSHOx/x5H98HG5Yd5t+9HEJ6s6b2u2hRlKOLleBKwJE2CFPPTu9kJs7xiQcEG8sxuSlBxQ3jgB1PoXhMq4uOgKZBAFvsmuA3bXIzNYbfYlfObMFwgcamyEVANQcFMnevF/j53QKlXvVajvO5QhT+oGZDipxS/Y099XcTWUi9gcH4oxvxrfxheAEREqA9lVloiBcnz2fZ+vbg7Ow5E266U/nl71BxCNOFnyL2bYuzWGI35dVMF0YjdTALfnWxDrGvQoxDVP2B0PRMC/qF0vSE4y0iTo0vrBnuf/WgqssnrUsF4CvqRcAx9mIwnsp3A8NwdErchtdXGR5rEAvG2B8QOrOuDtSSywGzMihV119OuuRqMb191lqMH3OY5NYpg3L5aqxcc9c2ab3nOuPpfhvyrDBl+Fqzu7BTFGky6Q7cOAsjoFL11/C8eiDDGhx3D4i1qDPyhg0yUFawsmO9gD4aYMAKfXXLd2AlvP0gncDjrV9ISusZVHEjgREPPaKz1DRr67wOnEZsJUP5z8RmLtLGobkbKRuZx/g9teBJcbBCsXw+zAKK1IYVhx6p9sw7NmTIOZ/wMCC7lMFlC2XY83ox2B/iQQP5bKxv5wIHzjHRecRbJAMAYyBNIdAFQCtXegUrrKfZne/IPViXWJ+rNZY1l2FPheVeX+mflzG8kVSnwwivx0ktJxTtB4tLbDPHy97sDn+f3ZhxSVHRYVf6LnmjP9d7BTjW5nbDgGroHsj9eLQa3uDX8ybBlKBQfYKXGn/qpPwsUxVeq8+DoU7qr2BysjlNa+0fFzCOmGmDgbAIJYH2EXrgodTNuU0lWDFHWMHtqrlWDeut6JB29DMTTbcvGGiKky/7rQBVoRFJ8mfUNesAqWZejkA0JfqjEMuY+cOIcBQGTZUKhf5E3I/TI3occXb7yTjbU9G3lHfaYeFiTa6eMlYgjxgwTMvZrTh8HDn1Zx3/MIfIAl5VGFoyq3t0GVev8FJ6Q66OD2UdCyMbYXfiZMwRHMrOIUTL0T4U9WwTCyz9yZTfkpmtJJAn2cOt3vLPwaGkJDITRWEAWenSuk+7vurAXjmhKHM33mRvh5B/3uFs+voxtuw4usUCRYRPqEdMNp9H9rvkqlnwzSo0ptbwogapxvcU105Sj5hEFSQXhZDoFDpVVc9qQquMpv6ilQ60oi7AyV03TS6B2LVnoRNdodtFh9f/HOksapAzqnJSkYWMF5O9d+0WAKyKy43U0nNZIJQA/jRJBBXm+/jKrvmIKei3IVYZ5/71Ce4tdgIdWVBEftgp7LFc+8n3/wPSwywYyZh0iNost8cAVb3cd9egQ5gs06oI5FFB9n2H6VXgYrrvbJVy/3oeFUvJ94XjGBzTQDP3B4yKjZFvix9011qvw8nVuzd2TeK8SdYFdsggyDHGhtPwyAgy1Hd/SvBGjYV/cXtMRC5N9WeEsKucKhuJV3TXCBwfOsESVmTq9lMEyjHogDWkMgoe60scqbACZ7tMMsbTc5kTf4SIK5exRLuUc7mNKM/rzmLJLH2z8OB8s3BqfN5u1RmHeNjQ6RCgX1SXLoA/SL6RufVvd0tctwd9UFRlH2SX8jcB0uurFcRMCD6G0ZrGMwk9O/Kuy9kyRsnPmzpjH+eFrUkYTnCh0WhB69LWfcVaRE7A0ck4fL22tXbvOwrclDvb4H9Sl96gugJxeTnaNLKQVhNUXyfnoGY4tGglOhxFTUAaYAgwjzQb4VRHPOg4w8nhU6jzf+u+zaSQ/W7C61c8osHqQn0e2/LmU9xHHyHg6BzfguEsxGw2gU11V18bFr63DdZ+/IEdtDdxkEsa7s+bYOHh+4tkdgGqRyT0wMqYtXvGypITgSYZlOioLRHI2O1Q+C0SYvOlB/SkvvkzdkjEmx8XUTwZzA0l77IkTAU3Mrs/M3eaopPZcpqZm4Wldo43szpxe9jljkQKrPc/OX6zcvwReOskArjDY6SSxE3okzOKVF4kmG7xwOBsYPVcQbNTtcRYZUH9PEL6h7kel70fr3TT4Hw40WBdDBefM6pYEtsgD+mOQbF2VC8bCwdhYoxr4xW3tdWzSoUqU4PhcAW94MxD2cxEMeMnJpY7qZWjkFrKOHTTncfTstAisbwxu9q/wyUWVQ9WN5z9oYNCZnJzxjX4q7+8fDh0b+705O0a7ggcCr9D27OK7oe0x002tXX1/vKaCRQLyedmXK6bM41xMZdfZ2HQrIUdItuhss2lVaVMEgTaCDQabUmx+IbHukdLIIth5Ia1cbI5OH81xivoHA6ZU6eHxdXi+uhYSwS+fX/Ox8GGmdX11PnP1xpJjVZZ8LNMCH1bEUnH/AWR5C7wHDSq24Y9/fM/D7mLUNlFngHK7AhZ/+JG0WlLveMPrLY4pBTsqJJCqPQhZd0xgiRky6ERQbyI2+IT1IULzwjLZJh1hrlRkOTMoF50F/V3VFHCf+Db8ZnEegYQxvmQs9n+qD6mY9ceCK8tdvvs5lYVVji4OB4LR/YRYEex2aK4uoUZkRyqMomaZ1NwB69r8gXGbgtHfUNYjxXkNRzKiOmX9CXUQHawfqhaLT8C82awf4oYsn2lIjHUDLMmIhW5Tp8LkGt2L+3ElfUuiMjoq2SnQZb0Vh6rC/qYREVSl+tuYAft9PdlkzeUn2ef7YWgICCbvR5/v3gEuRwLcBQQHztoygvaCBLx9TywKZ2W8Q7CfExfYLCPKrU+bCRMun85/wGtR4QG29P6FnyrM+He4sbeXOY4ehdG1tyfDfSHEL4EeqvZB7EEUQcpfJwQhiKFITgr5j4O6nVaXFEdKe9e9TkijToqhgTzHpfHd3rVYkV7XAuuCVq7D2AaFib5kTFJkV4qA39mzIVbCAexSwFFgHUTx11IcIaKlSn+OYKgoQR0Q5I0o35vmGoQVvVHCRx0awcej9l+E0Ro1R2sHuJ/vKdPEdhoGmvQQCj+q8Fs+biKDQroz1wsVo6EzbX7cWwWIMBt3z+ou4h8/NPTbzjZRpAb+8KBtcxSnce3y637E7aBxlP6fEtk6j70ACKPjg3IAF+ZVLVm5L4jzzK8+9oLtoIpukAYbTqHt9wrUFl4biHm9noA6ORedE4cMHCrYU85BPHP9dD2EeN1JJ+dTqOj4xSgunA5h2fPEQ65R/7MO4L+AxHzE9Wh2o9beT686RfR3YqzooqqaLQeQy+81uBfaZRbMRyUAP9jU2+XsJV5nCgpgupKZWG0gH5UoqBHmiCMKAa0zj5JSj7HOYLM9FJz26MtSHrZPkXTHAEnGS8zJI0I9Jf32bZmzlKx7dVYZts/oFrsj0ZujyYkzvMX82ht+by/iphVzqGrfMituTKv+Xi9ODNLfeE+65arFJIXSOOd7oWklIglkjKSfzq+CSY5RP8OEJ1EehCYPcRDhayS+Li+SbOiJHFbGprqDhN/9fDHjZd5NFich0SFXP7gRkvPLgzqPF6kYgJZF+Md1RJIWAAP7uL2e8wTq03fRNwoyGaR378S328QVsjWYENEJ3qdkuBtn1M2AKA0KLhRvf5oIP04jTzrgNoMGNg6O94TFPCgRGXGCoeU0/K7YhotejBtfzq25sf68sG149DSEFRN+6u62VtZylVs509uyE9TUPwtYf5JDWuaRE34DQUGwpqYnmWvkwCrn5zQJGHX2aQqoDvw17si/8LRg/aTpF+kP0Wm4yJLwo/IbrM8YWP92aqUNmvjiPYA6uq5haJ2rIyw52WfFlOWX4zRuoGpyMjB6q2a6aD0ifWcOHeFMgZ2p/E9FYT1nMgvpfEd6izhhAm3q1mKGODLd3sq16wMYz2DYpexVVIKlBPhBsmSCjqij0/BrJFrQ+kzHwb4XDxGPOdOq9QIzUXpABa7yFUU3Z7OpWGus50b9AWCOo/ox0ZZUdEteAEpDQfUINAbWgUXCd2dCD/U3+J9mQQrjavVJK5ERirx+8USOwpVgSsZw2H4dx8rjetvLN/rCEMGizZ8j6qU5pXNg1JE3toOhKKqZJVGcWrsTOK5Wn/1nNlgcbNLaQK0SOTbCc9LFGbyMMBP+F9Gj/ZbVAkI/Qpf0mL1LuJv8bkKS8EAR9t8i8M00XXsaFjlopTi/jw/hJTOpCsiQfk8/GiAXC+yvZTTlAk6DXoi7T2SzbiPm+OBAkcotNNoXlWTSipH14VKCXio1Wym05V9NQ7999dclCI4yUqNl0/qdglGDQZx9E43RtrSxhu1e98KqBZq+pn/47f6OVPFg9Xyt2CjL3IqV7JvX6ApAN1STjAJRZGIqhs37Uxme5BXP4tXcL/pX8/xGdF5hixKPdCAlB1m39DOvxrMTfIdYUhqgK8YLsGuNvfBU5XW7qEme8brt1IbjjyUTQ2h1pGmKv3Kfx0CL4DrufPEpQwd3NWR7hZCL7ngZnq6bjhCs/foyxib8SxI+7wNpq0xiIOoj7q00HSZgyszbKLfYuUWQ2mwNO7S9VTUULGNEeoQuK7Y0P8scquXZwlxxkYwle4NegGHpPUeHll7Xj94NPOG6X7tfdxOHvkNO77indwWkDTdXbhCr9f8FgWzOPXVgsaxyX9GIO+KZ3w3YGYEzcDrUfDeKgZo/uAcq8A/TNwYNvHpg/8yyjakUwgXeTIuecme2oiKmzjMOzO9+vdG0FTkqpnR/kpD7QUB6pDzjfRn0frEKlIjEexg1yfhT+JVvVfGyoGrNb5TkzeU4tP2W8m44FogNLCD1LC5IpzFEMSSaOVa3O6/LNV0s1zO1/WPVLe4Q3VlpYic128Cfs/gpNj9sLkR3oFhCgp4093Nah6BEorderFh7/dlr24l1IES+czatNvvDDXrKgACqxhYtRZD9zXudOP9hAKjY3VyZEwDo2eWkpUS97qqPVK4O+aHYkO3ibUV4eBSXpq6Y9PIc0WHEjOJTd2NMDr70P6J/CuYcfuyuQld6FKEwHztJ+XcizCzhpRUSAXsE0EAD2kV0nq0MxmgRKr4Zs4UMoVemrnv+zOxfQXte+tm74yWErrvtsZ7A+cYVr8PwqUu6ZZG4+njF9boE4xneBxRsx/QQO2Y2MPOC6wc5B/190/A1/iuftN8u3b6WNyo52xk4chh3ELmrS9w99m1aktg0xlCT34QFaOpv8I4imUiB1ADEWYYa1ruWENofLcz/t1nyq/LHH0qCrLEI58S9d+YLxAACvwAlcADK+qopqvpzNtvDMoaXZWinYu3Y1HgwRQOLrtemHiR22E1D18qFnWOw6nwrwo2quLFSlTXh5idrKE/NrLGOuHDF2Y7TiJe98RK3he62BkTyskcM0Mc58vmT3dE8PtVQ0TscC7cF6TKkuHSSbXJC0bShjebMhOxfi4gb5lSNH7m924XGa+Ij8/iris/m3Hu1Jz3gGYTIjtTVSua1tIMwpAizQ/Rx1tvJkSCmaSzUv6IMfuw3hHO+miabX07SIif8WJ8pgj1Hd2+NiZgHoArMwyaVYvXp8KzBdRVSMihb8HR5TN6A2Ts6NZbqXARvV8n/MNBGpjTm2Saupc6IR8Y2aYG2/9ZaEZ7CGbwELI+e9ud56HtiApQQawir/8wbKhhRRKVzAsWLVQBDsZluTBbMSf0NusZSgD+093pM4Bk/HCNFZoupRXknFrv1FGCzmpaADprS6afWsCntkF6cqzmlM5az4chv3RRZW45a8kRQl7danlo0W/Xklc9IWHPh08EYvoKh4GgJZjbcalclKjxheOk2OQV8RnkrI2ij5yAY/alX71EGq2V3hOA13BP/qqe0dyCUkl9O3oj+EAFEu16TO45Qd3ZWSoYmh/geYXU22EdPlXpsD5fsbF2x3s0GzwmQPySe9wWmMdBc5Udaci7/U0C1GYWAcdNzj7vdbPnus2Ez97B6MD+nFDYXoXGCna6O+BiIQhkKwLI5WX0pqG8GyUKNMcXob8Tbu4NaI+Bi98/5t0gX9pbaH66OQkYhc5qiCHU7/JAIe7bVYaOeF1+nUweEnaxXI0vEbFk0gRkvv0AUlllCi4pMpKKWmaC1vVPE/Cwx7M+FfCFuAMeSTRgDCNckyEfpLtLB88g/BgoXXMvbXwFzyQYKC6pHUsnQyiQDc6VwF9WEK2bMjAj3VSWdGN7gQ0Gr8fzsVXpaPqyhCUDt7y+x29AncTfCBSxyor5X/BFeRZFd3dq0hdnhWiWgP7iZ9oIrinvppOzeSnjk0Ulai9GGSZhktsoIgHYkqaXEgFv1Q0shrvVV9QHMu2UKhsMaTQRvK76c/xbyGFceYKvOR17xCcGA2b13QTT+EZ5SN0BxeEA7Yxl2tHSs0LuYh29egCM0JW8R6TNsfKwpVVZD95HzUC7w+2/0V5pq+0cjxuv2ettIiR43WsjfYY0Su0BuFrFWR3q3bUuHQnp0saMXYXWOWX84UAAaBxTu4HN0D73ASnjvua/KvZ4/ALFa645ziDiF6vznR3iY6b40NrIUUXqFxNY6/RP8ncCF4/5if7YJs8CPY/y0nK/Aqp8km/MHMUNyETokFMnkIIHVyAIY1Mmk7n9uJnLZdbgUn5hCH/IojCMttKuNjLe7Fdw99lWwMT8e7HfnI4AsJmHL8yjnbF/jmwH3G9vCXQaiPJBEoS54EOuUYmddnSoW70wSAPVWEMq2HdsTWS7fBEl3Xni4bBCTXx5lsM2xzAX2nG1EdwO0T0mcdpo+uax77dscQkn5XykE043SHsyPrHQvHfe3lYlhy4EKYtwDy/lalQrKcFY5YUSUF9L+z82z6orgkXj+CME6KtbN0tTqoYIQdcz69N6+0TrHI7CHl1qURDbsH8Jq2Cpmu4iZ+EHqf8bbqCcjU8kq4pmRw39Co8tg0Y2Nd01j/LCyJWWj/76ju48YwK8630Bks2TU8tm6irswtHRkjWJk44zvPvlO1T3iQU7Hg62aWtrPboMyOWVw9h1SaQSulHtIrLs8VJFONEbn/B47c29mb9eysPxhujnRIlRPtCGWHH977Nhi0c2+u4H7jzcxwMa3GOu7EkepfhaYHEHl4lrSyR9L6sHxQfA8hLVJBRUrZGxk3chSyITQ/k8fzlRNjUkwNwiOHwpC7FPcJUQeFmVdX3A3VAzbXnmAN6AeXB32UlXmVTIXvmkAotapo+JfFbFDFQUvvy1+Qs25Y62vCFKq4IEJyrsRLEGDFnzh3uu/NFhJ/LAu0ImeSENvO9twT8VQJ7Maz3EgrI79zgi9PzGNls9v4EBzbDqM9ucep0Gd5f97gyIB0UCfzHrTGpsy57iHLDK7Ji00GsqWR5dn2ek8hB/GeLjvZK5aijNly4Lvq0Yfz8qHU6wIcyaW1YcCPwaSnd0sZnnRDWGZgzNi4+0Qcp1DqQVibVWokPIZfmsb/hsLcPwxJNRrtYbMhCIFcRqTc8BbCTe572xlX3oI9eeb6gwRcty/+I431B6e5Q73VB8e+TnZqxBVgiP3GUIFBpcm5PxkG4o8akr4I/5j9mIEnuWYZbK2k0pMteJsnYay+oHqrASHbVmOgEc6c5MzPN3W3RkAgVeZWHTptfzcAEu1mxZVogh9l9TSpBc7kZuJDBbfpyKFF8W6ZnK81++PEKmKT3yKHFcIP9Nr86xFhXNWzcIgtFVk1Uq7xKdkrqxgFzr4TKGTDr17soA+OCmxQs4sszDEiDaVuiYv1Npn2VUWKvOV20uhq6fzQlucPqT+uFRR3qvllS4EI8MVMWlJZYj6Pz9e3zQp/ywu1dDvExyEn1680XqxcUd4ydkij0w4t49zDvOzHWO4rxV9hf0kNpGVmlXGWkZv5ffybQVtewtR3Xra2DcIVx/qu8WyaX1sYlYv1DnZV7FPZ4xdJNpQHsyyRtxXkn/sTkETiNiAxi8PWPea1K/ITAih3oZ/7zxXPbGG8R3fBayJbVsbqfwbmBOQ/JZK1ge/nUIuTaMCXVDFwCIM8HvjTxwGeS2uuXcKMchw/kbGmb/kY0LewnWtsHx9WfQtvNil0jfoUY7+2iAaNtJvLDDi4yzqRGaFvzCprKPmtSnoC9J1I20oszwMFPv0r0cRnyE8Bybr8EeLApHUzzjezDRf/HdrE8LDjG5ZZvKnU4nqYc0zrMKq2nqiI9q49dXV9PGPXpa4Jn0ZJPNWibA2wDRkUxQ9qHId1ofS6CoUEluRQcYxb5g/BEZYH5OvJQN1o2REvL6L9K3N8VBsoYoAa6db2I2Z+UDyszXZx/rYrbB3U1u0uhudDb46b918bNn4UXesw9sz+d02pfPxRhwFDAcIMI3EN97kqh/cYoz4Piq57uLT1AwnQ7IuY0OaKLMId4A3XDLU2HN39HjxDwTM/VIlvi0SNyfR8PrfDk5NKRihOVgFLG5KUTgHiyMdyRqCUKV60Bf3LQJbtrgYK6R1Qvq/5PAehD6KujN6s+bFuzOYFHnbM+c1B7Kp0PRo7dM+cfZlKkvwWGowVY/4tqCTpz7Gm1BXM3O5v4hyLtScRj6BzxtJnI16ovXkP8NRafcjRRDyHDrc67+utaLe7PAnY7LzcRn8631LVn4UZfUnTjnyUvqHObtoWu7PEDsVrhj6ol5gF0KdqKfCSYDPNJ94RVKCSCoT6D4cmZ2EsIbWCeMx9SBLeO6cOWXeBGhndtV5SCWIuHwBvc7CCzE/7bBjqZ2DRnxgjtGLQxmzK/CUcq8I7pcFQdF85swbpokww6uVYEtY9MOWCAhOGhn/3ZlXtUYUPot6cCWlV5EeXZv9AChxZZkwBLiHUJxJet8uCODQEnKpU07HbCeQzBHpzzU8G06iTMdGkW7bQCFHoZuKSsOpD4/S66J3w6CmpcKQOkHhoYvuNTG8cVg3M4CJRtf8Adf0hBf1lx3GxHVDxcHujnJWzkeGgzjnP3aL48TRx7/R6R2derB/gUDrGX9vUOO7rrQxDbj//v61ug43nBcUfXxF8qI28QXEoAGSbFd4NVGOj5482270WHbZIc6nTq9t9t49lj+TYrffn5N/lP5JVy4OS6Pkw3XPq/z1vDVlviOrFCYzzQ27JPLu1yL8HDwNgqoQSiNY3YEmoecuzGQxtPo4oESTay1uNoAuwyYGDB8aF4TMG39Trl+TxHCMAFPEX6SBoZQaSqYVwAfKO6AoWvM4PdeKXa3BCLL2/l/4OA2rnmOhqyrmYs5LddneHimcTXh58iyZc+xyHPSY/VDz8zmxqUnIRkh+mDCZ06N8tJaFuT7BHdr5kn3pwtWAZTAZtdhg2fzwvGH1i0BT47u8piRgjgMtp6EH3xhlMJZuZsIMq/+eLiO8Nb/Zm1PHJ2AO918Gf92Q+M2QGajTBJNKl7G5jcfySAb76FsRGaXKHxHIaezZSMQLPbMAf0avifKmT+8tS1gec4t/MJXJqlbvA09Y5ZpACK1RPPo7+bW0UgGKRa80y9PZF7FIuCKrfFunxJXEPwCOHOYIxCRa5zj1aCfwCltFx2s9aKORYZ7wTXD49CJwAGPCB3yTkjEUNM680N5pwYrHQEWm0EOj6wDLkeZTn+IJ4b3o96wkaV3H7I+lCf0VGjiemRHYFp7dRNmz9/LmEm6Wsl07jWqzsxjhpcBwhme2IMLOVD/tmKhnWayB8Ww38sMi6fhpavlMIgJ1/mIBwgCCSxQ77oEYhUme2XeeYTYMgEMUe6gQofDKd4R2i5ZfdOm5Pfe7VV+Fjh7wRMLA5hxirQmKAv9e6tHw0TW2VP8qGvHH/PdZRpcRbPMA8MjxOvDCPD8zX08OWw4M8EF/erQ54qepRU8yU/jJyEpfeybsilznLEJC/bE4lOZ9VmqNNyjZb21a/nkEK4iTDZQw1x/BGBsnD8phsw4md5LV6hLB9QGLnWzWqqmd9adGQ/eoTUItqx/whsI0Dq2uLbpYdwLGwCxIIs7+neUYUKNHnJZQvqIBCGwy6E4QsMgMA0NWNVq1RSyu2Cc8kTtHU8cMJY08EawJx3NqYiHh8PXI5wDAVZLAH/e5WQJGzxkbiUJK3NdRGALS3wvqFcYpj8c70N8yM6a91xvAHEn/hG3mfY7i/Cj/Ff/vzEezenX+TPyjjNkbFmi4KFCB54LpbABn6hlXkc5oB56l/pg1mOoiQKYcJjpOSBOLv8TdssEm8odKWZcHRtd5zyhJpkta0YUMlIs3c0NYvWddUOhi46kbaoqmpcysgC2SNXt9wBMGYHJufgVxMhfe6Nj0TZxEV9QI0ziGou+2D+Y3ytoVMxnATCwlLxXMJ9xeTaWjwi4o/nxBu2ILSA8RW+Ca5w/AA4oTchrKxXblZd/lT8NOvRIcK2E7+XA9gBhSn9zGrR8uLuE9pk1kchk70s5rXdQ3Isls8ZAY7cp9/uYZlW/cGaq2ufQ7yY2flshUEC1ewpNTP6WoBmG1zsJMJG1q0AS9Bq+fZN6AuZ11xCzjwZy4VcKz5H8YhQ0+As8KudQnab3X8en/V6afjBZpTu8rKyEAw9jd3b94Ej6UvWKIgY7ibAk0GHXJ/2nlw1pu/Ca4eg4z9I19qCa/yvLJqBbGfLQbd+9vytQmjNJV5YW8ejcAQ4GbBLLlN+io3epmxlp7Q3PL7ojcN61f8Dq70GrTAzTb6dt83CmGyGbulthZ0tKn3au78jLB/Chcg74gnpVg+N4uTIsD5VoEgVkOt0UWy7znScSPxaBnQwL0MyCi5CCv44x+ZMXc4RcnrHNgMBJ2+UZ8wYW63hNeYMZZekTTN0Y5tW4l0iyByvmO6/GTnJNh5ygYBELzBYazvyc1CPgOA3XaLt0OR18mhOMy/JGxmO7p/FiIBv/aKN2O0IoAHtPsIlpu7Pfd3GyZdXv/x9r1IVaEWNfND3bGvnYODLklWl7fgsUfUQu4q/c+CnvgmSI87d8rwJ/EslBie7S4dWA9PmqxOWbayS+kdTXafyt5lCqAud87+sKsMsibNgHslvQLiEmuSU9QrC4iDrbQOAF3wGfZjBIK6V/B5bk9MtVwcRfJ+DYCgDRNeup817vXrGnXugS/Vj9cPXmLHbqfiqxicrBNk3FpFWkUBgJ3GET6Fdl3xXCvbFYqjDTjg/2Ti+Hjtrkh0JjirPLtcxzzHIG5V+Lfj2+68zbyoa6Td6tA16HWqnU3xSKgZr7VHgw0BKgF2HBVgS65uWMpYjBi5vjww5Dwm6ubMKXd662juP3xOLDuSKCjK/gRSjhF+SJlABlDJCYcf9v7NnMu9DHcvkuqSIr4BFN0k8L6zHT/DjiWXjqtKw1+WY5D/ztYRJ1Y21jHVaNecrfDgs1/6lGaExso4AIiBL5kqx/1wG/rQgkgKCgDnmDSdK9rbwsuZVU+3+1zxTeRKwtQZ0Sa1kd8ETP8HrlMbhWvpDnx5BFSy7Nje980tfbhPhKxN531s8O/3RTiJzGyvNqQVjdgcVSuaCDF+UTpRmIaCGUmNBZk//eUHx615GNyUUsR/kRCoy0GQJO8sDR9iO0zYtGnWEoHbDbPfioPcfACs/MlHeEX9J3JDJb5wE3tXn33WvlmDIV9vds0ozRDdb0mD+ODIN3gTz84MHy/h44VK6wjw9aT/y+NzVkCdLoZFHaaikDJes2NefRlDsPiBqune5gp4o4b9KqjxVrhORj0GLpcjLvrhdLXQvAKVDDY7TVw/6CQoYxtGN9Bk1GUJT2bY0SMBAbxg13j6Xh/RH2HrluhQte0nWGXcrxwhdpMhUKakfnROsw33WN7JDE5Ap59Ha4BNogTVoNYaVSNAhjTMYOskxEMOI1pCK1/HEbjc+OQJfpnhib9RER/cgintCRn19Dxb+DaGa78Sk0irR3CuKiAoB7ne36RQuYPEmMid8Yxro1QPUy3MNZ9Em25FRYNwQdbFPbxpdxUGZ6cKiph5/WfcFjV+ESKAT66IWx5EQbkYGi2V+PY74wwySXv0FnKoZlyKZBXFAgYvQsDda1AHQ+oxQFubLTetodSVB7fW5TjJhbJ9xgdsCtHnniBQU6JYBZzjhi7q1BtJtGMLiAk52px6LbiCJtqwVC9/wI+3ud9UVYftIFKqu8MHkePuRdSrXh37Zh+7kFtz8IgUmUFSbcMr6mKlU5nwkZc9x3Z/kkznGJBpXGIAumcrFtJidLurA6BDoIKkuT3tvjFHs/pSOrhSZ86nL814tMPTAigL0p29t6bk6kXCEZbvRYjcgoNFlLK11AsYAvWxhUDnBVj0KSAldSdWKBrbZG/t+6JXgSadfssFcBnsglRwsL7zxM1Jc9bdmg1rbdKuMe0ojYHGDtF+0poU0ILW3ywru2seoWxZ2mYhE+Ty5ewYEhn5fcLy95q5ae6oqFih5gILCVX0TQGVjXcXvoFzp2lRQ7xohcN7bvnXoc2Wu5J6gB7J+ghYVacermkp5wcQRdj8Lyw/hVGLnI6VDkX7HEtfhbid9I2lhI8SQmC/09guIX5cKxY0eVcMOlXZWuxkAmH4An1Dtbq/ZZ0gpv/tABKJwRUY8PB6pv1w9jtJ1KpTYFay1Yeubaz8RWQRW5nWQXdL93X0EETFrOFPwXQYmp7MvZb3KT/haN60s29pzFGxSSP84yB/l/JBIchUYQwi4/mri7VdA60wYdgVvsTttHYEKHHYcmM+ev0c7l40rCnAg7yrMl7ocvfIXH2DQKnXG5u5OD67xpOy0ku8VwuqaP05uP9OjY88VWlKDxaDva+O5PoMRn7KiNPrbFVUDdydeMZJmdmcfv+Ce5a56InHASEq2pkL9dQgbzoOmAxG4P+Fip0irUUphD3G7VairlsAcPJEw5ATvgimz6LY4kxW/opW2gN9yjnOCToW2JVvComINgx/63S9wczYAJN3cGKUj6a4pwc5pzcVzJgMaEo73djtMz4cT6MdrosBQCAFcbTHuZDhHiTcvwgRlTzgdA1y5DCsmoJPFxQWcF0IdKdRyYMLXESSH+Ff0zcG+RvXl9qHzACX8nyhOdMz6WlHNmZUSAp2GBfQU1yGlBxWkub8lY78saWC92gGb/NZxD+PLYxy9RedPPjYvxbssTnTCuLwXhazPFNgJorUSjy68dnV5a9ZeGEYEehAUUBBEQY9W+275pLjBPDETEWorzeZGnDuMrccqzWdPtE5WgX3Q43IYq9D23IhPItlYIMXuGWD8NEL9fmsWtLtGeRJCfi0xVmhSi4VfmSE7b49Xf1zQkP0kev/QfDpW1jRn30NcjaL97vrDhMp+ei4nZXDFvrglw5EdOogAAED//VAhTp/8WkkY2Cp6dWF8sNaOrtO6G1/mE1O+9TKdPKhsffpQ1MFjb/RZx6lBdvHFsqSNwN9VY2zVUgvdgFtHZbq7iuYYfdBBDuNFu5VEmcauEsdTI/mXsRpN9czZixUrmnjPi5jaaaIp8hr2FoZPCxvyMSzjGPRuTRG82gX8aoIwuybIML6GTgd3OJ5Ao+C8XmDpeXwetg4CqTd+vDtf2M9Buw537JFV7l1vxvdqD2AQ6ZHxpX/NSUQvdN5oR8XnF4ZCzbqtJs40rHDRQqtbxl7w8XvK4HhP6ya3e9v0TqlqqEOLjGVxhNe6YzQLx5aJ29/wBTKChngkxbVy1PtLyqIgUAkY2G1e1AHT+7S+7AQoknue/JjGwhIWZLphH6hEwYTAjtu5aexfY3mHqHIZjbOm0YhpQxXSJriuiXZmgp0TaluDfhJsN0zIfv6Vjlzfiil0to4x3gfjKHWODUdGmMWcx3q9kINkSZGEMMP47vYRIDhxK5FSF7d3kS+srV1Kj0O62a3bGknM6wRQ9jlJ5GDK6R+NE1XRhwZDHqyqyemxSVoTh4QA+A2AH1Vpo3ygiVtT/hGS8q1E5+xJSC8nH+H8UWSWBy7ly+WiV+Dr7RbRzEkLaWB33UM1SEiL/UKr7ypANfpjwi1PWY+2h6GWNaheEUAu8lwcbivsfPitN/d7K4151H5EbY72eR+iR7mqqOqpi4EAyg4gWUhUhCMWW0j9m9wTmoqgZXECc5+2P4+PypCl6HieTF2Y82LxQthcNwiGW6nSYJt/ZOZDN/jVrsIKEs1qX5vgFbX51kVKDeWSqxcGo4X7blcCzCxm5mIJEnH85TnmAioXQp/bIrqq6GU7NNPYzn+pLTtgVaMYPrAiFI62YaxhRe5A02LgwV8HJUlaJH2IyieifFa/cERVEk77yzq5bpTRchRH/qdfS3oLO3Gf3V+gJHIivW31AEa4P+YDkhdU8SDZPC5QqHzVZ+gHJJxbs4MEfz+ZzLK9zOKyLOa+7tDE7zt/x3x5oDG9M+IZYSpEYgE0KekcWTP3jsmRPLMavgqHz6iPO99fG+xA49eFltwc3v2CkRCJQi09kPozZ1vvpShHcqEfl7CjGyTyrai6pSPZnpNxz7hP9kit7esgLmLkNUiv1pCxC2X7KJCKmOhYKDWejQaZbFVxqqDTWw/RoZDERgzLQXwkH9LErwYYxPc+VsV52MHfAfdwQ7XAdpaIutUzUsBcMkWFvsEjbqdAViTZKG6XJJ5wV6oMFJNAgEmyBt6oIjwBfTyZpaQuCI94H/mDo3m/bmDYRQqLbUAmp1nnFMs0PQEJBiGVkNF/PGT9QjtBBVDnFQtICGoZce/xQGLIzQApRTEaw0RDKOhcRACgcBz5AfsMfTmocACHgGo672BWUs5mYPbeFw7fb4J1LB7flmscy6OEk9v26tJt7Zefs+VZaOXsWimtK2Yl9knhbKG0G6SfqPNDuQtUJAOIZH0qpdPRFavGnZ7pV8IIDLMZH/zB/ZMcwYaI4nC4fP5ZaxtL2bkRZB9H2c+FjmplP9NSoVfQacR3iIqb1yjytUQAAWS7tIRYDdoOjumPrJ5RnUY499TGQ4/7Rrl8Np41LFf88lUK+8L+YnrKWdZPu3qf0aN8yzwp5+ZM7+3AV7KVe8ulsra02F0sa2NQc3bFZrqm+/nsv+scJuLHYPcc0d+18A5CyoQSqBXFAG33BVg2v4wLF7TzrlTr0By21qZTI70HVUaX9Mfxila+oJYAZHxkHR/dPQKaTtm0R/eAlW9Oylyu0mwqkFI9jv7DpmyXNbqyuFaItPTRj+bQ0iYnRjcq69/1RnqlTPNhMsV2YAA3hUrlPv7PgpSU7M7BVb15Nr5koDm0qvJtjqVZow31M0MBB7yw78igSlf89dgViQagJ79arUbWhQjjKy/Nm50I1A3mmn3+wcj/RuJqsHTi/UXMOXfinXoh/zJVzp+FHj7gYzycxrtttlsCu43He6e5L7GDsgUFI6J04o12lenB5rDbUERu/c8BW218X/TSgJZEjqNsjfaajfVr+J8q+MJQ6VsBhavyCEMTgGOimuF7PFPtxSYAaZ8ovEkFEkRpOfGn/dB3csJAzQTyW1HE8IGe4NmrcjfrFOicODHume8al6YCQcRk0mdBHoTyMmzVYAhxs7LLiNKGbsjbBygaLI0nmNqcepGGdJLuG7Pa+VzHkWHb4JimLu4ct4MdKTnWKLPfgC3/+YSvbdxrFrtxBGC+bK7XDBsKQi8bJPo7EWPOojC9z9xUKhlqfJN+7VFTqeDPAANPOxIeh6IN+E+uLErv8PWA3nrGgncLLql9kNfbs4xKaHwJddqg7hmTR4Bp8sqAqKkvMtMCFCtEYzVSE42uZCG5O2yrW7/cxjr11jRODGSAR+qu6LWrU9JCdCWQjZtKHXM8evWQkDICgf7r81xpDOCkW44FFwLAogYeoi+JZNTKlCC67c5dvjWxagssCeNHstP3lQ10wjOT0mxA6GBLbV9GK/2dwwUIM3dumVg/0zVcb8gyufJpyo6N6NBAdbd6cE7YqFhG7MRphxq47xCShJpcBJDUGvqpI8mAoiFwrSGJ/pFtIFwVHk1bbvIVOffN+nz/DIXfvl0lnHAP1w+gaSyYVjZi9JdZdYR8plPOKSuocCcbO0Mriz/DlPB3T8xrIfBWpsOUfF7pRt/5rn1e6DzFXP7Gv8fxqSl74BOyeeqdk0D7tixZ8cZcH0lzVo71Vpo4LcCgA3RM2cH5e5idqW/2ZZOTSw+V0o9vvCwtwEueZa4+9zpUVFzLI0UxM1cCnCIEZen9yhhWQlSCNRMPR6OdUg8+S1DDFP4JvUmZhD/Blf+g9tAMF7kuJiq/4NpK2aLIWJ97msY2gzACr3UgSW1r8MEMsgxfb5lLanLk9r2rIQRdtkSFbNYjI7o/Ow/pCs6BIYfBWRejWByRY0qN8nVVWwStP1LiCzi6z6gAq6vatfoIRDlKQhUstc0KiZolD7FNckR4C6n5zZ02rjYdRITH6Sq3c7BnaCmkCKunroMK5y7JZakmIQGp9ydd8ns6m9fuTwd5rnZtR6wwPoN32+NeeufDDKhnDvnr1nINrjxWt6OHycgGVKcHdbjAPu5K0BjD2xc9J79nHrPgLoawIDhzgthBL0iNc2bldpX2oxhBjLCm479ssCmmkQEubpfiqwYfZ8fHjA3PlghpNpx14aEu4S67Conhi1aq0g5ZZfd+8w9l0D/ntvgXN/BdN1jYmvdojVOg/qVRJLoOiy49Zvzc+pJVU1Yx5UovnPTOigqEygN1+Dpl+AVY3bW4xht6sO8Dw3/KLgS7AIbkpJ0FxzsXnPYX79hUHW7BDNUrB6pDqNucENDOMhv1sufpjR5db36l/e+8CBXMNx2BjlT/rV4mrGIlYRz4yuVx5PaB9VmIWs5W/4Bj1RlV96TaGDd3cBQNUehnd3dCQtuVsZ5YIfAf40tl+cf3znzhKQxO1mugo1JJ3+9SMkjcXPGtl6SlGtGQEFJk+kK71bpvZ1SCQRbYCmunTv1oyRklru/ge6u+TJfrZK5QrcraIbN6bB9JhrFeb/QNp4zu6U8MLapq7nmGoYG48XhaqkY2TXOKHyMWqnMqfu1WNBnbtiUPLeltceuA5AIvu14UP5kjDJj4utUw0V4l22kknLDJVexPcODu9BSSmFIb9M073G3K3PMa/iS4gwbNENgWXiLAoVU1Tukurvt7oek3S2QfAe6ZsOtpN51VHU42bRCELfH8bwRplmiUyF023qWhcRDdtyFK0tEaWiC5FQTTA6O5ViafoEJ3VO/KLflv/V4oV0RKt6FBP70FaS82c8rTSJZPDKrhzZtvRTLe4SV/wpzqtdci3VO0U7jKz7VjFkQrbQd9X1y63Mr6oHajTkZLABbaxlRGhzZvlS1lQjJtj3mAbB3hTH4F+smaITjETvbB+fLpg7UqVs9y3dCKZpiRth/IWB6tHPugBlnrOLhETIBbi+44UpBEYml4ZQSj3ZJbnNGE//ucQgsSUTNCRSJ0/We/IfUABKDqG3rrNFUFmNXZEMNDP5snsjDScFRxX/7p9CH6fhKshR84M215pBA2DEjgr4AyOHH/KRz3V2HXbmn0hehyM8SA6diLukHaNvVr1ezeJBJVtk5y+2+qZKb9pGBjMuAGFYkhM77sDUE2/36Vsl9RJ2YU9WrQu3r/e2eUkX6x2N35eswOcUt4Dxo+XP4keONJ8jZ5WNtMU09mxJaPsfKvdnsua5W7jhJgXdpt4CrTIabHNQdVsiHV4ICBu+AnMBZn1u43oPegK0f0YuiNJZW8GE9KaFXf53oZVY0phkd/vayUTGO3Nqwpa1eOaGmF06l5BU39QPEE8As7NYWHqX03N26D5I0+uQtfqsr28QYuphPq3DN82ndrFV3QWZKrFsDGzpOWuAvHIjXb+g3gFx8ZMgDcfA/Ws9RriiMNQWNj6OOHA2nJrx9WElNBBAfo/Bm6oXzoxLpyRB8fXsf66PxYvDpHeaTYG2JKoAoV+pBpHO5J7pmBgJpbPz/LGxBFfStVZeB9HSaIOsvoeN14jTb08jpJfzTVnNJ/wHfJfngcY72l1pJ8f3ePyocJg73NcEUcoPs3ZGpD/WA/NLeF6CQt2Pwx88Hjjpm6E1IMDryvmNprDlMwUqLAGBgkU4ZqoZ42/WyTqhIeXTdNQELeHOLTZ3xKisvYqlS3egQL4pvwWoWmpOCz0D0ViLNuJ1UgSlZ7KVRTQP20a86Nbce+nJGMAY/bVCokndMJdfO1Jqyv4rH1GQBaeJEKSEqn9gKUEDRD191Raqw2jiQk8lHUqk1w26fF+ypTqnRPPY4qDa9N1DmVSMvqiaYIhcpWBMibIXjqlcxfei+jnA6DH/irmKSwbiZ4OhfENUxU4oszUv2Fsk7oSNuzxNbMDmnhR5THJYSqpW+xTHAorPRaX53+lmuVVYTwzKwBGZmegJOyPdkkYBwxycsNvmK4OFem8tnCTPG21pgtm2/RHHE6Cc0wpuE6SittE8UeR2+ChySPxrEgnAm/u770ZyUVY+M2zT9cGRBqIFIF40lbhIrPzjPsCPbnhBt+GSUIylMehW0Tx7uvM70gGB9cxQ0vI+JDH0UDdBJE+CgW5dCV5tjJVGZE+MMH17PROi22MIPQajqApJHt9IXmyraTTC7OwIguSUyh89ovy2XlffHQnh/+eP43J56Ip/ZVxzhseHlvlwIFH7EXc75oGSnvZw8AcQ0EvRZ7Xu7gSHuOBhtqAAhcJU34TReiUUddpHLEvq6i8LRXiNet0yawr1GTIdeaNfvKEbn8mLf7bGgg6tmPpAthu+DNKaTTwGBMuajh6SDFyzdFo5AZ+X80YlwnXSqw+6L4lDtkazt7ix/+Mj1KrBGSt6dVS4KEDq9hQw0rzPMpHRT9tKNZow2051Fi0Lt/yNNAMOJoMaY4agGiclvY/H1pttfvSfz2IuRQdluKpCqAGH+kN8XiSuaD9bWCk7phEXq7plCQ2bgEPCki0NktLaler70lQ3Uj+2uav+eqzS84Tizat5UdaNhNvF7l2r623YV0YKL3m65TMzegIiBQynaR76Ce/DOEkOAZkgGYOSiKGo7PqNS4a8ZSclp08PqUpcXvDI3g+YPLQ/5Ceex6mZU+DQcZl0Rx5OFUs+BjHJaAi8fjzLUV4WXldZmJtNqHRDeh9w88V1G78O/5m6pvhrBCyihkPTGTySGTzXpz31qN6h0zyyzMhds+M8/czq5Apl6OWPbWi5KODTLyC95RlF5pb4G3+mAor/xXDSKXj4msz1QPMZijJ+Q09ou7ADPeo41/EoB0X6aV4O/AIwAQ4tsk73eqh04DH09dT/n3reKZlOo2fQzBEAgAO98xCHJYMog8aX+OAuXVtD/fG18Q8UCd5cSR1kQZuQ+I0/L+rVz6y0hZSyuDB8wGBD80mOd/YapWSHRuBhEnoqDn2AgKztg1fJuZUN7xVdon24ovUBaug8z6RlHeTRaT9enqUjgR47dH2zbaZrT3D96XI2dhEAFpZa0BpMlSnEp7SGPs51bW6QWUKJyr8Ra89SJ7QkLTAWaEfpN1aIrT1/c7SBiYMhsuXpfg7/9vMxgC1rT+uxJlu76ewgaDQ0D7/PpHJW3vJaoeklKEyP9/ZFOCiQbXTojsRwzi4Jmrm1kKeSfvTpOlPEGeF0U+DrcNSVV7JKepSmocE+Nehp3Kl80+6cZ/+Kp2fbwr+VPE29wQjDInT/hZXbXX0GMX71cLO4q8q4ZajUcJxlzT3aKx+x96hHDaQVnGGFHVPj8Qcu0y75KlHzGvv+y+44JIBG6BhOyEZUmVAn6b9dwbZMBNPgtvfjLZH7xeDfgM8VKD8DmLwAvGSMs3ybNwgh3CmbA/a0AuaNtx8xya0eBnsGmNci/YHtgW2Lw4ois0jenDnEzIIUKQUJYQBTJYbz0Cr5xxAlhDA1YO/3seV8abv9iQiNVV7eT1k9TEEZ3XwJSn2xsXPz2pWaDaTT0jJ1e/mMBPt5JEyTPm6MzpL3715nGQWqBEpJhq3BhpgZdonxPD/E3bRQqjq2Q4OooKjXrDsJvFxn6MnRrp6QPNt0c2E7vbPOUsvNuUhzr8ps5JHs5LEPsPnuhXGX+Nyh+saBRbn9lbbFLewjJgbg3NxDgcB9uX49iMfYvQ76jqJu0QvZfgPlAtpsmvurlSfeXZ/2+xME6/3AOx4qX4kLUpNFND/m2bDIDlwTnPsTpT8wkYlCA3bKZDlIs2zgVctJKWqYN44iAb8Eg74nEn+K/juNvm/B/+tGvrM0mjULZhEyZPdWiW9fqlpH3oQzCRN0msSd8NPK8r0KxyMSAQtQjYqT4xoTgXoIZhiBS6AJjqU8u4lR5Sac9YfidZqOdbL90YJC7Ugo2jvOnN52bt669ej7G0HE8+s6Rrq7ViiATNzXKE6jowWoGpgD4G2wFiKrnc9W1UilWJjGYZrvLkwHL2cC6s4UC7f10Sfp2P5TF/Kow6Yf0JMMqPQgqCmeGabcpY5EfQSNOLeY6pMYoIBMavLWacF+vbrWXXpJSngc/nUtnPKkWfFh+DDut/GNMpM+VpiWAzohXriFMVpkbYiQhdSNkEQ59ztwJxZphG61b67LllLJDkbLaZxWPxKzY/fXkaYAr1eTQMdKgKIuQ7NPwrCTwEOfPQjeth5z7MaPBujFCrV4+x58yURoYB+Ap/tvZyAGLFfmry80gK+EXZN6hYp/u6a9f1cGzK+UBlXUmqCo7Iat4cLWrmLm0zTGOm+N/ib2ViIXMyPIQtMS8F/zYUHNe68OelNt3u/8vC86cc0fRMQNE9CU//9YviHbP0QfJkgxPvqNOiAHYoHcAv2tEO+eiK+x8HVQZEQNH8T1Tbb2MZ10bPL8osbrKMnUINvd9d2zq0lwpSkzAsxgZPTSnJfl3dP2nB+l2DmUwe3x5z2W46hSLwV8snZMx72JHz36d/s/y4ntorcR0g8GgvGEA4QkzU2n71Oursi8G+H3Tj61eYpH3wsAbX3QSE08lwVKNbYGdWxB2LAJypPE4EK7o0iQUncWADiDMQMp5eRoIeoGtAuSwMn2vDuVDdpzUMvmR4BlAkSFzLfZ86spQTlWicFWwpnsPAnx/qYompzJ2wnSVQjEjsC1NKN/3B5ELNnuqEu+xLjpXAvx+4Kg0xLh89F7izXAIn1PBI5u/jYWo0zExfDwJcH7/i8UYS8GKRgPgMcQg/SKGLlEzqEYmkJ+BhBWE6JfWcStFVAbIEZZWoeVKu1eBXuDS+hdXrOC8LkvVi8bud5dpCQ4KoCCnnzczGNb2g7PK47hTuQdEFBB6UvxZE3MLR2DcxlFlQIwjrFfXyACfZIZPPI7fFQUfyt0cS2t6QoKE+rRR3iENFdWc34aKJd9AG9nAPYoZRhG+9q+PgZAv8xyDbXC7ooP7V73I4xpfzy3kMZn3NJF+GwuNNT3lYnSDOXHJjaaK/40PRQrMpKJQ3hjcJxmMIJcQHFPBAqZ3bhCC8v4O0KTB/vSZ/4LQcyjU27cs5MqESvPhHAZsHLsSB3BYBF4SbX2iP53w6n+qBWxihl3NhS1DctggdM+ALn/5qVRE/OCqvAo4hL2lj+JHIBGcf9svHD/Legagz9THNm9IHQnPOKZPm0bJh1UbqEVRs3af7iDkjWVHUQyCcc/aQAakuNhUvGerNkzUHj1xpIVVwhS+DwK9L/T7EQaJPHE3OU1l4nAaEYbFm4DQi7h4xssLBYgojVfknJdsTSERb79P+pp330/sdvbnFHrvIYWZvDQWauCbO5OIph5pDJ2QeYWdXn2RWSuZ6ynYN17pqACjAm/fNaev8E4XjY4jHJhucAOhMWRiI1qkAYalHQlXby5sjUsQ2PUzjE0I60Oz3KbboRSEBOiqny2lwpjQ05x/X3jgj0vJdiiBn9OkjmTeVNjYA1jfrhcsWyjN579UdHnSGM3w9v6vIG+lVSsILqS1mgTYfCKfwCBZn2bqwYQuH8WoilxckDUzpsiyxz6atxMgMb446T7ouLT0YSUBFTWwiIdY40AUxXFU1RmwN0fwHSEyAkSgDjHqbhyRyp9K+fbH1lkdtTbnZtgzHX2yQJhESkRHQxPgxV4O+3PPfw1IygVdN8Qs05/oRN/vjZ/Zu0Vw/ysI7iLICLUJ2B/Qw408HtCYSYZYEkAqICcie5f3ntFcqJVC03R9mHRm3KnXvj2SIZqIH/rIp3db4aMWyrk7ExTlyBBiV+zfueZ18FmVAHZ/XwyeejtvDpnn+a4OwIDPCJWiUMOvu16Vq9VLLrKNqv9yZR/7YWc0zl/4OxLNul0mdDD6aDLKPWolE6O3bXLOCoQ4irQwjDxUjfU9q5TEsGpqHWpf4fW0TM4U5QIkhaboW7ZzyEbduVE4RD9Jeg8wAOj/8RmExgUhnfus7GBjQUuZJNjEyVmo08VdBaaSbLG5TIeLrCHmcHoJoWH/eho1C13HfvS5WdJqF4Vjleje6tkj3LJmERsUqxpfSSlWT2IFiaxkua7zf2zRRg/iMRBnjyAx/taKWJG46kdKLhI+wRwbdBjGQ0ppqBUYJsA0mPOH5raDS9DzFgUwvKobLryfd8eVnRpFjitUnS3Z5buJJWtMsxsKLBkgH5ndi5t/lW9YukcrWQIYa+aWdZq2KcAwtHhixe9HnffWpTJkWXv1svU4QM2h19SXBexD/ytIASj3TJyj705C/9pPM8KLojRVlWyKJ7UNFMERonCwhCSp87+cHKOi+/abdCM9l7vWiyIERpnaB4kh7QXet88Wfe92e5wJO06ibJeHuG7xPKTdzabp/trTExiRvBKlcR92ORefgWL0/W81H6t5hn3gfWvGGU9quGCkWZnsC9QK0433hBMRHij9ZW9qhP42V7ImrM8FRQdg6XzIH5uOxdAogt8Pdckn1DL0tHLHcnhsfm3bfG/ZJqh/aliSdAjtUmv3xqoRoP8ODWLslrPkeVwhd0u0QyOIHmBjfn+t8Ppl11FfP4Sd+SonBfHDqwzJ2TI5u9MLki5lieBPeH6hybyosG9mKXGNX+HKFpvpqEfCdXhvawZt8VemiFJkZax10snOxYb81P9Npk+VF9R1IUCLAy2r+E2aVMkRc6qUckWwxs3x7I8w770qBbpZ3pbMkwbEF1ycYFbimsJ7pzn1Wxmg2ycpaS3u88sztpoAGRXE4dauEv7PgSXAAGFM0mHTAafHUaG2XmOJ8k958KB3ztgADvIudJ72WbTnuWamfC0cpr6BPzBdZlKvcBEO9JVjx9/WeGi8+VbvSK2aXkl6Hnak1sYouiRQyglURxowNsStYtR1z05lvXCFblCasLmmqZAEHDGi/3nK9fP778CS/o0q47B/wwuRTgAo6R4YsCpi7hYTGOROjn7+jLkSgiT4E71Umy9WWOy4JFH8HuZzovbWBgZ06BKPv3ng6FSJ7HcSgSPd/IeheQZfpNT4TIbPfCLubJI+ruDPFzVx51dfs6NQVKPaR2zpHX5LDpODJqv59i3VbrvgyYXN38kx2X8OFka2TQDDkD2kPOM3FJYBYbXHrYfW8mY1uKl1MF5gYvdm9sj85BxHsI6AhsFfkm28KXChC1Mg48JjEoqEw2g5HmU2nETrl4hImog8rwfx0eoLsqJB8XlPpPRmvS3v3QofRUk5AiEBYNgZsak9UfHCS6SzwXoBF27g4zrdrnS+c1sz8HrwnzkP+8L58ElcRhs1OzbGzt/T566SHx1XRwyYh9gabk63iDUFQkpVWC/ecJMsSMbs7J20i4x8UJP+9gG2pPbs1SEj3MRoBsJxmdfRWVx8gjjOkqWo4JG19P1pAmYsYuCz8LeSmGWZ9hJ2x/ieh1JDClvlhkV9H3soUwbA9ZbA5M3P1e8X1FiddbtWHRRuaujxCYW/pxnjzcIa626h85cBwxdqnJAyQllk/1+pQzXnvl3K9MbC9AheASaPGrE0s3G3XXDQD/WJZm5z1YGkGxzV050ZKKSwK6Kq8SQuFTjn7IXyN6AAoeJLPZUIzuN5QlcT7rYyCHDjgyZb/4zUzXyULVc9ApnqBM95aPuswcT3P4zIftvxjuooebwIhfUJQp13ikARcISGTup598cllpgZV0qpA+4ebVwKYf+4654B/fuCsiBezKPvI6kD7Xfncki5OYR9fYzVoMO8/DWEOAuNhQC2OH4S788hnz23NLSf99gJFjezPXR4L48l54hfMxwkLD/5DOeADteT28IYE42CruHbexOPoKHyfKHjHhVRv+SGfbQZxnwzLkWIoinFMtn370arVBqJxRVuKhAupx+Mt9FPAVljWpc5N4brYv4nDxe/xdvnN4Od30fWCJ4N41m4kWirki0MNgk7NrGMD/6pDKYMBNs57N3NLeHJZgmvilgP+HWhW681+OLE65Nm6ILxBtJXLwULvDNc+PPjzwy7KGPhLDYqq/4g6pE0MNMI5ma3Sxq1Pfxu0QgEjcaUHx16goGqgofgRVd/Gv+y5XpKDAb9rSXtVIezBBarXC+IpdjzPSBKZjhLw6g2tUhd4oAPL3PwpfcG/Iok0C+akgsBbLtZDakG3fqyomuDisMBMqeZ4D8gYY0tkEuZkYsyNAGB+MFqwRVdEA66NJKJtQ05I+5gEw5aW39i1db8q2Mxx01yc5paD4WMg7a5ZA0hMw2Z+XnrtTiXI2CW6DTm8+ajoajDPv47blnJHDYC9BQT+AdxZ8E5giIx+3s5D938sqBdsZv5ZslG25pBn5/AJ6z1pYtdAVlwLKBoHub2uGxiJFbEngAS/D5ShWFWQImYHMVlxZtu1mygGIWYY1Ie94j1w1LChyTGWAQxzB+CQPIqymWsiRbRKrrwhdm6zyUZ12/19mw5sDOF4qPzSzig3w/UetAUqpEK/33mJvl8tmhhN0eu8VYrsCDPZ8bNOUqmMM+YGm5nMkaWMYAB2CZr4w4lBMG6gtTsL1C+fSbxkd1MCRW29zBs63g9hHTzeekBFukPfw2DBDX58rwLpnw+PL7K1RSXqzcpKQhfFMzD2ReS12X8IMzsMT1Jta8V+CRr/nh0Y9cCQlN+cUjRewuZzrrrIoOgzli4bRrr5VoZBvBzRVSNtlwkodSZQi4wrXMmXcBk1p33jfagrxuCjCiVooksKvolItcZXJcJ7DuKwyKlBOmOmmTDU4bWuWc/q8vWtL4zmR+ri+RnRcxBTqWqYi87eW3NmF+pyIAABRRuLTLWLjD7BBsUPk9Xg1etK3n3xhLB5fnnWYpUkzEOzLmczs4cPQ9e00rOE68Nes5FGna+8GMEs6vBagpa3VfqBJwTc2CifPZ8+wX8fgcus8CV50sTt43ISFimvGRN5blURwtvtRiFAdykZpBJB+lRTRKG6jHX3qysHRF7VRzKnoGNWpuWgXJlRvLGV4Mn6Q0Vaw7UwS5VX2alTIr+et8elOdaXztrpOuMqTiIaEOhDSk3MKIQlZIrX8oHCeyLYWN832ajEPIYFPQCHRCRR5w2Bo470S04c6SHE28UKoXO16FNdlz9Tvp8n3d2fwa2JtKNhZvDAjZ1xPdMjAJh9MjiqOuQkI7GDBBb7pT7n9WvXfsqA8r1hLWcuQorFUjGmYdz+gPo7i3BUuv1PqgNu+uCWJeHP/r+VJCOFLxRll41Uz3x6njpoMWpjOnCFwcYDSrwUwQFNiZdgeyawOj0chB5td04/zQ3mvgZqQFMT0N+PV92EBNW1fmJo0XyRKaFvugayQjrYwt1HNf1NjHDRRAfd5CmX5XcEgrLOtd+lbMGhjSzwc90KbI2+PZIqZa6REpLf7+VA/e0iVjRR8ENh92nuQuS5Jg03u2roHYSxj5aQsCc5owyMKVCwihqRHCmlyLH+W3nuZhk6s9+gqFH3LJCYdBfYy3DJdCjE24bHFYZLYh6X6pQqUO/B/IWPM4s5xUwOD0sNb199TIPVFqZJ1y/ReYXQ5eYvs793F8ORbr4o4Eb6Gv3oJ/UW9qHIKx6qylm40OtFbamIm6fftI4OMkrFwtUg1ujXokhHnYQ+3tsqyJc2MYv7yzr2hNDUqccls3qsQ6aQgpwFj58uCWNNRVZJC25AWu3DBkHQ8ZCzM1urX19ovnEC59Wa2i5upwm6xx4kmvwqclu2+97mgtgrlu5itMBtnqcj37/6ILMaVPjABp0av1wskXTj77F3Rwsd0buet0Gh+cLBTVM7r5rpcq1+qWQQfAxgC9NGPYjFGnR4LabhH4Gtd+5S022NyMgzukkiskcEgiiDxhVl0FSp2LzZNRJq3D/zsL+ikjWXW5cwGdZTOH1s7+NFUkeDYiN7g/3SayYzjnu6WKGFiRdEu3ytFIa+UFg84EiwsJCTIUV5roLJxVXMZlGtCYNmbiPWdnFpMSUkUMdkGq8ToSNO4N3ktv5iOFffKYuhljpaxAnSSM5jugiEUHQFyZ51CfPnKPQFGrFReQ1IcpRmZROCwxxyQj9qeWxwBdNhJ8U0r8762dy7F2kOwnXrfIPOT6QeEbZsnqnWTjwW9Yb50F8iUeT2KsC+/PP7GxLT281o0Efcjmo8DIKOywBP1Ck6O/kK4ex8UuMu4Kme9V3dHkQTlLrAUD0OAlwEfHWbZDwHKcSEudUojqs4qN4gtwXVFbYCgYtLN2yvC+zp9j22kzz8UBKbEPajupOlWoeL3GRurfgg2xQC4D23hLM4hR/UkgISLwMEcECM/cNFEgtJ/j873+l/uE9X6IC53KZ+ES/KgvMVK2YRHt8kiID08naWqmb6lrfgAWuw0nytsfAMsqNU4xHKbQsz8LIgZouOc2o0CTmyEq2JAJl1KdOai3gF9zJQweMguz6giESZalJa29ffsoFdyre+TC91sBYhr8b0Jm85hWvKgbyZBHOxp1G/SROUbFvg71fLL4h2iyS1c6V9F1oEXNarUe69iBulHAI6sB1bRakBVoB3IN3KZyjKeYVJynU5y49XYwEMVCZnMcseKGtnd0x+AyBlLSiQOT1k2to1pHS+dlW2XQ/7oQEdfsST3oybMZCWpJtwJMuPG1VusQ63fnlUJBvPx7QvLZKt4qbmN1bnRCvF3SDxV5k/uoFcCl1zcMhpX7Qwlxu5ZkURZbPUiAYsfTNN+6JlglrTQtbsprO9ZDVS/t2wiBpK8q+YJlWpzCXYWBFiqi8W2X2a5PAsIuBw3BJaN04IcwwAypt1EI6hiuU0nQpj183VdYxFfrA2SOG0HBkzh8iEGuUDPFObUAcEsvwzUXqgB3lfskaYvARZiwJs3kMx32TfBiGsfDgp+gXYw+taJBXFmAhe4ErkZRE7oMa989uhj0cZqwbVamL46hyXzYxLpk7Ku1BNYVJpTtt92GdfpMMjOdJm9P+sKlTxzOczXgIg/+BH+R8oZk1qtcpt9isPwkcUV46fzmGSkCyyI03FuoVkIHunHNMv8urEylbElm4JNriEkDgLopKuN2cKXVNuwbK9CCOo9OgWycl2a9MrtEUS00Yo+keOd3rVmL63fEm4BLu7ivYkjmr6U2ZwsXw52JrEY/HFiq9yT3xl5yQtj96s8OU/Hz/krsKtyY9lOqhW42FFy31LOCH421ct7HTkKjyRmO7jdf/pLOlXIxDHgUDyU00cvgu/7EAIOMZ9JcWlAGBo7fz6vhHY40oaYEBBRd1uUn7eQc8bgVRjLxjaYiheyNZObHg6hVJoqSdEN5C8klON0UN6C6J8EPFAvmq7L9wkn/ezBVwyRVwFGCUVx17a7zR5549lyug6YiDsW67BVesC8ebb5BekhObXzhQ3XHmKo+9Pb3uZMEEMk7mK1d6iGRA5ihgYoYbG2DvL93KuGn6JX12pcuPmWT5WX+JP69N2XM/CrBqktvPBwwiGLA8hDMtH2CRez4cCsVHMl47KzCKYoV1600rx7cWOo9WpQhPz+Y4Jbs8MRcfcwJExRIBWXVMxvjfm0CzeOdKzaWwwFgrwcO2KI3SR9rLw0w+0lOqUOoPhaYEo1Dc1JiCTIQDl2/PbtZeXouZrs3U2jMvNuGRI9zXC5HkSwd5lNK/vvmPBcLaNzKEaeRxTys/UHrt3UUxst4M8FyzOZ5hHOk+YmS362TSimniqWZdxSivlD8QrBt6MQAJckZnROqbdNBxNAqB40S7ERgYwel6yYZku/ACx7S4S7+OEqIw/Oizdtoba2xndivYkTT1bEezceymrljMXB+j6tTdFGyeKZFQSFAveVlzUy9Ll00/dwnQ/vH+mphKA8NlAozFhDz6M8PifNiblJUTAOSb4yccljHmYtDa6FaA1kWPf6e/A6pMRKAfrfvNcJX+PY/5oYZUOexDRes6nO2L+ROVnB9bZTRUqrBO3O0L9BHggpdN0AnQjjJk2oBhkOgnc5fsA5AaLtZsihw4cMn05IN/k2Bas7hGMSlv5GC9D9Bcv0wjmiRSCFlYNY8Yb/SHzzo2PxDU1EXGTS5i03SOsvEYxj5H0/Db66G5Doh52KJhFCIUz2LEYCi/eifdMRqYmE6aGU9fTiHf7rUhHpNJ0JnTruZqS6SaZZkdDsVxRi/57D3siFWD5SRquWXMtJQQRfF5gxD8Ololigp4JohIDDTzHeNm1iOw/6YqcwcmaXcr2Jy5qT7Exo1lBr+YxNhp9UrWnML6hqSe2LBL9vUKBB7N1kP4SMW+BpFsSN1MW58suolOn0zhtGHr/B4Vw2cZ8zNwHwYktjcYle3/nlykBYjhrfeuXcZQ8nUcNEK6lAppYOAz8sJQVmKzCeWkqGcpAaK2H51TVQkF/qnXhh5OaKa5/qkl8DKdM7zaGJmweT1Qjdbt5UjYX5DA3lzGBPZNKXnQbuLYVw4WCp5dDhoHImSv0FfWjL/NQd4EaaecbVbGaGcoumuR74p1icGgjfDkqs0sETbhDTfSOLQu6RLv1B9yBrDoNOc0798AGaBfSXVgQH4sPhF5sg/UtPkIbLl2hP+YxT72iy2Oznj0DNELJmY3q13ZT3F8bx9bUsZyQvFTQgvdPjFGeArAdSs6TMEKp99DEyxQsN3SQxjLimWyjBykH2h3VsHcOY+5tNpMbAD6nMjQtp7TycJkY2EpLA0oDO2hK3hxtVzFWXHQVkQGVDRivN2A8iWKey4iskh4GfnMZhiHseWWeq/KTMPHYZvA/3i8Da1nKhahtMgMZvwLoyaVZei5uB9TFVZvYdUNvNlvRmVeb+ocL5xO1N1QCIxY+hjJhRmGTLnUhGmRgOEFI5VWvwychoqD07tvAf5+/ozyow/uOdM6eRiHr+yZzobV3glqWhUq9CQO3Fx+P9s17iGspNXOO9TdkdiZdNp/jWTxkKvJdm1QWWan9OW43VC6/JnuUK9NrtRj2dLubUsQikfcKwS9vLZ8urnHKPWQLOS3Aye0Q/vjNwK4IqYDdXXsRTDWnimFac4opwTMZ5pTJACOK7l+m3ZJHDwjYv1B9ZLsPYgYGNQlQlF0EEroXljQoM/eNbxkQfTu2OWRml7TMZ3KtKWgq0qQQXdCKRQa3WHUH3luSEB65NWFbXVdWFdWmPUadJC5AA/yChtTVtFp0pUzUzWHBSZ+RlF6FLiW34dUzYPCMl+2HkcticB5vMLjxalb8Ru1lDT8HTJtjmIqTvwCGdF3KOyaqT/3V/BvIM35clzit0Qct6sFfZwynm28PVlBi0q812YJ3UiQsljcxzA2i3HWubQM03Up9GFM28PbgeVnB6ASM11uGOI4Eal1ZtW2b75/NupXme6fjdJz3NW+VHCsqYRBFjtAcRXHTuWA1hibhH6N/fI0Myg9X6A6zj6k2J5JcP1jKAIIlhAzch8COQvIXDsESz0Mg86TdwpUOe61rt9YNWaywQdCTn1dST/YCb2udIiq33OruuVshAffUrPlxM+PnCpnZsKO53pCtsGHWWNjWykTnwZBtGzz0fk+m+T7UT4WCQQQU3ikaVVhbTtptGNZSsZXpxB+ZUoKM3Bh4Y9pRUcInqLLy4duJy15+lEncYVUCMCOw5Ra8b2AF0jB7KBN/5QrRAYCvjEh1DKP40omAXoaRQvVaWmPjFBz1jcOieh4jqr50P501dc7CbeMZyeMtWxz6m9yHEJk32KGC611KcRYMmepxm0eCkpWBlhvqaHSIAs/Q3/gI8yWGOTlnegdJoZJS3AUtWEOFuo7OCY1EvIncuYC8kzNLhpJblVB1zccg7fJ4BW8a7uZ++lrO1ICXZLFyYV9EaYyhD103hDMGWpOgxn47CRNFLim5lQY7+Zd3/VBN5RG7afYQ8nzEaW0rMqJx71dpKqrnJxUAnRz15cw8vHhsNVrIE0cG7YsDW4qYVJSUPjwjaTQFSfhNqa/yErsg1RUq9qBdk2C/Afv5JDrJoGFDeZWwvjphfinWPTSpHDEy79McrL2KZvTvSwpTbuhVpc0uX5rhRyKUjmr1QlnHDA+umfV4mfptZtps3gioIKEujguwPWMq7AepAGwZ4AwlZ0hcOYxmzzApwN9PkIxrm+AGjHxpjwxQ7pqpXGkKecSQezaWjQAxn6tYAESJiLynJ7YgQrrtN/dewRad9MfIwkchix7pcUI5qHLN5HjUJfrqSDQ1oougoscfJbuaPgj6UCWszJCNB9pYKn24q9HDo3i3XaQh5E8/mGsHYAexlXsqoDPWiMwFs7LPKlK287TXVCbo5zt2ogGO6hnkVdfl5UUZcz1ZT+ZDCXIrPy+s2PheeqqGb3SL79EHTQ4wXOia9HdCXUtmKeia6B/cMz6O+cDEU298iLMjpH1KuE+z37Tj8QHOWaeACvaU0TutKa35LXsWh3+M307/GBetdZdVSzYojdjR+QiX0Ig8aWCf8YH/GKh04GzmfPpC5p4mZUJOa2gm2dXD1AR7Va1sVE79b3FWC7UIjYu6h7AClF8wu2iVULoDcmzPuw6fLFcIi+njEBy2Lt/rr2mCzcTWQ7x4zuzChGPJauUnnV0vXu6KwoCBAjUl7fEmHajBVeIA0fxRjj18mBn5kT8FsCwx7aCFnqBI/r/gxe/Q3hTBoHyGJQCzUYSeUaXHYq16JT71iOVRsrcKCEx44C0WsEwqjOC+UrpQtXRjqpiGBIWQjmi8NU52wpKgYW9XDW55lJV/1s1jnIqDg6t9YDNyUj1xwyg2tyOpcWoNetiwF7sHYW/S2G77ixkauhv7SvkzD3Zn7VccA+IebOhUmcQ0r3PwZUw1idMwMbDlCg01IoSGzKyXWUYkxiPX1idDLpwb/iq8bfZxMknRVx/mUVbQ5lxJW07nVwxkVvfIUBOCIqXtkor++THAlBIpj21wBjjeLDRr1hvxwS9WvG5Pofs7h3p/VqIIX5ZYiMfVHQMBw0vLdlGDn7gwr3XJ6eS422u1r1HDk9NxCmsWjnx2bp1ZtsMvgy6Qla92wU8alRNPNZcLIhItiIK9GqiJQfQZYPTGx5X3UCgxCm7gqxXTwbejbaIeTs/U5IJJyryLU+gb2eXR8G7TkcZo+m/1rnGplzPIqDMhPkN81U23ts7+I5xR85YlpdGibUWIqqVIZ2vahk9lUvjpAHg756ZBopOe7rvwBwbxEEvgbGyP9EgQJoJvQ4kfFiWfAwqcJyb0187blPR3CHvUNj0UCpf8jWFZMjqjB4MrHf4NeRVIRUwBtYnsmGj72WfUlKiN6SiPRFOkAAG6OStiIGPvUtWrMCIYTkJgyc/tUSZGgjmgBP4Me29eX2jb4m+y8vETfDxaTWf7Rwo32nIljBSbjHS+gD04MBQHITySVTx0k0DMfHXSQy5jq2ghrDsWRRL9GFzwCkzvmzRbai3l+kwB4W1tuTw7KS/AM2/eyukVfuVBrbuUgQXjkeTQF3Wq/3SUnHyi0YG+dT9M0Mnxlq0O2rUN/YV97WSfpv1iBS8qJSWXJ/RomXYV6zAqD75+SSfbFZOcwFRybhtU+o/8ITLCYEh1Lx2ElIJqPH/5HnsNs4r9uCT7/q4CeD2vMVwYfuycHSUelOmdW4tXx5sVwoeqa8eK6QrTU42f3C5GwaSzFt8lSq8HxdDA8EbPPdquarAcA5kC8gAS0A30dOABpG0FGT45wxk1Co5lClmwaaNtKVuoBPx47GI9jqwybJ2iicpIIQyVGOvxOighKvDIa0YtIZZCfh7aldntCvM0rlVZm11aj9xpAHrwOW98aa8XPdhRYjKhtp9LGwdCQpSw/5qHxgRAGztXbybmMlCmj/FCd2yZYLz2X5cQPGJBnTfrZ0R4D5dM8RJZEZnTiwycvKD+eIs4/UIdRCtpnQd3q4O80Fo0lcqvrHsjhrbKtMfI96nRxs5zRPdonFVYQbxSwlK4HQbYnSxnNrC5X212pZi7XRlYFYxtDhqrCvl+fge0vZulsV/jq/X6Qsg7EMt44ch1Z1V/l3R7WsrWa2k43+CZYUYY+0zXLxjr6glIlx0hxgu8Qvosf1Ov9kMqVp+VDIHi3ZWmEPjSMK8OXhdR+WpPLliPT372947kJoZqxGTZWMEnPnW1eeg6V3LYCIEqc6pOPsJYVEqzM/eACQK0MxiHof8Ohn7obTcPqQXChIYlV0g1b9zfGasOUdPqeoI/dC8cCe4Z2LjcB4m1mercIQkKYycr9cWzwk+yXnIyPGiA7V0eC+WbFIbRpwAFwsE8ym25rznRN/OQ0azEg9xqRuGSilyxv5KL5ckwkutZZdyqhs0gAKcGNHXFwtJshL272+7WL68OMtMKLoc7WlC5q5DETbpn7LCipB5ubq8quzf4OrWr84kTN47WbNR0+B82N8H7FLY/zkndZrineJglmkWAwwoOgUVT3cT9cRQ+HlQDqulNa8q9oWh8yHVptkXqfyHRZbt9M/B/y+oS4+u+iGD+lwjbAhZMxS/20Grh0etqSYTfjZytT3EDvB4d2+n0wg7A1lMSeJurLi4bfNSfwcuYEHbo9u9qo/DIZ7zz6rhNoKD/m4HzVwTRih4oR86/BR26sNMjB7LUlx2ctIcHhBTrxxAe4cKYdgDqhGJXLHsnvnKk6w6QTtAHuT2YZK25ywTsIgDH+hFe59PBcG6+fuzDCh2kfDqFVqgH+wMaXWj+ul4rwiz2dSSJNsnP78pBUZ6l/RZTxQlA2tUlg5zTJI3QhZxE6ZheefOa7+EuTywsjrd5aoFg4EgcKux6Vb/87WmaljgIuPQUWsrFnVjuXpkR4ngwJaCMqRsh2u8cZhhAftSqqwqtspi5GRYScmL0C0eL+UNcNLtD8slFv61c6saLBSHltQMgfsRFM4HTQhVDkIUPR6ewR19JblVSdKpejGPW3myamV4Mpc8H14qcE2RxUDWg4OaEQ0CKd1dRKc5rzIreY9WFVoH+JuhajwXXPVFKm7MEpTD00FMZ+ALhUMO0XzHE3lYjQVkYUCZq/aGuTcC4NcaGxwlxVm4sQI2PrJ0nb8Zmb+IlZWb8HWW4nkYuIIZiJsbC9SfTnS1OlPmhmr2aXRdilkkEkAA1a4QoyJs5Uq5c0wE9UramsgQ6iCnof6E+SudkrbF2G/lCpMyWOaNR7iCM2WpcRK4I/+b8bRhxRqgrxNqBqXUpZ3wfvM7rjzqj5Pw59BqVuVXuxAi57AUQwSAbIL28EYjxbRhFxaO6S0vsWWs99SJ43lfd3I9/NNIYhfjVvmzGyQf+4b/KYjp7/GfEY9EZMQ7L33pMd2IA/v+ntRHJ+MklmwdMS4ndcyMS92NEFE6BQstvK2k9Zn7awJJmOp+gVcylN48qv0953UWv2WLXR47rHg4iSs11RALtnC6KiDSi5JPhtP0W3keAlqmOr12Sfk3QB0xzSEj1W0/XabY4r1H577TOERRMmD/dA0nirtCOWbOy6Ow37/6hA3BrqdeC2RP7sbL9iNI0QTTQZxOe3oF0+lnrBe02g7dV/9/iU+6MjFhs1bKhc6gcOP3o/BzKiiR5mgGNivR8iEpPwCzbITSRsYuANvAkn/vFT8VG0muyLfRX5pYWFt0lYa5SzPX9G64A9+aCxMk6UPzFncS/0vO8zX3aIXpNvjEn6L27vifnN93oCvNbisOYDFGJ9bDlwpqO32owMDclK2r+qOeZrM7mbbxrQKjvHtfFRL75L2hUjTIzmYcrxJzkAHkOrLDNF3Tkrhn4DW/rJlgP8ijiRM6X+ziSMaq4DX/T6b0ozeExveWgml9kbEz8IBVstq71dv6QAPbpPLzKh7ie+LNPRCjwH1pkzXrxm7sq/F3vHEBe/YOb/0+m6qMhHX0EHgO4Fl07H7WGyfnCK8UyyYud95ZlE0tcCJpIupx2sj0jxRpkEd8jf2qEnzWMRjUd94AoeA1AddP4AZaJf4AVbiS/9mXkZAuZ3Eefg0Pnx7FHjLLml+fztSviBJCRe51U79Cl3OWdX0mqNvGTx3ABYn2RWA+NW6XffNKSFu3jr1ZfuJfw3DNePR0zWeKQ0ARBX4C6fzpN+9NCgrk41hGkqNsXf2e7LEbhhL3ZLdaR5CHfitleN3IBu2wH/vMEL0WZOi5UJ5zmf3xT6WgJyut4pQyVEoW41a8o3ZKRu6x3gW4v5GJDWZ6fItZe+VPlb6FPUtoaBBsqKBy1TVTRo4c7IHuHQSDVrwuJ0y3/jrzeLUNXIFKap1jUQdZzahDhVJdiTeiMydE9Cf31lNugybvWLqzkAnC1Up1CneK4kEmf+rCOPF5K/lHf012jheHIVrNrCLgxsUi0WO4XKS/zzMuJRazY01J4eWlVve1wvklLrdwIgcBKqIBau9CZJVNJ1PFpr1/o3nj6ItH8JZks3QcFGeegLQkAEyKRIqgoHOyn7RxKfzrCSmB4qxzVbbIBZAoT4w6BeIq9lSG0G2OZNxfLYM6XddxwVTZ797tS3Q/WnowlaA97wcnlomCCpry1HkpSU+sC6bTT3TIoIVhvpsaR9U/CbuV2aAGwryP9hfJ7ytMfamIV05DPvD1F4yn1FUlVwTjWTI66BEL3fIjZwcZUY0+uI2x6y/djUZKv/gQORQqHxMN0bcM/WxttN+1gAi2hXFyPO3l1B2Kjb7fonyDLAJr6emUNojTl6+X4nhLYfFVpytZWyfk3TNB8gWzyeg+IU4dGuW5bESgInFkjHPIxWUIKl4hlIENw8P8rHJ9Lky+VaM+eakI0EJ0BrzCSF/2tL2jbRIzEUMIH06wQmKLz2ahKc+ueGgD56pm/lV7ngwkz4AoWvRVDUTYkCirCBuU73anew7olLAUAlnDoaW/Mlpb/ciQ8eyj2gDxKXvd81b/YEuObzMyxXiXKQsi1Pz8FGz19KStE220tCcQqI0Do0Mg+6/okayjFHeCWCEr/3LjILCCcsCJmCIe4EdoD02ALolB47dfXPgUIrMCCntoaEBzj1u6VvC0gvQGsaELKy02AfSvGNReZHG8TfGK0NeOS/ioQZTS2zp0P9CFVAcuv4ST4QxBG9OoAbiO1tMa3oVs9SHfABaENzOl4fuPIeFA6nYImRINWEodrIule12E1jorFlzrchD7m9jalxzhAGiTO2DSJ3L42fk1WHYfQDndJTsRrdlK23sQSkxmpvBdRj5QerfddjVg4ib0xsPzIZFKdK74pBRq/hFpHVxWGlHewuxst+TGkIfeaZTrf7Q02J7vlychjmGQtRF6y6BAmbYr1Z7eWMcsxUDg0T5zFcEK+tiPTTdjlnvl9eguu10K33vPTqfWI5A0NiPqmzxjcX8aGVFJMU1d2Nax4OwnZU1v6EiT+Svb9xcP82hCV8J3+hXl0huzkqrvzdfjWNbTd4APlCklyllhkV0IKV9BbPcv/MvtLFQaQYIxiOMAV6BAubwUhsFM/8yV+WujEJ2/y7k0Ehb1t7AgfpkeZ9mgB+qgQeasy7KrRnwbewMM+dpdkJ95RBcITvpTpZudOMHQgpU4mxQ6H+6P2AQpB1qmoU45ayY3BIkJQaEN4YLMg6TCqb5VaGq8VDTTStGDNmP/fbtmn5ly/t3ikwdEeFYK8d2ipZI9GEHRwgSR7JwWli4j2MUWOeV1x/JUBS290Y+6OFgiq1PtYAgghLYNOabqkUxr8ESUIsxD5ivIX7gKCe+w1a5sLPsG4kWM+7OCuAGW2F/8bt3U0iu5iixtJ3hLjzXpMi+CsEvAJguZPrOu6NZTcC9Okd5M/iKD6EvAGPMPcM7qD+wsI58PEOa76iJ8H1MaCkzgg9z/WklzWXH+44aBiGrc+vHuO+VYnaz/GKuPepuaIk/0O/1zZf11pt6hJy0hjMXdooi27pALaMNPr0X7EZ32MwQnnH9v9V1dwIs4mC6v8uCzJjhXHjGdVR7bml0AqmTu22NRy6fzlgePGFSlHU+COHOM3/Hvm08W+f6QT1pg2z6E4QEkvIIUkSbtA8Rfptd1HFFX5ikGAlyO1nZ8kySDgsfWJOadnxHZlxnRRWRRFR4fVhb5MZEuod1KQmzJWbX3G267z6CBSg7vXYkLacZHOtRyLIuGrDODtYxMFwNYh5HuGZQtbnyXPwdJ7IEnSmOKkSb8SQ8SWsgE76/KOBOMLi4j2kbkfB+c7u4lIiKlfkGb9xxZElt0StXjD06wLmii1SJ3J/Db3Ufo5FO/Mrf0z/ZuIDqNFIcmTAPoNsw35VrCoPak629poEZbAVoPN36APRHEbrlHGLOwiBfzKB7YFFOc0NJLdZGqyjm1D4kECBuqBdszkwY6h3XHDoQajOYWUvdu6h8IiKVBROaaWbAB29TjlChl5oxaAYCumZ853rLaYuRsYBAkswFqb9QAZx3zZsUfkE2FfoHJ01kSnL1ZLIfqhMeAcT5UBGVhh6M1PuO9MecCgHTVan10+q3kcclH3QvCTPI9rP67yRpd0qUBR1CAkQLAmXYJ9nuwSK3GUPaIrnFuZa4n4f6Cy+F3Rw7Sj1a+5SF9sSBXSsYVVn+G+BZ5vDRI1tfPeAJNmXmtoasYmxeg2Wf8eEVsDbOvXKnIuyCMSgbU5pTz8gi0ykrlIvmbOyl9/gRuVrRHbTgn47qHEk7q794oIGvlM/W/KZk8/uu/GKTr1ONfMNfNPGv/+TkSLdnkW4IJWyHfn3tVcDEBwPUU+5xcl/0Tu4umiYz9AfbpalbzdRmKMjDjk7IP8qGziVpYRQhCcY+z41qKEGT7kv0mkLZtEbkmbRqgHMGIbb8em3PJ0BlMDhNDAHG7ut6Wn28qYAkFTUry3bie5/BoEv58qx9KeGv6+j2MvoeDHak2bkzcJsht8Ycqqxh6+qdv8HUgJegTccSLZ48wMAK/Qhh/QktIz2airWgztLltvrN5iWL46kklmEJsPug1r7P6uQqzidB0fD+/0NTKcGlY7FfkTFAOVEPbbcXV9xph9mPZLy7Oan2ZXzz1aetEj2Iv4CF2+nCCaj8lQmLEaCC4h9R1r+bICPHsRlAOSs+fF0cpDy18sVz4fsJBUeUluIoTy8keIuIlBH2EdfCPGrcJmA4spzNu2w5+SNL4UBpHoadmbsMWsQI1kAWUv4lUFxFBaFjdGUQ0zvJVw8ghSW7liSiZ9mCvrimGTguuSOiZnLgpbymje/zS1tGR0aipxtv3H2vIbqB9KZRIPdk1XPTGWWju0q92Zu07fzsQc4LNJdz+DtnH4cnpSMxBXiBUhMuGYkTmYz8zHf6AT4sY6ISZAWP8dzEpm8JQubcs2pQhO2LlGhJrc3RQDpIzerAKSiAdrl7M2/vFIQ7l6xfh5SSuz/7squmv3S+f5h0VnBCWEfOEpy42h9BnANwDvr0f1cD9n6KCflwNeAPR2eaMV79BC6+GSx+KTDebEQD0otsnCjuB4bDqv5ymzMtP6e9Mo5e3lk0xWcAKZiPrFAUItMpRz0HEZyxXjTxAA0VfdeIXM75Wrl33I7Mn6LUPzloMZxpTyIMjUzyomknOUS92JWnCPcfd8XK8iA2+DQTLTVXo6coAZFgMNoEkUb5F+vCvN1PfqpySFS1Dygf2iDSYsSYeyZqPhqUfTlm2id9S3HRwukHM06rAoU374wESauXpU6P77YMxXxumnLqIjb6vfD7yAXk9LFqRqRLl5YIYXoyNpNHEja8QGhdj/Cm09W9sBnhiES9MihuV2JqaIyoqWDFV5ExHR75HdoHGoTWFecVjhLi/Un52TyGjaOCZCacWSyV0oaBmWaemXULwfOWoI1XqsOl+Zhf+3fkaEJ/i2HF8UZ22cv5As4n3Inm4XTfeKZcOgv+Q7PjHrKd6FQFZnDnzKxQhJg6RxPhYazzajJbYz/9gDcfwnjTJBWYufXXe84fM5iFWMbSUujV/JuXSQUpJ/X7WV93zufBmqevqJove5SRo2VkgQ27uX0ztmj7NwZ1E/B3qsBfNI1CqOzvCWVb9qKufmRCkbaJGQxhV4Le1gY9cuH+PRMYEts1A3W8nevL1VoXRIBr46PW5/J5bQPyI4CuVoJovGGfYe5CsFX9wY3HW98/hnvS0kyIwGql25h4sssxNaYaUzHur2QPBOJm2bYR/WS4Qxv7Q3j+YadQpW5077Ng3R9pp4nva+Vh3gSKUp/TirRLa3A1ElrL60ofTnlO65qGKLNYL/VJvayAumXu8ZzL3na7R5mfJeUV50cXVZ4oxY+4WCRqSjjP+ap29hpYkd9l9K7uQHQK9Z8c5Oi95UGp689pfn6yIncyRStIRO7Ss3CqzmEqm6dpSIex8Y4B0ObkcgMic873549LRWZT9XXQk52vK7DR6Rzr/i+CGinKDs8we616PGMwcA8DqzaKdD3DqSIF97jki9e3Gjwd3iZBy9Nv+JIgx5AcIGpTg5bC4S20bM7JJTJA+O9JBrbech/6+8B8bk4/PX6HRnPiRmFXje2ARBrLvlaK1SmkUXVDZraHE7uR6CI2CszX/4Jr8wSTocUDyxBP6jkg8Zz3o/4DESXWGRbuUqlm+C6yHzKM3Yy2nwwZRpdyXGmoAaw8T/AwqUVTsgNwMYFzCr9WjQjgfxZ+hnrbDVnKj6W+22g20/NVtnOVRRv006YkeO1YuW3clNsuTR2jaSRFqEBJrLu3MNgL+LR5WXizJjZSEHExqgeDSQjrKLXuP8lxivS9if3s+v4noubSZe4vHnH6sHIxUXKY8TU2Z0DltFNgto9iJPVG4LWUZPcpRmBMKWeZn2Y6wWTkOmOkTdE+uZMZ5KMXjjhmFigLb2Bpml0asck+y2RyJfKi87HyhWboGtagxMBfzrfyVcAHjhyPxHde7GwgizCTCL7VWQ1/vs5j+mTZo5kjFIlHZee2az8bgirTlnAuFTbHU0CmbEOqx7E4t8CDVoYj0gkwTRqlrTCg8cnzElfwCut/jdtgFibXXY5f5FaNQhiMxYn/GmTiDCpObXPDf2GYZrmDGFOv6GPmG8lE5DA6rdW0O/t2pXeIecTlafCDv8VJPOF35e+MXOvNPnBPmnBiqNfPN4zw/bwmRQjT1VpMrrl3/aZE/k2nbvGFT1DsZAhfzdsfxPNK3du3dpaJyod0ytaIT8ana/CoZyqTFO5WSe72471S1j5TIaVIGfCyU4MWilq9T4CF4IyAMKZ86FLqUWGgPQ+XsCR79ViEoXwSJBpMRm2rGFrj86aEqjFTQ+LsN5/P+mjpEfwq7CHaBuiQlZK9egS9FS5JUK87Zy+fbBy7l53wSXi+cj8YQ56UrCSp9709zOIxUThZ2RP0ANCgGifwVk4maO0gsiwdTD0mmEpJXHUWbbfNYRQkGEezHobuJ2C0ymkhB2u+AWIrTbpfnZ9pQ28zTnKttQtCq2lWmo7rSAdP2UiqwQ7vdhRZf2dL93XJm2e42RMxTtWRKA9OGhMDuzSpeXhsbyn0eKCxjjEB/FPScGcllc48Np+/ReHPVu/NvLImVBmKw71UcaL1ItTCjJZrmLKQot1tch3bmodDUAbKDseZsuCQ2fTjo4DsYiiPvJjYQ/UMtcRLJT8pqE7YZ2SQuoW2H75nU4i/ywP5DvHqc0NQHJNUYoCxfZU7llu4/DLA36KpUWlDGWnFKiKkVLmWHUk+UcnZ4V29XobQW9nLZfVbIuz33G1SoL2x8PG1mnKEr2hnTsHaFk2WCTdKgsr/fJ/u/K2RJyNk5u0kQOZzD+VGntLbY9yLXE9yl/IHxFIev67XM7po0ofVoBnRVxiTq2O4xCLmujKHyBYgxnLVHs1iyi47kw110+Z29Pwe0pYMV/WtfGS3sZGgQDJwSJytHXjCKW5Nx/53gp9WJUpH4Ubznk20vGNyeF0oq35NbWEdPMpom822K4Bfe5eKlI1CCrKa4UNiSkN6L0M4s06Zb0UAZdlob4z6SakGlGpNPfvAuSAE2sd07rFnL26mWbYxHFMOiaEerDq6SW9SkwyAf00liF3LatwPAlul87lXh80BKAuzcyKZfEoRHaIBvb0jPzKoCR5lWQv6WgE7MMThWzkwwg/9PvQvPouLUMVM8HB3IMvSQbgmyJUlLJlxn9Mk+Ry/RRk00+QM1pB49VaI305YY9shAfwYs0O4fzV+u1v8Nwai/z5NN8aem9CmMjewoCc0wHD2tDvu5luyTJDAO8Dx5hpnNbMLyD6PGstRePF6H5vnVx1DBPyiqviRQDOo2LRwFIYNAEVWCFItGh7gRj6N4fGdbz3hiddNOwCh5wvv1imDwDc0voVk41pQF0kzMc/EjPAJW7de7kDrC+bVoUCqP9xLk8OmQqOM379kv3m/BJlSMs/pO9EU8nBHyPTeoXaWQOKPWjXo35bP9hnxGY0DUZzIzUJm4GbkDsbl7iI8OOdokt1Za208Ity7LEknb9GCFOILav0LlEmz4afptyeRlCNK814/UgCsabpCVu0XFCEUXKyNjRKb4iwjP2rzSGwemNyzEKfn+y7CXWfedSzIZDjBTI/jF6xOo+TqJEVaA45L+0siFdEXu7OPOxAhxxEbC8qg6Y+WU8AeFzM3nigZ1IEvD+nr+kkhOUHTY18b5iJooD1YuSle4OQP6W72kd1/y98JXy8q6jrBwam2UDw0B+qkqzYhRjM/yPq/d01NeXOEE44shwmRd69IPhqqSvxTaS+VdHEkxlqBMTutkGKAEiTZ3srP0WQd63zFhj9DuBsE2RHvJFjg6lgRusrtF8jO5hym+1u8VMpdNP+Leu50sueabEX7fjbI3duU+BMjFPsePpoUHHFi3tpHKmwQv33u0Qb21dnUDI/NJrgfwrjXBFKAvuvfwdxRAyRgSvrb79aeBAYmlvwl2Ijd9KFEJs4Ad/Hm3ZdfwJqeIib8y5tvSgzP1p6+c/B61O/Wp09FEdlcy5gSODmFLxYqXuRK5kAACP6mRsP9Mo6bFZoNszhfs21QCmn6xCtl363XqgTPXFlcA3R1g9R9oUjUWp9iYuD/VrHdgXWqK6xu+WX8ljgvMMa7069oc/jglVzrt6dam2cW6IUx0s8WwOVQSdnufMqPUNdbJzOQL0/TG3A/B3S8uIuqI/9ecGKYyZwCBRamqnh+CJENlZ3W4De4TcedzxCSvtz2V+IuKBkUoK5m8sno5kPagLDtP65/0oMQOPS1kGo57U7aaiv6F6yPdstkK+XXKr4/QeWwPlSeM3IB6Av1lQsIe1iaK/MCI/vOAm8mTGNIJjcPCHiX+TlOe/g07tWcL7M7+PGdjPj/5C+hSK3fYpXGmNfxd9dbo1K3EXYt3LkHnof64vaynJK3Bgr/t0mIV3MZc82ULbHg+0i7BPIZcZj7UYp8RetQzikJtwQAmg1j44d3JzzJSaEAGXIlJVZQhhDZgj2kVTYW+lhDJ9PBkh/1XeqB+NVNUUEvWsEw3W9w1VMPBq4t7x8IWk/BP415DCZ1SKKCAlJ6GflNAUrjcN2uZ5fI7qHFkYi3CGgBJe3/2B09UiMqPtWILNeEPM2OZcwalFHJ8dGY+Po0LlxXKaE1Y41g6hF+rK3LcFQljTW40eOnNEuSlehUXAYnGJxwZs5GSLQpKdS6iyFM8ZQUo5FtxwMfHOXsgz8sVB4EJln9aON/KhA/SSYTdd/9N1hY7IjXt287hvgFVCulOR2FZSZRx2ejV2uRoXBweJju1a1Th7fYdTj4ZPY7danZWPcJ8S2cEi8pzzxFTtXNdCAa2rmaezTzwjR6vrTyBEyPTHsCIeTsjl8KpKnVqWmRXH6iQkQ7GmFHIanPDi9k1wRuGe7EuO3/yhAEsaM23xbWghdj1rGs6YfFRDngGCRiNNTKPYcyKSA+8/Q9d+r5Sk9Ef7YyKIwvcJWXlD5qqemiNCJUVAdcRTXrasWPSfb+s81+PNqSwhvj/eMEobgc6Z0EwhNh/UvPfBu3f9coAg9X46VTtcmCUFxg3Ebv9Uzmm8YN5nstd9GdCdrlnuCcqPGAndbhox6n7nVglPVcAuy49oXg6ALK1W6sUWKvmKHqQ1vJuIObjAFgnc2C6kJP4skSikhvrB+LRKKlnzFZeQaEgMnJxlD8gV2LNLwxrFYUbqhSl7sEAO4Qze2CLyKXitwukTsTxZjCbBNRo0xXjjHMDTnNLbvBRWWWhk+0/qH5FKpbHQdsQu5tHpqM0Zep90rHIBQuJUTt0/3RfGArFIbBwECeXz3ZOLblzBsszKRAkZeENuY7eipktevxNWU+BVFI4Tn4zs/vjnL8wse2kYx/KmP6jYqneDrWIArIMmN//EpZjkwIE53js+WdmRzqUaf1kCbe7UFOvaNMiGX59D4O+squZ81F3dsXc9/kHrXJfUYxbD7/L0XBf2zHMdpR5op55kfdD5bfChtPQxG1S1K2q/WRt/4aJohTsHpzYjCDqCY24TqySoQGTXoiS1QaIU8UgZ4WfibzjLXaMMKTq7VBhYmw+KMh1VNl7wyyUWVcGCVo54T4fLZ/C/YcaodqaTrJtnmLuYeC4q6Jv83sEu2fcVquQkH/AP3QpWU4ufE484k8UMePgXKKclO0PSXcfO/hLaJutwP+kLIa/+nzS8jQMXEnaFwnxdg16lBKgxAGv76YRz2EI6Az8r3CXXOOqhte2Tuvy2adotTSbUsuelAduhb5axrnPoZkQQPaara8AQqjDRYXGTl2bHpuVxE6HPFLgcP9QsPqd2nh489RvTHV00lGPjYLOL0EKK88XAXjkK1bQe2IdX2po1nh/zs2YxopVd8YVL5WMn5ZuK9E7iUS5VMjXhzh6z4vuFucGSj/Un9Fn52C4clXv5xDgxzk4uRXkposGChm+c9WwCmD6Lky0OSy+7OVa02DdZ5bYE2as8LZv8UNPky4PB6vm7uxXek7nC4D6cn3igu5nM6nbs9L4jpgLs/ABHsvdNtNsoMLtJnfyh3I282mZMyrLSYhIa6WjWcZf1BkWrmagQLF6qvr3iTi0pgJzOi+11SUQKwdyOXuMo8GcHBLqOy+WFRnjj8BV2uiaAuqODeikPBgFHr2NKymqJVORgrXxkw9pPftymvetm+QF4sCeKjyPPStqm8oznIUj9hBnVxszTYR/6XNN9LTYmG87PQ0X3O6uS4mX7av7SwCkHd6ZARrqKKKK08Xf0CerdsVmRW52qjUOIUW4vHdAB4EJ3ehek0nj/2gasMiuht2OHvyNbgAv7kuHfrUZA/NToBIzv9J/dxv4oXQ7KOFgGs+jYMhVpf3SVByzO0+TKuVCPzZNwQQxnThTwBCgaYdi7Co9qaVx75ZMOU4y1hCH2teixKnuNC6r5QDw+evwQCSWAnY1AUzt6l0Vg5niX/oJ2M5Pg8oGyhf7RUpTvJIN8KUV27pJv7oUndSxjSrn8YcJIAc6spkI5GcCpgFEBCHmz/q4wj8IfSBDOuLKZ8KqIRY236wASrdt1rfpEE406SoSiL1+7JZ5DAnYqEXjJqJBTQEVOoUINn74nLoJMnxWZgCJ46AEzfEmYXOv1Gu/GZREy1G/VYCRabjqMjVnoOsTTW4hmh/8Rdy2uVl5egkTYqQl8ToKm0eUfSuu8tI000IgVRwmxNWGLBOinWyZMtPexaHDQtZ7bydfNy3KhJULI3BeriHn6gwcZbAyE9OYioh5K/hxR+OKgJUiTSFbc0kJ5C78eiyu6ZXju5LsnWmGDhPvLYMLSq9/kcZQ0wAmOJuc16m6f93is3X01usqtvrO2SDMOU8FM3b73ipSvqc5VW9nsgwOq6zxHb4aJDgixkfrsH5Xoz20Zln4+tQFzYcfOmfg+zRPJKvzEikhUgFCiPyu4IcVwIbRiBHHWGgS4hBQvuvcJygLeOv+2ja7uUCejm8d7JW0q6aWbIY+P2kJe/qHyWe/JnSoj4oUhOa+qv2jUBD1BKWqAmRylnzuVrpdmu9TWRMX/xkvXwaMa5Dcryee/vr/p4Sb+VWdxqV9sreShy87Ldgob/a6Q4DoMHrXygCtYEgdKES7KTlv3U+2a7M43JU0Trap6RAOV+DBAVQHg7hCd2oKI1bBJNyYo9kS63Ilz92Z5yBt/gwDRG59ybe4TQT+0G+I8mX79NDEI9uCSmqBMTBN1H4glu2U0bYYLpOO05+qPOOBbcYoYEkxqdoNFpdOkRO40cIK+emPlMYcopxUIfURnWeQpaD9mO442fgf0xaHc6MEFECcmSE5A/0c1FPTgl3SVX9HSfAeaertxJ1eGkk5k2UG1PxwvkYLLHR9h2uZaHf70TPv866as6rKSvs8Jsyfubp845qviam+QKFX1UkyqpU7OBipgLaMDyK4/2geTPpKYjiaEIljGWFfGjwtDt2DRp3yLxnrSkyrFbBtvNS5o1GpSpb7NDqhOYyN/R1einmL/dcNMfbSrBNCpTY8IIfRxH4Bec9LtsMmXctVCk1gr0TgNpAVDt7JsEzRea3N6vtkm8H6i27sw7EVbclQe01v+VK179jnytM6d4Nqu/NXqTzk9mGw3NEdgZgL48Wuh6MMmzWHiXs72Ea+ZivUFD7e917K5KkswZQtM9JrKgfvlp4Ded9mWowwTWVV6sgUPVYDriMVC0Rel+WIvoLgOy4Z7CCpsRxHcgr5zVwFp0rA/vVrF6+HgpS8NXegV3/tuguT9ltXr2vlIeV4w+4Y2e/Q3XD87ZaKpq4Nw6MSBH43ukOTVAekD3J2M3a2CG+lhHOBd/FA0d1hy4n9o4Fz8RG15ThOf1JampYTbRvW/mBbtgneNiBdRIHu10TGoF/r2i/z2U7XV3sIXXdw3FHk6QQWZKSeK5BDfW1gP2JAvzqiXRES16jJeXCM6lhujRVR2K13/l9LEqYb4mQZ4S+Zrn5AOwqS5dLr07NN9DKR6iQZOUKYKliZ+n62SLejOEY4u8V3fCvh4FoT5Yn25TbQDsb4rE/domroBmACulDqbrYUy1hLWJXuOcY/EuxYywj/t863o6StS9f8rUevsOXkDAZH8slGN8ZS465mF48rpFt6HWPOxPOfc/cstXuKhTAQteRdULkPYThF2phme19kejIQQG/HnYsjBnJpbNUOaGO69JJS25g//lIP3S4bsz7e5hS67f+sPnbiSHXiNbkftzmUDDnAwNbJqHSZjEYCUW9wPWTvd6R9+SXM0mOIuahsLSCeaD0MvJUc9pIsaaXp1rnrGUcWjPeg48bOhjKUwLxEwSyzZq792ELDHW6DWGEmQesWp9zE7fJs5uHYKmfSvmVB7qHvWPzbMW+LP3El7ikTobd5mBC+LEX5eENFZnUXrFxoi1Ww4bk/Xg8QFaNUr3Y3OALCErigb4mUlmBsy3LrGvJCM7ZjYKz/To54eocqzlPa3jbYMl/tRM59FMg/ora/OAudXENsCySRPEZpoy/yEV4UXT//asgpZNT+ZzVRbsHryX3ItnzLbdaS/aaOr83NpIKXytHgQLHNqGNQAAr850kPYiYhVWoI/5GtfxNLvGZND7O7GXZziwtGkav0hlk8PJcnXD33V4mrW8DRtcbKe66rQmxUv4uKyB+wkyUz/rz+2w8UzdI0Rdy1Jwg/+EAO4ffdGrwkNIECwmU4+nnEDDwusZJrcKl7XM3xFoRPHMvmCjpUxiWpXShgFR3T5BpupdQY4qqeRMmGb6JWkAb8SRhAC7vVH5OTCO69ZbKIDcc17mxwS+wo5NpPbjR7PQLSASTAWvBUE+7hkD1VAmgFbzlZBBpjyB8I1D35fVCkj8pNwz0j6qMHeF/k6ljobvEpIHIdWz5zSdDdlOf+eQ4WEUOWlJSnD0aOXZTEjx7iJ78/2ZJ5nmbihpexANM/0YrY4x0QHgVQ4ww9OqP0ae9ZawI+nA3UvjYtPPYs5siU7jMA9zEi92x4A2lK04C3SvZKBELdwnmi371PX2P7qeJQjvjkVHqLwqZVeMMzXswhF+RhTG+5I+k1BwWHjLs4/TnlGngjpk9VwOL0h2xQM/BPYqpM/+l2jStZ+QA/3mSI7CrOBaOSv2AgVuSiWEc0IG1ng28pZfKdQL5Ova6Xp3/5x+CA/RvSz/IbuAHDc1iJJMY+v8NfpdHtInZuodLV+8kubUKpWcPuJ9WyDaSql691a15pDdWEeNhjwAoQZKTkEp9+1TSgmUJxnM8SgUechVwJBBU+v3TO+ltTXFwrT56I7moDSaL35sMKKQ0BXKi17csvpWrD01pC7J6XYzquMhij1aNsU0DWKEoSUXG+fKgPjK28pbUPjp+CwTtVzXHIFYjpI6XYHcJdcbclctIr+LfTCIjSgopEJEG/2tPE3Zo3ebTH4J5njbqIMtSvnBeE31Go55VdizGBW443v4H7UgMzZMHAYiCkByuSdt53cOWDgo5jfKtn/lOXCRj5mTJ1KRzEY7UibpbudUJub/0qc3WvNXLkY6Hj0N3pPJCe4Gldt/8+c57mOUfrAqHe+Rcc7lU426yC0Fwh29KREFcHISFSoyoEz630WXCK02QSdQYSRueyQfA8cMroXBErNlcXf3EVUVjkfXqVjTyb7HrfsolrLu52227tP4jGQLwV/J4fPkBASeo1V9N48WJSRHw48EwsmB84xwy8Skp7+MqkXGvVG4wzdfHE8Q14EUpfHEoOFjTZr+0bS7gPQIg9eIuDbXRhQx1+mRIdKppDn+MK0h8O721gL1n2gSFOFyFY5fuVFYfs77mfOLRe/IV8HMkEc9lMgBdzp0LYGxZs/x08kkimiETFSW4pN1osNZAQhytNlGUmt391XVZdv7wgrLFTjAYwNGHcLxbc7xj1DXPyZ6FX5luKY/rHHt7uTZ9cfHtZf44a5ajggNwhy7uODCyGEmuEL13TU3it/kKNtePPikQuOgsjMwUPTpuRLvMQZ54+hMyojssOfh8En2DnEbAXAEfiQRR11+PJg8BiutE2tjX6GMI4DAqICFPkV94eU5rNd6AjMG1HNn6RyIylNji+hkqrDhIT04JA+pP5a4vnccEyVZsFVQXCuRATfKDEb/6Mic3eIxlXK1unVt7BdKhglRNpB13qnWrK8JoxKnBKazNVQQG+oFCMQ80nM4OfmI99AAA="
+        }
+      ]
     }
+  } as any;
+
+/* ------------------------------------------------------------------ geometry helpers */
+
+/** Local stand-in for BufferGeometryUtils.mergeGeometries, which cannot be imported here.
+ *  Everything is converted to non-indexed so attribute arrays can be appended; that changes the
+ *  vertex count but NOT the triangle count, which is the axis the budget measures. */
+function mergeGeos(geos: THREE.BufferGeometry[]): THREE.BufferGeometry {
+  const parts: THREE.BufferGeometry[] = [];
+  const temp: boolean[] = [];
+  for (const g of geos) {
+    if (g.index) { parts.push(g.toNonIndexed()); temp.push(true); }
+    else { parts.push(g); temp.push(false); }
   }
-  const normalStrength = Math.max(0.05, readLayerNumber(spec.normal, ['strength', 'amplitude'], 0.35));
-  const aoStrength = clamp01(readLayerNumber(spec.ambientOcclusion, ['cavityStrength', 'strength'], 0.35));
-  for (let y = 0; y < size; y += 1) {
-    const up = ((y - 1 + size) % size) * size;
-    const down = ((y + 1) % size) * size;
-    for (let x = 0; x < size; x += 1) {
-      const left = (x - 1 + size) % size;
-      const right = (x + 1) % size;
-      const index = y * size + x;
-      const center = heightField[index];
-      const dx = (heightField[y * size + right] - heightField[y * size + left]) * normalStrength * 6;
-      const dy = (heightField[down + x] - heightField[up + x]) * normalStrength * 6;
-      const inverseLength = 1 / Math.sqrt(dx * dx + dy * dy + 1);
-      const normalX = -dx * inverseLength;
-      const normalY = -dy * inverseLength;
-      const normalZ = inverseLength;
-      const neighborAverage = (
-        heightField[y * size + left] + heightField[y * size + right]
-        + heightField[up + x] + heightField[down + x]
-      ) * 0.25;
-      const cavity = Math.max(0, neighborAverage - center);
-      const ao = clamp01(1 - aoStrength * (cavity * 12 + (1 - center) * 0.16));
-      const offset = index * 4;
-      const heightByte = center * 255;
-      const roughnessByte = roughnessField[index] * 255;
-      writePixel(images.height.data, offset, heightByte, heightByte, heightByte);
-      writePixel(images.roughness.data, offset, roughnessByte, roughnessByte, roughnessByte);
-      writePixel(
-        images.normal.data, offset,
-        (normalX * 0.5 + 0.5) * 255,
-        (normalY * 0.5 + 0.5) * 255,
-        (normalZ * 0.5 + 0.5) * 255,
-      );
-      writePixel(images.ao.data, offset, ao * 255, ao * 255, ao * 255);
+  let total = 0;
+  for (const g of parts) total += g.getAttribute('position').count;
+  const position = new Float32Array(total * 3);
+  const normal = new Float32Array(total * 3);
+  const uv = new Float32Array(total * 2);
+  let v = 0;
+  for (const g of parts) {
+    const p = g.getAttribute('position'), n = g.getAttribute('normal'), t = g.getAttribute('uv');
+    for (let i = 0; i < p.count; i++) {
+      position[(v + i) * 3] = p.getX(i); position[(v + i) * 3 + 1] = p.getY(i); position[(v + i) * 3 + 2] = p.getZ(i);
+      if (n) { normal[(v + i) * 3] = n.getX(i); normal[(v + i) * 3 + 1] = n.getY(i); normal[(v + i) * 3 + 2] = n.getZ(i); }
+      if (t) { uv[(v + i) * 2] = t.getX(i); uv[(v + i) * 2 + 1] = t.getY(i); }
     }
+    v += p.count;
   }
-  contexts.albedo.putImageData(images.albedo, 0, 0);
-  contexts.roughness.putImageData(images.roughness, 0, 0);
-  contexts.height.putImageData(images.height, 0, 0);
-  contexts.normal.putImageData(images.normal, 0, 0);
-  contexts.ao.putImageData(images.ao, 0, 0);
-  return {
-    albedo: createMapTexture(canvases.albedo, THREE.SRGBColorSpace, spec, options),
-    roughness: createMapTexture(canvases.roughness, THREE.NoColorSpace, spec, options),
-    height: createMapTexture(canvases.height, THREE.NoColorSpace, spec, options),
-    normal: createMapTexture(canvases.normal, THREE.NoColorSpace, spec, options),
-    ao: createMapTexture(canvases.ao, THREE.NoColorSpace, spec, options),
-    source: 'procedural',
-  };
+  for (let i = 0; i < parts.length; i++) { if (temp[i]) parts[i].dispose(); geos[i].dispose(); }
+  const out = new THREE.BufferGeometry();
+  out.setAttribute('position', new THREE.BufferAttribute(position, 3));
+  out.setAttribute('normal', new THREE.BufferAttribute(normal, 3));
+  out.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+  out.computeBoundingBox(); out.computeBoundingSphere();
+  return out;
 }
 
-function createSculptMaterial(id: string, spec: SculptMaterialSpec, options: ProceduralModelOptions, denseComponent = false): THREE.MeshPhysicalMaterial {
-  // A material that declares -- with evidence -- that its subject carries no texture
-  // detail gets NO texture set. Synthesising one anyway is not a harmless default: the
-  // branch below then forces color to white and roughness to 1 and reads both from the
-  // generated maps, so the authored albedo and the reference-derived roughness are both
-  // discarded, and the model gains mottling the reference does not have. Measured on the
-  // tuxedo cat, whose black fur rendered as speckled grey-and-white from a palette that
-  // only ever described two flat regions.
-  const textureless = (spec.textureless as { declared?: boolean } | undefined)?.declared === true;
-  const textures = textureless
-    ? null
-    : makeReferenceTextureSet(spec, options) ?? makeProceduralTextureSet(id, spec, options);
-  const material = new THREE.MeshPhysicalMaterial({
-    color: textures ? 0xffffff : clampedAlbedoColor(spec),
-    roughness: textures ? 1 : clamp01(readLayerNumber(spec.roughness, ['base'], 0.76)),
-    metalness: clampPbrMetalness(readLayerNumber(spec.metalness, ['base'], 0.0)),
-    clearcoat: clamp01(readLayerNumber(spec.clearcoat, ['base', 'amount'], 0)),
-    clearcoatRoughness: clamp01(readLayerNumber(spec.clearcoatRoughness, ['base'], 0.25)),
-    transmission: clamp01(readLayerNumber(spec.transmission, ['base', 'amount'], 0)),
-    ior: clampPbrIor(readLayerNumber(spec.ior, ['base', 'value'], 1.5)),
-    thickness: Math.max(0, readLayerNumber(spec.thickness, ['base', 'amount'], 0)),
-    attenuationDistance: Math.max(0.001, readLayerNumber(spec.attenuationDistance, ['base', 'value'], Infinity)),
-    attenuationColor: new THREE.Color(typeof spec.attenuationColor === 'string' ? spec.attenuationColor : '#ffffff'),
-    sheen: clamp01(readLayerNumber(spec.sheen, ['base', 'amount'], 0)),
-    sheenColor: new THREE.Color(typeof spec.sheenColor === 'string' ? spec.sheenColor : '#ffffff'),
-    sheenRoughness: clamp01(readLayerNumber(spec.sheenRoughness, ['base'], 1.0)),
-    iridescence: clamp01(readLayerNumber(spec.iridescence, ['base', 'amount'], 0)),
-    iridescenceIOR: clampPbrIor(readLayerNumber(spec.iridescenceIOR, ['base', 'value'], 1.3)),
-    anisotropy: clamp01(readLayerNumber(spec.anisotropy, ['base', 'amount'], 0)),
-    anisotropyRotation: readLayerNumber(spec.anisotropy, ['rotation'], 0),
-    specularIntensity: clampPbrF0(readLayerNumber(spec.specularF0 ?? spec.f0 ?? spec.specularIntensity, ['base', 'value'], 1.0)),
-    specularColor: new THREE.Color(typeof spec.specularColor === 'string' ? spec.specularColor : '#ffffff'),
-    emissive: new THREE.Color(typeof spec.emissive === 'string' ? spec.emissive : '#000000'),
-    emissiveIntensity: Math.max(0, readLayerNumber(spec.emissiveIntensity, ['base'], 1.0)),
-    opacity: clamp01(readLayerNumber(spec.opacity, ['base'], 1)),
-    transparent: readLayerNumber(spec.transmission, ['base', 'amount'], 0) > 0 || readLayerNumber(spec.opacity, ['base'], 1) < 1,
-    alphaTest: Math.max(0, readLayerNumber(spec.alpha, ['cutoff', 'alphaTest'], 0)),
-    wireframe: options.wireframe ?? false,
-    side: spec.doubleSided === true ? THREE.DoubleSide : THREE.FrontSide,
-    flatShading: spec.flatShading === true,
-  });
-  if (textures) {
-    material.map = textures.albedo;
-    material.roughnessMap = textures.roughness;
-    material.normalMap = textures.normal;
-    material.normalScale.setScalar(Math.max(0.05, readLayerNumber(spec.normal, ['strength', 'amplitude'], 0.35)));
-    material.aoMap = textures.ao;
-    material.aoMap.channel = 0;
-    material.aoMapIntensity = readLayerNumber(spec.ambientOcclusion, ['cavityStrength', 'strength'], 0.35);
-    const denseMesh = denseComponent || spec.denseMesh === true || spec.geometryDensity === 'dense' || spec.topologyClass === 'dense';
-    const bumpScale = Math.max(0, readLayerNumber(spec.bump, ['amplitude', 'strength'], 0));
-    const effectiveBumpScale = denseMesh ? Math.max(0.05, bumpScale) : bumpScale;
-    if (effectiveBumpScale > 0) {
-      material.bumpMap = textures.height;
-      material.bumpScale = effectiveBumpScale;
+function boxAt(cx: number, cy: number, cz: number, w: number, h: number, d: number) {
+  const g = new THREE.BoxGeometry(w, h, d); g.translate(cx, cy, cz); return g;
+}
+function cylAt(cx: number, cy: number, cz: number, r: number, h: number, seg = 16) {
+  const g = new THREE.CylinderGeometry(r, r, h, seg); g.translate(cx, cy, cz); return g;
+}
+/** A box list is the merge lever for everything in one material. An entry is
+ *  [cx, cy, cz, w, h, d] with an optional seventh number, a rotation about X in radians applied
+ *  before the translate (a sloped keypad shelf), or `{ cyl: [cx, cy, cz, r, h, seg?, rotX?, rotZ?] }`
+ *  for a round part in the same submission (a door pull bar). */
+function boxes(list: (number[] | { cyl: number[] })[]) {
+  return mergeGeos(list.map((b) => {
+    if (!Array.isArray(b)) {
+      const c = b.cyl;
+      const g = new THREE.CylinderGeometry(c[3], c[3], c[4], c[5] ?? 12);
+      if (c[6]) g.rotateX(c[6]);
+      if (c[7]) g.rotateZ(c[7]);
+      g.translate(c[0], c[1], c[2]);
+      return g;
     }
-    const displacementScale = Math.max(0, readLayerNumber(spec.displacement, ['amplitude', 'strength'], 0));
-    const effectiveDisplacementScale = denseMesh ? Math.max(0.005, displacementScale) : displacementScale;
-    if (effectiveDisplacementScale > 0) {
-      material.displacementMap = textures.height;
-      material.displacementScale = effectiveDisplacementScale;
-      material.displacementBias = -effectiveDisplacementScale * 0.5;
-    }
+    if (b[6]) { const g = new THREE.BoxGeometry(b[3], b[4], b[5]); g.rotateX(b[6]); g.translate(b[0], b[1], b[2]); return g; }
+    return boxAt(b[0], b[1], b[2], b[3], b[4], b[5]);
+  }));
+}
+
+/** Merge a box list with a per-ENTRY tone written into a vertex colour attribute. The material
+ *  that draws it must then have `vertexColors` on -- see `finishVertexColors` -- and every other
+ *  geometry on that material needs a white attribute, or it renders black. Tones are sRGB hexes,
+ *  decoded to linear by setHex, which is the space the shader multiplies in. */
+function tonedBoxes(list: (number[] | { cyl: number[] })[], tones: (number | undefined)[]) {
+  const parts = list.map((b) => boxes([b]));
+  const geo = mergeGeos(parts.map((g) => g.clone()));
+  const col = new Float32Array(geo.getAttribute('position').count * 3);
+  const c = new THREE.Color();
+  let v = 0;
+  for (let i = 0; i < parts.length; i++) {
+    const n = parts[i].getAttribute('position').count;
+    c.setHex(tones[i] ?? 0xffffff);
+    for (let k = 0; k < n; k++) { col[(v + k) * 3] = c.r; col[(v + k) * 3 + 1] = c.g; col[(v + k) * 3 + 2] = c.b; }
+    v += n;
+    parts[i].dispose();
   }
-  material.envMapIntensity = readLayerNumber(spec, ['envMapIntensity'], 0.8);
-  material.userData.sculptMaterial = spec;
-  material.userData.proceduralMapsIndependent = true;
-  material.userData.pbrConstraints = { albedoRange: [30, 240], binaryMetalness: true, f0Range: [0.02, 1], iorRange: [1, 2.5] };
-  material.userData.pbrTextureSource = textures?.source ?? 'flat-fallback';
-  material.userData.referencePbr = spec.referencePbr ?? null;
-  material.userData.referenceMaterialId = spec.referenceMaterialId ?? spec.materialReference?.profileId ?? null;
-  material.userData.materialEvidence = spec.materialEvidence ?? null;
-  material.userData.validationViews = spec.materialReference?.validationViews ?? [];
-  material.needsUpdate = true;
-  return material;
+  geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+  return geo;
 }
-
-type AttachmentEndpoint = {
-  start: THREE.Vector3;
-  midpoint: THREE.Vector3;
-  quaternion: THREE.Quaternion;
-  length: number;
-  baseRadius: number;
-  endRadius: number;
-};
-
-function readVector3(value: unknown, fallback: [number, number, number]): THREE.Vector3 {
-  if (Array.isArray(value) && value.length === 3 && value.every((item) => typeof item === 'number')) {
-    return new THREE.Vector3(value[0], value[1], value[2]);
+/** Turn `vertexColors` on for a material and give every geometry that shares it a WHITE colour
+ *  attribute where one is missing. The shader reads an absent attribute as (0,0,0): one tinted
+ *  part makes its whole material poisonous to every untinted mesh on it. */
+function finishVertexColors(materials: Record<string, THREE.MeshStandardMaterial>, meshes: Record<string, THREE.Mesh>, matId: string) {
+  const m = materials[matId];
+  if (!m || m.vertexColors) return;
+  m.vertexColors = true; m.needsUpdate = true;
+  for (const mesh of Object.values(meshes)) {
+    if (mesh.material !== m) continue;
+    const geo = mesh.geometry as THREE.BufferGeometry;
+    if (geo.getAttribute('color')) continue;
+    const n = geo.getAttribute('position').count;
+    geo.setAttribute('color', new THREE.BufferAttribute(new Float32Array(n * 3).fill(1), 3));
   }
-  return new THREE.Vector3(fallback[0], fallback[1], fallback[2]);
 }
 
-function readNumber(value: unknown, fallback: number): number {
-  return typeof value === 'number' && Number.isFinite(value) ? value : fallback;
+/* ------------------------------------------------------------------ materials */
+
+/**
+ * Every material is declared `textureless` in the sculpt spec, so no procedural texture set is
+ * synthesised. That matters twice. Speed: makeProceduralTextureSet writes FIVE canvases per
+ * material pixel by pixel in JavaScript, at a cost that is the SQUARE of the resolution.
+ * Correctness: whenever a texture set exists the generator forces color to white and roughness
+ * to 1 and reads both back from the generated maps, discarding the measured albedo -- which is
+ * what renders a building mid-grey.
+ *
+ * Metalness is capped well below physical for metals. The thaikit harness supplies a hemisphere
+ * light and three directionals and NO environment map, and a metal with nothing to reflect
+ * renders black. The albedo stays measured; the metalness is what is wrong for this rig.
+ *
+ * The one printed graphic, the brand fascia, is a canvas assigned AFTER material construction.
+ * The textureless declaration does not affect that, and it is the documented route.
+ */
+function buildMaterials(options: ProceduralModelOptions): Record<string, THREE.MeshStandardMaterial> {
+  const map: Record<string, THREE.MeshStandardMaterial> = {};
+  for (const s of CONFIG.materials as any[]) {
+    const m = new THREE.MeshStandardMaterial({
+      color: new THREE.Color(s.color),
+      roughness: s.roughness,
+      metalness: s.metalness,
+      wireframe: options.wireframe ?? false,
+    });
+    if (s.envMapIntensity !== undefined) m.envMapIntensity = s.envMapIntensity;
+    if (s.opacity !== undefined) { m.transparent = true; m.opacity = s.opacity; m.depthWrite = true; }
+    m.name = s.id;
+    map[s.id] = m;
+  }
+  return map;
 }
 
-function makeAttachmentEndpoint(attachment: unknown): AttachmentEndpoint | null {
-  if (!attachment || typeof attachment !== 'object') return null;
-  const record = attachment as Record<string, unknown>;
-  const start = readVector3(record.localStart, [0, 0, 0]);
-  const end = readVector3(record.localEnd, [0, 1, 0]);
-  const delta = end.clone().sub(start);
-  const length = delta.length();
-  if (length <= 0.0001) return null;
-  const direction = delta.clone().normalize();
-  const quaternion = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction);
-  const baseRadius = Math.max(0.005, readNumber(record.baseRadius, 0.06));
-  const endRadius = Math.max(0.003, readNumber(record.endRadius, baseRadius * 0.55));
-  return {
-    start,
-    midpoint: delta.multiplyScalar(0.5),
-    quaternion,
-    length,
-    baseRadius,
-    endRadius,
-  };
-}
+/* ------------------------------------------------------------------ the model */
 
-// Generated from ObjectSculptSpec target: AIS Shop Building
-// Sculpt build pass: optimization-pass
-// This factory is intentionally pass-gated. Finish browser screenshot review before unlocking deeper passes.
-export function createAISShopBuildingModel(options: ProceduralModelOptions = {}): THREE.Group {
+export function createAisShopBuildingModel(options: ProceduralModelOptions = {}): THREE.Group {
   const root = new THREE.Group();
-  root.name = "AIS Shop Building";
-  root.userData.reconstructionEvidence = {"itemFamily": null, "subtype": null, "componentAdapter": null, "route": null, "exactnessTier": null, "referenceCamera": {"viewpoint": "three-quarter from the front-left, elevated above the parapet", "notes": "One plate only. The elevation is high enough to show the roof deck and plant, which is why the roof band carries usable evidence at all; it is also why the right side wall and the rear wall are unseen."}, "approximationNotes": []};
-  root.userData.materialPipeline = {"schemaVersion": 1, "status": "proceed", "registry": "/home/mulligan/.claude/skills/img2threejs/docs/materials/material-reference.json", "analysisArtifact": "/home/mulligan/code/thaikit/scratch/ais-shop-building/material-analysis.json", "targetThreshold": 0.7, "unresolvedNotObservedMaterials": [], "regions": [{"componentId": "building-shell", "regionId": "render", "specMaterialId": "render-cream", "profileId": "plastic.matte", "status": "proceed"}, {"componentId": "roof-deck", "regionId": "concrete", "specMaterialId": "concrete-grey", "profileId": "stone.natural", "status": "proceed"}, {"componentId": "fascia-band", "regionId": "panel", "specMaterialId": "white-panel", "profileId": "coating.painted-metal", "status": "proceed"}, {"componentId": "fascia-sign", "regionId": "acrylic", "specMaterialId": "sign-green", "profileId": "plastic.glossy", "status": "proceed"}, {"componentId": "shopfront-glazing", "regionId": "glass", "specMaterialId": "glass-tinted", "profileId": "glass.clear", "status": "proceed"}, {"componentId": "shopfront-glazing", "regionId": "framing", "specMaterialId": "aluminium", "profileId": "metal.aluminum", "status": "proceed"}, {"componentId": "roof-deck", "regionId": "plant", "specMaterialId": "galvanised", "profileId": "metal.steel-brushed", "status": "proceed"}], "controlledViewsRequired": ["albedo-unlit", "backlight-transmission", "environment-reflection", "grazing", "neutral-studio", "reference-beauty"]};
-  root.userData.materialReferenceRegistry = "/home/mulligan/.claude/skills/img2threejs/docs/materials/material-reference.json";
+  root.name = 'AIS Shop Building';
 
-  const materialMap: Record<string, THREE.Material> = {};
-  materialMap["render-cream"] = createSculptMaterial(
-    "render-cream",
-    {"id": "render-cream", "name": "Painted cement render", "type": "standard", "shaderModel": "MeshStandardMaterial / PBR approximation", "baseColor": "#E4D2AC", "color": "#E4D2AC", "roughness": {"base": 0.88, "variation": 0.05, "notes": "Authored from the observed specular response, NOT from extract_pbr_evidence's roughnessBase. That field returned 0.680-0.702 for all seven materials on this plate -- a constant across matte render, gloss acrylic and mirror glass is the extractor's regression default, not a measurement, and taking it would have made the glazing as matte as the concrete.", "bindingPolicy": "Scalar at runtime. The independently extracted map is kept on disk as evidence and is deliberately not bound: this material is textureless, and binding any map would force color to white and roughness to 1.", "map": "material-evidence/render-cream_roughness.png"}, "metalness": 0.0, "albedo": {"dominant": "#E4D2AC", "secondary": ["#DCC9A0", "#E3CDA8"], "samplingNotes": "Sampled from the clean field of the -X side wall between the parapet and the service door (material-crops/render-cream.png, 186x200 px, PBR confidence 0.751, background #E1D0B8). The value falloff toward the front corner is the studio key and was excluded from the sample rather than averaged into it."}, "localOverrides": [{"id": "render-grime-streaks", "kind": "stain", "region": "the top 0.9 m of every wall, immediately below the coping, heaviest at the corners", "colorShift": "#B9A886", "roughnessDelta": 0.04, "coverage": 0.18, "confidence": 0.75, "evidenceRef": "region-side-wall", "notes": "Vertical run-off streaks below the coping drip. Carried as vertex-darkening in the hand-refinement pass, not as a texture, so the textureless declaration holds."}], "finishClass": "plastic", "clearcoat": {"base": 0.0, "variation": 0.0}, "clearcoatRoughness": {"base": 0.3, "variation": 0.0}, "transmission": {"base": 0.0, "variation": 0.0}, "ior": {"base": 1.5, "value": 1.5}, "envMapIntensity": 0.8, "anisotropy": {"base": 1.0}, "finishStyle": "flat exterior emulsion over cement render", "evidenceRefs": ["view-full", "region-side-wall"], "textureless": {"declared": true, "evidence": ["extract_pbr_evidence on material-crops/render-cream.png measures valueRange 0.080 and heightP90Gradient 0.0200 over a 186x200 px field: no high-frequency component survives at plate resolution, and the extractor itself warns 'low high-frequency detail weakens normal/roughness inference'.", "Painted cement render is flat paint at prop distance; its tooth is finer than one texel of an 8 m wall seen from across a street."], "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely. That function writes FIVE canvases per material pixel by pixel in JavaScript, at a cost that is the SQUARE of textureResolution; seven materials at 1024 would cost roughly 13 s inside createObjectModel before the drawer could show anything, on a kit aimed at low-end integrated GPUs. It is also a correctness fix: with a texture set present the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding the authored albedo -- which is what renders a cream building mid-grey. No textureResolution, referencePbr, textureProjection or surfaceFrequencyBands is carried here; the validator enforces both halves of the declaration."}, "referenceMaterialId": "plastic.matte", "materialFamily": "plastic", "materialSubtype": "generic-polymer", "materialFinish": "matte", "materialReference": {"registry": "/home/mulligan/.claude/skills/img2threejs/docs/materials/material-reference.json", "profileId": "plastic.matte", "method": "family-subtype-finish", "confidence": 0.751, "sourceRefs": ["three.mesh-standard", "adobe.pbr-guide-1", "google.filament-pbr", "mit.material-recognition"], "requiredMaps": ["map", "roughnessMap"], "optionalMaps": ["normalMap", "aoMap"], "validationViews": ["albedo-unlit", "neutral-studio", "grazing"]}, "textureAnalysis": {"finishClass": "painted-metal", "recipe": {"metalness": 0.0, "roughness": 0.5, "clearcoat": 1.0, "clearcoatRoughness": 0.05, "transmission": 0.0, "ior": 1.5, "envMapIntensity": 1.0, "anisotropy": 0.0, "procedural": "flat-clearcoat"}, "palette": ["#E4CEA9", "#E3CDA8", "#DFCAA4", "#DCC9A0", "#D4CBBA"], "paletteHueRisk": [], "gradientAxis": "horizontal", "stats": {"meanLum": 205.0, "meanSaturation": 0.26, "gradientStrength": 0.079, "mottle": 0.005, "streakRatio": 1.53, "hueSpread": 0.0, "specularFraction": 0.0}}, "materialEvidence": {"componentId": "building-shell", "regionId": "render", "crop": {"path": "/home/mulligan/code/thaikit/scratch/ais-shop-building/material-evidence/00-render.png", "bbox": {"x": 196, "y": 470, "width": 186, "height": 200}, "sourceWidth": 1024, "sourceHeight": 1024, "loaderWarnings": [], "coverage": 0.0355}, "observations": ["chromatic base-colour response", "single-image PBR inference requires controlled render validation"], "hypothesis": {"componentId": "building-shell", "regionId": "render", "materialId": null, "family": "plastic", "subtype": "generic-polymer", "finish": "matte", "aliases": [], "confidence": 0.751, "source": "vision"}, "alternatives": []}, "materialPipelineNote": "material_region_analysis + apply_material_analysis were run and their PROVENANCE is kept -- materialFamily/Subtype/Finish, referenceMaterialId, materialReference, materialEvidence and textureAnalysis all come from that chain, and this material's region resolved to its canonical profile with status 'proceed'. What was NOT kept: the chain also wrote textureResolution, referencePbr and textureProjection onto every material, and overwrote the authored roughness and metalness with the profile's generic priors. Both were reverted deliberately. The three texture keys directly contradict the textureless declaration, and the validator enforces both halves of it; keeping them would make createSculptMaterial synthesise five canvases per material and -- worse -- force color to white and roughness to 1 and read both from the generated maps, discarding the measured albedo. The scalar priors would also have re-raised aluminium and galvanised metalness to bare-metal values, which render near-black in a harness with no environment map. The profile is evidence about what KIND of surface this is; it is not a measurement of this one."},
-    options
-  );
-  materialMap["concrete-grey"] = createSculptMaterial(
-    "concrete-grey",
-    {"id": "concrete-grey", "name": "Concrete roof deck and shopfront kerb", "type": "standard", "shaderModel": "MeshStandardMaterial / PBR approximation", "baseColor": "#8C8F92", "color": "#8C8F92", "roughness": {"base": 0.92, "variation": 0.05, "notes": "Authored from the observed specular response, NOT from extract_pbr_evidence's roughnessBase. That field returned 0.680-0.702 for all seven materials on this plate -- a constant across matte render, gloss acrylic and mirror glass is the extractor's regression default, not a measurement, and taking it would have made the glazing as matte as the concrete.", "bindingPolicy": "Scalar at runtime. The independently extracted map is kept on disk as evidence and is deliberately not bound: this material is textureless, and binding any map would force color to white and roughness to 1.", "map": "material-evidence/concrete-grey_roughness.png"}, "metalness": 0.0, "albedo": {"dominant": "#8C8F92", "secondary": ["#969A9B", "#818587"], "samplingNotes": "Sampled from the roof deck inside the parapet (material-crops/concrete-grey.png, 96x26 px, PBR confidence 0.793, background #96999C). Shared with the shopfront kerb, which the plate shows as the same grey concrete."}, "localOverrides": [{"id": "deck-weather-wash", "kind": "stain", "region": "roof deck, pooling along the parapet's inner foot", "colorShift": "#7F8285", "roughnessDelta": 0.03, "coverage": 0.3, "confidence": 0.65, "evidenceRef": "region-roof-deck", "notes": "Darker wash where rainwater stands against the upstand."}], "finishClass": "stone", "clearcoat": {"base": 0.0, "variation": 0.0}, "clearcoatRoughness": {"base": 0.3, "variation": 0.0}, "transmission": {"base": 0.0, "variation": 0.0}, "ior": {"base": 1.5, "value": 1.5}, "envMapIntensity": 0.8, "anisotropy": {"base": 1.0}, "finishStyle": "untreated fair-faced concrete, matte", "evidenceRefs": ["region-roof-deck", "region-kerb"], "textureless": {"declared": true, "evidence": ["heightP90Gradient 0.0242 on material-crops/concrete-grey.png. The valueRange of 0.475 is the parapet's cast shadow crossing the deck, not surface relief -- confirmed by the flat height gradient beside it.", "The deck is seen only from above the parapet line and the kerb is 0.15 m tall; neither resolves aggregate at prop distance."], "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely. That function writes FIVE canvases per material pixel by pixel in JavaScript, at a cost that is the SQUARE of textureResolution; seven materials at 1024 would cost roughly 13 s inside createObjectModel before the drawer could show anything, on a kit aimed at low-end integrated GPUs. It is also a correctness fix: with a texture set present the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding the authored albedo -- which is what renders a cream building mid-grey. No textureResolution, referencePbr, textureProjection or surfaceFrequencyBands is carried here; the validator enforces both halves of the declaration."}, "referenceMaterialId": "stone.natural", "materialFamily": "stone", "materialSubtype": "natural", "materialFinish": "rough-or-polished", "materialReference": {"registry": "/home/mulligan/.claude/skills/img2threejs/docs/materials/material-reference.json", "profileId": "stone.natural", "method": "family-subtype-finish", "confidence": 0.793, "sourceRefs": ["three.mesh-standard", "three.mesh-physical", "adobe.pbr-guide-1", "mit.material-recognition"], "requiredMaps": ["map", "roughnessMap", "normalMap"], "optionalMaps": ["aoMap", "displacementMap", "clearcoatMap"], "validationViews": ["albedo-unlit", "neutral-studio", "grazing", "reference-beauty"]}, "textureAnalysis": {"finishClass": "worn-composite", "recipe": {"metalness": 0.0, "roughness": 0.9, "clearcoat": 0.0, "clearcoatRoughness": 0.0, "transmission": 0.0, "ior": 1.5, "envMapIntensity": 0.5, "anisotropy": 0.0, "procedural": "mottle"}, "palette": ["#ACB0B2", "#767B7D", "#7E8385", "#848687", "#787A7B"], "paletteHueRisk": [], "gradientAxis": "horizontal", "stats": {"meanLum": 134.6, "meanSaturation": 0.046, "gradientStrength": 0.248, "mottle": 0.022, "streakRatio": 1.02, "hueSpread": 0.0, "specularFraction": 0.0}}, "materialEvidence": {"componentId": "roof-deck", "regionId": "concrete", "crop": {"path": "/home/mulligan/code/thaikit/scratch/ais-shop-building/material-evidence/01-concrete.png", "bbox": {"x": 438, "y": 292, "width": 96, "height": 26}, "sourceWidth": 1024, "sourceHeight": 1024, "loaderWarnings": [], "coverage": 0.0024}, "observations": ["near-neutral colour response", "strong image-space gradient; verify it is material pattern, not lighting", "single-image PBR inference requires controlled render validation"], "hypothesis": {"componentId": "roof-deck", "regionId": "concrete", "materialId": null, "family": "stone", "subtype": "natural", "finish": "rough-or-polished", "aliases": [], "confidence": 0.793, "source": "vision"}, "alternatives": []}, "materialPipelineNote": "material_region_analysis + apply_material_analysis were run and their PROVENANCE is kept -- materialFamily/Subtype/Finish, referenceMaterialId, materialReference, materialEvidence and textureAnalysis all come from that chain, and this material's region resolved to its canonical profile with status 'proceed'. What was NOT kept: the chain also wrote textureResolution, referencePbr and textureProjection onto every material, and overwrote the authored roughness and metalness with the profile's generic priors. Both were reverted deliberately. The three texture keys directly contradict the textureless declaration, and the validator enforces both halves of it; keeping them would make createSculptMaterial synthesise five canvases per material and -- worse -- force color to white and roughness to 1 and read both from the generated maps, discarding the measured albedo. The scalar priors would also have re-raised aluminium and galvanised metalness to bare-metal values, which render near-black in a harness with no environment map. The profile is evidence about what KIND of surface this is; it is not a measurement of this one.", "albedoCorrection": "material_comparator measured deltaE00 11.912, plate crop mean (131,136,137) against render (169,173,175) and classified it 'wrong-exposure-or-value'. Darkened from #9A9DA0."},
-    options
-  );
-  materialMap["white-panel"] = createSculptMaterial(
-    "white-panel",
-    {"id": "white-panel", "name": "Painted composite fascia panel", "type": "standard", "shaderModel": "MeshStandardMaterial / PBR approximation", "baseColor": "#EDEFEF", "color": "#EDEFEF", "roughness": {"base": 0.42, "variation": 0.05, "notes": "Authored from the observed specular response, NOT from extract_pbr_evidence's roughnessBase. That field returned 0.680-0.702 for all seven materials on this plate -- a constant across matte render, gloss acrylic and mirror glass is the extractor's regression default, not a measurement, and taking it would have made the glazing as matte as the concrete.", "bindingPolicy": "Scalar at runtime. The independently extracted map is kept on disk as evidence and is deliberately not bound: this material is textureless, and binding any map would force color to white and roughness to 1.", "map": "material-evidence/white-panel_roughness.png"}, "metalness": 0.0, "albedo": {"dominant": "#EDEFEF", "secondary": ["#DCE0E1", "#C8CDCA"], "samplingNotes": "Sampled from the fascia band's left return, clear of the sign tray (material-crops/white-panel.png, 52x134 px, PBR confidence 0.790, background #DCE0E1). A first crop taken as a horizontal strip below the sign was DISCARDED: perspective carried its right-hand end onto the glazing, and it measured rgb(119,127,111) -- a green-grey that is not the fascia at all. It raised the confidence score while sampling the wrong surface, which is exactly the failure the material rules warn about."}, "localOverrides": [], "finishClass": "plastic", "clearcoat": {"base": 0.0, "variation": 0.0}, "clearcoatRoughness": {"base": 0.3, "variation": 0.0}, "transmission": {"base": 0.0, "variation": 0.0}, "ior": {"base": 1.5, "value": 1.5}, "envMapIntensity": 0.8, "anisotropy": {"base": 1.0}, "finishStyle": "satin painted aluminium composite panel", "evidenceRefs": ["region-fascia"], "textureless": {"declared": true, "evidence": ["valueRange 0.138 and heightP90Gradient 0.0143 on material-crops/white-panel.png: a flat sheet with a broad soft highlight and no relief.", "A factory-finished composite panel has no texture to resolve; its identity is the satin specular lobe, which the roughness scalar carries."], "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely. That function writes FIVE canvases per material pixel by pixel in JavaScript, at a cost that is the SQUARE of textureResolution; seven materials at 1024 would cost roughly 13 s inside createObjectModel before the drawer could show anything, on a kit aimed at low-end integrated GPUs. It is also a correctness fix: with a texture set present the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding the authored albedo -- which is what renders a cream building mid-grey. No textureResolution, referencePbr, textureProjection or surfaceFrequencyBands is carried here; the validator enforces both halves of the declaration."}, "referenceMaterialId": "coating.painted-metal", "materialFamily": "coating", "materialSubtype": "paint-over-metal", "materialFinish": "gloss-or-satin", "materialReference": {"registry": "/home/mulligan/.claude/skills/img2threejs/docs/materials/material-reference.json", "profileId": "coating.painted-metal", "method": "family-subtype-finish", "confidence": 0.831, "sourceRefs": ["three.mesh-physical", "gltf.2", "khronos.gltf-pbr", "adobe.pbr-guide-1", "adobe.pbr-guide-2"], "requiredMaps": ["map", "roughnessMap"], "optionalMaps": ["normalMap", "clearcoatMap", "clearcoatRoughnessMap", "metalnessMap"], "validationViews": ["albedo-unlit", "neutral-studio", "grazing", "environment-reflection", "reference-beauty"]}, "textureAnalysis": {"finishClass": "plastic", "recipe": {"metalness": 0.05, "roughness": 0.6, "clearcoat": 0.2, "clearcoatRoughness": 0.3, "transmission": 0.0, "ior": 1.5, "envMapIntensity": 0.7, "anisotropy": 0.0, "procedural": "flat-clearcoat"}, "palette": ["#D0D4D3", "#CDD1D0", "#C8CDCA", "#BFC4BF", "#AEB3AD"], "paletteHueRisk": [], "gradientAxis": "horizontal", "stats": {"meanLum": 198.5, "meanSaturation": 0.026, "gradientStrength": 0.133, "mottle": 0.002, "streakRatio": 0.69, "hueSpread": 0.0, "specularFraction": 0.0}}, "materialEvidence": {"componentId": "fascia-band", "regionId": "panel", "crop": {"path": "/home/mulligan/code/thaikit/scratch/ais-shop-building/material-evidence/02-panel.png", "bbox": {"x": 404, "y": 398, "width": 52, "height": 134}, "sourceWidth": 1024, "sourceHeight": 1024, "loaderWarnings": [], "coverage": 0.0066}, "observations": ["near-neutral colour response", "single-image PBR inference requires controlled render validation"], "hypothesis": {"componentId": "fascia-band", "regionId": "panel", "materialId": null, "family": "coating", "subtype": "paint-over-metal", "finish": "gloss-or-satin", "aliases": [], "confidence": 0.831, "source": "vision"}, "alternatives": []}, "materialPipelineNote": "material_region_analysis + apply_material_analysis were run and their PROVENANCE is kept -- materialFamily/Subtype/Finish, referenceMaterialId, materialReference, materialEvidence and textureAnalysis all come from that chain, and this material's region resolved to its canonical profile with status 'proceed'. What was NOT kept: the chain also wrote textureResolution, referencePbr and textureProjection onto every material, and overwrote the authored roughness and metalness with the profile's generic priors. Both were reverted deliberately. The three texture keys directly contradict the textureless declaration, and the validator enforces both halves of it; keeping them would make createSculptMaterial synthesise five canvases per material and -- worse -- force color to white and roughness to 1 and read both from the generated maps, discarding the measured albedo. The scalar priors would also have re-raised aluminium and galvanised metalness to bare-metal values, which render near-black in a harness with no environment map. The profile is evidence about what KIND of surface this is; it is not a measurement of this one."},
-    options
-  );
-  materialMap["sign-green"] = createSculptMaterial(
-    "sign-green",
-    {"id": "sign-green", "name": "AIS illuminated sign face", "type": "standard", "shaderModel": "MeshStandardMaterial / PBR approximation", "baseColor": "#8FC72C", "color": "#8FC72C", "roughness": {"base": 0.28, "variation": 0.05, "notes": "Authored from the observed specular response, NOT from extract_pbr_evidence's roughnessBase. That field returned 0.680-0.702 for all seven materials on this plate -- a constant across matte render, gloss acrylic and mirror glass is the extractor's regression default, not a measurement, and taking it would have made the glazing as matte as the concrete.", "bindingPolicy": "Scalar at runtime. The independently extracted map is kept on disk as evidence and is deliberately not bound: this material is textureless, and binding any map would force color to white and roughness to 1.", "map": "material-evidence/sign-green_roughness.png"}, "metalness": 0.0, "albedo": {"dominant": "#8FC72C", "secondary": ["#A5CD1B", "#98C91E"], "samplingNotes": "Sampled from the clean green field left of the swoosh (material-crops/sign-green.png, 70x38 px, background #A0CB1F, sd 6.7/2.6/2.4). The measured #A0CB1F is BRIGHTER than the authored albedo on purpose: this is an internally lit lightbox, so part of the observed value is emission. Baking it into base colour would be baked lighting in albedo. The emission is carried separately as an emissive term instead."}, "localOverrides": [], "finishClass": "plastic", "clearcoat": {"base": 0.0, "variation": 0.0}, "clearcoatRoughness": {"base": 0.3, "variation": 0.0}, "transmission": {"base": 0.0, "variation": 0.0}, "ior": {"base": 1.5, "value": 1.5}, "envMapIntensity": 0.8, "anisotropy": {"base": 1.0}, "finishStyle": "gloss translucent acrylic lightbox face", "evidenceRefs": ["region-fascia-sign"], "textureless": {"declared": true, "evidence": ["extract_pbr_evidence returns confidence 0.665 -- BELOW the 0.7 threshold -- with valueRange 0.080, heightP90Gradient 0.00885 and normalStrength 0.167, the flattest of the seven crops. Its own warnings are 'low value range weakens height/roughness inference' and 'low high-frequency detail weakens normal/roughness inference'. On a moulded acrylic lightbox face that shortfall is the EVIDENCE FOR textureless, not a signal to widen the crop until noise appears: the extractor is reporting that there is no texture there, which is correct.", "The only pattern on this face is the printed AIS mark, which is a canvas applied AFTER material construction and is unaffected by this declaration."], "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely. That function writes FIVE canvases per material pixel by pixel in JavaScript, at a cost that is the SQUARE of textureResolution; seven materials at 1024 would cost roughly 13 s inside createObjectModel before the drawer could show anything, on a kit aimed at low-end integrated GPUs. It is also a correctness fix: with a texture set present the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding the authored albedo -- which is what renders a cream building mid-grey. No textureResolution, referencePbr, textureProjection or surfaceFrequencyBands is carried here; the validator enforces both halves of the declaration."}, "emissive": {"color": "#3E6A10", "intensity": 0.35, "notes": "Internally lit acrylic lightbox. Applied in the hand-refinement pass after material construction so the authored albedo survives."}, "referenceMaterialId": "plastic.glossy", "materialFamily": "plastic", "materialSubtype": "generic-polymer", "materialFinish": "glossy", "materialReference": {"registry": "/home/mulligan/.claude/skills/img2threejs/docs/materials/material-reference.json", "profileId": "plastic.glossy", "method": "family-subtype-finish", "confidence": 0.72, "sourceRefs": ["three.mesh-physical", "three.mesh-standard", "adobe.pbr-guide-1", "google.filament-pbr", "mit.material-recognition"], "requiredMaps": ["map", "roughnessMap"], "optionalMaps": ["normalMap", "clearcoatMap"], "validationViews": ["neutral-studio", "grazing", "environment-reflection", "reference-beauty"]}, "textureAnalysis": {"finishClass": "painted-metal", "recipe": {"metalness": 0.0, "roughness": 0.5, "clearcoat": 1.0, "clearcoatRoughness": 0.05, "transmission": 0.0, "ior": 1.5, "envMapIntensity": 1.0, "anisotropy": 0.0, "procedural": "flat-clearcoat"}, "palette": ["#92C51F", "#9AC91F", "#A0CC1C", "#A3CD1B", "#A5CC19"], "paletteHueRisk": [], "gradientAxis": "vertical", "stats": {"meanLum": 170.8, "meanSaturation": 0.858, "gradientStrength": 0.038, "mottle": 0.001, "streakRatio": 0.88, "hueSpread": 0.001, "specularFraction": 0.0}}, "materialEvidence": {"componentId": "fascia-sign", "regionId": "acrylic", "crop": {"path": "/home/mulligan/code/thaikit/scratch/ais-shop-building/material-evidence/03-acrylic.png", "bbox": {"x": 510, "y": 412, "width": 70, "height": 38}, "sourceWidth": 1024, "sourceHeight": 1024, "loaderWarnings": [], "coverage": 0.0025}, "observations": ["chromatic base-colour response", "single-image PBR inference requires controlled render validation"], "hypothesis": {"componentId": "fascia-sign", "regionId": "acrylic", "materialId": null, "family": "plastic", "subtype": "generic-polymer", "finish": "glossy", "aliases": [], "confidence": 0.72, "source": "vision"}, "alternatives": []}, "materialPipelineNote": "material_region_analysis + apply_material_analysis were run and their PROVENANCE is kept -- materialFamily/Subtype/Finish, referenceMaterialId, materialReference, materialEvidence and textureAnalysis all come from that chain, and this material's region resolved to its canonical profile with status 'proceed'. What was NOT kept: the chain also wrote textureResolution, referencePbr and textureProjection onto every material, and overwrote the authored roughness and metalness with the profile's generic priors. Both were reverted deliberately. The three texture keys directly contradict the textureless declaration, and the validator enforces both halves of it; keeping them would make createSculptMaterial synthesise five canvases per material and -- worse -- force color to white and roughness to 1 and read both from the generated maps, discarding the measured albedo. The scalar priors would also have re-raised aluminium and galvanised metalness to bare-metal values, which render near-black in a harness with no environment map. The profile is evidence about what KIND of surface this is; it is not a measurement of this one."},
-    options
-  );
-  materialMap["glass-tinted"] = createSculptMaterial(
-    "glass-tinted",
-    {"id": "glass-tinted", "name": "Tinted shopfront glazing", "type": "standard", "shaderModel": "MeshStandardMaterial / PBR approximation", "baseColor": "#7E8C94", "color": "#7E8C94", "roughness": {"base": 0.08, "variation": 0.05, "notes": "Authored from the observed specular response, NOT from extract_pbr_evidence's roughnessBase. That field returned 0.680-0.702 for all seven materials on this plate -- a constant across matte render, gloss acrylic and mirror glass is the extractor's regression default, not a measurement, and taking it would have made the glazing as matte as the concrete.", "bindingPolicy": "Scalar at runtime. The independently extracted map is kept on disk as evidence and is deliberately not bound: this material is textureless, and binding any map would force color to white and roughness to 1.", "map": "material-evidence/glass-tinted_roughness.png"}, "metalness": 0.05, "albedo": {"dominant": "#7E8C94", "secondary": ["#5B5C57", "#454641"], "samplingNotes": "AUTHORED, not sampled, and this is deliberate. The crop (material-crops/glass-tinted.png, 34x72 px, PBR confidence 0.793) measures rgb(84,85,81) -- but every one of those pixels is the shop INTERIOR seen through the pane, and this prop is an exterior shell with nothing behind the glass. Sampling it would reproduce a photograph of a room that does not exist in the model. The authored blue-grey is the pane's own tint."}, "localOverrides": [], "finishClass": "glass", "clearcoat": {"base": 0.0, "variation": 0.0}, "clearcoatRoughness": {"base": 0.3, "variation": 0.0}, "transmission": {"base": 0.0, "variation": 0.0}, "ior": {"base": 1.5, "value": 1.5}, "envMapIntensity": 0.5, "anisotropy": {"base": 1.0}, "finishStyle": "tinted architectural glass, mostly opaque surface", "evidenceRefs": ["region-glazing"], "textureless": {"declared": true, "evidence": ["The pane is a flat float-glass surface: heightP90Gradient 0.0315 on the crop is the mullion edge crossing it, not relief on the glass.", "Glass identity is the specular lobe and the tint, both carried by scalars. A procedural texture set here would force color to white and roughness to 1 and destroy exactly the two properties that make it read as glass."], "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely. That function writes FIVE canvases per material pixel by pixel in JavaScript, at a cost that is the SQUARE of textureResolution; seven materials at 1024 would cost roughly 13 s inside createObjectModel before the drawer could show anything, on a kit aimed at low-end integrated GPUs. It is also a correctness fix: with a texture set present the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding the authored albedo -- which is what renders a cream building mid-grey. No textureResolution, referencePbr, textureProjection or surfaceFrequencyBands is carried here; the validator enforces both halves of the declaration."}, "metalnessNote": "Also reduced, for the same no-environment-map reason, though less far: the pane is a dielectric and its 0.08 roughness is what carries the highlight, not its metalness.", "referenceMaterialId": "glass.clear", "materialFamily": "glass", "materialSubtype": "clear", "materialFinish": "polished", "materialReference": {"registry": "/home/mulligan/.claude/skills/img2threejs/docs/materials/material-reference.json", "profileId": "glass.clear", "method": "family-subtype-finish", "confidence": 0.793, "sourceRefs": ["three.mesh-physical", "three.pmrem", "gltf.2", "khronos.transmission", "khronos.volume", "google.filament-pbr"], "requiredMaps": ["roughnessMap", "thicknessMap"], "optionalMaps": ["map", "normalMap", "transmissionMap"], "validationViews": ["neutral-studio", "environment-reflection", "backlight-transmission", "reference-beauty"]}, "textureAnalysis": {"finishClass": "worn-composite", "recipe": {"metalness": 0.0, "roughness": 0.9, "clearcoat": 0.0, "clearcoatRoughness": 0.0, "transmission": 0.0, "ior": 1.5, "envMapIntensity": 0.5, "anisotropy": 0.0, "procedural": "mottle"}, "palette": ["#52524C", "#4D4E49", "#4C4D47", "#434643", "#464947"], "paletteHueRisk": [], "gradientAxis": "horizontal", "stats": {"meanLum": 85.0, "meanSaturation": 0.069, "gradientStrength": 0.549, "mottle": 0.023, "streakRatio": 6.14, "hueSpread": 0.0, "specularFraction": 0.0}}, "materialEvidence": {"componentId": "shopfront-glazing", "regionId": "glass", "crop": {"path": "/home/mulligan/code/thaikit/scratch/ais-shop-building/material-evidence/04-glass.png", "bbox": {"x": 700, "y": 600, "width": 34, "height": 72}, "sourceWidth": 1024, "sourceHeight": 1024, "loaderWarnings": [], "coverage": 0.0023}, "observations": ["near-neutral colour response", "directional surface frequency", "strong image-space gradient; verify it is material pattern, not lighting", "single-image PBR inference requires controlled render validation"], "hypothesis": {"componentId": "shopfront-glazing", "regionId": "glass", "materialId": null, "family": "glass", "subtype": "clear", "finish": "polished", "aliases": [], "confidence": 0.793, "source": "vision"}, "alternatives": []}, "needsEnvironment": true, "materialPipelineNote": "material_region_analysis + apply_material_analysis were run and their PROVENANCE is kept -- materialFamily/Subtype/Finish, referenceMaterialId, materialReference, materialEvidence and textureAnalysis all come from that chain, and this material's region resolved to its canonical profile with status 'proceed'. What was NOT kept: the chain also wrote textureResolution, referencePbr and textureProjection onto every material, and overwrote the authored roughness and metalness with the profile's generic priors. Both were reverted deliberately. The three texture keys directly contradict the textureless declaration, and the validator enforces both halves of it; keeping them would make createSculptMaterial synthesise five canvases per material and -- worse -- force color to white and roughness to 1 and read both from the generated maps, discarding the measured albedo. The scalar priors would also have re-raised aluminium and galvanised metalness to bare-metal values, which render near-black in a harness with no environment map. The profile is evidence about what KIND of surface this is; it is not a measurement of this one.", "albedoCorrection": "material_comparator measured deltaE00 23.69, plate crop mean (83,84,80) against render (131,143,150), classified 'wrong-base-color' and 'wrong-exposure-or-value'. The glazing read far lighter than the plate. Darkened to #6B767E. The correction is applied to the CANVAS field rather than to material.color, because the map now owns the albedo and the colour slot is white; putting it back on material.color would multiply twice. It is also deliberately not taken all the way to the plate's measured value: those pixels are the shop INTERIOR seen through the pane, and this prop is an exterior shell, so matching them exactly would darken the glass to reproduce a room that does not exist and turn the shopfront back into the hole this material exists to avoid."},
-    options
-  );
-  materialMap["aluminium"] = createSculptMaterial(
-    "aluminium",
-    {"id": "aluminium", "name": "Mill-finish aluminium shopfront framing", "type": "standard", "shaderModel": "MeshStandardMaterial / PBR approximation", "baseColor": "#8E9294", "color": "#8E9294", "roughness": {"base": 0.38, "variation": 0.05, "notes": "Authored from the observed specular response, NOT from extract_pbr_evidence's roughnessBase. That field returned 0.680-0.702 for all seven materials on this plate -- a constant across matte render, gloss acrylic and mirror glass is the extractor's regression default, not a measurement, and taking it would have made the glazing as matte as the concrete.", "bindingPolicy": "Scalar at runtime. The independently extracted map is kept on disk as evidence and is deliberately not bound: this material is textureless, and binding any map would force color to white and roughness to 1.", "map": "material-evidence/aluminium_roughness.png"}, "metalness": 0.35, "albedo": {"dominant": "#8E9294", "secondary": ["#ACB1B1", "#B2B7B6"], "samplingNotes": "Sampled from a single mullion (material-crops/aluminium.png, 9x150 px, PBR confidence 0.761). Recorded as CORROBORATING rather than decisive: at 1024 px across an 8 m building a 0.06 m mullion is about 9 px wide, at the edge of what the plate resolves, and the crop's sd of ~37 is glass bleeding in at both edges. The neutral mid-high value it returns agrees with mill-finish aluminium, so the authored scalars are held."}, "localOverrides": [], "finishClass": "metal", "clearcoat": {"base": 0.0, "variation": 0.0}, "clearcoatRoughness": {"base": 0.3, "variation": 0.0}, "transmission": {"base": 0.0, "variation": 0.0}, "ior": {"base": 1.5, "value": 1.5}, "envMapIntensity": 0.5, "anisotropy": {"base": 1.0}, "finishStyle": "satin mill-finish anodised aluminium", "evidenceRefs": ["region-glazing", "region-framing"], "textureless": {"declared": true, "evidence": ["heightP90Gradient 0.0154 on material-crops/aluminium.png; the valueRange of 0.475 is dark glass either side of the member, not brushing on the metal.", "Mill finish carries a faint linear brush that is well under one texel at prop distance; the anisotropic highlight is what reads, and that is a scalar."], "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely. That function writes FIVE canvases per material pixel by pixel in JavaScript, at a cost that is the SQUARE of textureResolution; seven materials at 1024 would cost roughly 13 s inside createObjectModel before the drawer could show anything, on a kit aimed at low-end integrated GPUs. It is also a correctness fix: with a texture set present the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding the authored albedo -- which is what renders a cream building mid-grey. No textureResolution, referencePbr, textureProjection or surfaceFrequencyBands is carried here; the validator enforces both halves of the declaration."}, "metalnessNote": "LOWERED from the physically-correct bare-metal value after the structural-pass render. A metalness near 1 has almost no diffuse term and gets its entire appearance from what it REFLECTS; thaikit's render harness lights analytically -- a hemisphere and three directional lights, no environment map and no PMREM -- so there is nothing to reflect and the surface renders near-black. The structural-pass render showed the condensers and duct as black boxes. This is not a harness quirk to work around either: this is a browser FPS prop for low-end integrated GPUs, where a level's lighting is very often analytic for the same performance reason, so a material that only reads under IBL is the wrong choice for the kit. The sibling 7-Eleven capped its aluminium at 0.35 and its galvanised at 0.30 for this exact reason. Roughness is nudged up with it so the specular lobe still carries the finish.", "referenceMaterialId": "metal.aluminum", "materialFamily": "metal", "materialSubtype": "aluminum", "materialFinish": "satin", "materialReference": {"registry": "/home/mulligan/.claude/skills/img2threejs/docs/materials/material-reference.json", "profileId": "metal.aluminum", "method": "family-subtype-finish", "confidence": 0.794, "sourceRefs": ["three.mesh-standard", "three.pmrem", "gltf.2", "khronos.gltf-pbr", "adobe.pbr-guide-2", "google.filament-pbr"], "optionalMaps": ["normalMap", "anisotropyMap"], "validationViews": ["neutral-studio", "environment-reflection", "grazing"], "requiredMapsWaived": ["map", "roughnessMap"]}, "textureAnalysis": {"finishClass": "plastic", "recipe": {"metalness": 0.05, "roughness": 0.6, "clearcoat": 0.2, "clearcoatRoughness": 0.3, "transmission": 0.0, "ior": 1.5, "envMapIntensity": 0.7, "anisotropy": 0.0, "procedural": "flat-clearcoat"}, "palette": ["#343732", "#434744", "#ACB1B1", "#818480", "#6F7069"], "paletteHueRisk": [], "gradientAxis": "horizontal", "stats": {"meanLum": 121.8, "meanSaturation": 0.063, "gradientStrength": 0.529, "mottle": 0.016, "streakRatio": 0.78, "hueSpread": 0.021, "specularFraction": 0.0}}, "materialEvidence": {"componentId": "shopfront-glazing", "regionId": "framing", "crop": {"path": "/home/mulligan/code/thaikit/scratch/ais-shop-building/material-evidence/05-framing.png", "bbox": {"x": 596, "y": 560, "width": 18, "height": 150}, "sourceWidth": 1024, "sourceHeight": 1024, "loaderWarnings": [], "coverage": 0.0026}, "observations": ["near-neutral colour response", "strong image-space gradient; verify it is material pattern, not lighting", "single-image PBR inference requires controlled render validation"], "hypothesis": {"componentId": "shopfront-glazing", "regionId": "framing", "materialId": null, "family": "metal", "subtype": "aluminum", "finish": "satin", "aliases": [], "confidence": 0.794, "source": "vision"}, "alternatives": []}, "needsEnvironment": true, "materialPipelineNote": "material_region_analysis + apply_material_analysis were run and their PROVENANCE is kept -- materialFamily/Subtype/Finish, referenceMaterialId, materialReference, materialEvidence and textureAnalysis all come from that chain, and this material's region resolved to its canonical profile with status 'proceed'. What was NOT kept: the chain also wrote textureResolution, referencePbr and textureProjection onto every material, and overwrote the authored roughness and metalness with the profile's generic priors. Both were reverted deliberately. The three texture keys directly contradict the textureless declaration, and the validator enforces both halves of it; keeping them would make createSculptMaterial synthesise five canvases per material and -- worse -- force color to white and roughness to 1 and read both from the generated maps, discarding the measured albedo. The scalar priors would also have re-raised aluminium and galvanised metalness to bare-metal values, which render near-black in a harness with no environment map. The profile is evidence about what KIND of surface this is; it is not a measurement of this one.", "albedoCorrection": "Darkened #B6BABB -> #A5A9AA -> #8E9294 over the material_comparator rounds, and the last step was taken on APPEARANCE rather than on the metric: side by side the rendered mullions read near-white against the plate's mid-grey. The metric itself is only partly usable here and the limit is stated rather than chased. A 0.06 m mullion is about 9 px on a 1024 plate, so no crop isolates it -- the comparator masked one render crop down to 22% coverage and kept the flanking GLASS rather than the metal, and it warns 'foreground mask is tiny; material extraction is likely unreliable' on the plate side. The plate's framing is also genuinely darker than any correct albedo would make it, because it is backlit by a dim shop interior that this exterior shell does not have. Driving deltaE to zero against that crop would mean baking the plate's lighting into base colour, which the material rules forbid outright. So the value is set to the darkest reading that is still an albedo, and the residual gap is reported.", "profileDeviation": "The canonical profile resolved for this material (metal.aluminum) declares requiredMaps, and the compatibility check then fails it for having no UV/textureProjection contract. The requirement is waived here, recorded rather than deleted, for two reasons that are both properties of this pipeline rather than oversights. FIRST, img2threejs emits CODE and no textures: there is no baked map to bind, the material is declared textureless on measured evidence, and adding a textureProjection to satisfy the check would re-enable makeProceduralTextureSet and force color to white and roughness to 1 -- destroying the very albedo this material pass spent its rounds measuring. SECOND, the profile is evidence about what KIND of surface this is -- it is what let the region resolve at 0.79 and 0.86 confidence -- and its map list describes a photoreal metal workflow, not a low-end-GPU browser prop. This material is also bound to no componentTree entry by design: it is carried entirely by an InstancedMesh cluster, which the componentTree does not model, so no component could supply the uvContract the check looks for."},
-    options
-  );
-  materialMap["galvanised"] = createSculptMaterial(
-    "galvanised",
-    {"id": "galvanised", "name": "Galvanised steel rooftop plant", "type": "standard", "shaderModel": "MeshStandardMaterial / PBR approximation", "baseColor": "#7C7A74", "color": "#7C7A74", "roughness": {"base": 0.55, "variation": 0.05, "notes": "Authored from the observed specular response, NOT from extract_pbr_evidence's roughnessBase. That field returned 0.680-0.702 for all seven materials on this plate -- a constant across matte render, gloss acrylic and mirror glass is the extractor's regression default, not a measurement, and taking it would have made the glazing as matte as the concrete.", "bindingPolicy": "Scalar at runtime. The independently extracted map is kept on disk as evidence and is deliberately not bound: this material is textureless, and binding any map would force color to white and roughness to 1.", "map": "material-evidence/galvanised_roughness.png"}, "metalness": 0.3, "albedo": {"dominant": "#7C7A74", "secondary": ["#978B7B", "#7C7366"], "samplingNotes": "Sampled from a condenser casing (material-crops/galvanised.png, 72x52 px, PBR confidence 0.807 -- the highest of the seven). The measured palette skews warm (#978B7B) from rust staining; the authored albedo is the neutral zinc value and the staining is carried as a localOverride rather than averaged into base colour."}, "localOverrides": [{"id": "plant-rust-staining", "kind": "stain", "region": "lower third of each condenser casing and the duct's underside", "colorShift": "#8A7B68", "roughnessDelta": 0.1, "coverage": 0.25, "confidence": 0.7, "evidenceRef": "region-roof-plant", "notes": "Warm rust bloom measured in the crop palette (#978B7B, #7C7366) and deliberately kept OUT of base colour so the zinc stays neutral."}], "finishClass": "metal", "clearcoat": {"base": 0.0, "variation": 0.0}, "clearcoatRoughness": {"base": 0.3, "variation": 0.0}, "transmission": {"base": 0.0, "variation": 0.0}, "ior": {"base": 1.5, "value": 1.5}, "envMapIntensity": 0.5, "anisotropy": {"base": 1.0}, "finishStyle": "hot-dip galvanised steel, semi-matte with weathering", "evidenceRefs": ["region-roof-plant"], "textureless": {"declared": true, "evidence": ["heightP90Gradient 0.00692 -- the LOWEST of the seven crops -- on a surface whose valueRange of 0.519 comes entirely from staining and cast shadow between units.", "The rooftop plant is visible only from above the parapet line. Spending five synthesised canvases on zinc spangle nobody in a first-person view will ever see is the clearest textureless case in this prop."], "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely. That function writes FIVE canvases per material pixel by pixel in JavaScript, at a cost that is the SQUARE of textureResolution; seven materials at 1024 would cost roughly 13 s inside createObjectModel before the drawer could show anything, on a kit aimed at low-end integrated GPUs. It is also a correctness fix: with a texture set present the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding the authored albedo -- which is what renders a cream building mid-grey. No textureResolution, referencePbr, textureProjection or surfaceFrequencyBands is carried here; the validator enforces both halves of the declaration."}, "metalnessNote": "LOWERED from the physically-correct bare-metal value after the structural-pass render. A metalness near 1 has almost no diffuse term and gets its entire appearance from what it REFLECTS; thaikit's render harness lights analytically -- a hemisphere and three directional lights, no environment map and no PMREM -- so there is nothing to reflect and the surface renders near-black. The structural-pass render showed the condensers and duct as black boxes. This is not a harness quirk to work around either: this is a browser FPS prop for low-end integrated GPUs, where a level's lighting is very often analytic for the same performance reason, so a material that only reads under IBL is the wrong choice for the kit. The sibling 7-Eleven capped its aluminium at 0.35 and its galvanised at 0.30 for this exact reason. Roughness is nudged up with it so the specular lobe still carries the finish.", "referenceMaterialId": "metal.steel-brushed", "materialFamily": "metal", "materialSubtype": "steel", "materialFinish": "brushed", "materialReference": {"registry": "/home/mulligan/.claude/skills/img2threejs/docs/materials/material-reference.json", "profileId": "metal.steel-brushed", "method": "family-subtype-finish", "confidence": 0.859, "sourceRefs": ["three.mesh-physical", "three.pmrem", "gltf.2", "khronos.gltf-pbr", "adobe.pbr-guide-2", "google.filament-pbr"], "optionalMaps": ["metalnessMap"], "validationViews": ["neutral-studio", "grazing", "environment-reflection", "reference-beauty"], "requiredMapsWaived": ["map", "roughnessMap", "normalMap", "anisotropyMap"]}, "textureAnalysis": {"finishClass": "worn-composite", "recipe": {"metalness": 0.0, "roughness": 0.9, "clearcoat": 0.0, "clearcoatRoughness": 0.0, "transmission": 0.0, "ior": 1.5, "envMapIntensity": 0.5, "anisotropy": 0.0, "procedural": "mottle"}, "palette": ["#786E61", "#6A6B6C", "#5C5E5C", "#6B6E6F", "#999E9C"], "paletteHueRisk": [], "gradientAxis": "horizontal", "stats": {"meanLum": 118.6, "meanSaturation": 0.061, "gradientStrength": 0.39, "mottle": 0.052, "streakRatio": 1.32, "hueSpread": 0.043, "specularFraction": 0.0}}, "materialEvidence": {"componentId": "roof-deck", "regionId": "plant", "crop": {"path": "/home/mulligan/code/thaikit/scratch/ais-shop-building/material-evidence/06-plant.png", "bbox": {"x": 600, "y": 248, "width": 72, "height": 52}, "sourceWidth": 1024, "sourceHeight": 1024, "loaderWarnings": [], "coverage": 0.0036}, "observations": ["near-neutral colour response", "visible meso/micro variation", "strong image-space gradient; verify it is material pattern, not lighting", "single-image PBR inference requires controlled render validation"], "hypothesis": {"componentId": "roof-deck", "regionId": "plant", "materialId": null, "family": "metal", "subtype": "steel", "finish": "brushed", "aliases": [], "confidence": 0.859, "source": "vision"}, "alternatives": []}, "needsEnvironment": true, "materialPipelineNote": "material_region_analysis + apply_material_analysis were run and their PROVENANCE is kept -- materialFamily/Subtype/Finish, referenceMaterialId, materialReference, materialEvidence and textureAnalysis all come from that chain, and this material's region resolved to its canonical profile with status 'proceed'. What was NOT kept: the chain also wrote textureResolution, referencePbr and textureProjection onto every material, and overwrote the authored roughness and metalness with the profile's generic priors. Both were reverted deliberately. The three texture keys directly contradict the textureless declaration, and the validator enforces both halves of it; keeping them would make createSculptMaterial synthesise five canvases per material and -- worse -- force color to white and roughness to 1 and read both from the generated maps, discarding the measured albedo. The scalar priors would also have re-raised aluminium and galvanised metalness to bare-metal values, which render near-black in a harness with no environment map. The profile is evidence about what KIND of surface this is; it is not a measurement of this one.", "albedoCorrection": "Two rounds of material_comparator. Round 1 measured deltaE00 35.995 against the plate crop (mean rgb 99,92,81) and the value was taken from #A6ABAD to #909496; round 2 still measured 25.782, so it is taken to #7C7A74. The plate's rooftop plant is genuinely dark and warm -- it sits in the parapet's shade and carries rust staining -- and an earlier draft kept that warmth OUT of base colour on the principle that staining belongs in a localOverride. That principle is right for a generator that renders localOverrides, and this one does not: the override is declarative only, so insisting on it meant the observed staining appeared nowhere at all and the plant rendered as clean bright zinc. The override is kept as the record of WHY the value is warm; the value itself now lives where it can actually be seen.", "profileDeviation": "The canonical profile resolved for this material (metal.steel-brushed) declares requiredMaps, and the compatibility check then fails it for having no UV/textureProjection contract. The requirement is waived here, recorded rather than deleted, for two reasons that are both properties of this pipeline rather than oversights. FIRST, img2threejs emits CODE and no textures: there is no baked map to bind, the material is declared textureless on measured evidence, and adding a textureProjection to satisfy the check would re-enable makeProceduralTextureSet and force color to white and roughness to 1 -- destroying the very albedo this material pass spent its rounds measuring. SECOND, the profile is evidence about what KIND of surface this is -- it is what let the region resolve at 0.79 and 0.86 confidence -- and its map list describes a photoreal metal workflow, not a low-end-GPU browser prop. This material is also bound to no componentTree entry by design: it is carried entirely by an InstancedMesh cluster, which the componentTree does not model, so no component could supply the uvContract the check looks for."},
-    options
-  );
-
-  const nodes: Record<string, THREE.Object3D> = { root };
+  const materials = buildMaterials(options);
+  const nodes: Record<string, THREE.Object3D> = {};
   const meshes: Record<string, THREE.Mesh> = {};
   const sockets: Record<string, THREE.Object3D> = {};
   const colliders: Record<string, unknown> = {};
   const destructionGroups: Record<string, THREE.Object3D[]> = {};
+  const castShadow = options.castShadow ?? true;
+  const receiveShadow = options.receiveShadow ?? true;
 
-  const endpoint_building_shell_0 = makeAttachmentEndpoint(null);
-  const node_building_shell_0 = new THREE.Group();
-  node_building_shell_0.name = "Building shell: side and rear walls with parapet__pivot";
-  node_building_shell_0.scale.set(1, 1, 1);
-  if (endpoint_building_shell_0) {
-    node_building_shell_0.position.copy(endpoint_building_shell_0.start);
-    node_building_shell_0.rotation.set(-1.5707963267948966, 0.0, 0.0);
-  } else {
-    node_building_shell_0.position.set(0.0, 0.0, 0.0);
-    node_building_shell_0.rotation.set(-1.5707963267948966, 0.0, 0.0);
+  function add(id: string, name: string, geo: THREE.BufferGeometry, matId: string) {
+    const node = new THREE.Group(); node.name = name + '__node';
+    const mesh = new THREE.Mesh(geo, materials[matId]);
+    mesh.name = name; mesh.castShadow = castShadow; mesh.receiveShadow = receiveShadow;
+    node.add(mesh); root.add(node);
+    nodes[id] = node; meshes[id] = mesh; colliders[id] = null;
+    return mesh;
   }
-  node_building_shell_0.userData.sculptComponent = {"id": "building-shell", "name": "Building shell: side and rear walls with parapet", "level": "macro", "role": "body", "importance": 1.0, "confidence": 0.88, "primitive": "extrude", "topologyClass": "assembled-solid", "topologyRationale": "The -X, -Z and +X walls are one continuous painted render surface and one extrusion. Splitting them into three components would spend three draw calls, for the life of the prop, to express one skin. The +Z wall is separate ONLY because a plan extrusion cannot carry a vertical opening, and the shopfront opening is the identity feature of the front elevation.", "geometryDescriptor": {"topologyIntent": "U-shaped footprint ring extruded 4.60 m upward: the -X, -Z and +X walls at 0.20 m thickness, open on +Z where the facade wall takes over. Hollow by construction. The parapet is the same extrusion continuing past the roof deck at 3.90 m -- it is NOT a separate proud element, because the plate shows one unbroken render surface from ground to coping.", "wallThickness": 0.2, "copingProfile": {"top": 4.6, "bottom": 4.46, "proudEachFace": 0.05, "chamfer": 0.02, "note": "Lighter cream-grey cap projecting proud of both parapet faces with a drip edge, measured off crops/side-wall.png at 0.85 confidence."}, "edgeTreatment": {"type": "chamfer", "bevelRadius": 0.012, "segments": 1}, "deformationStack": [], "uvStrategy": "generated procedural coordinates", "normalStrategy": "vertex normals from generated geometry", "segmentRationale": "Eight profile points, one extrusion step: 8 side quads plus caps, about 60 triangles.", "profile2D": {"points": [[-4.0, -3.3], [-4.0, 3.5], [4.0, 3.5], [4.0, -3.3], [3.8, -3.3], [3.8, 3.3], [-3.8, 3.3], [-3.8, -3.3]], "depth": 4.52}, "shapeSpaceNote": "Profile is authored in (sx, sy) = (worldX, -worldZ). The component carries rotationEuler [-pi/2, 0, 0], mapping the shape plane onto the ground plane and the extrusion axis onto world +Y. Extrude components are NOT unit-scaled by the generator -- profile units are real metres, so these are the building's actual footprint coordinates.", "zFightingNote": "The U's open ends stop at sy=-3.30, which is worldZ=+3.30 -- the facade wall's BACK face -- not at +3.50 where its front face is. Two surfaces in the same plane facing the SAME direction tear into interleaved triangles as the camera moves; this joint is instead a butt of OPPOSED faces, which is how solids are meant to meet. A first draft of this profile put the open ends at +3.50 and would have shipped the identical defect the sibling 7-Eleven had in eight places. The rear outer face at sy=+3.50 is worldZ=-3.50, so the footprint still comes out at exactly the declared 7.0 m.", "copingHandoffNote": "The walls stop at y=4.52 and the parapet COPING owns the top 0.16 m, ending at the declared 4.60 m. That split exists to avoid a z-fight, not for its own sake: a coping band laid on top of a wall that also reaches 4.60 puts two +Y faces in the same plane, which is the coincident co-facing case this prop has been careful about throughout. With the wall at 4.52 its top face is BURIED inside the coping's 4.44-4.60 span and only the coping's own top is exposed. Total height is unchanged at the declared 4.60 m."}, "parent": null, "attachment": null, "dimensions": {"width": 8.0, "height": 4.52, "depth": 7.0, "units": "meters", "confidence": 0.88}, "transform": {"position": [0, 0, 0], "rotationEuler": [-1.5707963267948966, 0, 0], "scale": [1, 1, 1], "rotation": [-1.5707963267948966, 0, 0]}, "material": "render-cream", "materialLayers": [], "deformations": [], "joints": [], "seams": [], "localFeatures": [{"id": "parapet-coping", "kind": "ridge", "confidence": 0.85, "placement": {"yTop": 4.6, "yBottom": 4.44, "proudEachFace": 0.05}, "notes": "Lighter cream-grey cap standing 0.05 m proud of both parapet faces. BUILT, by the parapet-coping cluster, after the material-pass comparison showed the plate's cap reading clearly lighter than the wall while the model's parapet was a single flat cream. It carries the white-panel material, costs one draw call -- the prop's last -- and costs ZERO unique geometries because it shares the clusters' unit box.", "evidenceRef": "region-side-wall"}, {"id": "render-grime-streaks", "kind": "stain", "confidence": 0.75, "placement": {"yTop": 4.46, "yBottom": 3.55}, "notes": "Vertical run-off streaking below the coping drip, heaviest at the corners.", "evidenceRef": "region-side-wall"}, {"id": "side-door-reveal", "kind": "groove", "confidence": 0.85, "placement": {"wall": "-X", "z": 1.15, "leaf": [0.9, 2.1]}, "notes": "Service door on the -X wall, read as a shadow reveal around the leaf. Built by the side-wall-fittings cluster as a proud architrave with a less-proud leaf; see that system's rationale for the stated relief deviation.", "evidenceRef": "region-side-wall"}], "surfaceDetail": {"macroRoughness": 0.1, "microRoughness": 0.3, "bumpAmplitude": 0.2, "normalPattern": "cement render tooth, uniform across the wall field", "displacementPattern": "", "occlusionPattern": "soft occlusion in the parapet's inner corner and under the coping drip", "edgeWearPattern": "clean - a maintained shopfront, no edge wear on the render", "notes": "Carried by the roughness scalar and the grime localOverride, not by geometry."}, "evidenceRefs": ["view-full", "region-side-wall"], "details": ["parapet-coping", "render-grime-streaks"], "fidelityTier": "primary", "actionProfile": {"animationRole": "root", "pivot": {"mode": "custom", "localPosition": [0, 0, 0], "axis": [0, 1, 0], "confidence": 0.95, "name": "root", "notes": "base-center, as the asset declares. The building is a static shell; this is its only rigid-body pivot and the prop has no articulated part."}, "transformChannels": {"translate": true, "rotate": true, "scale": true, "bend": false, "twist": false, "detach": false, "visibility": true, "materialState": true}, "sockets": [{"name": "sign-mount", "localPosition": [0, 3.47, 3.5], "axis": [0, 0, 1], "confidence": 0.9, "notes": "Where the brand fascia attaches. This is the prop's ONLY socket and it is a real mechanism with a real consumer, not a marker named after a place on the surface: the kit's branded shops share this identical 8.0 x 4.6 x 7.0 m building module and differ essentially in the sign hung here, so a level builder swapping fascias relies on it. fascia-sign declares it as its attachment.parentSocket, so the contract is used inside the model as well as outside it."}], "constraints": [], "destruction": {"breakable": false, "fractureGroup": "", "seamRefs": []}, "collider": {"type": "convex", "offset": [0, 2.3, 0], "scale": [4.0, 2.3, 3.5], "isTrigger": false, "notes": "Declared convex on the asset. The full walled envelope; the rooftop plant sits inside its vertical extent, so one convex hull covers the whole prop."}}, "colorMaterialRecipe": {"baseColor": {"hex": "#E4D2AC", "evidenceRef": "region-side-wall", "notes": "Measured from the named evidence region, not chosen."}, "regions": [{"id": "field", "hex": "#E4D2AC", "coverage": 1.0, "evidenceRef": "region-side-wall"}], "finishStyle": "flat exterior emulsion over cement render", "materialRef": "render-cream", "dominantAlbedo": "rgba(228, 210, 172, 1.0)", "secondaryAlbedo": "rgba(228, 210, 172, 1.0)", "materialClass": "plastic", "materialClassConfidence": 0.9}, "uvContract": {"status": "unwrapped", "strategy": "generated procedural coordinates", "materialId": "render-cream"}, "materialRegions": [{"regionId": "render", "materialId": "render-cream", "profileId": "plastic.matte", "crop": {"path": "/home/mulligan/code/thaikit/scratch/ais-shop-building/material-evidence/00-render.png", "bbox": {"x": 196, "y": 470, "width": 186, "height": 200}, "sourceWidth": 1024, "sourceHeight": 1024, "loaderWarnings": [], "coverage": 0.0355}}]};
-  node_building_shell_0.userData.actionProfile = {"animationRole": "root", "pivot": {"mode": "custom", "localPosition": [0, 0, 0], "axis": [0, 1, 0], "confidence": 0.95, "name": "root", "notes": "base-center, as the asset declares. The building is a static shell; this is its only rigid-body pivot and the prop has no articulated part."}, "transformChannels": {"translate": true, "rotate": true, "scale": true, "bend": false, "twist": false, "detach": false, "visibility": true, "materialState": true}, "sockets": [{"name": "sign-mount", "localPosition": [0, 3.47, 3.5], "axis": [0, 0, 1], "confidence": 0.9, "notes": "Where the brand fascia attaches. This is the prop's ONLY socket and it is a real mechanism with a real consumer, not a marker named after a place on the surface: the kit's branded shops share this identical 8.0 x 4.6 x 7.0 m building module and differ essentially in the sign hung here, so a level builder swapping fascias relies on it. fascia-sign declares it as its attachment.parentSocket, so the contract is used inside the model as well as outside it."}], "constraints": [], "destruction": {"breakable": false, "fractureGroup": "", "seamRefs": []}, "collider": {"type": "convex", "offset": [0, 2.3, 0], "scale": [4.0, 2.3, 3.5], "isTrigger": false, "notes": "Declared convex on the asset. The full walled envelope; the rooftop plant sits inside its vertical extent, so one convex hull covers the whole prop."}};
-  (nodes["root"] ?? root).add(node_building_shell_0);
-  nodes["building-shell"] = node_building_shell_0;
-  const mesh_building_shell_0Geometry = endpoint_building_shell_0
-    ? new THREE.CylinderGeometry(endpoint_building_shell_0.endRadius, endpoint_building_shell_0.baseRadius, endpoint_building_shell_0.length, 16, 6)
-    : buildExtrudeGeometry({"points": [[-4.0, -3.3], [-4.0, 3.5], [4.0, 3.5], [4.0, -3.3], [3.8, -3.3], [3.8, 3.3], [-3.8, 3.3], [-3.8, -3.3]], "depth": 4.52});
-  if (!endpoint_building_shell_0) {
-    mesh_building_shell_0Geometry.scale(1.0, 1.0, 1.0);
+  function addInst(id: string, name: string, geo: THREE.BufferGeometry, matId: string, mats: THREE.Matrix4[], cols?: number[]) {
+    const node = new THREE.Group(); node.name = name + '__node';
+    const inst = new THREE.InstancedMesh(geo, materials[matId], mats.length);
+    inst.name = name; inst.castShadow = castShadow; inst.receiveShadow = receiveShadow;
+    for (let i = 0; i < mats.length; i++) inst.setMatrixAt(i, mats[i]);
+    if (cols) {
+      const c = new THREE.Color();
+      for (let i = 0; i < cols.length; i++) inst.setColorAt(i, c.setHex(cols[i]));
+      if (inst.instanceColor) inst.instanceColor.needsUpdate = true;
+    }
+    inst.instanceMatrix.needsUpdate = true;
+    node.add(inst); root.add(node);
+    nodes[id] = node; meshes[id] = inst as unknown as THREE.Mesh; colliders[id] = null;
+    return inst;
   }
-  const mesh_building_shell_0 = new THREE.Mesh(
-    mesh_building_shell_0Geometry,
-    materialMap["render-cream"] ?? new THREE.MeshStandardMaterial({ color: 0x888888 })
-  );
-  mesh_building_shell_0.name = "Building shell: side and rear walls with parapet";
-  if (endpoint_building_shell_0) {
-    mesh_building_shell_0.position.copy(endpoint_building_shell_0.midpoint);
-    mesh_building_shell_0.quaternion.copy(endpoint_building_shell_0.quaternion);
-  }
-  mesh_building_shell_0.castShadow = options.castShadow ?? true;
-  mesh_building_shell_0.receiveShadow = options.receiveShadow ?? true;
-  mesh_building_shell_0.userData.sculptComponent = {"id": "building-shell", "name": "Building shell: side and rear walls with parapet", "level": "macro", "role": "body", "importance": 1.0, "confidence": 0.88, "primitive": "extrude", "topologyClass": "assembled-solid", "topologyRationale": "The -X, -Z and +X walls are one continuous painted render surface and one extrusion. Splitting them into three components would spend three draw calls, for the life of the prop, to express one skin. The +Z wall is separate ONLY because a plan extrusion cannot carry a vertical opening, and the shopfront opening is the identity feature of the front elevation.", "geometryDescriptor": {"topologyIntent": "U-shaped footprint ring extruded 4.60 m upward: the -X, -Z and +X walls at 0.20 m thickness, open on +Z where the facade wall takes over. Hollow by construction. The parapet is the same extrusion continuing past the roof deck at 3.90 m -- it is NOT a separate proud element, because the plate shows one unbroken render surface from ground to coping.", "wallThickness": 0.2, "copingProfile": {"top": 4.6, "bottom": 4.46, "proudEachFace": 0.05, "chamfer": 0.02, "note": "Lighter cream-grey cap projecting proud of both parapet faces with a drip edge, measured off crops/side-wall.png at 0.85 confidence."}, "edgeTreatment": {"type": "chamfer", "bevelRadius": 0.012, "segments": 1}, "deformationStack": [], "uvStrategy": "generated procedural coordinates", "normalStrategy": "vertex normals from generated geometry", "segmentRationale": "Eight profile points, one extrusion step: 8 side quads plus caps, about 60 triangles.", "profile2D": {"points": [[-4.0, -3.3], [-4.0, 3.5], [4.0, 3.5], [4.0, -3.3], [3.8, -3.3], [3.8, 3.3], [-3.8, 3.3], [-3.8, -3.3]], "depth": 4.52}, "shapeSpaceNote": "Profile is authored in (sx, sy) = (worldX, -worldZ). The component carries rotationEuler [-pi/2, 0, 0], mapping the shape plane onto the ground plane and the extrusion axis onto world +Y. Extrude components are NOT unit-scaled by the generator -- profile units are real metres, so these are the building's actual footprint coordinates.", "zFightingNote": "The U's open ends stop at sy=-3.30, which is worldZ=+3.30 -- the facade wall's BACK face -- not at +3.50 where its front face is. Two surfaces in the same plane facing the SAME direction tear into interleaved triangles as the camera moves; this joint is instead a butt of OPPOSED faces, which is how solids are meant to meet. A first draft of this profile put the open ends at +3.50 and would have shipped the identical defect the sibling 7-Eleven had in eight places. The rear outer face at sy=+3.50 is worldZ=-3.50, so the footprint still comes out at exactly the declared 7.0 m.", "copingHandoffNote": "The walls stop at y=4.52 and the parapet COPING owns the top 0.16 m, ending at the declared 4.60 m. That split exists to avoid a z-fight, not for its own sake: a coping band laid on top of a wall that also reaches 4.60 puts two +Y faces in the same plane, which is the coincident co-facing case this prop has been careful about throughout. With the wall at 4.52 its top face is BURIED inside the coping's 4.44-4.60 span and only the coping's own top is exposed. Total height is unchanged at the declared 4.60 m."}, "parent": null, "attachment": null, "dimensions": {"width": 8.0, "height": 4.52, "depth": 7.0, "units": "meters", "confidence": 0.88}, "transform": {"position": [0, 0, 0], "rotationEuler": [-1.5707963267948966, 0, 0], "scale": [1, 1, 1], "rotation": [-1.5707963267948966, 0, 0]}, "material": "render-cream", "materialLayers": [], "deformations": [], "joints": [], "seams": [], "localFeatures": [{"id": "parapet-coping", "kind": "ridge", "confidence": 0.85, "placement": {"yTop": 4.6, "yBottom": 4.44, "proudEachFace": 0.05}, "notes": "Lighter cream-grey cap standing 0.05 m proud of both parapet faces. BUILT, by the parapet-coping cluster, after the material-pass comparison showed the plate's cap reading clearly lighter than the wall while the model's parapet was a single flat cream. It carries the white-panel material, costs one draw call -- the prop's last -- and costs ZERO unique geometries because it shares the clusters' unit box.", "evidenceRef": "region-side-wall"}, {"id": "render-grime-streaks", "kind": "stain", "confidence": 0.75, "placement": {"yTop": 4.46, "yBottom": 3.55}, "notes": "Vertical run-off streaking below the coping drip, heaviest at the corners.", "evidenceRef": "region-side-wall"}, {"id": "side-door-reveal", "kind": "groove", "confidence": 0.85, "placement": {"wall": "-X", "z": 1.15, "leaf": [0.9, 2.1]}, "notes": "Service door on the -X wall, read as a shadow reveal around the leaf. Built by the side-wall-fittings cluster as a proud architrave with a less-proud leaf; see that system's rationale for the stated relief deviation.", "evidenceRef": "region-side-wall"}], "surfaceDetail": {"macroRoughness": 0.1, "microRoughness": 0.3, "bumpAmplitude": 0.2, "normalPattern": "cement render tooth, uniform across the wall field", "displacementPattern": "", "occlusionPattern": "soft occlusion in the parapet's inner corner and under the coping drip", "edgeWearPattern": "clean - a maintained shopfront, no edge wear on the render", "notes": "Carried by the roughness scalar and the grime localOverride, not by geometry."}, "evidenceRefs": ["view-full", "region-side-wall"], "details": ["parapet-coping", "render-grime-streaks"], "fidelityTier": "primary", "actionProfile": {"animationRole": "root", "pivot": {"mode": "custom", "localPosition": [0, 0, 0], "axis": [0, 1, 0], "confidence": 0.95, "name": "root", "notes": "base-center, as the asset declares. The building is a static shell; this is its only rigid-body pivot and the prop has no articulated part."}, "transformChannels": {"translate": true, "rotate": true, "scale": true, "bend": false, "twist": false, "detach": false, "visibility": true, "materialState": true}, "sockets": [{"name": "sign-mount", "localPosition": [0, 3.47, 3.5], "axis": [0, 0, 1], "confidence": 0.9, "notes": "Where the brand fascia attaches. This is the prop's ONLY socket and it is a real mechanism with a real consumer, not a marker named after a place on the surface: the kit's branded shops share this identical 8.0 x 4.6 x 7.0 m building module and differ essentially in the sign hung here, so a level builder swapping fascias relies on it. fascia-sign declares it as its attachment.parentSocket, so the contract is used inside the model as well as outside it."}], "constraints": [], "destruction": {"breakable": false, "fractureGroup": "", "seamRefs": []}, "collider": {"type": "convex", "offset": [0, 2.3, 0], "scale": [4.0, 2.3, 3.5], "isTrigger": false, "notes": "Declared convex on the asset. The full walled envelope; the rooftop plant sits inside its vertical extent, so one convex hull covers the whole prop."}}, "colorMaterialRecipe": {"baseColor": {"hex": "#E4D2AC", "evidenceRef": "region-side-wall", "notes": "Measured from the named evidence region, not chosen."}, "regions": [{"id": "field", "hex": "#E4D2AC", "coverage": 1.0, "evidenceRef": "region-side-wall"}], "finishStyle": "flat exterior emulsion over cement render", "materialRef": "render-cream", "dominantAlbedo": "rgba(228, 210, 172, 1.0)", "secondaryAlbedo": "rgba(228, 210, 172, 1.0)", "materialClass": "plastic", "materialClassConfidence": 0.9}, "uvContract": {"status": "unwrapped", "strategy": "generated procedural coordinates", "materialId": "render-cream"}, "materialRegions": [{"regionId": "render", "materialId": "render-cream", "profileId": "plastic.matte", "crop": {"path": "/home/mulligan/code/thaikit/scratch/ais-shop-building/material-evidence/00-render.png", "bbox": {"x": 196, "y": 470, "width": 186, "height": 200}, "sourceWidth": 1024, "sourceHeight": 1024, "loaderWarnings": [], "coverage": 0.0355}}]};
-  node_building_shell_0.add(mesh_building_shell_0);
-  meshes["building-shell"] = mesh_building_shell_0;
-  colliders["building-shell"] = {"type": "convex", "offset": [0, 2.3, 0], "scale": [4.0, 2.3, 3.5], "isTrigger": false, "notes": "Declared convex on the asset. The full walled envelope; the rooftop plant sits inside its vertical extent, so one convex hull covers the whole prop."};
-  const socket_building_shell_socket_0_0 = new THREE.Object3D();
-  socket_building_shell_socket_0_0.name = "socket-0";
-  socket_building_shell_socket_0_0.position.set(0.0, 3.47, 3.5);
-  socket_building_shell_socket_0_0.rotation.set(0, 0, 0);
-  socket_building_shell_socket_0_0.userData.socket = {"name": "sign-mount", "localPosition": [0, 3.47, 3.5], "axis": [0, 0, 1], "confidence": 0.9, "notes": "Where the brand fascia attaches. This is the prop's ONLY socket and it is a real mechanism with a real consumer, not a marker named after a place on the surface: the kit's branded shops share this identical 8.0 x 4.6 x 7.0 m building module and differ essentially in the sign hung here, so a level builder swapping fascias relies on it. fascia-sign declares it as its attachment.parentSocket, so the contract is used inside the model as well as outside it."};
-  node_building_shell_0.add(socket_building_shell_socket_0_0);
-  sockets["building-shell:socket-0"] = socket_building_shell_socket_0_0;
 
-  const endpoint_facade_wall_1 = makeAttachmentEndpoint(null);
-  const node_facade_wall_1 = new THREE.Group();
-  node_facade_wall_1.name = "Facade wall with shopfront opening__pivot";
-  node_facade_wall_1.scale.set(1, 1, 1);
-  if (endpoint_facade_wall_1) {
-    node_facade_wall_1.position.copy(endpoint_facade_wall_1.start);
-    node_facade_wall_1.rotation.set(0.0, 0.0, 0.0);
-  } else {
-    node_facade_wall_1.position.set(0.0, 0.0, 3.3);
-    node_facade_wall_1.rotation.set(0.0, 0.0, 0.0);
-  }
-  node_facade_wall_1.userData.sculptComponent = {"id": "facade-wall", "name": "Facade wall with shopfront opening", "level": "macro", "role": "body", "importance": 0.95, "confidence": 0.9, "primitive": "extrude", "topologyClass": "assembled-solid", "topologyRationale": "A Shape WITH A HOLE, extruded 0.20 m in +Z. This is the one part of the shell a plan extrusion cannot express: the shopfront opening is a vertical void, so the front wall is authored in elevation instead of in plan. It costs one draw call and one geometry, and it buys the identity feature of the whole prop.", "geometryDescriptor": {"topologyIntent": "Front elevation authored in the XY plane and extruded 0.20 m along +Z: an outer rectangle 8.0 x 4.60 m with a single rectangular hole for the shopfront opening. Piers of 0.60 m survive at each end, which the plate shows as cream render returning past the glazing.", "edgeTreatment": {"type": "chamfer", "bevelRadius": 0.01, "segments": 1}, "deformationStack": [], "uvStrategy": "generated procedural coordinates", "normalStrategy": "vertex normals from generated geometry", "segmentRationale": "Eight outline points and four hole points, one extrusion step: about 120 triangles including the reveal faces.", "profile2D": {"points": [[-4.0, 0.0], [4.0, 0.0], [4.0, 4.52], [-4.0, 4.52]], "holes": [[[-3.4, 0.15], [3.4, 0.15], [3.4, 3.0], [-3.4, 3.0]]], "depth": 0.2}, "shapeSpaceNote": "Authored in (sx, sy) = (worldX, worldY) with no rotation; the extrusion axis is world +Z. Positioned so the extrusion spans z=+3.30 to z=+3.50.", "zFightingNote": "The opening's four reveal faces are the classic z-fighting trap: a frame whose hole is EXACTLY the wall's opening puts four coincident co-facing faces in the model. Nothing in this prop meets those reveals. The glazing pane is inset to z=+3.40 and OVERSIZED to +-3.45 x 0.10..3.10, so it passes behind the reveal rather than meeting it; the framing cluster overlaps the opening edge by 0.06 m on all four sides and stands proud to z=+3.53, clear of the wall's own front face at +3.50.", "copingHandoffNote": "The walls stop at y=4.52 and the parapet COPING owns the top 0.16 m, ending at the declared 4.60 m. That split exists to avoid a z-fight, not for its own sake: a coping band laid on top of a wall that also reaches 4.60 puts two +Y faces in the same plane, which is the coincident co-facing case this prop has been careful about throughout. With the wall at 4.52 its top face is BURIED inside the coping's 4.44-4.60 span and only the coping's own top is exposed. Total height is unchanged at the declared 4.60 m."}, "parent": null, "attachment": {"parentSocket": "", "contactType": "butt", "notes": "Butts against the shell's two open ends at z=+3.30, opposed faces."}, "dimensions": {"width": 8.0, "height": 4.52, "depth": 0.2, "units": "meters", "confidence": 0.9}, "transform": {"position": [0, 0, 3.3], "rotationEuler": [0, 0, 0], "scale": [1, 1, 1], "rotation": [0, 0, 0]}, "material": "render-cream", "materialLayers": [], "deformations": [], "joints": [], "seams": [], "localFeatures": [{"id": "shopfront-opening", "kind": "hole", "confidence": 0.9, "placement": {"xHalf": 3.4, "yBottom": 0.15, "yTop": 3.0}, "notes": "6.80 x 2.85 m opening leaving a 0.60 m cream pier at each end.", "evidenceRef": "region-glazing"}], "surfaceDetail": {"macroRoughness": 0.1, "microRoughness": 0.3, "bumpAmplitude": 0.2, "normalPattern": "cement render tooth", "displacementPattern": "", "occlusionPattern": "soft occlusion in the opening reveal", "edgeWearPattern": "clean", "notes": "Same render skin as the shell; one material between them."}, "evidenceRefs": ["view-full", "region-glazing"], "details": ["shopfront-opening"], "fidelityTier": "primary", "actionProfile": {"animationRole": "structure", "pivot": {"mode": "custom", "localPosition": [0, 0, 0], "axis": [0, 1, 0], "confidence": 0.95, "name": "facade-wall-node", "notes": "Static. No pivot is declared for this part: it does not move relative to the shell."}, "transformChannels": {"translate": true, "rotate": true, "scale": true, "bend": false, "twist": false, "detach": false, "visibility": true, "materialState": true}, "sockets": [], "constraints": [], "destruction": {"breakable": false, "fractureGroup": "", "seamRefs": []}, "collider": {"type": "convex", "offset": [0, 2.3, 0.1], "scale": [4.0, 2.3, 0.1], "isTrigger": false, "notes": "Convex proxy for the front wall plane."}}, "colorMaterialRecipe": {"baseColor": {"hex": "#E4D2AC", "evidenceRef": "region-side-wall", "notes": "Measured from the named evidence region, not chosen."}, "regions": [{"id": "field", "hex": "#E4D2AC", "coverage": 1.0, "evidenceRef": "region-side-wall"}], "finishStyle": "flat exterior emulsion over cement render", "materialRef": "render-cream", "dominantAlbedo": "rgba(228, 210, 172, 1.0)", "secondaryAlbedo": "rgba(228, 210, 172, 1.0)", "materialClass": "plastic", "materialClassConfidence": 0.9}};
-  node_facade_wall_1.userData.actionProfile = {"animationRole": "structure", "pivot": {"mode": "custom", "localPosition": [0, 0, 0], "axis": [0, 1, 0], "confidence": 0.95, "name": "facade-wall-node", "notes": "Static. No pivot is declared for this part: it does not move relative to the shell."}, "transformChannels": {"translate": true, "rotate": true, "scale": true, "bend": false, "twist": false, "detach": false, "visibility": true, "materialState": true}, "sockets": [], "constraints": [], "destruction": {"breakable": false, "fractureGroup": "", "seamRefs": []}, "collider": {"type": "convex", "offset": [0, 2.3, 0.1], "scale": [4.0, 2.3, 0.1], "isTrigger": false, "notes": "Convex proxy for the front wall plane."}};
-  (nodes["root"] ?? root).add(node_facade_wall_1);
-  nodes["facade-wall"] = node_facade_wall_1;
-  const mesh_facade_wall_1Geometry = endpoint_facade_wall_1
-    ? new THREE.CylinderGeometry(endpoint_facade_wall_1.endRadius, endpoint_facade_wall_1.baseRadius, endpoint_facade_wall_1.length, 16, 6)
-    : buildExtrudeGeometry({"points": [[-4.0, 0.0], [4.0, 0.0], [4.0, 4.52], [-4.0, 4.52]], "holes": [[[-3.4, 0.15], [3.4, 0.15], [3.4, 3.0], [-3.4, 3.0]]], "depth": 0.2});
-  if (!endpoint_facade_wall_1) {
-    mesh_facade_wall_1Geometry.scale(1.0, 1.0, 1.0);
-  }
-  const mesh_facade_wall_1 = new THREE.Mesh(
-    mesh_facade_wall_1Geometry,
-    materialMap["render-cream"] ?? new THREE.MeshStandardMaterial({ color: 0x888888 })
-  );
-  mesh_facade_wall_1.name = "Facade wall with shopfront opening";
-  if (endpoint_facade_wall_1) {
-    mesh_facade_wall_1.position.copy(endpoint_facade_wall_1.midpoint);
-    mesh_facade_wall_1.quaternion.copy(endpoint_facade_wall_1.quaternion);
-  }
-  mesh_facade_wall_1.castShadow = options.castShadow ?? true;
-  mesh_facade_wall_1.receiveShadow = options.receiveShadow ?? true;
-  mesh_facade_wall_1.userData.sculptComponent = {"id": "facade-wall", "name": "Facade wall with shopfront opening", "level": "macro", "role": "body", "importance": 0.95, "confidence": 0.9, "primitive": "extrude", "topologyClass": "assembled-solid", "topologyRationale": "A Shape WITH A HOLE, extruded 0.20 m in +Z. This is the one part of the shell a plan extrusion cannot express: the shopfront opening is a vertical void, so the front wall is authored in elevation instead of in plan. It costs one draw call and one geometry, and it buys the identity feature of the whole prop.", "geometryDescriptor": {"topologyIntent": "Front elevation authored in the XY plane and extruded 0.20 m along +Z: an outer rectangle 8.0 x 4.60 m with a single rectangular hole for the shopfront opening. Piers of 0.60 m survive at each end, which the plate shows as cream render returning past the glazing.", "edgeTreatment": {"type": "chamfer", "bevelRadius": 0.01, "segments": 1}, "deformationStack": [], "uvStrategy": "generated procedural coordinates", "normalStrategy": "vertex normals from generated geometry", "segmentRationale": "Eight outline points and four hole points, one extrusion step: about 120 triangles including the reveal faces.", "profile2D": {"points": [[-4.0, 0.0], [4.0, 0.0], [4.0, 4.52], [-4.0, 4.52]], "holes": [[[-3.4, 0.15], [3.4, 0.15], [3.4, 3.0], [-3.4, 3.0]]], "depth": 0.2}, "shapeSpaceNote": "Authored in (sx, sy) = (worldX, worldY) with no rotation; the extrusion axis is world +Z. Positioned so the extrusion spans z=+3.30 to z=+3.50.", "zFightingNote": "The opening's four reveal faces are the classic z-fighting trap: a frame whose hole is EXACTLY the wall's opening puts four coincident co-facing faces in the model. Nothing in this prop meets those reveals. The glazing pane is inset to z=+3.40 and OVERSIZED to +-3.45 x 0.10..3.10, so it passes behind the reveal rather than meeting it; the framing cluster overlaps the opening edge by 0.06 m on all four sides and stands proud to z=+3.53, clear of the wall's own front face at +3.50.", "copingHandoffNote": "The walls stop at y=4.52 and the parapet COPING owns the top 0.16 m, ending at the declared 4.60 m. That split exists to avoid a z-fight, not for its own sake: a coping band laid on top of a wall that also reaches 4.60 puts two +Y faces in the same plane, which is the coincident co-facing case this prop has been careful about throughout. With the wall at 4.52 its top face is BURIED inside the coping's 4.44-4.60 span and only the coping's own top is exposed. Total height is unchanged at the declared 4.60 m."}, "parent": null, "attachment": {"parentSocket": "", "contactType": "butt", "notes": "Butts against the shell's two open ends at z=+3.30, opposed faces."}, "dimensions": {"width": 8.0, "height": 4.52, "depth": 0.2, "units": "meters", "confidence": 0.9}, "transform": {"position": [0, 0, 3.3], "rotationEuler": [0, 0, 0], "scale": [1, 1, 1], "rotation": [0, 0, 0]}, "material": "render-cream", "materialLayers": [], "deformations": [], "joints": [], "seams": [], "localFeatures": [{"id": "shopfront-opening", "kind": "hole", "confidence": 0.9, "placement": {"xHalf": 3.4, "yBottom": 0.15, "yTop": 3.0}, "notes": "6.80 x 2.85 m opening leaving a 0.60 m cream pier at each end.", "evidenceRef": "region-glazing"}], "surfaceDetail": {"macroRoughness": 0.1, "microRoughness": 0.3, "bumpAmplitude": 0.2, "normalPattern": "cement render tooth", "displacementPattern": "", "occlusionPattern": "soft occlusion in the opening reveal", "edgeWearPattern": "clean", "notes": "Same render skin as the shell; one material between them."}, "evidenceRefs": ["view-full", "region-glazing"], "details": ["shopfront-opening"], "fidelityTier": "primary", "actionProfile": {"animationRole": "structure", "pivot": {"mode": "custom", "localPosition": [0, 0, 0], "axis": [0, 1, 0], "confidence": 0.95, "name": "facade-wall-node", "notes": "Static. No pivot is declared for this part: it does not move relative to the shell."}, "transformChannels": {"translate": true, "rotate": true, "scale": true, "bend": false, "twist": false, "detach": false, "visibility": true, "materialState": true}, "sockets": [], "constraints": [], "destruction": {"breakable": false, "fractureGroup": "", "seamRefs": []}, "collider": {"type": "convex", "offset": [0, 2.3, 0.1], "scale": [4.0, 2.3, 0.1], "isTrigger": false, "notes": "Convex proxy for the front wall plane."}}, "colorMaterialRecipe": {"baseColor": {"hex": "#E4D2AC", "evidenceRef": "region-side-wall", "notes": "Measured from the named evidence region, not chosen."}, "regions": [{"id": "field", "hex": "#E4D2AC", "coverage": 1.0, "evidenceRef": "region-side-wall"}], "finishStyle": "flat exterior emulsion over cement render", "materialRef": "render-cream", "dominantAlbedo": "rgba(228, 210, 172, 1.0)", "secondaryAlbedo": "rgba(228, 210, 172, 1.0)", "materialClass": "plastic", "materialClassConfidence": 0.9}};
-  node_facade_wall_1.add(mesh_facade_wall_1);
-  meshes["facade-wall"] = mesh_facade_wall_1;
-  colliders["facade-wall"] = {"type": "convex", "offset": [0, 2.3, 0.1], "scale": [4.0, 2.3, 0.1], "isTrigger": false, "notes": "Convex proxy for the front wall plane."};
+  const G = CONFIG.geometry as any;
 
-  const endpoint_roof_deck_2 = makeAttachmentEndpoint(null);
-  const node_roof_deck_2 = new THREE.Group();
-  node_roof_deck_2.name = "Concrete roof deck slab__pivot";
-  node_roof_deck_2.scale.set(1, 1, 1);
-  if (endpoint_roof_deck_2) {
-    node_roof_deck_2.position.copy(endpoint_roof_deck_2.start);
-    node_roof_deck_2.rotation.set(0.0, 0.0, 0.0);
-  } else {
-    node_roof_deck_2.position.set(0.0, 3.82, 0.0);
-    node_roof_deck_2.rotation.set(0.0, 0.0, 0.0);
-  }
-  node_roof_deck_2.userData.sculptComponent = {"id": "roof-deck", "name": "Concrete roof deck slab", "level": "macro", "role": "structure", "importance": 0.45, "confidence": 0.85, "primitive": "box", "topologyClass": "assembled-solid", "topologyRationale": "A flat slab seen only from above the parapet line. A box is exactly the right primitive. The roof WELL that surrounds it is genuine concavity, but it is carved by the shell's hollow plan extrusion, not by this component -- this is only the floor at the bottom of it.", "geometryDescriptor": {"topologyIntent": "single hard-edged box; no bevel, no subdivision", "edgeTreatment": {"type": "none", "bevelRadius": 0.0, "segments": 1}, "deformationStack": [], "uvStrategy": "generated procedural coordinates", "normalStrategy": "vertex normals from generated geometry", "segmentRationale": "1x1x1 segments: 12 triangles. Triangles are not the binding axis here.", "zFightingNote": "Oversized to x=+-3.85 and z=-3.35..+3.35 so its edge faces sit INSIDE the 0.20 m wall thickness on all four sides rather than meeting the walls' inner faces at +-3.80 / +-3.30. Its top face at y=3.90 is coincident with nothing.", "scaleConvention": "NO `scale` key on transform, deliberately. generate_threejs_factory.py's scale_vector() SHORT-CIRCUITS on the presence of transform.scale and returns it verbatim; only when the key is ABSENT does it fall through to sizing the unit box from dimensions.width/height/depth. An authored `scale: [1, 1, 1]` therefore reads as 'this box is one metre cubed', and every box in a first draft of this spec collapsed to a unit cube -- the glazing rendered as a 1 m box floating in a 6.8 m opening. The extrude components are the exact opposite and MUST keep scale: [1, 1, 1]: their profile2D points are already in real metres, so falling through to dimensions would rescale an 8 m building by a further 8x4.6x7."}, "parent": null, "attachment": {"parentSocket": "", "contactType": "embed", "notes": "Embedded into the wall ring; edges buried in the 0.20 m wall thickness."}, "dimensions": {"width": 7.7, "height": 0.16, "depth": 6.7, "units": "meters", "confidence": 0.85}, "transform": {"position": [0, 3.82, 0.0], "rotationEuler": [0, 0, 0], "rotation": [0, 0, 0]}, "material": "concrete-grey", "materialLayers": [], "deformations": [], "joints": [], "seams": [], "localFeatures": [{"id": "deck-weather-wash", "kind": "stain", "confidence": 0.65, "placement": {"region": "parapet inner foot"}, "notes": "Darker wash where rainwater stands against the upstand.", "evidenceRef": "region-roof-deck"}, {"id": "condenser-fan-grille", "kind": "contour", "confidence": 0.55, "placement": {"perUnit": 1, "face": "+Z of each condenser"}, "notes": "Circular fan grille with a louvre strip beside it on each condenser's outward face. Carried as a darker instance-coloured plate on the rooftop-plant cluster; the disc is not resolvable and is not modelled. Roof-only, so confidence is deliberately low.", "evidenceRef": "region-roof-plant"}], "surfaceDetail": {"macroRoughness": 0.12, "microRoughness": 0.35, "bumpAmplitude": 0.1, "normalPattern": "fair-faced concrete, no aggregate resolvable", "displacementPattern": "", "occlusionPattern": "occlusion along the parapet's inner foot", "edgeWearPattern": "clean", "notes": "Parapet upstand is 0.70 m above this deck."}, "evidenceRefs": ["region-roof-deck"], "details": ["deck-weather-wash"], "fidelityTier": "secondary", "actionProfile": {"animationRole": "structure", "pivot": {"mode": "custom", "localPosition": [0, 0, 0], "axis": [0, 1, 0], "confidence": 0.95, "name": "roof-deck-node", "notes": "Static slab, no pivot declared."}, "transformChannels": {"translate": true, "rotate": true, "scale": true, "bend": false, "twist": false, "detach": false, "visibility": true, "materialState": true}, "sockets": [], "constraints": [], "destruction": {"breakable": false, "fractureGroup": "", "seamRefs": []}}, "colorMaterialRecipe": {"baseColor": {"hex": "#8C8F92", "evidenceRef": "region-roof-deck", "notes": "Measured from the named evidence region, not chosen."}, "regions": [{"id": "field", "hex": "#8C8F92", "coverage": 1.0, "evidenceRef": "region-roof-deck"}], "finishStyle": "untreated fair-faced concrete, matte", "materialRef": "concrete-grey", "dominantAlbedo": "rgba(140, 143, 146, 1.0)", "secondaryAlbedo": "rgba(140, 143, 146, 1.0)", "materialClass": "stone", "materialClassConfidence": 0.85}, "levelRationale": "MACRO, not meso. A blockout is the clay mass, and a mass with a 6.80 x 2.85 m hole punched through its front and its roof open to the sky is not a closed solid -- turntable_gate measured the front silhouette as 45% interior hole. The glazed shopfront is 6.80 m of an 8.0 m elevation and the deck is the roof: both are the building's mass, not detail applied to it. The applied bands, the sign, the kerb and every instanced cluster stay meso/micro, so the blockout is still clay-macro.", "uvContract": {"status": "unwrapped", "strategy": "generated procedural coordinates", "materialId": "concrete-grey"}, "materialRegions": [{"regionId": "concrete", "materialId": "concrete-grey", "profileId": "stone.natural", "crop": {"path": "/home/mulligan/code/thaikit/scratch/ais-shop-building/material-evidence/01-concrete.png", "bbox": {"x": 438, "y": 292, "width": 96, "height": 26}, "sourceWidth": 1024, "sourceHeight": 1024, "loaderWarnings": [], "coverage": 0.0024}}, {"regionId": "plant", "materialId": "galvanised", "profileId": "metal.steel-brushed", "crop": {"path": "/home/mulligan/code/thaikit/scratch/ais-shop-building/material-evidence/06-plant.png", "bbox": {"x": 600, "y": 248, "width": 72, "height": 52}, "sourceWidth": 1024, "sourceHeight": 1024, "loaderWarnings": [], "coverage": 0.0036}}], "materialRebindNote": "apply_material_analysis rebound this to 'galvanised'; restored to 'concrete-grey', the material this component actually carries."};
-  node_roof_deck_2.userData.actionProfile = {"animationRole": "structure", "pivot": {"mode": "custom", "localPosition": [0, 0, 0], "axis": [0, 1, 0], "confidence": 0.95, "name": "roof-deck-node", "notes": "Static slab, no pivot declared."}, "transformChannels": {"translate": true, "rotate": true, "scale": true, "bend": false, "twist": false, "detach": false, "visibility": true, "materialState": true}, "sockets": [], "constraints": [], "destruction": {"breakable": false, "fractureGroup": "", "seamRefs": []}};
-  (nodes["root"] ?? root).add(node_roof_deck_2);
-  nodes["roof-deck"] = node_roof_deck_2;
-  const mesh_roof_deck_2Geometry = endpoint_roof_deck_2
-    ? new THREE.CylinderGeometry(endpoint_roof_deck_2.endRadius, endpoint_roof_deck_2.baseRadius, endpoint_roof_deck_2.length, 16, 6)
-    : new THREE.BoxGeometry(1, 1, 1, 4, 4, 4);
-  if (!endpoint_roof_deck_2) {
-    mesh_roof_deck_2Geometry.scale(7.7, 0.16, 6.7);
-  }
-  const mesh_roof_deck_2 = new THREE.Mesh(
-    mesh_roof_deck_2Geometry,
-    materialMap["concrete-grey"] ?? new THREE.MeshStandardMaterial({ color: 0x888888 })
-  );
-  mesh_roof_deck_2.name = "Concrete roof deck slab";
-  if (endpoint_roof_deck_2) {
-    mesh_roof_deck_2.position.copy(endpoint_roof_deck_2.midpoint);
-    mesh_roof_deck_2.quaternion.copy(endpoint_roof_deck_2.quaternion);
-  }
-  mesh_roof_deck_2.castShadow = options.castShadow ?? true;
-  mesh_roof_deck_2.receiveShadow = options.receiveShadow ?? true;
-  mesh_roof_deck_2.userData.sculptComponent = {"id": "roof-deck", "name": "Concrete roof deck slab", "level": "macro", "role": "structure", "importance": 0.45, "confidence": 0.85, "primitive": "box", "topologyClass": "assembled-solid", "topologyRationale": "A flat slab seen only from above the parapet line. A box is exactly the right primitive. The roof WELL that surrounds it is genuine concavity, but it is carved by the shell's hollow plan extrusion, not by this component -- this is only the floor at the bottom of it.", "geometryDescriptor": {"topologyIntent": "single hard-edged box; no bevel, no subdivision", "edgeTreatment": {"type": "none", "bevelRadius": 0.0, "segments": 1}, "deformationStack": [], "uvStrategy": "generated procedural coordinates", "normalStrategy": "vertex normals from generated geometry", "segmentRationale": "1x1x1 segments: 12 triangles. Triangles are not the binding axis here.", "zFightingNote": "Oversized to x=+-3.85 and z=-3.35..+3.35 so its edge faces sit INSIDE the 0.20 m wall thickness on all four sides rather than meeting the walls' inner faces at +-3.80 / +-3.30. Its top face at y=3.90 is coincident with nothing.", "scaleConvention": "NO `scale` key on transform, deliberately. generate_threejs_factory.py's scale_vector() SHORT-CIRCUITS on the presence of transform.scale and returns it verbatim; only when the key is ABSENT does it fall through to sizing the unit box from dimensions.width/height/depth. An authored `scale: [1, 1, 1]` therefore reads as 'this box is one metre cubed', and every box in a first draft of this spec collapsed to a unit cube -- the glazing rendered as a 1 m box floating in a 6.8 m opening. The extrude components are the exact opposite and MUST keep scale: [1, 1, 1]: their profile2D points are already in real metres, so falling through to dimensions would rescale an 8 m building by a further 8x4.6x7."}, "parent": null, "attachment": {"parentSocket": "", "contactType": "embed", "notes": "Embedded into the wall ring; edges buried in the 0.20 m wall thickness."}, "dimensions": {"width": 7.7, "height": 0.16, "depth": 6.7, "units": "meters", "confidence": 0.85}, "transform": {"position": [0, 3.82, 0.0], "rotationEuler": [0, 0, 0], "rotation": [0, 0, 0]}, "material": "concrete-grey", "materialLayers": [], "deformations": [], "joints": [], "seams": [], "localFeatures": [{"id": "deck-weather-wash", "kind": "stain", "confidence": 0.65, "placement": {"region": "parapet inner foot"}, "notes": "Darker wash where rainwater stands against the upstand.", "evidenceRef": "region-roof-deck"}, {"id": "condenser-fan-grille", "kind": "contour", "confidence": 0.55, "placement": {"perUnit": 1, "face": "+Z of each condenser"}, "notes": "Circular fan grille with a louvre strip beside it on each condenser's outward face. Carried as a darker instance-coloured plate on the rooftop-plant cluster; the disc is not resolvable and is not modelled. Roof-only, so confidence is deliberately low.", "evidenceRef": "region-roof-plant"}], "surfaceDetail": {"macroRoughness": 0.12, "microRoughness": 0.35, "bumpAmplitude": 0.1, "normalPattern": "fair-faced concrete, no aggregate resolvable", "displacementPattern": "", "occlusionPattern": "occlusion along the parapet's inner foot", "edgeWearPattern": "clean", "notes": "Parapet upstand is 0.70 m above this deck."}, "evidenceRefs": ["region-roof-deck"], "details": ["deck-weather-wash"], "fidelityTier": "secondary", "actionProfile": {"animationRole": "structure", "pivot": {"mode": "custom", "localPosition": [0, 0, 0], "axis": [0, 1, 0], "confidence": 0.95, "name": "roof-deck-node", "notes": "Static slab, no pivot declared."}, "transformChannels": {"translate": true, "rotate": true, "scale": true, "bend": false, "twist": false, "detach": false, "visibility": true, "materialState": true}, "sockets": [], "constraints": [], "destruction": {"breakable": false, "fractureGroup": "", "seamRefs": []}}, "colorMaterialRecipe": {"baseColor": {"hex": "#8C8F92", "evidenceRef": "region-roof-deck", "notes": "Measured from the named evidence region, not chosen."}, "regions": [{"id": "field", "hex": "#8C8F92", "coverage": 1.0, "evidenceRef": "region-roof-deck"}], "finishStyle": "untreated fair-faced concrete, matte", "materialRef": "concrete-grey", "dominantAlbedo": "rgba(140, 143, 146, 1.0)", "secondaryAlbedo": "rgba(140, 143, 146, 1.0)", "materialClass": "stone", "materialClassConfidence": 0.85}, "levelRationale": "MACRO, not meso. A blockout is the clay mass, and a mass with a 6.80 x 2.85 m hole punched through its front and its roof open to the sky is not a closed solid -- turntable_gate measured the front silhouette as 45% interior hole. The glazed shopfront is 6.80 m of an 8.0 m elevation and the deck is the roof: both are the building's mass, not detail applied to it. The applied bands, the sign, the kerb and every instanced cluster stay meso/micro, so the blockout is still clay-macro.", "uvContract": {"status": "unwrapped", "strategy": "generated procedural coordinates", "materialId": "concrete-grey"}, "materialRegions": [{"regionId": "concrete", "materialId": "concrete-grey", "profileId": "stone.natural", "crop": {"path": "/home/mulligan/code/thaikit/scratch/ais-shop-building/material-evidence/01-concrete.png", "bbox": {"x": 438, "y": 292, "width": 96, "height": 26}, "sourceWidth": 1024, "sourceHeight": 1024, "loaderWarnings": [], "coverage": 0.0024}}, {"regionId": "plant", "materialId": "galvanised", "profileId": "metal.steel-brushed", "crop": {"path": "/home/mulligan/code/thaikit/scratch/ais-shop-building/material-evidence/06-plant.png", "bbox": {"x": 600, "y": 248, "width": 72, "height": 52}, "sourceWidth": 1024, "sourceHeight": 1024, "loaderWarnings": [], "coverage": 0.0036}}], "materialRebindNote": "apply_material_analysis rebound this to 'galvanised'; restored to 'concrete-grey', the material this component actually carries."};
-  node_roof_deck_2.add(mesh_roof_deck_2);
-  meshes["roof-deck"] = mesh_roof_deck_2;
-  colliders["roof-deck"] = {};
-
-  const endpoint_fascia_band_3 = makeAttachmentEndpoint(null);
-  const node_fascia_band_3 = new THREE.Group();
-  node_fascia_band_3.name = "White fascia band__pivot";
-  node_fascia_band_3.scale.set(1, 1, 1);
-  if (endpoint_fascia_band_3) {
-    node_fascia_band_3.position.copy(endpoint_fascia_band_3.start);
-    node_fascia_band_3.rotation.set(0.0, 0.0, 0.0);
-  } else {
-    node_fascia_band_3.position.set(0.0, 3.4699999999999998, 3.52);
-    node_fascia_band_3.rotation.set(0.0, 0.0, 0.0);
-  }
-  node_fascia_band_3.userData.sculptComponent = {"id": "fascia-band", "name": "White fascia band", "level": "meso", "role": "structure", "importance": 0.8, "confidence": 0.88, "primitive": "box", "topologyClass": "assembled-solid", "topologyRationale": "A flat applied panel band. Box.", "geometryDescriptor": {"topologyIntent": "single hard-edged box; no bevel, no subdivision", "edgeTreatment": {"type": "none", "bevelRadius": 0.0, "segments": 1}, "deformationStack": [], "uvStrategy": "generated procedural coordinates", "normalStrategy": "vertex normals from generated geometry", "segmentRationale": "1x1x1 segments: 12 triangles. Triangles are not the binding axis here.", "zFightingNote": "Spans z=+3.44 to +3.60, so its back face is 0.06 m INSIDE the facade wall rather than flush with the wall's front face at +3.50. Overlap, not a meeting of planes. It also overlaps the shopfront opening's head by 0.08 m (bottom at 2.92 against an opening head at 3.00), which is what a fascia does and what keeps the head reveal out of the silhouette. ALSO, the width is 7.90 m and not 8.00 m. At the full 8.00 the band's two END faces sat at x=+-4.000, exactly coplanar and co-facing with the facade wall's own end faces, and check-coplanar.mjs flagged both (0.07 m2 each). Pulling the band in by 0.05 m at each end leaves a cream return of 0.6% of the facade's width -- not resolvable at prop distance -- and removes the pair. Widening instead would have pushed the prop past its declared 8.0 m envelope.", "scaleConvention": "NO `scale` key on transform, deliberately. generate_threejs_factory.py's scale_vector() SHORT-CIRCUITS on the presence of transform.scale and returns it verbatim; only when the key is ABSENT does it fall through to sizing the unit box from dimensions.width/height/depth. An authored `scale: [1, 1, 1]` therefore reads as 'this box is one metre cubed', and every box in a first draft of this spec collapsed to a unit cube -- the glazing rendered as a 1 m box floating in a 6.8 m opening. The extrude components are the exact opposite and MUST keep scale: [1, 1, 1]: their profile2D points are already in real metres, so falling through to dimensions would rescale an 8 m building by a further 8x4.6x7."}, "parent": null, "attachment": {"parentSocket": "", "contactType": "overlap", "notes": "Stands 0.10 m proud of the facade, back face buried in the wall."}, "dimensions": {"width": 7.9, "height": 1.0999999999999996, "depth": 0.16, "units": "meters", "confidence": 0.88}, "transform": {"position": [0, 3.4699999999999998, 3.52], "rotationEuler": [0, 0, 0], "rotation": [0, 0, 0]}, "material": "white-panel", "materialLayers": [], "deformations": [], "joints": [], "seams": [], "localFeatures": [{"id": "fascia-reveal-groove", "kind": "groove", "confidence": 0.7, "placement": {"y": 3.9, "depth": 0.012}, "notes": "Horizontal reveal groove and a vertical panel joint right of the sign tray, both shadow lines rather than geometry at this scale.", "evidenceRef": "region-fascia"}], "surfaceDetail": {"macroRoughness": 0.05, "microRoughness": 0.15, "bumpAmplitude": 0.04, "normalPattern": "factory-finished composite panel, no tooth", "displacementPattern": "", "occlusionPattern": "shadow gap under the band's bottom edge", "edgeWearPattern": "clean", "notes": "The satin specular lobe is the identity here, carried by roughness 0.42."}, "evidenceRefs": ["region-fascia"], "details": ["fascia-reveal-groove"], "fidelityTier": "primary", "actionProfile": {"animationRole": "structure", "pivot": {"mode": "custom", "localPosition": [0, 0, 0], "axis": [0, 1, 0], "confidence": 0.95, "name": "fascia-band-node", "notes": "Static applied panel, no pivot declared."}, "transformChannels": {"translate": true, "rotate": true, "scale": true, "bend": false, "twist": false, "detach": false, "visibility": true, "materialState": true}, "sockets": [], "constraints": [], "destruction": {"breakable": false, "fractureGroup": "", "seamRefs": []}}, "colorMaterialRecipe": {"baseColor": {"hex": "#EDEFEF", "evidenceRef": "region-fascia", "notes": "Measured from the named evidence region, not chosen."}, "regions": [{"id": "field", "hex": "#EDEFEF", "coverage": 1.0, "evidenceRef": "region-fascia"}], "finishStyle": "satin painted aluminium composite panel", "materialRef": "white-panel", "dominantAlbedo": "rgba(237, 239, 239, 1.0)", "secondaryAlbedo": "rgba(237, 239, 239, 1.0)", "materialClass": "plastic", "materialClassConfidence": 0.88}, "uvContract": {"status": "unwrapped", "strategy": "generated procedural coordinates", "materialId": "white-panel"}, "materialRegions": [{"regionId": "panel", "materialId": "white-panel", "profileId": "coating.painted-metal", "crop": {"path": "/home/mulligan/code/thaikit/scratch/ais-shop-building/material-evidence/02-panel.png", "bbox": {"x": 404, "y": 398, "width": 52, "height": 134}, "sourceWidth": 1024, "sourceHeight": 1024, "loaderWarnings": [], "coverage": 0.0066}}]};
-  node_fascia_band_3.userData.actionProfile = {"animationRole": "structure", "pivot": {"mode": "custom", "localPosition": [0, 0, 0], "axis": [0, 1, 0], "confidence": 0.95, "name": "fascia-band-node", "notes": "Static applied panel, no pivot declared."}, "transformChannels": {"translate": true, "rotate": true, "scale": true, "bend": false, "twist": false, "detach": false, "visibility": true, "materialState": true}, "sockets": [], "constraints": [], "destruction": {"breakable": false, "fractureGroup": "", "seamRefs": []}};
-  (nodes["root"] ?? root).add(node_fascia_band_3);
-  nodes["fascia-band"] = node_fascia_band_3;
-  const mesh_fascia_band_3Geometry = endpoint_fascia_band_3
-    ? new THREE.CylinderGeometry(endpoint_fascia_band_3.endRadius, endpoint_fascia_band_3.baseRadius, endpoint_fascia_band_3.length, 16, 6)
-    : new THREE.BoxGeometry(1, 1, 1, 4, 4, 4);
-  if (!endpoint_fascia_band_3) {
-    mesh_fascia_band_3Geometry.scale(7.9, 1.0999999999999996, 0.16);
-  }
-  const mesh_fascia_band_3 = new THREE.Mesh(
-    mesh_fascia_band_3Geometry,
-    materialMap["white-panel"] ?? new THREE.MeshStandardMaterial({ color: 0x888888 })
-  );
-  mesh_fascia_band_3.name = "White fascia band";
-  if (endpoint_fascia_band_3) {
-    mesh_fascia_band_3.position.copy(endpoint_fascia_band_3.midpoint);
-    mesh_fascia_band_3.quaternion.copy(endpoint_fascia_band_3.quaternion);
-  }
-  mesh_fascia_band_3.castShadow = options.castShadow ?? true;
-  mesh_fascia_band_3.receiveShadow = options.receiveShadow ?? true;
-  mesh_fascia_band_3.userData.sculptComponent = {"id": "fascia-band", "name": "White fascia band", "level": "meso", "role": "structure", "importance": 0.8, "confidence": 0.88, "primitive": "box", "topologyClass": "assembled-solid", "topologyRationale": "A flat applied panel band. Box.", "geometryDescriptor": {"topologyIntent": "single hard-edged box; no bevel, no subdivision", "edgeTreatment": {"type": "none", "bevelRadius": 0.0, "segments": 1}, "deformationStack": [], "uvStrategy": "generated procedural coordinates", "normalStrategy": "vertex normals from generated geometry", "segmentRationale": "1x1x1 segments: 12 triangles. Triangles are not the binding axis here.", "zFightingNote": "Spans z=+3.44 to +3.60, so its back face is 0.06 m INSIDE the facade wall rather than flush with the wall's front face at +3.50. Overlap, not a meeting of planes. It also overlaps the shopfront opening's head by 0.08 m (bottom at 2.92 against an opening head at 3.00), which is what a fascia does and what keeps the head reveal out of the silhouette. ALSO, the width is 7.90 m and not 8.00 m. At the full 8.00 the band's two END faces sat at x=+-4.000, exactly coplanar and co-facing with the facade wall's own end faces, and check-coplanar.mjs flagged both (0.07 m2 each). Pulling the band in by 0.05 m at each end leaves a cream return of 0.6% of the facade's width -- not resolvable at prop distance -- and removes the pair. Widening instead would have pushed the prop past its declared 8.0 m envelope.", "scaleConvention": "NO `scale` key on transform, deliberately. generate_threejs_factory.py's scale_vector() SHORT-CIRCUITS on the presence of transform.scale and returns it verbatim; only when the key is ABSENT does it fall through to sizing the unit box from dimensions.width/height/depth. An authored `scale: [1, 1, 1]` therefore reads as 'this box is one metre cubed', and every box in a first draft of this spec collapsed to a unit cube -- the glazing rendered as a 1 m box floating in a 6.8 m opening. The extrude components are the exact opposite and MUST keep scale: [1, 1, 1]: their profile2D points are already in real metres, so falling through to dimensions would rescale an 8 m building by a further 8x4.6x7."}, "parent": null, "attachment": {"parentSocket": "", "contactType": "overlap", "notes": "Stands 0.10 m proud of the facade, back face buried in the wall."}, "dimensions": {"width": 7.9, "height": 1.0999999999999996, "depth": 0.16, "units": "meters", "confidence": 0.88}, "transform": {"position": [0, 3.4699999999999998, 3.52], "rotationEuler": [0, 0, 0], "rotation": [0, 0, 0]}, "material": "white-panel", "materialLayers": [], "deformations": [], "joints": [], "seams": [], "localFeatures": [{"id": "fascia-reveal-groove", "kind": "groove", "confidence": 0.7, "placement": {"y": 3.9, "depth": 0.012}, "notes": "Horizontal reveal groove and a vertical panel joint right of the sign tray, both shadow lines rather than geometry at this scale.", "evidenceRef": "region-fascia"}], "surfaceDetail": {"macroRoughness": 0.05, "microRoughness": 0.15, "bumpAmplitude": 0.04, "normalPattern": "factory-finished composite panel, no tooth", "displacementPattern": "", "occlusionPattern": "shadow gap under the band's bottom edge", "edgeWearPattern": "clean", "notes": "The satin specular lobe is the identity here, carried by roughness 0.42."}, "evidenceRefs": ["region-fascia"], "details": ["fascia-reveal-groove"], "fidelityTier": "primary", "actionProfile": {"animationRole": "structure", "pivot": {"mode": "custom", "localPosition": [0, 0, 0], "axis": [0, 1, 0], "confidence": 0.95, "name": "fascia-band-node", "notes": "Static applied panel, no pivot declared."}, "transformChannels": {"translate": true, "rotate": true, "scale": true, "bend": false, "twist": false, "detach": false, "visibility": true, "materialState": true}, "sockets": [], "constraints": [], "destruction": {"breakable": false, "fractureGroup": "", "seamRefs": []}}, "colorMaterialRecipe": {"baseColor": {"hex": "#EDEFEF", "evidenceRef": "region-fascia", "notes": "Measured from the named evidence region, not chosen."}, "regions": [{"id": "field", "hex": "#EDEFEF", "coverage": 1.0, "evidenceRef": "region-fascia"}], "finishStyle": "satin painted aluminium composite panel", "materialRef": "white-panel", "dominantAlbedo": "rgba(237, 239, 239, 1.0)", "secondaryAlbedo": "rgba(237, 239, 239, 1.0)", "materialClass": "plastic", "materialClassConfidence": 0.88}, "uvContract": {"status": "unwrapped", "strategy": "generated procedural coordinates", "materialId": "white-panel"}, "materialRegions": [{"regionId": "panel", "materialId": "white-panel", "profileId": "coating.painted-metal", "crop": {"path": "/home/mulligan/code/thaikit/scratch/ais-shop-building/material-evidence/02-panel.png", "bbox": {"x": 404, "y": 398, "width": 52, "height": 134}, "sourceWidth": 1024, "sourceHeight": 1024, "loaderWarnings": [], "coverage": 0.0066}}]};
-  node_fascia_band_3.add(mesh_fascia_band_3);
-  meshes["fascia-band"] = mesh_fascia_band_3;
-  colliders["fascia-band"] = {};
-
-  const endpoint_fascia_sign_4 = makeAttachmentEndpoint(null);
-  const node_fascia_sign_4 = new THREE.Group();
-  node_fascia_sign_4.name = "AIS illuminated fascia sign face__pivot";
-  node_fascia_sign_4.scale.set(1, 1, 1);
-  if (endpoint_fascia_sign_4) {
-    node_fascia_sign_4.position.copy(endpoint_fascia_sign_4.start);
-    node_fascia_sign_4.rotation.set(0.0, 0.0, 0.0);
-  } else {
-    node_fascia_sign_4.position.set(0.0, 3.4699999999999998, 3.62);
-    node_fascia_sign_4.rotation.set(0.0, 0.0, 0.0);
-  }
-  node_fascia_sign_4.userData.sculptComponent = {"id": "fascia-sign", "name": "AIS illuminated fascia sign face", "level": "meso", "role": "identity", "importance": 1.0, "confidence": 0.92, "primitive": "box", "topologyClass": "assembled-solid", "topologyRationale": "A thin graphic FACE, not the whole tray. The tray's proud return is a separate InstancedMesh cluster on the shared unit box, which costs one draw call and zero unique geometries. Splitting it this way is what lets the printed AIS mark live on a 0.03 m plate whose side faces are hidden inside the return -- a canvas map on a BoxGeometry lands on all six faces, so a deep tray would have carried a squashed slice of the mark down each edge.", "geometryDescriptor": {"topologyIntent": "single hard-edged box; no bevel, no subdivision", "edgeTreatment": {"type": "none", "bevelRadius": 0.0, "segments": 1}, "deformationStack": [], "uvStrategy": "generated procedural coordinates", "normalStrategy": "vertex normals from generated geometry", "segmentRationale": "1x1x1 segments: 12 triangles. Triangles are not the binding axis here.", "zFightingNote": "Front face at z=+3.635, standing 0.035 m proud of the fascia band's +3.60. The surrounding tray return spans +3.52 to +3.645 and OVERLAPS this plate's edges, so no two co-facing surfaces share a plane.", "scaleConvention": "NO `scale` key on transform, deliberately. generate_threejs_factory.py's scale_vector() SHORT-CIRCUITS on the presence of transform.scale and returns it verbatim; only when the key is ABSENT does it fall through to sizing the unit box from dimensions.width/height/depth. An authored `scale: [1, 1, 1]` therefore reads as 'this box is one metre cubed', and every box in a first draft of this spec collapsed to a unit cube -- the glazing rendered as a 1 m box floating in a 6.8 m opening. The extrude components are the exact opposite and MUST keep scale: [1, 1, 1]: their profile2D points are already in real metres, so falling through to dimensions would rescale an 8 m building by a further 8x4.6x7."}, "parent": null, "attachment": {"parentSocket": "sign-mount", "contactType": "overlap", "notes": "Sits on the fascia band, inside the tray return."}, "dimensions": {"width": 5.8, "height": 0.8, "depth": 0.03, "units": "meters", "confidence": 0.92}, "transform": {"position": [0, 3.4699999999999998, 3.62], "rotationEuler": [0, 0, 0], "rotation": [0, 0, 0]}, "material": "sign-green", "materialLayers": [], "deformations": [], "joints": [], "seams": [], "localFeatures": [{"id": "sign-tray-relief", "kind": "ridge", "confidence": 0.9, "placement": {"proudOfFascia": 0.045, "returnDepth": 0.125, "rails": 4}, "notes": "The lightbox tray stands proud of the white fascia band with a visible drop shadow along its lower edge and a lighter edge return on all four sides. Built by the sign-tray-return cluster; this face sits inside it, 0.01 m behind the return's front plane.", "evidenceRef": "region-fascia-sign"}, {"id": "ais-swoosh-wordmark", "kind": "decal", "confidence": 0.95, "placement": {"anchor": "centred", "markWidthFraction": 0.34}, "notes": "White AIS swoosh (a curved crescent) followed by the AIS wordmark in a bold rounded sans. Drawn on a canvas applied AFTER material construction, which is the route the textureless declaration deliberately leaves open. It is a RECONSTRUCTION of the brand mark, not a pixel lift of the plate.", "evidenceRef": "region-fascia-sign"}, {"id": "sign-face-emissive", "kind": "emissive", "confidence": 0.8, "placement": {"whole": true}, "notes": "Internally lit lightbox. The plate's green measures brighter (#A0CB1F) than the authored albedo (#8FC72C); the difference is emission and is carried as an emissive term rather than baked into base colour.", "evidenceRef": "region-fascia-sign"}], "surfaceDetail": {"macroRoughness": 0.03, "microRoughness": 0.1, "bumpAmplitude": 0.02, "normalPattern": "moulded acrylic, no tooth", "displacementPattern": "", "occlusionPattern": "none - the face is flush inside its return", "edgeWearPattern": "clean", "notes": "Gloss acrylic; roughness 0.28 gives the tight highlight the plate shows."}, "evidenceRefs": ["region-fascia-sign"], "details": ["ais-swoosh-wordmark", "sign-face-emissive"], "fidelityTier": "critical", "actionProfile": {"animationRole": "structure", "pivot": {"mode": "custom", "localPosition": [0, 0, 0], "axis": [0, 1, 0], "confidence": 0.95, "name": "fascia-sign-node", "notes": "Static sign face, no pivot declared."}, "transformChannels": {"translate": true, "rotate": true, "scale": true, "bend": false, "twist": false, "detach": false, "visibility": true, "materialState": true}, "sockets": [], "constraints": [], "destruction": {"breakable": false, "fractureGroup": "", "seamRefs": []}}, "colorMaterialRecipe": {"baseColor": {"hex": "#8FC72C", "evidenceRef": "region-fascia-sign", "notes": "Measured from the named evidence region, not chosen."}, "regions": [{"id": "green-field", "hex": "#8FC72C", "coverage": 0.86, "evidenceRef": "region-fascia-sign"}, {"id": "white-mark", "hex": "#FFFFFF", "coverage": 0.14, "evidenceRef": "region-fascia-sign"}], "finishStyle": "gloss translucent acrylic lightbox face", "materialRef": "sign-green", "dominantAlbedo": "rgba(143, 199, 44, 1.0)", "secondaryAlbedo": "rgba(143, 199, 44, 1.0)", "materialClass": "plastic", "materialClassConfidence": 0.92}, "dimensionNote": "Widened 5.40 -> 5.80 m after the structural-pass render. Measured against the plate, the sign spans about 82% of the shopfront opening (436 px of 530); at 5.40 m it spanned 78%. 5.80/6.90 = 84%.", "uvContract": {"status": "unwrapped", "strategy": "generated procedural coordinates", "materialId": "sign-green"}, "materialRegions": [{"regionId": "acrylic", "materialId": "sign-green", "profileId": "plastic.glossy", "crop": {"path": "/home/mulligan/code/thaikit/scratch/ais-shop-building/material-evidence/03-acrylic.png", "bbox": {"x": 510, "y": 412, "width": 70, "height": 38}, "sourceWidth": 1024, "sourceHeight": 1024, "loaderWarnings": [], "coverage": 0.0025}}]};
-  node_fascia_sign_4.userData.actionProfile = {"animationRole": "structure", "pivot": {"mode": "custom", "localPosition": [0, 0, 0], "axis": [0, 1, 0], "confidence": 0.95, "name": "fascia-sign-node", "notes": "Static sign face, no pivot declared."}, "transformChannels": {"translate": true, "rotate": true, "scale": true, "bend": false, "twist": false, "detach": false, "visibility": true, "materialState": true}, "sockets": [], "constraints": [], "destruction": {"breakable": false, "fractureGroup": "", "seamRefs": []}};
-  (nodes["root"] ?? root).add(node_fascia_sign_4);
-  nodes["fascia-sign"] = node_fascia_sign_4;
-  const mesh_fascia_sign_4Geometry = endpoint_fascia_sign_4
-    ? new THREE.CylinderGeometry(endpoint_fascia_sign_4.endRadius, endpoint_fascia_sign_4.baseRadius, endpoint_fascia_sign_4.length, 16, 6)
-    : new THREE.BoxGeometry(1, 1, 1, 4, 4, 4);
-  if (!endpoint_fascia_sign_4) {
-    mesh_fascia_sign_4Geometry.scale(5.8, 0.8, 0.03);
-  }
-  const mesh_fascia_sign_4 = new THREE.Mesh(
-    mesh_fascia_sign_4Geometry,
-    materialMap["sign-green"] ?? new THREE.MeshStandardMaterial({ color: 0x888888 })
-  );
-  mesh_fascia_sign_4.name = "AIS illuminated fascia sign face";
-  if (endpoint_fascia_sign_4) {
-    mesh_fascia_sign_4.position.copy(endpoint_fascia_sign_4.midpoint);
-    mesh_fascia_sign_4.quaternion.copy(endpoint_fascia_sign_4.quaternion);
-  }
-  mesh_fascia_sign_4.castShadow = options.castShadow ?? true;
-  mesh_fascia_sign_4.receiveShadow = options.receiveShadow ?? true;
-  mesh_fascia_sign_4.userData.sculptComponent = {"id": "fascia-sign", "name": "AIS illuminated fascia sign face", "level": "meso", "role": "identity", "importance": 1.0, "confidence": 0.92, "primitive": "box", "topologyClass": "assembled-solid", "topologyRationale": "A thin graphic FACE, not the whole tray. The tray's proud return is a separate InstancedMesh cluster on the shared unit box, which costs one draw call and zero unique geometries. Splitting it this way is what lets the printed AIS mark live on a 0.03 m plate whose side faces are hidden inside the return -- a canvas map on a BoxGeometry lands on all six faces, so a deep tray would have carried a squashed slice of the mark down each edge.", "geometryDescriptor": {"topologyIntent": "single hard-edged box; no bevel, no subdivision", "edgeTreatment": {"type": "none", "bevelRadius": 0.0, "segments": 1}, "deformationStack": [], "uvStrategy": "generated procedural coordinates", "normalStrategy": "vertex normals from generated geometry", "segmentRationale": "1x1x1 segments: 12 triangles. Triangles are not the binding axis here.", "zFightingNote": "Front face at z=+3.635, standing 0.035 m proud of the fascia band's +3.60. The surrounding tray return spans +3.52 to +3.645 and OVERLAPS this plate's edges, so no two co-facing surfaces share a plane.", "scaleConvention": "NO `scale` key on transform, deliberately. generate_threejs_factory.py's scale_vector() SHORT-CIRCUITS on the presence of transform.scale and returns it verbatim; only when the key is ABSENT does it fall through to sizing the unit box from dimensions.width/height/depth. An authored `scale: [1, 1, 1]` therefore reads as 'this box is one metre cubed', and every box in a first draft of this spec collapsed to a unit cube -- the glazing rendered as a 1 m box floating in a 6.8 m opening. The extrude components are the exact opposite and MUST keep scale: [1, 1, 1]: their profile2D points are already in real metres, so falling through to dimensions would rescale an 8 m building by a further 8x4.6x7."}, "parent": null, "attachment": {"parentSocket": "sign-mount", "contactType": "overlap", "notes": "Sits on the fascia band, inside the tray return."}, "dimensions": {"width": 5.8, "height": 0.8, "depth": 0.03, "units": "meters", "confidence": 0.92}, "transform": {"position": [0, 3.4699999999999998, 3.62], "rotationEuler": [0, 0, 0], "rotation": [0, 0, 0]}, "material": "sign-green", "materialLayers": [], "deformations": [], "joints": [], "seams": [], "localFeatures": [{"id": "sign-tray-relief", "kind": "ridge", "confidence": 0.9, "placement": {"proudOfFascia": 0.045, "returnDepth": 0.125, "rails": 4}, "notes": "The lightbox tray stands proud of the white fascia band with a visible drop shadow along its lower edge and a lighter edge return on all four sides. Built by the sign-tray-return cluster; this face sits inside it, 0.01 m behind the return's front plane.", "evidenceRef": "region-fascia-sign"}, {"id": "ais-swoosh-wordmark", "kind": "decal", "confidence": 0.95, "placement": {"anchor": "centred", "markWidthFraction": 0.34}, "notes": "White AIS swoosh (a curved crescent) followed by the AIS wordmark in a bold rounded sans. Drawn on a canvas applied AFTER material construction, which is the route the textureless declaration deliberately leaves open. It is a RECONSTRUCTION of the brand mark, not a pixel lift of the plate.", "evidenceRef": "region-fascia-sign"}, {"id": "sign-face-emissive", "kind": "emissive", "confidence": 0.8, "placement": {"whole": true}, "notes": "Internally lit lightbox. The plate's green measures brighter (#A0CB1F) than the authored albedo (#8FC72C); the difference is emission and is carried as an emissive term rather than baked into base colour.", "evidenceRef": "region-fascia-sign"}], "surfaceDetail": {"macroRoughness": 0.03, "microRoughness": 0.1, "bumpAmplitude": 0.02, "normalPattern": "moulded acrylic, no tooth", "displacementPattern": "", "occlusionPattern": "none - the face is flush inside its return", "edgeWearPattern": "clean", "notes": "Gloss acrylic; roughness 0.28 gives the tight highlight the plate shows."}, "evidenceRefs": ["region-fascia-sign"], "details": ["ais-swoosh-wordmark", "sign-face-emissive"], "fidelityTier": "critical", "actionProfile": {"animationRole": "structure", "pivot": {"mode": "custom", "localPosition": [0, 0, 0], "axis": [0, 1, 0], "confidence": 0.95, "name": "fascia-sign-node", "notes": "Static sign face, no pivot declared."}, "transformChannels": {"translate": true, "rotate": true, "scale": true, "bend": false, "twist": false, "detach": false, "visibility": true, "materialState": true}, "sockets": [], "constraints": [], "destruction": {"breakable": false, "fractureGroup": "", "seamRefs": []}}, "colorMaterialRecipe": {"baseColor": {"hex": "#8FC72C", "evidenceRef": "region-fascia-sign", "notes": "Measured from the named evidence region, not chosen."}, "regions": [{"id": "green-field", "hex": "#8FC72C", "coverage": 0.86, "evidenceRef": "region-fascia-sign"}, {"id": "white-mark", "hex": "#FFFFFF", "coverage": 0.14, "evidenceRef": "region-fascia-sign"}], "finishStyle": "gloss translucent acrylic lightbox face", "materialRef": "sign-green", "dominantAlbedo": "rgba(143, 199, 44, 1.0)", "secondaryAlbedo": "rgba(143, 199, 44, 1.0)", "materialClass": "plastic", "materialClassConfidence": 0.92}, "dimensionNote": "Widened 5.40 -> 5.80 m after the structural-pass render. Measured against the plate, the sign spans about 82% of the shopfront opening (436 px of 530); at 5.40 m it spanned 78%. 5.80/6.90 = 84%.", "uvContract": {"status": "unwrapped", "strategy": "generated procedural coordinates", "materialId": "sign-green"}, "materialRegions": [{"regionId": "acrylic", "materialId": "sign-green", "profileId": "plastic.glossy", "crop": {"path": "/home/mulligan/code/thaikit/scratch/ais-shop-building/material-evidence/03-acrylic.png", "bbox": {"x": 510, "y": 412, "width": 70, "height": 38}, "sourceWidth": 1024, "sourceHeight": 1024, "loaderWarnings": [], "coverage": 0.0025}}]};
-  node_fascia_sign_4.add(mesh_fascia_sign_4);
-  meshes["fascia-sign"] = mesh_fascia_sign_4;
-  colliders["fascia-sign"] = {};
-
-  const endpoint_shopfront_glazing_5 = makeAttachmentEndpoint(null);
-  const node_shopfront_glazing_5 = new THREE.Group();
-  node_shopfront_glazing_5.name = "Shopfront glazing and spandrel field__pivot";
-  node_shopfront_glazing_5.scale.set(1, 1, 1);
-  if (endpoint_shopfront_glazing_5) {
-    node_shopfront_glazing_5.position.copy(endpoint_shopfront_glazing_5.start);
-    node_shopfront_glazing_5.rotation.set(0.0, 0.0, 0.0);
-  } else {
-    node_shopfront_glazing_5.position.set(0.0, 1.6, 3.4);
-    node_shopfront_glazing_5.rotation.set(0.0, 0.0, 0.0);
-  }
-  node_shopfront_glazing_5.userData.sculptComponent = {"id": "shopfront-glazing", "name": "Shopfront glazing and spandrel field", "level": "macro", "role": "identity", "importance": 0.9, "confidence": 0.85, "primitive": "box", "topologyClass": "assembled-solid", "topologyRationale": "ONE pane spanning the whole opening, not one per bay. Eight bays as eight components would be eight draw calls and eight unique geometries on a prop whose entire ceiling is eight geometries. The bay rhythm comes from the framing cluster in front of it, and the two opaque green spandrel bays are regions of the canvas rather than separate solids.", "geometryDescriptor": {"topologyIntent": "single hard-edged box; no bevel, no subdivision", "edgeTreatment": {"type": "none", "bevelRadius": 0.0, "segments": 1}, "deformationStack": [], "uvStrategy": "generated procedural coordinates", "normalStrategy": "vertex normals from generated geometry", "segmentRationale": "1x1x1 segments: 12 triangles. Triangles are not the binding axis here.", "zFightingNote": "Inset to z=+3.385..3.415, well behind the wall's front face at +3.50, and OVERSIZED to +-3.45 x 0.10..3.10 so its edges pass behind the opening's reveals instead of meeting them. No face of this pane shares a plane with any other surface.", "scaleConvention": "NO `scale` key on transform, deliberately. generate_threejs_factory.py's scale_vector() SHORT-CIRCUITS on the presence of transform.scale and returns it verbatim; only when the key is ABSENT does it fall through to sizing the unit box from dimensions.width/height/depth. An authored `scale: [1, 1, 1]` therefore reads as 'this box is one metre cubed', and every box in a first draft of this spec collapsed to a unit cube -- the glazing rendered as a 1 m box floating in a 6.8 m opening. The extrude components are the exact opposite and MUST keep scale: [1, 1, 1]: their profile2D points are already in real metres, so falling through to dimensions would rescale an 8 m building by a further 8x4.6x7."}, "parent": null, "attachment": {"parentSocket": "", "contactType": "embed", "notes": "Sits inside the facade opening, edges buried behind the reveals."}, "dimensions": {"width": 6.9, "height": 3.0, "depth": 0.03, "units": "meters", "confidence": 0.85}, "transform": {"position": [0, 1.6, 3.4], "rotationEuler": [0, 0, 0], "rotation": [0, 0, 0]}, "material": "glass-tinted", "materialLayers": [], "deformations": [], "joints": [], "seams": [], "localFeatures": [{"id": "green-spandrel-bays", "kind": "decal", "confidence": 0.92, "placement": {"bays": ["outermost left", "outermost right"], "widthEach": 0.85}, "notes": "Full-height opaque vivid-green vinyl-faced spandrel panels bracketing the glazed bays. Painted as canvas regions on this pane rather than modelled: at an opacity of 0.94 the pane is already all but opaque, so a green region on it reads as an opaque panel and costs no geometry, no draw call and no material.", "evidenceRef": "region-glazing"}, {"id": "spandrel-poster-panels", "kind": "decal", "confidence": 0.8, "placement": {"perBay": 1, "anchor": "upper middle of each green bay"}, "notes": "A pale near-white poster rectangle on each green spandrel bay.", "evidenceRef": "region-promo-panel"}, {"id": "transom-rail", "kind": "ridge", "confidence": 0.88, "placement": {"y": 2.34, "spans": "the full glazed width"}, "notes": "Horizontal aluminium transom rail near the head, with a lower sill rail at 0.19 m. Built by the shopfront-framing cluster in front of this pane.", "evidenceRef": "region-glazing"}, {"id": "door-meeting-stile", "kind": "ridge", "confidence": 0.85, "placement": {"x": 0.0, "width": 0.1, "handleAt": [0.1, 1.15]}, "notes": "A wider vertical meeting stile on the building's centre line carrying a vertical pull handle. Built by the shopfront-framing cluster.", "evidenceRef": "region-glazing"}], "surfaceDetail": {"macroRoughness": 0.02, "microRoughness": 0.06, "bumpAmplitude": 0.0, "normalPattern": "float glass, no relief", "displacementPattern": "", "occlusionPattern": "none", "edgeWearPattern": "clean", "notes": "Authored as a SURFACE, not a window: this is an exterior shell with nothing behind the pane, so opacity is 0.94 and the tint plus a tight specular lobe is what makes it read as glass instead of a hole."}, "evidenceRefs": ["region-glazing", "region-promo-panel"], "details": ["green-spandrel-bays", "spandrel-poster-panels"], "fidelityTier": "critical", "actionProfile": {"animationRole": "structure", "pivot": {"mode": "custom", "localPosition": [0, 0, 0], "axis": [0, 1, 0], "confidence": 0.95, "name": "shopfront-glazing-node", "notes": "Static pane. The entrance leaves are drawn as framing on this pane and are NOT articulated, so no door pivot is declared."}, "transformChannels": {"translate": true, "rotate": true, "scale": true, "bend": false, "twist": false, "detach": false, "visibility": true, "materialState": true}, "sockets": [], "constraints": [], "destruction": {"breakable": false, "fractureGroup": "", "seamRefs": []}}, "colorMaterialRecipe": {"baseColor": {"hex": "#7E8C94", "evidenceRef": "region-glazing", "notes": "Measured from the named evidence region, not chosen."}, "regions": [{"id": "glass-field", "hex": "#7E8C94", "coverage": 0.72, "evidenceRef": "region-glazing"}, {"id": "green-spandrel", "hex": "#8FC72C", "coverage": 0.24, "evidenceRef": "region-glazing"}, {"id": "poster-panel", "hex": "#EDF2E6", "coverage": 0.04, "evidenceRef": "region-promo-panel"}], "finishStyle": "tinted architectural glass, mostly opaque surface", "materialRef": "glass-tinted", "dominantAlbedo": "rgba(126, 140, 148, 1.0)", "secondaryAlbedo": "rgba(126, 140, 148, 1.0)", "materialClass": "glass", "materialClassConfidence": 0.85}, "levelRationale": "MACRO, not meso. A blockout is the clay mass, and a mass with a 6.80 x 2.85 m hole punched through its front and its roof open to the sky is not a closed solid -- turntable_gate measured the front silhouette as 45% interior hole. The glazed shopfront is 6.80 m of an 8.0 m elevation and the deck is the roof: both are the building's mass, not detail applied to it. The applied bands, the sign, the kerb and every instanced cluster stay meso/micro, so the blockout is still clay-macro.", "uvContract": {"status": "unwrapped", "strategy": "generated procedural coordinates", "materialId": "glass-tinted"}, "materialRegions": [{"regionId": "glass", "materialId": "glass-tinted", "profileId": "glass.clear", "crop": {"path": "/home/mulligan/code/thaikit/scratch/ais-shop-building/material-evidence/04-glass.png", "bbox": {"x": 700, "y": 600, "width": 34, "height": 72}, "sourceWidth": 1024, "sourceHeight": 1024, "loaderWarnings": [], "coverage": 0.0023}}, {"regionId": "framing", "materialId": "aluminium", "profileId": "metal.aluminum", "crop": {"path": "/home/mulligan/code/thaikit/scratch/ais-shop-building/material-evidence/05-framing.png", "bbox": {"x": 596, "y": 560, "width": 18, "height": 150}, "sourceWidth": 1024, "sourceHeight": 1024, "loaderWarnings": [], "coverage": 0.0026}}], "materialRebindNote": "apply_material_analysis rebound this to 'aluminium'; restored to 'glass-tinted', the material this component actually carries."};
-  node_shopfront_glazing_5.userData.actionProfile = {"animationRole": "structure", "pivot": {"mode": "custom", "localPosition": [0, 0, 0], "axis": [0, 1, 0], "confidence": 0.95, "name": "shopfront-glazing-node", "notes": "Static pane. The entrance leaves are drawn as framing on this pane and are NOT articulated, so no door pivot is declared."}, "transformChannels": {"translate": true, "rotate": true, "scale": true, "bend": false, "twist": false, "detach": false, "visibility": true, "materialState": true}, "sockets": [], "constraints": [], "destruction": {"breakable": false, "fractureGroup": "", "seamRefs": []}};
-  (nodes["root"] ?? root).add(node_shopfront_glazing_5);
-  nodes["shopfront-glazing"] = node_shopfront_glazing_5;
-  const mesh_shopfront_glazing_5Geometry = endpoint_shopfront_glazing_5
-    ? new THREE.CylinderGeometry(endpoint_shopfront_glazing_5.endRadius, endpoint_shopfront_glazing_5.baseRadius, endpoint_shopfront_glazing_5.length, 16, 6)
-    : new THREE.BoxGeometry(1, 1, 1, 4, 4, 4);
-  if (!endpoint_shopfront_glazing_5) {
-    mesh_shopfront_glazing_5Geometry.scale(6.9, 3.0, 0.03);
-  }
-  const mesh_shopfront_glazing_5 = new THREE.Mesh(
-    mesh_shopfront_glazing_5Geometry,
-    materialMap["glass-tinted"] ?? new THREE.MeshStandardMaterial({ color: 0x888888 })
-  );
-  mesh_shopfront_glazing_5.name = "Shopfront glazing and spandrel field";
-  if (endpoint_shopfront_glazing_5) {
-    mesh_shopfront_glazing_5.position.copy(endpoint_shopfront_glazing_5.midpoint);
-    mesh_shopfront_glazing_5.quaternion.copy(endpoint_shopfront_glazing_5.quaternion);
-  }
-  mesh_shopfront_glazing_5.castShadow = options.castShadow ?? true;
-  mesh_shopfront_glazing_5.receiveShadow = options.receiveShadow ?? true;
-  mesh_shopfront_glazing_5.userData.sculptComponent = {"id": "shopfront-glazing", "name": "Shopfront glazing and spandrel field", "level": "macro", "role": "identity", "importance": 0.9, "confidence": 0.85, "primitive": "box", "topologyClass": "assembled-solid", "topologyRationale": "ONE pane spanning the whole opening, not one per bay. Eight bays as eight components would be eight draw calls and eight unique geometries on a prop whose entire ceiling is eight geometries. The bay rhythm comes from the framing cluster in front of it, and the two opaque green spandrel bays are regions of the canvas rather than separate solids.", "geometryDescriptor": {"topologyIntent": "single hard-edged box; no bevel, no subdivision", "edgeTreatment": {"type": "none", "bevelRadius": 0.0, "segments": 1}, "deformationStack": [], "uvStrategy": "generated procedural coordinates", "normalStrategy": "vertex normals from generated geometry", "segmentRationale": "1x1x1 segments: 12 triangles. Triangles are not the binding axis here.", "zFightingNote": "Inset to z=+3.385..3.415, well behind the wall's front face at +3.50, and OVERSIZED to +-3.45 x 0.10..3.10 so its edges pass behind the opening's reveals instead of meeting them. No face of this pane shares a plane with any other surface.", "scaleConvention": "NO `scale` key on transform, deliberately. generate_threejs_factory.py's scale_vector() SHORT-CIRCUITS on the presence of transform.scale and returns it verbatim; only when the key is ABSENT does it fall through to sizing the unit box from dimensions.width/height/depth. An authored `scale: [1, 1, 1]` therefore reads as 'this box is one metre cubed', and every box in a first draft of this spec collapsed to a unit cube -- the glazing rendered as a 1 m box floating in a 6.8 m opening. The extrude components are the exact opposite and MUST keep scale: [1, 1, 1]: their profile2D points are already in real metres, so falling through to dimensions would rescale an 8 m building by a further 8x4.6x7."}, "parent": null, "attachment": {"parentSocket": "", "contactType": "embed", "notes": "Sits inside the facade opening, edges buried behind the reveals."}, "dimensions": {"width": 6.9, "height": 3.0, "depth": 0.03, "units": "meters", "confidence": 0.85}, "transform": {"position": [0, 1.6, 3.4], "rotationEuler": [0, 0, 0], "rotation": [0, 0, 0]}, "material": "glass-tinted", "materialLayers": [], "deformations": [], "joints": [], "seams": [], "localFeatures": [{"id": "green-spandrel-bays", "kind": "decal", "confidence": 0.92, "placement": {"bays": ["outermost left", "outermost right"], "widthEach": 0.85}, "notes": "Full-height opaque vivid-green vinyl-faced spandrel panels bracketing the glazed bays. Painted as canvas regions on this pane rather than modelled: at an opacity of 0.94 the pane is already all but opaque, so a green region on it reads as an opaque panel and costs no geometry, no draw call and no material.", "evidenceRef": "region-glazing"}, {"id": "spandrel-poster-panels", "kind": "decal", "confidence": 0.8, "placement": {"perBay": 1, "anchor": "upper middle of each green bay"}, "notes": "A pale near-white poster rectangle on each green spandrel bay.", "evidenceRef": "region-promo-panel"}, {"id": "transom-rail", "kind": "ridge", "confidence": 0.88, "placement": {"y": 2.34, "spans": "the full glazed width"}, "notes": "Horizontal aluminium transom rail near the head, with a lower sill rail at 0.19 m. Built by the shopfront-framing cluster in front of this pane.", "evidenceRef": "region-glazing"}, {"id": "door-meeting-stile", "kind": "ridge", "confidence": 0.85, "placement": {"x": 0.0, "width": 0.1, "handleAt": [0.1, 1.15]}, "notes": "A wider vertical meeting stile on the building's centre line carrying a vertical pull handle. Built by the shopfront-framing cluster.", "evidenceRef": "region-glazing"}], "surfaceDetail": {"macroRoughness": 0.02, "microRoughness": 0.06, "bumpAmplitude": 0.0, "normalPattern": "float glass, no relief", "displacementPattern": "", "occlusionPattern": "none", "edgeWearPattern": "clean", "notes": "Authored as a SURFACE, not a window: this is an exterior shell with nothing behind the pane, so opacity is 0.94 and the tint plus a tight specular lobe is what makes it read as glass instead of a hole."}, "evidenceRefs": ["region-glazing", "region-promo-panel"], "details": ["green-spandrel-bays", "spandrel-poster-panels"], "fidelityTier": "critical", "actionProfile": {"animationRole": "structure", "pivot": {"mode": "custom", "localPosition": [0, 0, 0], "axis": [0, 1, 0], "confidence": 0.95, "name": "shopfront-glazing-node", "notes": "Static pane. The entrance leaves are drawn as framing on this pane and are NOT articulated, so no door pivot is declared."}, "transformChannels": {"translate": true, "rotate": true, "scale": true, "bend": false, "twist": false, "detach": false, "visibility": true, "materialState": true}, "sockets": [], "constraints": [], "destruction": {"breakable": false, "fractureGroup": "", "seamRefs": []}}, "colorMaterialRecipe": {"baseColor": {"hex": "#7E8C94", "evidenceRef": "region-glazing", "notes": "Measured from the named evidence region, not chosen."}, "regions": [{"id": "glass-field", "hex": "#7E8C94", "coverage": 0.72, "evidenceRef": "region-glazing"}, {"id": "green-spandrel", "hex": "#8FC72C", "coverage": 0.24, "evidenceRef": "region-glazing"}, {"id": "poster-panel", "hex": "#EDF2E6", "coverage": 0.04, "evidenceRef": "region-promo-panel"}], "finishStyle": "tinted architectural glass, mostly opaque surface", "materialRef": "glass-tinted", "dominantAlbedo": "rgba(126, 140, 148, 1.0)", "secondaryAlbedo": "rgba(126, 140, 148, 1.0)", "materialClass": "glass", "materialClassConfidence": 0.85}, "levelRationale": "MACRO, not meso. A blockout is the clay mass, and a mass with a 6.80 x 2.85 m hole punched through its front and its roof open to the sky is not a closed solid -- turntable_gate measured the front silhouette as 45% interior hole. The glazed shopfront is 6.80 m of an 8.0 m elevation and the deck is the roof: both are the building's mass, not detail applied to it. The applied bands, the sign, the kerb and every instanced cluster stay meso/micro, so the blockout is still clay-macro.", "uvContract": {"status": "unwrapped", "strategy": "generated procedural coordinates", "materialId": "glass-tinted"}, "materialRegions": [{"regionId": "glass", "materialId": "glass-tinted", "profileId": "glass.clear", "crop": {"path": "/home/mulligan/code/thaikit/scratch/ais-shop-building/material-evidence/04-glass.png", "bbox": {"x": 700, "y": 600, "width": 34, "height": 72}, "sourceWidth": 1024, "sourceHeight": 1024, "loaderWarnings": [], "coverage": 0.0023}}, {"regionId": "framing", "materialId": "aluminium", "profileId": "metal.aluminum", "crop": {"path": "/home/mulligan/code/thaikit/scratch/ais-shop-building/material-evidence/05-framing.png", "bbox": {"x": 596, "y": 560, "width": 18, "height": 150}, "sourceWidth": 1024, "sourceHeight": 1024, "loaderWarnings": [], "coverage": 0.0026}}], "materialRebindNote": "apply_material_analysis rebound this to 'aluminium'; restored to 'glass-tinted', the material this component actually carries."};
-  node_shopfront_glazing_5.add(mesh_shopfront_glazing_5);
-  meshes["shopfront-glazing"] = mesh_shopfront_glazing_5;
-  colliders["shopfront-glazing"] = {};
-
-  const endpoint_shopfront_sill_6 = makeAttachmentEndpoint(null);
-  const node_shopfront_sill_6 = new THREE.Group();
-  node_shopfront_sill_6.name = "Concrete shopfront kerb__pivot";
-  node_shopfront_sill_6.scale.set(1, 1, 1);
-  if (endpoint_shopfront_sill_6) {
-    node_shopfront_sill_6.position.copy(endpoint_shopfront_sill_6.start);
-    node_shopfront_sill_6.rotation.set(0.0, 0.0, 0.0);
-  } else {
-    node_shopfront_sill_6.position.set(0.0, 0.065, 3.49);
-    node_shopfront_sill_6.rotation.set(0.0, 0.0, 0.0);
-  }
-  node_shopfront_sill_6.userData.sculptComponent = {"id": "shopfront-sill", "name": "Concrete shopfront kerb", "level": "meso", "role": "structure", "importance": 0.45, "confidence": 0.88, "primitive": "box", "topologyClass": "assembled-solid", "topologyRationale": "A plain kerb course. Box.", "geometryDescriptor": {"topologyIntent": "single hard-edged box; no bevel, no subdivision", "edgeTreatment": {"type": "none", "bevelRadius": 0.0, "segments": 1}, "deformationStack": [], "uvStrategy": "generated procedural coordinates", "normalStrategy": "vertex normals from generated geometry", "segmentRationale": "1x1x1 segments: 12 triangles. Triangles are not the binding axis here.", "zFightingNote": "Spans z=+3.36 to +3.62, standing 0.12 m proud of the facade and burying its back face 0.14 m inside the wall. Its top face at y=0.15 meets the framing cluster's sill rail, which starts at y=0.12 and therefore OVERLAPS it rather than landing on it. ALSO, the kerb spans y=-0.02..0.15 rather than 0.00..0.15. Its underside at y=0.000 was coplanar and co-facing with the facade wall's own underside -- a 1.01 m2 pair, the largest check-coplanar.mjs found. Both faces point DOWN into the ground and are never seen in normal play, but they would tear the moment the prop is viewed from below or through a floor, so the kerb is buried 0.02 m instead. The pivot stays at base-center on y=0 and the visible base line is unchanged; the model's minimum Y is -0.02 on a 4.6 m prop, well inside the asset's 0.1 scale tolerance.", "scaleConvention": "NO `scale` key on transform, deliberately. generate_threejs_factory.py's scale_vector() SHORT-CIRCUITS on the presence of transform.scale and returns it verbatim; only when the key is ABSENT does it fall through to sizing the unit box from dimensions.width/height/depth. An authored `scale: [1, 1, 1]` therefore reads as 'this box is one metre cubed', and every box in a first draft of this spec collapsed to a unit cube -- the glazing rendered as a 1 m box floating in a 6.8 m opening. The extrude components are the exact opposite and MUST keep scale: [1, 1, 1]: their profile2D points are already in real metres, so falling through to dimensions would rescale an 8 m building by a further 8x4.6x7."}, "parent": null, "attachment": {"parentSocket": "", "contactType": "overlap", "notes": "Proud course under the glazing, back face inside the wall."}, "dimensions": {"width": 7.2, "height": 0.17, "depth": 0.26, "units": "meters", "confidence": 0.88}, "transform": {"position": [0, 0.065, 3.49], "rotationEuler": [0, 0, 0], "rotation": [0, 0, 0]}, "material": "concrete-grey", "materialLayers": [], "deformations": [], "joints": [], "seams": [], "localFeatures": [{"id": "shopfront-kerb", "kind": "ridge", "confidence": 0.88, "placement": {"proud": 0.12, "height": 0.15}, "notes": "Grey concrete kerb standing proud of the render under the full width of the glazing.", "evidenceRef": "region-kerb"}], "surfaceDetail": {"macroRoughness": 0.12, "microRoughness": 0.35, "bumpAmplitude": 0.1, "normalPattern": "fair-faced concrete", "displacementPattern": "", "occlusionPattern": "occlusion in the kerb's top reveal against the framing", "edgeWearPattern": "light scuffing at the nose", "notes": "Eye-level in a first-person view, unlike the roof deck it shares a material with."}, "evidenceRefs": ["region-kerb"], "details": ["shopfront-kerb"], "fidelityTier": "secondary", "actionProfile": {"animationRole": "structure", "pivot": {"mode": "custom", "localPosition": [0, 0, 0], "axis": [0, 1, 0], "confidence": 0.95, "name": "shopfront-sill-node", "notes": "Static kerb, no pivot declared."}, "transformChannels": {"translate": true, "rotate": true, "scale": true, "bend": false, "twist": false, "detach": false, "visibility": true, "materialState": true}, "sockets": [], "constraints": [], "destruction": {"breakable": false, "fractureGroup": "", "seamRefs": []}}, "colorMaterialRecipe": {"baseColor": {"hex": "#8C8F92", "evidenceRef": "region-kerb", "notes": "Measured from the named evidence region, not chosen."}, "regions": [{"id": "field", "hex": "#8C8F92", "coverage": 1.0, "evidenceRef": "region-kerb"}], "finishStyle": "untreated fair-faced concrete, matte", "materialRef": "concrete-grey", "dominantAlbedo": "rgba(140, 143, 146, 1.0)", "secondaryAlbedo": "rgba(140, 143, 146, 1.0)", "materialClass": "stone", "materialClassConfidence": 0.85}};
-  node_shopfront_sill_6.userData.actionProfile = {"animationRole": "structure", "pivot": {"mode": "custom", "localPosition": [0, 0, 0], "axis": [0, 1, 0], "confidence": 0.95, "name": "shopfront-sill-node", "notes": "Static kerb, no pivot declared."}, "transformChannels": {"translate": true, "rotate": true, "scale": true, "bend": false, "twist": false, "detach": false, "visibility": true, "materialState": true}, "sockets": [], "constraints": [], "destruction": {"breakable": false, "fractureGroup": "", "seamRefs": []}};
-  (nodes["root"] ?? root).add(node_shopfront_sill_6);
-  nodes["shopfront-sill"] = node_shopfront_sill_6;
-  const mesh_shopfront_sill_6Geometry = endpoint_shopfront_sill_6
-    ? new THREE.CylinderGeometry(endpoint_shopfront_sill_6.endRadius, endpoint_shopfront_sill_6.baseRadius, endpoint_shopfront_sill_6.length, 16, 6)
-    : new THREE.BoxGeometry(1, 1, 1, 4, 4, 4);
-  if (!endpoint_shopfront_sill_6) {
-    mesh_shopfront_sill_6Geometry.scale(7.2, 0.17, 0.26);
-  }
-  const mesh_shopfront_sill_6 = new THREE.Mesh(
-    mesh_shopfront_sill_6Geometry,
-    materialMap["concrete-grey"] ?? new THREE.MeshStandardMaterial({ color: 0x888888 })
-  );
-  mesh_shopfront_sill_6.name = "Concrete shopfront kerb";
-  if (endpoint_shopfront_sill_6) {
-    mesh_shopfront_sill_6.position.copy(endpoint_shopfront_sill_6.midpoint);
-    mesh_shopfront_sill_6.quaternion.copy(endpoint_shopfront_sill_6.quaternion);
-  }
-  mesh_shopfront_sill_6.castShadow = options.castShadow ?? true;
-  mesh_shopfront_sill_6.receiveShadow = options.receiveShadow ?? true;
-  mesh_shopfront_sill_6.userData.sculptComponent = {"id": "shopfront-sill", "name": "Concrete shopfront kerb", "level": "meso", "role": "structure", "importance": 0.45, "confidence": 0.88, "primitive": "box", "topologyClass": "assembled-solid", "topologyRationale": "A plain kerb course. Box.", "geometryDescriptor": {"topologyIntent": "single hard-edged box; no bevel, no subdivision", "edgeTreatment": {"type": "none", "bevelRadius": 0.0, "segments": 1}, "deformationStack": [], "uvStrategy": "generated procedural coordinates", "normalStrategy": "vertex normals from generated geometry", "segmentRationale": "1x1x1 segments: 12 triangles. Triangles are not the binding axis here.", "zFightingNote": "Spans z=+3.36 to +3.62, standing 0.12 m proud of the facade and burying its back face 0.14 m inside the wall. Its top face at y=0.15 meets the framing cluster's sill rail, which starts at y=0.12 and therefore OVERLAPS it rather than landing on it. ALSO, the kerb spans y=-0.02..0.15 rather than 0.00..0.15. Its underside at y=0.000 was coplanar and co-facing with the facade wall's own underside -- a 1.01 m2 pair, the largest check-coplanar.mjs found. Both faces point DOWN into the ground and are never seen in normal play, but they would tear the moment the prop is viewed from below or through a floor, so the kerb is buried 0.02 m instead. The pivot stays at base-center on y=0 and the visible base line is unchanged; the model's minimum Y is -0.02 on a 4.6 m prop, well inside the asset's 0.1 scale tolerance.", "scaleConvention": "NO `scale` key on transform, deliberately. generate_threejs_factory.py's scale_vector() SHORT-CIRCUITS on the presence of transform.scale and returns it verbatim; only when the key is ABSENT does it fall through to sizing the unit box from dimensions.width/height/depth. An authored `scale: [1, 1, 1]` therefore reads as 'this box is one metre cubed', and every box in a first draft of this spec collapsed to a unit cube -- the glazing rendered as a 1 m box floating in a 6.8 m opening. The extrude components are the exact opposite and MUST keep scale: [1, 1, 1]: their profile2D points are already in real metres, so falling through to dimensions would rescale an 8 m building by a further 8x4.6x7."}, "parent": null, "attachment": {"parentSocket": "", "contactType": "overlap", "notes": "Proud course under the glazing, back face inside the wall."}, "dimensions": {"width": 7.2, "height": 0.17, "depth": 0.26, "units": "meters", "confidence": 0.88}, "transform": {"position": [0, 0.065, 3.49], "rotationEuler": [0, 0, 0], "rotation": [0, 0, 0]}, "material": "concrete-grey", "materialLayers": [], "deformations": [], "joints": [], "seams": [], "localFeatures": [{"id": "shopfront-kerb", "kind": "ridge", "confidence": 0.88, "placement": {"proud": 0.12, "height": 0.15}, "notes": "Grey concrete kerb standing proud of the render under the full width of the glazing.", "evidenceRef": "region-kerb"}], "surfaceDetail": {"macroRoughness": 0.12, "microRoughness": 0.35, "bumpAmplitude": 0.1, "normalPattern": "fair-faced concrete", "displacementPattern": "", "occlusionPattern": "occlusion in the kerb's top reveal against the framing", "edgeWearPattern": "light scuffing at the nose", "notes": "Eye-level in a first-person view, unlike the roof deck it shares a material with."}, "evidenceRefs": ["region-kerb"], "details": ["shopfront-kerb"], "fidelityTier": "secondary", "actionProfile": {"animationRole": "structure", "pivot": {"mode": "custom", "localPosition": [0, 0, 0], "axis": [0, 1, 0], "confidence": 0.95, "name": "shopfront-sill-node", "notes": "Static kerb, no pivot declared."}, "transformChannels": {"translate": true, "rotate": true, "scale": true, "bend": false, "twist": false, "detach": false, "visibility": true, "materialState": true}, "sockets": [], "constraints": [], "destruction": {"breakable": false, "fractureGroup": "", "seamRefs": []}}, "colorMaterialRecipe": {"baseColor": {"hex": "#8C8F92", "evidenceRef": "region-kerb", "notes": "Measured from the named evidence region, not chosen."}, "regions": [{"id": "field", "hex": "#8C8F92", "coverage": 1.0, "evidenceRef": "region-kerb"}], "finishStyle": "untreated fair-faced concrete, matte", "materialRef": "concrete-grey", "dominantAlbedo": "rgba(140, 143, 146, 1.0)", "secondaryAlbedo": "rgba(140, 143, 146, 1.0)", "materialClass": "stone", "materialClassConfidence": 0.85}};
-  node_shopfront_sill_6.add(mesh_shopfront_sill_6);
-  meshes["shopfront-sill"] = mesh_shopfront_sill_6;
-  colliders["shopfront-sill"] = {};
-
-  root.userData.materialMap = materialMap;
-  root.userData.sculptRuntime = { nodes, meshes, sockets, colliders, destructionGroups } satisfies ProceduralModelRuntime;
-  root.userData.lookDevTargets = {"environment": "neutral studio, mid-grey backdrop", "keyRatio": 3.6, "exposure": 1.0, "notes": "Match the plate's soft studio key so a review comparison measures the model rather than a lighting difference.", "toneMapping": "ACESFilmic", "toneMappingIntent": "Match the plate's soft studio key. ACES holds the sign's saturated green and the white fascia apart instead of clipping both toward white, which is what a linear response does to a lit acrylic panel next to a high-value panel.", "contactShadow": {"mode": "shadow-map", "notes": "The prop is floor-placed, so it needs a real ground contact: the shell casts onto the ground plane, and inside the model the coping casts a short shadow onto the roof deck and the fascia band casts onto the glazing head. Those two internal contacts are what make the two relief steps on the front elevation read."}, "groundShadowBehavior": "receiveShadow on the roof deck and the glazing; castShadow on every component and every cluster."};
-  root.userData.actionReadiness = {
-    note: 'Use root.userData.sculptRuntime.nodes for transforms, sockets for attachments, colliders for physics proxies, and destructionGroups for breakable sets.',
+  /* Shell: SOLID box, not a ring. The prop is an exterior shell only ever seen from outside, so
+   * an interior costs draw calls, geometries and VRAM for something nobody sees -- and solid
+   * means the shopfront needs no opening cut in it, which removes all four reveal faces and the
+   * z-fighting they cause. Set 0.06 m INSIDE the parapet ring on every elevation so no wall face
+   * is ever coplanar and co-facing with a parapet face. */
+  // How far forward the shell face sits. The DEFAULT 2.50 leaves 1.00 m for an entrance canopy to
+  // cantilever into, so the canopy nose lands exactly on the declared 7.0 m depth. A building with
+  // NO forward cantilever must push this out instead, or the prop is built short of its declared
+  // envelope -- MK first came out 6.3 m deep against a declared 7.0 for exactly that reason.
+  const SF = (G.shellFront ?? 2.50) as number;
+  // `shellBox` [cx, cy, cz, w, h, d] replaces the full-module shell for a plate whose enclosed volume
+  // does not fill the slab -- the PTT kiosk sits under the rear-right of an 8 x 7 canopy slab.
+  const SB = (G.shellBox as number[] | undefined) ?? [0, 1.775, (SF - 3.44) / 2, 7.88, 3.55, SF + 3.44];
+  // `shellBoxes` replaces the shell with SEVERAL boxes in one submission, for a plate whose wall has
+  // a recess in it -- a service door set back into a reveal (MK). The pocket is left open by the
+  // boxes around it, so the leaf inside can sit BEHIND the wall face without a hole being cut.
+  add('building-shell', 'Building shell',
+      G.shellBoxes ? boxes(G.shellBoxes as number[][]) : boxAt(SB[0], SB[1], SB[2], SB[3], SB[4], SB[5]), 'wall');
+  colliders['building-shell'] = {
+    shape: 'box', localCenter: [0, 2.3, 0], halfExtents: [4.0, 2.3, 3.5],
+    notes: 'Asset declares collider "box". One convex proxy over the whole envelope.',
   };
+
+  /* Roof deck spans y 3.50..3.62 by default, so its underside is sunk INTO the shell rather than
+   * resting on it. Authored flush, the deck's bottom face and the parapet ring's bottom face were
+   * both at y=3.550 and both facing down -- 46 m2 of coplanar co-facing surface.
+   *
+   * `deckY` raises it inside the parapet ring, which is what a plate showing a SHALLOW roof well
+   * needs: with the deck at the shell top and a ring that runs to the coping, the rooftop plant
+   * sits in a 0.8 m pit and only its lids clear the parapet, when the plate shows most of each
+   * unit standing above it. Raising the deck cannot raise the plant past the declared 4.60 m --
+   * that is what the coping is -- but it is what decides how much of it a viewer sees. */
+  // `deckExtra` folds more boxes into the deck's submission -- a dark backdrop slab behind a glazed
+  // opening, so a shopfront with no interior image shows a dark room through its glass and its
+  // delivery hatch reads as a HOLE rather than as a patch of the render wall.
+  // `deckBox` [cx, cy, cz, w, h, d] replaces the full-module deck the same way `shellBox` does.
+  const DB = (G.deckBox as number[] | undefined) ?? [0, (G.deckY ?? 3.56) as number, (SF - 0.02 - 3.42) / 2, 7.8, 0.12, SF + 3.40];
+  const deckGeo = boxAt(DB[0], DB[1], DB[2], DB[3], DB[4], DB[5]);
+  // `deckExtraTones` (one per deckExtra box; the deck itself stays white) is how the backdrop is
+  // DARK while the deck keeps its measured tone: one material, one draw call, a vertex colour.
+  const tonedDeck = !!G.deckExtraTones;
+  add('roof-deck', 'Roof deck',
+      G.deckExtra
+        ? (tonedDeck
+            // `deckTone` tints the deck box itself, for a plate whose plant rides the deck MATERIAL
+            // (a galvanised tile shared by the units and the membrane) while the membrane keeps its
+            // own measured tone. Left unset the deck is white, i.e. the material's authored colour.
+            ? tonedBoxes([DB, ...(G.deckExtra as number[][])],
+                         [G.deckTone as number | undefined, ...(G.deckExtraTones as number[])])
+            : mergeGeos([deckGeo, boxes(G.deckExtra as number[][])]))
+        : deckGeo, 'deck');
+  if (tonedDeck) deckGeo.dispose();
+
+  /* Parapet: front fascia wall plus three upstands, MERGED into one component and one draw call.
+   * The front is taller than the sides, which a plan extrusion cannot express. Outer faces stand
+   * 0.06 m proud of the walls -- a coping drip edge, and what keeps them off the wall planes. */
+  const PS = (G.parapetSides ?? { cy: 3.75, h: 0.4, thick: 0.24 }) as any;
+  // Parapet plan size. It defaults to the full 8.00 m envelope width, but a building whose FASCIA
+  // turns the corner has to pull the ring in: the return board is the outermost thing on that
+  // elevation, and a parapet at the same +-4.00 both hides it and puts two co-facing planes at the
+  // same x. `parapetW` and `PS.cx` are how a config buys that clearance without every sibling
+  // moving.
+  const PW = (G.parapetW ?? 8.0) as number;
+  const PCX = (PS.cx ?? 3.88) as number;
+  // `parapetBoxes` replaces the whole default ring (fascia wall + three upstands) for a plate whose
+  // roof edge is not the shared module's -- a canopy slab with its own fascia depths per side.
+  add('parapet', 'Parapet ring and fascia wall', boxes(G.parapetBoxes ? [...(G.parapetBoxes as number[][]), ...((G.parapetExtra ?? []) as number[][])] : [
+    [0, G.fasciaWall.cy, G.fasciaWall.cz, PW, G.fasciaWall.h, G.fasciaWall.d],
+    // Side and rear upstands. `parapetSides` overrides the default 0.40 m upstand for a plate whose
+    // parapet is a full-height ring rather than a low kerb; the front is always the taller face and
+    // comes in through `fasciaWall`, which a plan extrusion could not express.
+    [-PCX, PS.cy, (SF - 0.30 - 3.5) / 2, PS.thick, PS.h, SF + 3.20],
+    [PCX, PS.cy, (SF - 0.30 - 3.5) / 2, PS.thick, PS.h, SF + 3.20],
+    [0, PS.cy, -3.38, PW, PS.h, 0.24],
+    // Anything else in the SAME material folds in here rather than costing its own draw call --
+    // full-height facade cladding, corner pilasters, a plinth. This is the merge lever: two
+    // parts that share a material should never be two submissions.
+    ...((G.parapetExtra ?? []) as number[][]),
+  ]), G.fasciaWallMaterial);
+
+  /* Brand fascia panel. Sunk INTO the fascia wall at the back and standing proud at the front, so
+   * it overlaps its surround instead of meeting it. UVs are AUTHORED: the +Z face samples the
+   * wordmark band of the canvas and the other five faces sample a plain corner of the same
+   * canvas, which keeps the brand graphic at ONE material and ONE draw call. */
+  {
+    const f = G.fascia;
+    let g: THREE.BufferGeometry;
+    if (f.shape === 'disc') {
+      // A round sign disc, built as a CircleGeometry face plus a shallow cylinder body.
+      //
+      // The obvious construction -- one cylinder rotated to face +Z -- puts the wordmark on its
+      // side, because CylinderGeometry lays its cap UVs out in the cylinder's own XZ plane and
+      // rotating the geometry does not rotate them with it. CircleGeometry's UVs are already
+      // (x, y) in the plane it faces, so the square canvas lands the right way up with no
+      // correction. The body's UVs are collapsed onto a plain corner of the same canvas so the
+      // disc's edge does not smear the wordmark around its rim.
+      const r = f.w / 2;
+      const face = new THREE.CircleGeometry(r, 32);
+      face.translate(0, 0, 0.061);
+      const body = new THREE.CylinderGeometry(r, r, 0.12, 32);
+      body.rotateX(-Math.PI / 2);
+      const buv = body.getAttribute('uv') as THREE.BufferAttribute;
+      for (let i = 0; i < buv.count; i++) buv.setXY(i, 0.02, 0.02);
+      buv.needsUpdate = true;
+      g = mergeGeos([face, body]);
+      g.translate(0, f.cy, f.cz);
+    } else {
+      // BoxGeometry vertex order is px, nx, py, ny, pz, nz -- four vertices per face -- so the
+      // outward face of a board is a known slice of the uv attribute. A building can carry the
+      // same mark on more than one elevation (this kit's hospital signs its front AND its side),
+      // so `boards` lets each board name the face that samples the graphic while every other face
+      // samples a plain corner of the same canvas. One material, one draw call, any number of
+      // boards facing any way.
+      const FACE_SLICE: Record<string, number> = { '+X': 0, '-X': 4, '+Y': 8, '-Y': 12, '+Z': 16, '-Z': 20 };
+      const boards = (f.boards as any[]) ?? [{ w: f.w, h: f.h, d: 0.12, at: [0, f.cy, f.cz], face: '+Z' }];
+      const parts: THREE.BufferGeometry[] = [];
+      for (const bd of boards) {
+        const b = new THREE.BoxGeometry(bd.w, bd.h, bd.d ?? 0.12);
+        const uv = b.getAttribute('uv') as THREE.BufferAttribute;
+        // `plain` boards carry no graphic at all: a band that wraps three sides of a canopy should
+        // repeat its mark on none of the returns, only on the face that fronts the street.
+        // The test is an explicit boolean, NOT a sentinel index -- setting the slice start to -1
+        // still satisfied `i >= start && i < start + 4` for vertices 0, 1 and 2, so three corners
+        // of the +X face kept sampling the wordmark band and smeared a stretched ghost of the mark
+        // along every return.
+        const plain = bd.plain === true;
+        const startAt = FACE_SLICE[bd.face ?? '+Z'];
+        // `u: [u0, u1]` lets a board sample a horizontal SLICE of the canvas band instead of all of
+        // it, so two boards with two different graphics (a blue board with white text, a white board
+        // with blue text) still share one canvas, one material and one draw call. `plainUV` is the
+        // canvas point the board's other five faces sample; it defaults to the bottom-left corner
+        // and a board whose ground is not the canvas background names its own.
+        const u0 = bd.u ? bd.u[0] : 0, u1 = bd.u ? bd.u[1] : 1;
+        const pu = bd.plainUV ? bd.plainUV[0] : 0.015, pv = bd.plainUV ? bd.plainUV[1] : 0.015;
+        for (let i = 0; i < uv.count; i++) {
+          // `f.uvRect` [u0, v0, u1, v1] names the ATLAS region the band occupies when the sign
+          // shares its image with other textured parts; default is the canvas contract (top 87.5 %).
+          const R = (f.uvRect as number[]) ?? [0, 0.125, 1, 1];
+          if (!plain && i >= startAt && i < startAt + 4) uv.setXY(i, R[0] + (u0 + uv.getX(i) * (u1 - u0)) * (R[2] - R[0]), R[1] + uv.getY(i) * (R[3] - R[1]));
+          else uv.setXY(i, pu, pv);
+        }
+        uv.needsUpdate = true;
+        b.translate(bd.at[0], bd.at[1], bd.at[2]);
+        parts.push(b);
+      }
+      g = parts.length === 1 ? parts[0] : mergeGeos(parts);
+    }
+    // `curved`: textured bulged fronts (an ATM kiosk face) that ride the SAME material and
+    // submission as the sign, sampling their own region of the baked atlas. Each is a partial
+    // cylinder about Y, apex at z, edges at z - bulge, spanning w by h, UVs remapped to uvRect.
+    if (f.curved) {
+      const cparts: THREE.BufferGeometry[] = [g];
+      for (const c of f.curved as any[]) {
+        const R = (c.w * c.w / 4 + c.bulge * c.bulge) / (2 * c.bulge);
+        const half = Math.asin(c.w / 2 / R);
+        const cyl = new THREE.CylinderGeometry(R, R, c.h, c.seg ?? 12, 1, true, -half, 2 * half);
+        const cuv = cyl.getAttribute('uv') as THREE.BufferAttribute;
+        const r = c.uvRect as number[];
+        for (let i = 0; i < cuv.count; i++) cuv.setXY(i, r[0] + cuv.getX(i) * (r[2] - r[0]), r[1] + cuv.getY(i) * (r[3] - r[1]));
+        cyl.translate(c.x, c.y, c.z - R);
+        cparts.push(cyl);
+      }
+      g = mergeGeos(cparts);
+    }
+    add('fascia-panel', 'Brand fascia panel', g, 'fascia');
+  }
+
+  /* One glazing pane, not one per bay: the mullion grid in front does the dividing. Overlaps INTO
+   * the facade at the back and sits RECESSED behind the framing at the front. Mostly opaque by
+   * design -- there is no interior behind it, so a transparent pane would read as a hole. */
+  // The pane is not always centred: a branch plan can put its glazing to one side of the entrance.
+  // Authored centred while its framing sat off to the left, the two read as unrelated parts.
+  // `glazingExtra` folds further panes -- a side window, a clerestory -- into the SAME component:
+  // one material, one draw call, however many openings the plate shows.
+  {
+    // `boxes` lets the pane be several PANELS in one component -- a fixed run, a transom light
+    // over the door bay, and a gap where a delivery hatch opens -- without costing a draw call
+    // per panel. `glazingExtra` is the older single-pane-plus-extras form and still works.
+    const pane = G.glazing.boxes
+      ? boxes(G.glazing.boxes as number[][])
+      : boxAt(G.glazing.cx ?? 0, G.glazing.cy, G.glazing.cz ?? 2.51, G.glazing.w, G.glazing.h, G.glazing.d ?? 0.10);
+    const extra = (G.glazingExtra ?? []) as number[][];
+    add('shopfront-glazing', 'Shopfront glazing',
+        extra.length ? mergeGeos([pane, ...extra.map((b) => boxAt(b[0], b[1], b[2], b[3], b[4], b[5]))]) : pane, 'glass');
+  }
+
+  /* Framing, transom, kick rail, door jambs and header MERGED into one component. Every part is
+   * the same metal; folding them together is the draw-call lever chosen in the blockout, not an
+   * optimisation deferred to the end -- a part split for authoring convenience cannot be merged
+   * afterwards once a pivot hangs off it. Front face stands proud of glazing and mullions. */
+  add('shopfront-frame', 'Shopfront framing and door bay', boxes(G.frame), G.frameMaterial);
+
+  /* Entrance door: a real LEAF on a real HINGE, not a rectangle painted into the glazing. The
+   * leaf is built in hinge-local coordinates (x runs from the hinge stile outward) under a pivot
+   * node at the jamb, so rotating that node about +Y swings the door. Two meshes -- stiles and
+   * rails in the frame metal, a pane in the glass -- and this is the one part of an otherwise
+   * static shell that earns a named pivot. The leaf sits in its own depth band between the
+   * glazing and the fixed frame so nothing on it is coplanar with a fixed face at any angle. */
+  const pivotNodes: THREE.Object3D[] = [];
+  if (G.door) {
+    const d = G.door;
+    const hinge = new THREE.Group();
+    hinge.name = 'door-hinge';
+    hinge.position.set(d.hinge[0], d.hinge[1], d.hinge[2]);
+    hinge.userData.actionProfile = {
+      animationRole: 'articulated',
+      pivot: { mode: 'custom', localPosition: [0, 0, 0], axis: [0, 1, 0], name: 'door-hinge',
+               note: 'Entrance door swings about the jamb stile. Closed at 0, opens outward toward +Z with negative yaw.' },
+    };
+    root.add(hinge);
+    pivotNodes.push(hinge);
+    const w = d.w as number, h = d.h as number, y0 = d.y0 as number, y1 = y0 + h, ym = (y0 + y1) / 2;
+    const st = d.stile ?? 0.08, D = d.depth ?? 0.12;
+    // `flip` hangs the leaf on the OTHER jamb: local +x runs toward -X instead of +X, so the
+    // handle lands on the correct edge for a plate whose door pull is on the left. It is a sign
+    // on the x coordinates rather than a mirrored transform, because a negative scale inverts
+    // every normal on the leaf and the glass then renders inside-out.
+    const sx = d.flip ? -1 : 1;
+    const hx = w - (d.handle ? (d.handle[0] ?? 0.16) : 0);
+    const leafFrame = boxes([
+      [sx * (st / 2), ym, 0, st, h, D],
+      [sx * (w - st / 2), ym, 0, st, h, D],
+      [sx * (w / 2), y1 - 0.04, 0, w, 0.08, D],
+      [sx * (w / 2), y0 + 0.16, 0, w, 0.32, D],
+      [sx * (w / 2), d.railY ?? 1.05, 0, w, 0.07, D],
+      // Pull handle: a vertical bar on two stand-offs, on the swinging edge. The plate shows one
+      // and it is the detail that reads a glass leaf as a door rather than as another pane.
+      ...(d.handle ? [
+        { cyl: [sx * hx, (d.handle[1] ?? 1.05), D / 2 + 0.05, 0.018, d.handle[2] ?? 0.80, 10] },
+        [sx * hx, (d.handle[1] ?? 1.05) + (d.handle[2] ?? 0.80) / 2 - 0.03, D / 2 + 0.025, 0.036, 0.036, 0.10],
+        [sx * hx, (d.handle[1] ?? 1.05) - (d.handle[2] ?? 0.80) / 2 + 0.03, D / 2 + 0.025, 0.036, 0.036, 0.10],
+      ] : []),
+    ] as any);
+    const leafPane = boxAt(sx * (w / 2), (y0 + 0.32 + y1 - 0.08) / 2, 0, w - 2 * st, y1 - 0.08 - (y0 + 0.32), 0.04);
+    for (const [id, name, geo, mat] of [
+      ['door-leaf-frame', 'Entrance door leaf frame', leafFrame, G.frameMaterial],
+      ['door-leaf-glass', 'Entrance door leaf glass', leafPane, 'glass'],
+    ] as [string, string, THREE.BufferGeometry, string][]) {
+      const node = new THREE.Group(); node.name = name + '__node';
+      const mesh = new THREE.Mesh(geo, materials[mat]);
+      mesh.name = name; mesh.castShadow = castShadow; mesh.receiveShadow = receiveShadow;
+      node.add(mesh); hinge.add(node);
+      nodes[id] = node; meshes[id] = mesh; colliders[id] = null;
+    }
+  }
+
+  /* Side feature: shutter, service door or louvre, per plate. Stands proud of the wall face but
+   * deliberately NOT out to the parapet plane at +-4.00 -- a face at exactly +-4.00 would be
+   * coplanar and co-facing with the parapet outer face, which the bounding-box coplanarity check
+   * flags even though the two never overlap in Y. */
+  if (G.sideFeature) add('side-feature', G.sideFeature.name, boxes(G.sideFeature.boxes), G.sideFeature.material);
+
+  /* Front feature: cladding band, ATM bank, upper-storey band or forecourt, per plate. */
+  if (G.frontFeature) add('front-feature', G.frontFeature.name, boxes(G.frontFeature.boxes), G.frontFeature.material);
+
+  /* A third merged slot, for whatever the plate has that the two above do not cover -- a parapet
+   * coping, a kerb, a forecourt column base. Same rule as the others: everything in it shares one
+   * material and is submitted once. */
+  if (G.extraFeature) add('extra-feature', G.extraFeature.name, boxes(G.extraFeature.boxes), G.extraFeature.material);
+
+  /* A fourth merged slot. Two features in DIFFERENT materials cannot share a component, and a
+   * plate that shows a galvanised plant deck AND a painted steel service door needs both. */
+  if (G.extraFeature2) add('extra-feature-2', G.extraFeature2.name, boxes(G.extraFeature2.boxes), G.extraFeature2.material);
+
+  /* A TINTED merged slot: one component, one material, and a per-BOX colour written into a vertex
+   * colour attribute. This is how a two-colour applied graphic -- a vinyl decal band on a shopfront,
+   * a painted stripe on a kerb -- ships without a material per colour, on a kit whose material
+   * ceiling is the axis these props are tightest on after draw calls.
+   *
+   * Two rules make it safe. The material must be WHITE, because a vertex colour MULTIPLIES with
+   * material.color and a tinted base would darken every tone. And EVERY vertex has to be written,
+   * because the shader reads a missing colour attribute as (0,0,0) and renders the mesh black --
+   * the failure that shipped the ubosot's walls and eight boundary stones as silhouettes. Both are
+   * satisfied here by construction: the attribute is filled box by box over the whole merge. The
+   * tones are LINEAR, matching how three.js multiplies them. */
+  if (G.tintFeature) {
+    const t = G.tintFeature;
+    const list = t.boxes as (number[] | { cyl: number[] })[];
+    const parts = list.map((b) => boxes([b]));
+    const geo = mergeGeos(parts.map((g) => g.clone()));
+    const col = new Float32Array(geo.getAttribute('position').count * 3);
+    const c = new THREE.Color();
+    let v = 0;
+    for (let i = 0; i < parts.length; i++) {
+      const n = parts[i].getAttribute('position').count;
+      c.setHex(t.tones[i % t.tones.length]);
+      // setHex on a Color is sRGB-decoded by three.js when colorManagement is on, which is what a
+      // vertex colour wants: the multiply happens in linear space.
+      for (let k = 0; k < n; k++) { col[(v + k) * 3] = c.r; col[(v + k) * 3 + 1] = c.g; col[(v + k) * 3 + 2] = c.b; }
+      v += n;
+      parts[i].dispose();
+    }
+    geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+    const mesh = add('tint-feature', t.name, geo, t.material);
+    (mesh.material as THREE.MeshStandardMaterial).vertexColors = true;
+    (mesh.material as THREE.MeshStandardMaterial).needsUpdate = true;
+  }
+
+  /* Mullions: the fine vertical grid is the most recognisable thing about a shopfront. Instances
+   * on one geometry cost one draw call; as components they would have cost one each and blown the
+   * ceiling on their own. They sit INSIDE the frame depth band at both ends so they are not
+   * coplanar with it, while still standing proud of the glazing so the glass reads as recessed. */
+  {
+    const m = G.mullions;
+    const mats = (m.x as number[]).map((x) => new THREE.Matrix4().setPosition(x, m.cy, m.cz ?? 2.58));
+    addInst('shopfront-mullions', 'Shopfront mullions', new THREE.BoxGeometry(m.w, m.h, 0.08), G.frameMaterial, mats);
+  }
+
+  /* Rooftop condensers: casing, fan cowl and four feet MERGED into a single instanced geometry.
+   * Feet start below the deck top so the two overlap rather than sharing a plane.
+   *
+   * An EMPTY list is a legitimate answer, not a missing config. Instancing one casing is the right
+   * lever when a plate shows the same box two or three times; it is the wrong one when the plate
+   * shows genuinely different units -- a hooded duct run, a wall-type condenser with a square fan
+   * guard, a tall louvred tower -- and repeating one casing three times is then a simplification
+   * that costs fidelity to save nothing. Such a plant deck comes in through `extraFeature` as
+   * merged geometry: still ONE draw call, and every unit its own shape. */
+  if ((G.condensers as number[][] ?? []).length) {
+    /* `condenserParts` replaces the default casing with an authored unit in the SAME box/cyl
+     * grammar, in unit-local coordinates (origin on the deck, the grille facing +Z before yaw).
+     * A packaged rooftop unit is not a plain box: the plate shows a recessed louvre panel with a
+     * fan disc behind it, a lidded top with a round cowl opening, and panel seams down the long
+     * side. All of it merges into the ONE instanced geometry, so the detail is free per unit. */
+    let unit: THREE.BufferGeometry;
+    if (G.condenserParts && G.condenserTones) {
+      // Per-part tones: a dark back plate and fan disc behind lighter blades is what makes a louvre
+      // grille read as an intake rather than as a panel of the casing. The tint rides a vertex
+      // colour on the plant material, and every other mesh on that material is filled white below.
+      unit = tonedBoxes(G.condenserParts as (number[] | { cyl: number[] })[], G.condenserTones as number[]);
+    } else if (G.condenserParts) {
+      unit = boxes(G.condenserParts as (number[] | { cyl: number[] })[]);
+    } else {
+      const parts: THREE.BufferGeometry[] = [
+        boxAt(0, 0.46, 0, 0.95, 0.72, 0.85),
+        cylAt(0, 0.87, 0, 0.30, 0.10, 16),
+      ];
+      for (const fx of [-0.4, 0.4]) for (const fz of [-0.35, 0.35]) parts.push(boxAt(fx, 0.05, fz, 0.08, 0.10, 0.08));
+      unit = mergeGeos(parts);
+    }
+    // An optional fourth number is a UNIFORM SCALE, so one instanced unit can stand in for a plate
+    // that shows one large condenser beside two small ones without a second geometry.
+    const mats = (G.condensers as number[][]).map(([x, z, yaw, s]) =>
+      new THREE.Matrix4().compose(
+        new THREE.Vector3(x, (G.condenserY ?? 3.60) as number, z),
+        new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), yaw),
+        new THREE.Vector3(s ?? 1, s ?? 1, s ?? 1),
+      ));
+    // The plant material is CONFIGURABLE, not hard-coded. Referencing a 'galv' id that a config
+    // does not define silently hands InstancedMesh an undefined material, three.js substitutes a
+    // default, and the prop ships one material over its ceiling with nothing in the config to
+    // explain the extra.
+    addInst('plant-condensers', 'Rooftop condenser units', unit, G.plantMaterial ?? 'galv', mats);
+  }
+
+  /* Optional instanced extra: canopy plates, pilasters or forecourt columns, per plate. */
+  if (G.extraSystem) {
+    const e = G.extraSystem;
+    let unit: THREE.BufferGeometry;
+    if (e.kind === 'plate') {
+      unit = mergeGeos([boxAt(0, 0, 0, e.w, e.h, e.d), cylAt(0, -e.h / 2 - 0.015, 0, 0.085, 0.03, 12)]);
+    } else {
+      unit = boxAt(0, 0, 0, e.w, e.h, e.d);
+    }
+    const mats = (e.at as number[][]).map(([x, y, z]) => new THREE.Matrix4().setPosition(x, y, z));
+    addInst(e.id, e.name, unit, e.material, mats, e.tones ? mats.map((_, i) => e.tones[i % e.tones.length]) : undefined);
+  }
+
+  /* Vertex-colour fill-in runs LAST, over every mesh that exists. It used to run right after the
+   * deck and the plant were added, so any later mesh on the same material -- Makro's concrete
+   * canopy and plinth on the toned deck material -- had no colour attribute and rendered BLACK. */
+  if (tonedDeck) finishVertexColors(materials, meshes, 'deck');
+  if (G.condenserTones && (G.condensers as number[][] ?? []).length) finishVertexColors(materials, meshes, G.plantMaterial ?? 'galv');
+
+  root.userData.sculptRuntime = { nodes, meshes, sockets, colliders, destructionGroups, pivotNodes } satisfies ProceduralModelRuntime & { pivotNodes: THREE.Object3D[] };
   return root;
 }
 
-export function createAISShopBuildingLookDevLights(
-  mode: 'neutral' | 'grazing' | 'reference' = 'neutral',
-): THREE.Group {
-  const lights = new THREE.Group();
-  lights.name = "AIS Shop Building look-dev lights";
-  const hemi = new THREE.HemisphereLight(
-    mode === 'reference' ? 0xfff0d6 : 0xf2f4ff,
-    0x363b42,
-    mode === 'grazing' ? 0.28 : mode === 'reference' ? 0.72 : 0.85,
-  );
-  lights.add(hemi);
-  const key = new THREE.DirectionalLight(
-    mode === 'reference' ? 0xffcf8a : 0xfff4e8,
-    mode === 'grazing' ? 4.2 : mode === 'reference' ? 2.6 : 2.15,
-  );
-  if (mode === 'grazing') key.position.set(7.5, 1.1, 4.0);
-  else if (mode === 'reference') key.position.set(-4.5, 7.5, 5.0);
-  else key.position.set(-4.0, 6.0, 5.5);
-  key.castShadow = true;
-  key.shadow.mapSize.set(4096, 4096);
-  key.shadow.bias = -0.00025;
-  key.shadow.normalBias = 0.018;
-  key.shadow.radius = 7;
-  key.shadow.blurSamples = 24;
-  key.shadow.camera.near = 0.5;
-  key.shadow.camera.far = 30;
-  key.shadow.camera.left = -2.6;
-  key.shadow.camera.right = 2.6;
-  key.shadow.camera.top = 2.6;
-  key.shadow.camera.bottom = -2.6;
-  key.shadow.camera.updateProjectionMatrix();
-  lights.add(key);
-  const fill = new THREE.DirectionalLight(0xa8c4ff, mode === 'grazing' ? 0.12 : 0.42);
-  fill.position.set(4.0, 3.0, 3.5);
-  lights.add(fill);
-  const rim = new THREE.DirectionalLight(0xfff1c4, mode === 'grazing' ? 0.28 : 0.85);
-  rim.position.set(0.5, 4.5, -6.0);
-  lights.add(rim);
-  lights.userData.reviewMode = mode;
-  lights.userData.lightingFromPhoto = [{"id": "key", "type": "directional", "direction": [-0.45, -0.72, -0.53], "intensity": 2.0, "color": "#FFF6E8", "notes": "Soft key from upper front-left: the -X wall carries a gentle value falloff toward the front corner and the coping casts a short shadow onto the deck."}, {"id": "fill", "type": "hemisphere", "direction": [0, 1, 0], "intensity": 0.55, "color": "#DCE4EC", "groundColor": "#6E6E6C", "notes": "Studio bounce off a mid-grey backdrop; keeps the shaded wall readable."}, {"id": "rim", "type": "directional", "direction": [0.62, -0.3, 0.72], "intensity": 0.35, "color": "#EAF0F6", "notes": "Weak rim separating the parapet coping from the backdrop."}, {"id": "sign-emission", "type": "emissive-surface", "surface": "fascia-sign", "intensity": 0.35, "color": "#3E6A10", "notes": "The lightbox itself. Carried on the material, not as a scene light: it must not spill onto the render."}, {"id": "exposure-and-shadow", "type": "render-intent", "exposure": 1.0, "toneMapping": "ACESFilmic", "notes": "Exposure 1.0 with ACESFilmic tone mapping, matched to the plate's soft studio key. ACES holds the sign's saturated green apart from the white fascia beside it instead of clipping both toward white, which is what a linear response does to a lit acrylic panel next to a high-value one. Contact shadow: the prop is floor-placed, so the shell casts a ground shadow, and INSIDE the model the coping casts onto the roof deck and the fascia band casts onto the glazing head -- those two internal contacts are what make the front elevation's two relief steps read as relief rather than as flat colour bands. castShadow on every component and cluster; receiveShadow on the roof deck, the glazing and the facade wall. Ambient occlusion is left to the renderer rather than baked, since no AO may enter base colour."}];
-  lights.userData.lookDevTargets = {"environment": "neutral studio, mid-grey backdrop", "keyRatio": 3.6, "exposure": 1.0, "notes": "Match the plate's soft studio key so a review comparison measures the model rather than a lighting difference.", "toneMapping": "ACESFilmic", "toneMappingIntent": "Match the plate's soft studio key. ACES holds the sign's saturated green and the white fascia apart instead of clipping both toward white, which is what a linear response does to a lit acrylic panel next to a high-value panel.", "contactShadow": {"mode": "shadow-map", "notes": "The prop is floor-placed, so it needs a real ground contact: the shell casts onto the ground plane, and inside the model the coping casts a short shadow onto the roof deck and the fascia band casts onto the glazing head. Those two internal contacts are what make the two relief steps on the front elevation read."}, "groundShadowBehavior": "receiveShadow on the roof deck and the glazing; castShadow on every component and every cluster."};
-  return lights;
-}
+/* ------------------------------------------------------------------ brand fascia canvas */
 
-// PBR materials (clearcoat/iridescence/transmission/anisotropy) need an environment
-// map to visually behave as intended — call this once per renderer and assign the
-// result to scene.environment before rendering. No external HDR asset required.
-
-// Plan 1.3 §3.2 — auto-framing by bounding box. The Divine Eye can only compare a
-// render to the reference if the object is FRAMED consistently (an object framed
-// differently scores as wrong even when its shape is right). This positions the camera
-// deterministically from the object's bounding box so it fills the frame at a stable
-// margin, and sets near/far to the object scale. Call after adding the model to the
-// scene, and again on resize (after updating camera.aspect).
-export function frameAISShopBuildingCamera(
-  camera: THREE.PerspectiveCamera,
-  object: THREE.Object3D,
-  options: { margin?: number; azimuthDeg?: number; elevationDeg?: number } = {},
-): void {
-  const box = new THREE.Box3().setFromObject(object);
-  if (box.isEmpty()) return;
-  const size = box.getSize(new THREE.Vector3());
-  const center = box.getCenter(new THREE.Vector3());
-  const margin = options.margin ?? 1.15;
-  const maxDim = Math.max(size.x, size.y, size.z) * margin;
-  const fov = (camera.fov * Math.PI) / 180;
-  // distance so the largest object dimension fits vertically in the frame
-  const distance = (maxDim / 2) / Math.tan(fov / 2);
-  const az = ((options.azimuthDeg ?? 0) * Math.PI) / 180;
-  const el = ((options.elevationDeg ?? 0) * Math.PI) / 180;
-  const dir = new THREE.Vector3(
-    Math.sin(az) * Math.cos(el),
-    Math.sin(el),
-    Math.cos(az) * Math.cos(el),
-  );
-  camera.position.copy(center).addScaledVector(dir, distance);
-  camera.near = Math.max(0.01, distance - maxDim);
-  camera.far = distance + maxDim * 2;
-  camera.lookAt(center);
-  camera.updateProjectionMatrix();
-}
-
-// Plan 1.3 §3.2c — PRESENTATION composer (DOF + bloom). CRITICAL (R-POSTFX): this is
-// for the showcase/hero render ONLY. The Divine Eye's EVALUATION render MUST use a
-// plain renderer with NO composer — bloom blows highlights and DOF blurs edges, which
-// would corrupt the deterministic IoU/DCD/edge/blowout signals. Enable dof/bloom ONLY
-// when the reference photo actually exhibits them (detect_reference_effects.py authorizes).
-
-export function configureAISShopBuildingRenderer(renderer: THREE.WebGLRenderer): void {
-  // Load-bearing for view-dependent finishes (anodized / Doppler): without ACES + sRGB
-  // the environment reflection reads flat/washed instead of a believable metal response.
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.outputColorSpace = THREE.SRGBColorSpace;
-}
-/** The build pass this factory was generated for. The hand-emitted clusters obey the
- * same macro/meso/micro gate the generator applies to componentTree, so a blockout
- * render shows a blockout and not a finished prop. */
-const BUILD_PASS = 'optimization-pass';
-// MUST match sculptPipeline.passOrder in the spec. 'surface-pass' was missing from a first
-// draft of this list, and indexOf returned -1 for it, so passAtLeast() answered false for
-// every gate and the surface pass silently rendered with no clusters and no canvases --
-// 7 draw calls instead of 12. A pass gate that fails OPEN is worse than none.
-const PASS_ORDER = ['blockout', 'structural-pass', 'form-refinement', 'material-pass',
-  'surface-pass', 'lighting-pass', 'interaction-pass', 'optimization-pass'];
-const passAtLeast = (p: string): boolean =>
-  PASS_ORDER.indexOf(BUILD_PASS) >= PASS_ORDER.indexOf(p);
-
-
-/* ==================== THAIKIT HAND REFINEMENT ==================== */
-
-/**
- * Emit the four LINEAR repetition clusters the generator cannot.
+/** Draw the brand wordmark onto a canvas and assign it AFTER material construction. This is the
+ *  documented route for a printed brand fascia and is unaffected by the material's `textureless`
+ *  declaration -- what that skips is the five-canvas PROCEDURAL set, a different thing entirely.
  *
- * generate_threejs_factory.py distributes instances RADIALLY, evenly around an axis
- * with '(i * 360) / count'. That is right for spokes, teeth and fasteners and wrong
- * for a row of mullions. It also reads `count` while the spec schema writes
- * `instanceCount`, so these four systems are skipped there in silence.
- *
- * Every cluster shares ONE unit BoxGeometry. Per-instance matrices carry the size, so
- * 31 repeated boxes across four clusters cost ONE unique geometry between them --
- * unlike componentTree boxes, where the generator bakes dimensions into vertex data
- * and each becomes distinct. That single fact is what holds this prop inside the
- * hero2x ceiling of 8 unique geometries.
- */
-function applyLinearRepetition(root: THREE.Group): void {
-  const rt = root.userData.sculptRuntime as any;
-  const meshes: Record<string, THREE.Mesh> = rt?.meshes ?? {};
-  const unit = new THREE.BoxGeometry(1, 1, 1);
-  const m4 = new THREE.Matrix4();
-  const q = new THREE.Quaternion();
+ *  Text is fitted to its field by MEASUREMENT rather than by a font-size ratio: headless Chrome's
+ *  font fallback decides the real advance widths, so the only reliable way to fill a known box is
+ *  to measure the string and scale it horizontally. */
+function applyFasciaGraphic(root: THREE.Group): void {
+  const rt = root.userData.sculptRuntime as ProceduralModelRuntime | undefined;
+  const mesh = rt?.meshes?.['fascia-panel'];
+  if (!mesh || typeof document === 'undefined') return;
+  const material = mesh.material as THREE.MeshStandardMaterial;
+  if (!material) return;
 
-  type P = { pos: [number, number, number]; scale: [number, number, number]; color?: string };
-  const cluster = (id: string, material: THREE.Material, placements: P[]): void => {
-    const inst = new THREE.InstancedMesh(unit, material, placements.length);
-    inst.name = id;
-    placements.forEach((p, i) => {
-      m4.compose(new THREE.Vector3(...p.pos), q, new THREE.Vector3(...p.scale));
-      inst.setMatrixAt(i, m4);
-      if (p.color) inst.setColorAt(i, new THREE.Color(p.color));
+  const g = CONFIG.graphic as any;
+  const srgb = (THREE as any).SRGBColorSpace;
+
+  // A BAKED sign -- the face image composed once from a real font and vector marks and embedded
+  // as a WebP data URI -- beats fillText, which draws a different wordmark on every machine's
+  // font fallback. Laid out to the same UV contract as the canvas: the top 87.5 % is the band
+  // the +Z face samples and the bottom-left corner is the plain field every other face samples.
+  // Assigned synchronously so the harness waits on the decode; the canvas ops below are the
+  // decode FALLBACK only.
+  if (g.baked) {
+    const baked = new THREE.TextureLoader().load(g.baked, undefined, undefined, () => {
+      const c = drawFasciaCanvas(g);
+      if (!c) return;
+      const t = new THREE.CanvasTexture(c);
+      if (srgb) t.colorSpace = srgb;
+      t.anisotropy = 4;
+      material.map = t;
+      material.needsUpdate = true;
     });
-    inst.instanceMatrix.needsUpdate = true;
-    if (inst.instanceColor) inst.instanceColor.needsUpdate = true;
-    inst.castShadow = true;
-    inst.receiveShadow = true;
-    root.add(inst);
-    meshes[id] = inst as unknown as THREE.Mesh;
+    if (srgb) baked.colorSpace = srgb;
+    baked.anisotropy = 4;
+    baked.needsUpdate = true;
+    material.map = baked;
+    material.color.setHex(0xffffff);
+    material.needsUpdate = true;
+    return;
+  }
+
+  const canvas = drawFasciaCanvas(g);
+  if (!canvas) return;
+  const tex = new THREE.CanvasTexture(canvas);
+  if (srgb) tex.colorSpace = srgb;
+  tex.anisotropy = 4;
+  tex.needsUpdate = true;
+  material.map = tex;
+  // White base so the canvas shows as drawn rather than tinted -- the measured fascia colour is
+  // already painted into the canvas background.
+  material.color.setHex(0xffffff);
+  material.needsUpdate = true;
+}
+
+function drawFasciaCanvas(g: any): HTMLCanvasElement | null {
+  // A round sign needs a SQUARE canvas: the cylinder cap maps the circle into the unit square,
+  // so a 2048x320 strip would squash the mark flat. A rectangular fascia keeps the wide strip,
+  // where the bottom 12.5% is the plain corner every non-front face samples.
+  const square = !!g.square;
+  const W = square ? 512 : (g.size?.[0] ?? 2048), H = square ? 512 : (g.size?.[1] ?? 320);
+  const canvas = document.createElement('canvas');
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return null;
+
+  ctx.fillStyle = g.background;
+  ctx.fillRect(0, 0, W, H);
+  const band = square ? H : H * (g.bandFrac ?? 0.875);
+
+  const fit = (text: string, font: string, x0: number, x1: number, cy: number, fill: string, strokeCol?: string, strokeW?: number) => {
+    ctx.font = font;
+    ctx.textBaseline = 'middle';
+    ctx.textAlign = 'left';
+    const w = ctx.measureText(text).width;
+    const s = (x1 - x0) / w;
+    ctx.save();
+    ctx.translate(x0, 0);
+    ctx.scale(s, 1);
+    if (strokeCol) { ctx.lineJoin = 'round'; ctx.strokeStyle = strokeCol; ctx.lineWidth = (strokeW ?? 6) / s; ctx.strokeText(text, 0, cy); }
+    ctx.fillStyle = fill;
+    ctx.fillText(text, 0, cy);
+    ctx.restore();
   };
 
-  const mat = (id: string, fallback: number): THREE.Material =>
-    (root.userData.materialMap?.[id] as THREE.Material)
-    ?? new THREE.MeshStandardMaterial({ color: fallback });
-
-  // --- shopfront framing: perimeter, six mullions over eight bays, transom, meeting stile ---
-  // The band sits at z=3.40..3.53: it OVERLAPS the opening edge by 0.06 m on all four
-  // sides rather than meeting the reveals, and its front face stands proud of the wall's
-  // own front face at 3.50 instead of sharing that plane.
-  const ZF = 3.465;
-  const framing: P[] = [
-    { pos: [0, 2.93, ZF], scale: [6.92, 0.14, 0.13] },     // head rail
-    { pos: [0, 0.19, ZF], scale: [6.92, 0.14, 0.13] },     // sill rail
-    { pos: [-3.39, 1.56, ZF], scale: [0.14, 2.88, 0.13] }, // jamb -X
-    { pos: [3.39, 1.56, ZF], scale: [0.14, 2.88, 0.13] },  // jamb +X
-    { pos: [0, 2.34, ZF], scale: [6.80, 0.10, 0.12] },     // transom rail
-    ...([-2.55, -1.70, -0.85, 0.85, 1.70, 2.55].map((x) => ({
-      pos: [x, 1.56, ZF] as [number, number, number],
-      scale: [0.06, 2.60, 0.12] as [number, number, number],
-    }))),
-    { pos: [0, 1.245, ZF], scale: [0.10, 2.19, 0.12] },    // door meeting stile
-    { pos: [0, 2.30, ZF + 0.005], scale: [1.70, 0.08, 0.12] }, // door head
-    { pos: [0.10, 1.15, 3.55], scale: [0.04, 0.34, 0.04] },    // pull handle
-  ];
-  cluster('shopfront-framing', mat('aluminium', 0xb6babb), framing);
-
-  // --- sign tray return: four rails around the graphic face, standing 0.01 m proud of it ---
-  const ZT = 3.5825;
-  cluster('sign-tray-return', mat('sign-green', 0x8fc72c), [
-    { pos: [0, 3.895, ZT], scale: [5.96, 0.08, 0.125] },
-    { pos: [0, 3.045, ZT], scale: [5.96, 0.08, 0.125] },
-    { pos: [-2.92, 3.47, ZT], scale: [0.08, 0.97, 0.125] },
-    { pos: [2.92, 3.47, ZT], scale: [0.08, 0.97, 0.125] },
-  ]);
-
-  // --- rooftop plant: two condensers, duct run, support rail, two darker grille plates ---
-  // Every top sits at or below y=4.52, under the coping at 4.60 -- the plate shows the
-  // plant silhouetted AGAINST the parapet, not over it.
-  cluster('rooftop-plant', mat('galvanised', 0xa6abad), [
-    { pos: [-1.55, 4.15, 0.55], scale: [1.05, 0.50, 0.46] },
-    { pos: [1.35, 4.15, 0.30], scale: [1.05, 0.50, 0.46] },
-    { pos: [0.10, 4.16, -0.95], scale: [3.30, 0.52, 0.72] },
-    { pos: [-2.35, 4.12, -0.70], scale: [0.95, 0.44, 0.70] },
-    { pos: [1.95, 4.16, -0.95], scale: [0.70, 0.52, 0.72] },
-    { pos: [0.10, 3.96, -0.30], scale: [3.60, 0.08, 0.10] },
-    // instanceColor MULTIPLIES the material colour, it does not replace it. An authored
-    // #4A4E50 against galvanised #A6ABAD resolved to roughly #303234 and the grilles rendered
-    // as pure black holes -- darker than the plate's mid-grey mesh, and reading as a gap in
-    // the casing rather than as a grille. #9AA0A4 multiplies through to about #646A6D.
-    { pos: [-1.55, 4.15, 0.79], scale: [0.52, 0.38, 0.03], color: '#9AA0A4' },
-    { pos: [1.35, 4.15, 0.54], scale: [0.52, 0.38, 0.03], color: '#9AA0A4' },
-  ]);
-
-  // --- parapet coping: a lighter cap on all four sides, 0.05 m proud of each face ---
-  // The walls stop at y=4.52 and this owns 4.44..4.60, so the wall's top face is buried inside
-  // the cap rather than sharing the plane with it. Corners overlap, which is a butt of the same
-  // material and not a coincident co-facing pair.
-  cluster('parapet-coping', mat('white-panel', 0xedefef), [
-    { pos: [0, 4.52, 3.40], scale: [8.10, 0.16, 0.30] },
-    { pos: [0, 4.52, -3.40], scale: [8.10, 0.16, 0.30] },
-    { pos: [-3.90, 4.52, 0], scale: [0.30, 0.16, 7.10] },
-    { pos: [3.90, 4.52, 0], scale: [0.30, 0.16, 7.10] },
-  ]);
-
-  // --- side wall service door: architrave 0.08 m proud, leaf only 0.037 m proud inside
-  // it, so the leaf READS recessed relative to its surround. Stated deviation: the plate
-  // shows a genuine recess, which would need a second hole in an extrusion already
-  // carrying the shopfront opening plus four more reveal faces. ---
-  cluster('side-wall-fittings', mat('render-cream', 0xe4d2ac), [
-    { pos: [-4.035, 2.155, 1.15], scale: [0.09, 0.11, 1.06] },
-    { pos: [-4.035, 1.05, 1.71], scale: [0.09, 2.21, 0.06] },
-    { pos: [-4.035, 1.05, 0.59], scale: [0.09, 2.21, 0.06] },
-    { pos: [-4.012, 1.05, 1.15], scale: [0.05, 2.10, 0.90], color: '#FFF6E2' },
-    { pos: [-4.055, 1.00, 0.72], scale: [0.05, 0.05, 0.14], color: '#9EA2A3' },
-  ]);
-}
-
-/**
- * The two canvases, drawn and assigned AFTER material construction.
- *
- * All seven materials declare `textureless`, so createSculptMaterial skips
- * makeProceduralTextureSet entirely -- five synthesised canvases per material, written
- * pixel by pixel in JavaScript at a cost that is the SQUARE of the resolution. That
- * declaration deliberately leaves ONE texture route open: a map assigned to a mesh after
- * its material exists. It is the right route for printed graphics and the wrong one for
- * a surface finish, and these are the only two printed graphics on the prop.
- *
- * Both are drawn ORTHOGRAPHICALLY. The plate sees the sign obliquely and its green face
- * carries a left-to-right lightening that reads as lightbox lamp falloff; projecting
- * those pixels would bake both the perspective and the lighting into base colour.
- */
-/**
- * True only where a 2D canvas can actually be created. The factory is evaluated OUTSIDE a browser
- * by parts of thaikit's own tooling -- the parts-coverage manifest walks the built Group in node
- * -- and `document.createElement` throws there. A factory that dies outside a DOM is fragile for
- * no benefit: the canvases carry printed graphics, not structure, so the right behaviour without
- * a DOM is to skip them and still return a complete, walkable model.
- */
-function hasCanvas(): boolean {
-  return typeof document !== 'undefined' && typeof document.createElement === 'function';
-}
-
-function makeGraphicCanvas(w: number, h: number): { c: HTMLCanvasElement; g: CanvasRenderingContext2D } {
-  const c = document.createElement('canvas');
-  c.width = w;
-  c.height = h;
-  return { c, g: c.getContext('2d') as CanvasRenderingContext2D };
-}
-
-function asTexture(c: HTMLCanvasElement): THREE.CanvasTexture {
-  const t = new THREE.CanvasTexture(c);
-  t.colorSpace = THREE.SRGBColorSpace;
-  t.anisotropy = 4;
-  t.needsUpdate = true;
-  return t;
-}
-
-/**
- * The white AIS swoosh: a bold crescent, blunt and thick at the left, sweeping down and then
- * hooking UP to a sharp point at the right. Measured off crops/fascia-sign.png -- it is about
- * 0.9x the cap height of the wordmark beside it and sits immediately to its left.
- */
-function drawSwoosh(g: CanvasRenderingContext2D, x: number, y: number, w: number, h: number): void {
-  g.fillStyle = '#FFFFFF';
-  g.beginPath();
-  // upper edge, left blunt end -> sweeping down -> hooking up to the sharp right tip
-  g.moveTo(x, y + h * 0.06);
-  g.bezierCurveTo(x + w * 0.16, y + h * 0.74, x + w * 0.56, y + h * 1.02, x + w, y);
-  // lower edge back to the left end, closer in: the gap between the two curves is the taper
-  g.bezierCurveTo(x + w * 0.62, y + h * 0.80, x + w * 0.30, y + h * 0.60, x + w * 0.16, y + h * 0.06);
-  g.closePath();
-  g.fill();
-}
-
-/** The shipped sign, baked from the plate's own mark -- see applyCanvasGraphics. */
-const SIGN_IMAGE_DATA_URL = 'data:image/webp;base64,UklGRjolAABXRUJQVlA4IC4lAABwTgGdASoACAACPjEYiEQiIYhtiBABglpbvxn+f/AHpbr5U1iT75fxn5aeG3IPd37f/cv2H/eb/EfPfWf61/Rvzb+8X9x5RaqvoA+JnxH8z/xX9+/ab+7//////f//T+pb9U/9r3Af4r/KP8n/o/8P/qf6p/////+cvQZ5gf1w/73+R/f/5b/8v+33uw/tX+9/0P9d/wHyAfzD+m/8r8/+8j/bf2AP6D/hP+P+f/y9f8H/zf5P/mf/////ab+0H/l/x3/D///0Lf0D+2/9D8///T9AHoAdRv1I/33997lf85/evP+w0dD8Df499xf5nmr3t8AL8c/oO6xgA/ju8b1bsgL9WuK1oB/0T/L+ivpKewgQ4nuevXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evWfItneEs0WLFixYsWLFixYsWLFixYsWLFixYsWLFixYsWLFixYsWLFixYsWLFixYsWLFixYsWLFixYsThCcXoeiP94ALzzVW8kMBukNgt04LFixYsWLFixYsWLFixYsWLFixYsWLFixYsWLFixYsWLFixYsWLFixYsWLFixX1Cz3MQHG+kAk608XdYex2p06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTmm4Y9QilKCJENQNj1J4qz3PXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr168YvzXKMMTqQ2C2+zu/NtgquVISErN7hlDdsWLFixYsWLFixYsWLFixYsWLFixYsWLFixYsWLFixYsWLFixYsWLFixYsWLFixYr4KWhxkk21sgFnt9ZZ/zKdMVi1KD+INSyu2FNlU9Rmgjx48ePHjx48ePHjx48ePHjx48ePHjx48ePHjx48ePHjx48ePHjx48ePHjx48eN7IK82uAB93yc+47/R/C9ZAIP/1bh80FJYhoAfMMK6cFixYsWLFixYsWLFixYsWLFixYsWLFixYsWLFixYsWLFixYsWLFixYsWLFixYsWLfSosnTvO+e3cOlbguoxU3TsAQ7l5ntxixGof+B2sRw7J5uMsNOU6dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp05oqe/moZiBc7rk0Wmp5TKZ8ePHjx48ePHjx48ePHjx48ePHjx48ePHjx48ePHjx48ePHjx48ePHjx48ePHjx48ePAxZjTuZ04yQ2CzjHb0X9DXEWC3TXC8jOevXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evWNBrHDwsUuXgHe9AMr9xkhr2F8UuFfIp0SK9eoo9PfubmQz1QomTQiYkexzj1q3l/kSQMkMb1KVUYDdIbBbpwWLFixYsWLFixYsWLFixYsWLFixYsWLFixYsWLFixYsWLFixYsToqaGau+NVqCGFkfBe/sZeGImINTrhbyFDshkcmt6ShhmI3ch5PNZKFUQH4T4oIs6ytSI5f+CxYsWLFixYsWLFixYsWLFixYsWLFixYsWLFixYsWLFixYsWLFixYsWLFixYnFH6I5gtkslFXS6XSjkHLgdkf0cAMqxpt/9vAytns5K1VnRN+TnaN1MEYZPm55BFCtfoqyd7kk5XlUCZb0skUeeERIPiKAG6Q2C3TgsWLFixYsWLFixYsWLFixYsWLFixYsWLFixYsWLFixYsWLFixYsWK+TlIJdYFzKMFbMv282wNVsqniO2js43zcre0iCFUgkt3Der50XR3h0p8ChmMekBj4mrpEzs7riPeLYLdOCxYsWLFixYsWLFixYsWLFixYsWLFixYsWLFixYsWLFixYsWLFixYsWLFivh6Wg63Bf0yD/j13+BweSctAIOepVJ3rcD4vrcekBvl1n4iHc6imkswAL3JRTukNgt04LFixYsWLFixYsWLFixYsWLFixYsWLFixYsWLFixYsWLFixYsWLFixYnQHH3irqjJVAYTfC0EizO3bx76ywLcyoPJ6emMLZb3IZkUDMywD28iKzZyXSmOpUluevXr169evXr169evXr169evXr169evXr169evXr169evXr169evXr169evXuhPs6IIdl5UBRw9QnfHlsMrpZQGa36VuTpUAFKbAo/3gDJbCLNn+Fe2Ic0cs5PRXELcZvxUaCb9lII8ePHjx48ePHjx48ePHjx48ePHjx48ePHjx48ePHjx48ePHjx48ePHjx48ePIQ5vy+OJ7W6+GgOaWGEjbYZJD0gMfE4LVHy25Oyr+zk730IGl8kMBukNgt04LFixYsWLFixYsWLFixYsWLFixYsWLFixYsWLFixYsWLFixYsWLFixYsV8juTAl44bytGcNBLQMpCtgMzCo2dpriwsNkvaRKmwEaLFixYsWLFixYsWLFixYsWLFixYsWLFixYsWLFixYsWLFixYsWLFixYsWLFixYsWK+YWKSqk1LJexuU3eGPUngNc6vIZwDdPpGBXrRyLUHf8EgdarMlpi93DOoOBc+SGA3SGwW6cFixYsWLFixYsWLFixYsWLFixYsWLFixYsWLFixYsWLFixYsWLFixYsWK+aINJjkYHaHznt7Sv5DANLDIK9CSUw0+8lbEhqomJAblUi6KmXZTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTF95cqdLOrHEkI6yJVb/jp/ggLE0RZSVtNuaq/MZnZEo3Be2Ea2hWLFixYsWLFixYsWLFixYsWLFixYsWLFixYsWLFixYsWLFixYsWLFixYsWLFixYsWLFixYsWLGf8p06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp06dOnTp0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';
-
-/** Decode fallback only: a hand-drawn approximation of the mark, never the shipped look. */
-function drawFallbackSign(): HTMLCanvasElement {
-  const { c, g } = makeGraphicCanvas(1024, 152);
-  g.fillStyle = '#8FC72C';
-  g.fillRect(0, 0, c.width, c.height);
-  g.fillStyle = '#FFFFFF';
-  g.font = 'bold 92px "Helvetica Neue", Helvetica, Arial, sans-serif';
-  g.textBaseline = 'middle';
-  const word = 'AIS';
-  const wordW = g.measureText(word).width;
-  const swooshW = 150, gap = 26;
-  const markW = swooshW + gap + wordW;
-  const x0 = (c.width - markW) / 2;
-  drawSwoosh(g, x0, c.height * 0.30, swooshW, c.height * 0.34);
-  g.fillText(word, x0 + swooshW + gap, c.height * 0.55);
-  return c;
-}
-
-function applyCanvasGraphics(root: THREE.Group): void {
-  if (!hasCanvas()) return;
-  const rt = root.userData.sculptRuntime as any;
-  const meshes: Record<string, THREE.Mesh> = rt?.meshes ?? {};
-
-  // --- the AIS fascia mark, on the 0.03 m graphic face ---
-  // It lives on a thin plate rather than on the tray body for a concrete reason: a canvas
-  // map on a BoxGeometry lands on ALL SIX faces, so a deep tray would carry a squashed
-  // slice of the mark down each edge. The tray's proud return is a separate cluster.
-  const sign = meshes['fascia-sign'];
-  if (sign) {
-    // The mark is the plate's own: scratch/<id>/sign/rectify.py perspective-rectifies
-    // crops/fascia-sign.png on its measured edge lines, extracts the white pixels, and
-    // blur-thresholds them into a clean silhouette -- the double swoosh (thin wing over a
-    // thick crescent) and the rounded wordmark, exactly as drawn on the reference. compose.py
-    // places it at the plate's own mark-height / sign-height ratio (0.65, 1.175 x 0.522 m)
-    // centred on the face, on the authored lightbox green, and bakes a 2048 x 512 WebP --
-    // non-square pixels, 353 px/m across against 640 px/m up, so the mark keeps its 334 px
-    // of height on a 7.25:1 face. The bbox is MEASURED off the mask each time compose.py runs:
-    // a stale hard-coded 75..369 once shipped the wordmark with its bottom quarter cut off.
-    // Baked ONCE and embedded (9.5 KB) so it is identical on every
-    // host; the canvas drawing below is only the decode fallback, and it is a known
-    // approximation (single crescent, fillText in whatever font the host has).
-    const m = (sign.material as THREE.MeshStandardMaterial).clone();
-    const baked = new THREE.TextureLoader().load(SIGN_IMAGE_DATA_URL, undefined, undefined, () => {
-      m.map = asTexture(drawFallbackSign());
-      m.emissiveMap = m.map;
-      m.needsUpdate = true;
-    });
-    baked.colorSpace = THREE.SRGBColorSpace;
-    baked.anisotropy = 4;
-    m.map = baked;
-    // A `map` MULTIPLIES `color`. Leaving the authored #8FC72C on the material while the image
-    // also carries #8FC72C squares the green and renders a vivid lightbox as dark olive -- and it
-    // crushes the white mark to a pale green smear. Once a map carries the albedo, the colour
-    // slot must be white or it is applied twice.
-    m.color = new THREE.Color(0xffffff);
-    m.needsUpdate = true;
-    sign.material = m;
-  }
-
-  // --- the shopfront graphic: green spandrel bays and their poster panels ---
-  // The two end bays are OPAQUE green vinyl-faced spandrel, not glass. They are canvas
-  // regions on the single glazing pane rather than components: at opacity 0.94 the pane
-  // is already all but opaque, so a green region on it reads as an opaque panel and costs
-  // no geometry, no draw call and no material. Modelling them would have cost one of each,
-  // on a prop whose geometry ceiling is at 8 of 8.
-  const glazing = meshes['shopfront-glazing'];
-  if (glazing) {
-    const { c, g } = makeGraphicCanvas(1024, 445);          // 6.90 x 3.00 m
-    g.fillStyle = '#626D75';                          // tinted glass field: the AUTHORED albedo,
-    // carried here rather than on material.color now that the map owns the albedo
-    g.fillRect(0, 0, c.width, c.height);
-    const bay = c.width * (0.85 / 6.90);              // one 0.85 m bay
-    for (const x of [0, c.width - bay]) {
-      g.fillStyle = '#8FC72C';
-      g.fillRect(x, 0, bay, c.height);
-      // Poster panel: measured off crops/promo-panel-left.png as roughly 70% of the bay's width
-      // and a third of its height, sitting a little above centre -- NOT the half-bay slab a first
-      // draft drew. Very pale green-white, not pure white.
-      g.fillStyle = '#EAF1E2';
-      g.fillRect(x + bay * 0.15, c.height * 0.30, bay * 0.70, c.height * 0.34);
+  for (const op of g.ops as any[]) {
+    if (op.type === 'rect') {
+      ctx.fillStyle = op.fill;
+      const x = op.x * W, y = op.y * band, w = op.w * W, h = op.h * band, r = (op.r ?? 0) * band;
+      ctx.beginPath();
+      if (r > 0) {
+        ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y); ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+        ctx.lineTo(x + w, y + h - r); ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+        ctx.lineTo(x + r, y + h); ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+        ctx.lineTo(x, y + r); ctx.quadraticCurveTo(x, y, x + r, y);
+      } else ctx.rect(x, y, w, h);
+      ctx.closePath(); ctx.fill();
+    } else if (op.type === 'circle') {
+      ctx.fillStyle = op.fill;
+      ctx.beginPath();
+      ctx.arc(op.cx * W, op.cy * band, op.r * band, 0, Math.PI * 2);
+      ctx.fill();
+    } else if (op.type === 'poly') {
+      // An arbitrary polygon in normalised canvas coords, for a mark a font cannot set -- a
+      // lightning bolt, a chevron, a leaf. Points are [x, y] with x a fraction of the canvas width
+      // and y a fraction of the band height.
+      ctx.fillStyle = op.fill;
+      ctx.beginPath();
+      const pts = op.points as number[][];
+      ctx.moveTo(pts[0][0] * W, pts[0][1] * band);
+      for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0] * W, pts[i][1] * band);
+      ctx.closePath();
+      ctx.fill();
+    } else if (op.type === 'text') {
+      fit(op.text, `${op.style ?? 'bold'} ${Math.round(op.size * band)}px ${op.family ?? 'Arial, Helvetica, sans-serif'}`,
+        op.x0 * W, op.x1 * W, op.cy * band, op.fill, op.stroke, op.strokeW ? op.strokeW * band : undefined);
     }
-    const m = (glazing.material as THREE.MeshStandardMaterial).clone();
-    m.map = asTexture(c);
-    // Same multiply: the tinted #7E8C94 against a #5E6B73 canvas field resolved to rgb(46,59,67),
-    // which read as a black hole rather than as glass -- the exact failure an exterior shell's
-    // glazing has to avoid. The canvas is the albedo now, so the colour slot is white.
-    m.color = new THREE.Color(0xffffff);
-    m.needsUpdate = true;
-    glazing.material = m;
+  }
+
+  return canvas;
+}
+
+/* ------------------------------------------------------------------ glazing graphic */
+
+/** A building is an exterior shell with no interior, so a plain tinted pane reads as a blind slab
+ *  -- or, dark enough, as a hole. `graphic.glass` paints a de-lit interior view into the glazing:
+ *  one baked image projected by WORLD x/y over `rect` [x0, y0, x1, y1] so it lines up across the
+ *  window pane, the transom and the door leaves, which are separate boxes in one merged mesh.
+ *  Assigned after material construction; the material stays `textureless` in the spec. */
+function applyGlassGraphic(root: THREE.Group): void {
+  const g = (CONFIG.graphic as any)?.glass;
+  // Node has no `document`, and thaikit's coplanar checker and part manifest evaluate this
+  // module there: TextureLoader would throw, so the glazing keeps its flat fallback albedo.
+  if (!g || typeof document === 'undefined') return;
+  const rt = root.userData.sculptRuntime as ProceduralModelRuntime | undefined;
+  const [x0, y0, x1, y1] = g.rect as number[];
+  // `also` extends the projection to panes that are NOT in the glazing component -- a hinged door
+  // leaf, whose geometry is authored in HINGE-local coordinates, so it names the offset from the
+  // hinge to the world origin and the same world rect then lands on it. Without this the leaf is
+  // the one pane in the shopfront with no interior behind it, which reads as a blind panel in
+  // the middle of a window.
+  const targets = [{ id: 'shopfront-glazing', off: [0, 0, 0] }, ...((g.also ?? []) as any[])];
+  let material: THREE.MeshStandardMaterial | null = null;
+  for (const t of targets) {
+    const mesh = rt?.meshes?.[t.id];
+    if (!mesh) continue;
+    const m = mesh.material as THREE.MeshStandardMaterial;
+    if (!m) continue;
+    material = material ?? m;
+    const geo = mesh.geometry as THREE.BufferGeometry;
+    const pos = geo.getAttribute('position');
+    const off = (t.off ?? [0, 0, 0]) as number[];
+    const uv = new Float32Array(pos.count * 2);
+    for (let i = 0; i < pos.count; i++) {
+      uv[i * 2] = (pos.getX(i) + off[0] - x0) / (x1 - x0);
+      uv[i * 2 + 1] = (pos.getY(i) + off[1] - y0) / (y1 - y0);
+    }
+    geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+  }
+  if (!material) return;
+  const srgb = (THREE as any).SRGBColorSpace;
+  const tex = new THREE.TextureLoader().load(g.baked);
+  if (srgb) tex.colorSpace = srgb;
+  tex.anisotropy = 4;
+  tex.needsUpdate = true;
+  material.map = tex;
+  // The image carries the tint; a coloured base would apply it twice.
+  material.color.setHex(0xffffff);
+  if (g.roughness !== undefined) material.roughness = g.roughness;
+  material.needsUpdate = true;
+}
+
+/* ------------------------------------------------------------------ wall render graphic */
+
+/** A rendered concrete wall is not a flat colour. Every plate in this set shows the same thing --
+ *  vertical rain streaking off the coping, patchy float marks, a darker band where the wall meets
+ *  the ground -- and a wall authored as one albedo reads as painted card next to the shopfront's
+ *  real detail. `graphic.wall` paints a SEAMLESS tile once and repeats it over the wall meshes.
+ *
+ *  It is a post-construction canvas, so the material stays `textureless` in the spec: what that
+ *  declaration skips is createSculptMaterial's five-canvas procedural set, which costs the square
+ *  of its resolution and discards the measured albedo. One tile drawn once costs milliseconds and
+ *  keeps the albedo, because the tile is authored in MULTIPLIER space -- mid-grey 128 is "leave the
+ *  measured colour alone" -- and is applied as `map` over the material's own colour.
+ *
+ *  UVs are metric and WORLD-PLANAR, chosen per vertex off the face normal: an X-facing face is
+ *  projected (z, y), a Z-facing face (x, y), a Y-facing face (x, z). Box UVs would stretch one
+ *  tile over each face, which puts a 7-metre-wide streak on the side wall and a 0.24-metre-wide one
+ *  on the parapet coping. */
+function applyWallGraphic(root: THREE.Group): void {
+  const gr = CONFIG.graphic as any;
+  if (!gr || typeof document === 'undefined') return;
+  // `graphic.wall` is the original single entry; `graphic.walls` is a list of further entries in
+  // the same shape, one per material that carries its own tile -- a grime tile on the coping and
+  // the shutter hood, a dirt tile on the yellow surround, a galvanised spangle on the plant.
+  const entries = [gr.wall, ...((gr.walls ?? []) as any[])].filter(Boolean);
+  const rt = root.userData.sculptRuntime as ProceduralModelRuntime | undefined;
+  if (!rt) return;
+  for (const g of entries) applyOneWallGraphic(rt, g);
+}
+
+function applyOneWallGraphic(rt: ProceduralModelRuntime, g: any): void {
+  const tile = g.tile ?? 2.5;
+  const N = g.size ?? 512;
+  // `clean` is a world-space XY rectangle whose vertices are pinned to one texel the tile leaves
+  // untouched -- the delivery counter has to stay spotless yellow while the lintel and jambs it
+  // shares a material with take the weather. The pin lands on a corner the canvas fills with the
+  // base value after every mark is drawn (all four corners, since the tile wraps).
+  const clean = g.clean as number[] | undefined;
+  const pin = 6 / N;
+  let tex: THREE.Texture | null = null;
+  for (const id of (g.meshes as string[])) {
+    const mesh = rt.meshes?.[id];
+    if (!mesh) continue;
+    const geo = mesh.geometry as THREE.BufferGeometry;
+    const pos = geo.getAttribute('position'), nrm = geo.getAttribute('normal');
+    if (!pos || !nrm) continue;
+    const uv = new Float32Array(pos.count * 2);
+    for (let i = 0; i < pos.count; i++) {
+      const x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i);
+      if (clean && x >= clean[0] && x <= clean[2] && y >= clean[1] && y <= clean[3]) {
+        uv[i * 2] = pin; uv[i * 2 + 1] = pin;
+        continue;
+      }
+      const ax = Math.abs(nrm.getX(i)), ay = Math.abs(nrm.getY(i)), az = Math.abs(nrm.getZ(i));
+      let u: number, v: number;
+      if (ax >= ay && ax >= az) { u = z; v = y; }
+      else if (az >= ay) { u = x; v = y; }
+      else { u = x; v = z; }
+      uv[i * 2] = u / tile; uv[i * 2 + 1] = v / tile;
+    }
+    geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+    if (!tex) {
+      const srgb = (THREE as any).SRGBColorSpace;
+      if (g.image) {
+        // A BAKED tile -- a seamless, multiplier-normalised image embedded as a data URI, the way
+        // the fascia is -- for a surface whose finish a drawn canvas cannot reach: galvanised
+        // spangle. Assigned synchronously so the harness waits on the decode.
+        tex = new THREE.TextureLoader().load(g.image);
+      } else {
+        const canvas = drawWallCanvas(g);
+        if (!canvas) return;
+        tex = new THREE.CanvasTexture(canvas);
+      }
+      tex.wrapS = THREE.RepeatWrapping; tex.wrapT = THREE.RepeatWrapping;
+      if (srgb) tex.colorSpace = srgb;
+      tex.anisotropy = 4; tex.needsUpdate = true;
+    }
+    const material = mesh.material as THREE.MeshStandardMaterial;
+    // ONE texture for however many meshes share the material: assigning per mesh would upload the
+    // same canvas twice and cost VRAM for nothing.
+    if (material && material.map !== tex) { material.map = tex; material.needsUpdate = true; }
   }
 }
 
-/** Surface refinements that are properties of the SCENE, not of the spec's material block. */
-function applySurfaceRefinements(root: THREE.Group): void {
-  const rt = root.userData.sculptRuntime as any;
-  const meshes: Record<string, THREE.Mesh> = rt?.meshes ?? {};
+/** Seamless render tile in MULTIPLIER space, and the neutral value is WHITE, not mid-grey.
+ *  `map` multiplies the material colour by the texture's LINEAR value, and the texture is decoded
+ *  as sRGB, so a tile drawn around 128 multiplies the measured albedo by 0.216 and renders a light
+ *  grey render wall near black -- which is exactly what the first build of this tile did. `base`
+ *  therefore sits just under white and every mark DARKENS from it; the wall's own albedo stays the
+ *  material's, and the tile only ever takes value away.
+ *
+ *  Everything wraps by drawing each mark a second time at x-W and x+W, which is what makes the
+ *  tile seamless -- a mark clipped at the edge is the single most visible artefact when a wall is
+ *  8 tiles wide. */
+function drawWallCanvas(g: any): HTMLCanvasElement | null {
+  const N = g.size ?? 512;
+  const canvas = document.createElement('canvas');
+  canvas.width = N; canvas.height = N;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return null;
+  let seed = g.seed ?? 20260828;
+  const rnd = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
+  const base = g.base ?? 246;
+  ctx.fillStyle = `rgb(${base},${base},${base})`;
+  ctx.fillRect(0, 0, N, N);
 
-  // Glass as a SURFACE, not a window. This is an exterior shell -- there is nothing behind
-  // the pane -- so a near-transparent sheet over an empty interior reads as a hole punched
-  // in the building. Mostly opaque, darker than the render, low roughness so it catches the
-  // key as a highlight.
-  const glazing = meshes['shopfront-glazing'];
-  if (glazing) {
-    const m = glazing.material as THREE.MeshPhysicalMaterial;
-    m.transmission = 0;
-    m.transparent = true;
-    m.opacity = 0.94;
-    m.roughness = 0.08;
-    m.metalness = 0.10;
-    m.depthWrite = true;
-    m.side = THREE.DoubleSide;
-    m.needsUpdate = true;
+  // Broad float-mark blotches: low-frequency patchiness in the render coat.
+  for (let i = 0; i < (g.patches ?? 90); i++) {
+    const x = rnd() * N, y = rnd() * N, r = (0.05 + rnd() * 0.18) * N;
+    const v = base - rnd() * (g.patchAmp ?? 26);
+    const grad = ctx.createRadialGradient(x, y, 0, x, y, r);
+    grad.addColorStop(0, `rgba(${v | 0},${v | 0},${v | 0},0.55)`);
+    grad.addColorStop(1, `rgba(${v | 0},${v | 0},${v | 0},0)`);
+    ctx.fillStyle = grad;
+    for (const dx of [-N, 0, N]) { ctx.save(); ctx.translate(dx, 0); ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill(); ctx.restore(); }
   }
-
-  // Evidence-driven albedo corrections from material_comparator, applied as a refine-code edit
-  // on the built artifact. They are ALSO recorded in the spec's materials block -- the spec is
-  // the source of truth and this is the same value, not a second one -- but a locked build pass
-  // will not regenerate while its own material gate is unsatisfied, and refine-code is the
-  // pipeline action for exactly that: fix the artifact, re-measure, then let the gate clear.
-  for (const [id, hex] of [['roof-deck', '#8C8F92'], ['shopfront-sill', '#8C8F92']] as [string, string][]) {
-    const m = meshes[id]?.material as THREE.MeshStandardMaterial | undefined;
-    if (m) { m.color = new THREE.Color(hex); m.needsUpdate = true; }
+  // Vertical rain streaks. Narrow, soft-edged, top-weighted -- water runs DOWN from the coping and
+  // fades out, so the alpha ramps to nothing at the bottom of each streak rather than stopping.
+  for (let i = 0; i < (g.streaks ?? 130); i++) {
+    const x = rnd() * N, w = (0.002 + rnd() * 0.010) * N;
+    const y0 = rnd() * N * 0.5, len = (0.25 + rnd() * 0.75) * N;
+    const dark = base - (6 + rnd() * (g.streakAmp ?? 22));
+    const grad = ctx.createLinearGradient(0, y0, 0, y0 + len);
+    grad.addColorStop(0, `rgba(${dark | 0},${dark | 0},${dark | 0},0.42)`);
+    grad.addColorStop(0.35, `rgba(${dark | 0},${dark | 0},${dark | 0},0.26)`);
+    grad.addColorStop(1, `rgba(${dark | 0},${dark | 0},${dark | 0},0)`);
+    ctx.fillStyle = grad;
+    for (const dx of [-N, 0, N]) ctx.fillRect(x + dx - w / 2, y0, w, len);
   }
-  const plant = meshes['rooftop-plant']?.material as THREE.MeshStandardMaterial | undefined;
-  if (plant) { plant.color = new THREE.Color('#7C7A74'); plant.needsUpdate = true; }
-  const frame = meshes['shopfront-framing']?.material as THREE.MeshStandardMaterial | undefined;
-  if (frame) { frame.color = new THREE.Color('#8E9294'); frame.needsUpdate = true; }
-
-  // The lightbox. The plate's green measures #A0CB1F, BRIGHTER than the authored albedo
-  // #8FC72C; the difference is emission from the lamps behind the acrylic. Carried here so
-  // the authored albedo survives instead of having the brightness baked into it.
-  const sign = meshes['fascia-sign'];
-  if (sign) {
-    const m = sign.material as THREE.MeshStandardMaterial;
-    m.emissive = new THREE.Color('#3E6A10');
-    m.emissiveIntensity = 0.22;
-    if (m.map) m.emissiveMap = m.map;
-    m.needsUpdate = true;
+  // Board marks: the horizontal seams a shuttered concrete pour leaves, one per board. Faint --
+  // this is a rendered wall and the seam shows through the coat rather than on it -- and drawn as
+  // a soft pair (a dark line under a slightly lighter one) because that is what a lipped shutter
+  // joint does to the light. `seamPitch` is in TILE fractions, so it lands on the same metric
+  // spacing wherever the tile repeats.
+  if (g.seams) {
+    const pitch = (g.seamPitch ?? 0.375) * N;
+    const amp = g.seamAmp ?? 9;
+    for (let y = pitch * 0.5; y < N + pitch; y += pitch) {
+      const yy = y % N;
+      const d = base - amp, l = Math.min(255, base + amp * 0.35);
+      ctx.fillStyle = `rgba(${d | 0},${d | 0},${d | 0},0.5)`;
+      ctx.fillRect(0, yy, N, 1.6);
+      ctx.fillStyle = `rgba(${l | 0},${l | 0},${l | 0},0.35)`;
+      ctx.fillRect(0, yy + 1.6, N, 1.2);
+    }
   }
+  // Fine speckle: the aggregate in the render, at the limit of what a prop-distance viewer resolves.
+  for (let i = 0; i < (g.specks ?? 2600); i++) {
+    const x = rnd() * N, y = rnd() * N, r = 0.5 + rnd() * 1.6;
+    const v = base - rnd() * (g.speckAmp ?? 30);
+    ctx.fillStyle = `rgba(${v | 0},${v | 0},${v | 0},0.30)`;
+    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+  }
+  // A clean texel for `clean`-pinned vertices: every corner, because the tile wraps and the pin
+  // sits 6 px in from (0, 0).
+  ctx.fillStyle = `rgb(${base},${base},${base})`;
+  for (const [x, y] of [[0, 0], [N - 12, 0], [0, N - 12], [N - 12, N - 12]]) ctx.fillRect(x, y, 12, 12);
+  return canvas;
 }
+
+/* ------------------------------------------------------------------ thaikit entry point */
 
 /**
- * thaikit entry point.
- *
- * The registry records `createObjectModel` as the export and calls it with (spec, options);
- * the generated factory is named for its target and takes options alone. `spec` is accepted
- * and attached for host-side inspection -- the reconstruction data already lives in this
- * module, so it is deliberately not treated as a second source of truth.
- *
- * It also NORMALISES sculptRuntime into the shape thaikit's harness and drawer read. The
- * generator emits Records keyed by id; the harness maps over arrays and returns the object
- * straight across the puppeteer bridge, where a Record of Object3D is circular and fails to
- * serialise -- which surfaces not as an error but as the whole stats object arriving
- * undefined.
+ * thaikit entry point. The registry records `createObjectModel` as the export and calls it with
+ * (spec, options). `spec` is accepted and attached for host-side inspection -- the reconstruction
+ * data already lives in this module, so it is deliberately not a second source of truth.
  */
-export function createObjectModel(
-  spec?: unknown,
-  options: ProceduralModelOptions = {},
-): THREE.Group {
-  const root = createAISShopBuildingModel(options);
+export function createObjectModel(spec?: unknown, options: ProceduralModelOptions = {}): THREE.Group {
+  const root = createAisShopBuildingModel(options);
   if (spec !== undefined && spec !== null) root.userData.sculptSpec = spec;
 
-  // meso/micro detail: the framing, tray return, roof plant and side fittings
-  if (passAtLeast('structural-pass')) applyLinearRepetition(root);
-  // printed graphics and finish response belong to the material pass onward
-  if (passAtLeast('material-pass')) {
-    applyCanvasGraphics(root);
-    applySurfaceRefinements(root);
-  }
+  applyFasciaGraphic(root);
+  applyGlassGraphic(root);
+  applyWallGraphic(root);
 
   const rt = root.userData.sculptRuntime as Record<string, any> | undefined;
   if (rt) {
     const nodes = (rt.nodes ?? {}) as Record<string, THREE.Object3D>;
 
-    // PIVOTS: exactly ONE, the root. This is a fixed building shell. It has no lid, no
-    // wheel and no door leaf that a game will articulate, so every other component
-    // declares animationRole 'structure' and gets no axis. A pivot per component would
-    // describe a machine this prop is not -- and a named pivot is a promise that a part
-    // turns on that axis, which the kit would then have to keep.
-    const pivots: THREE.Object3D[] = [];
+    // Pivots: the root, plus whatever the config actually hung a mechanism on -- `door-hinge`
+    // for a swinging entrance leaf, and nothing else. A roller shutter authored as fixed
+    // geometry gets no axis: a named pivot is a promise that a part turns on it, and a prop
+    // that declares pivots it has no mechanisms for has described a machine that does not exist.
+    const pivots: THREE.Object3D[] = [...(((rt as any).pivotNodes ?? []) as THREE.Object3D[])];
     const rootPivot = new THREE.Object3D();
     rootPivot.name = 'root';
     rootPivot.position.set(0, 0, 0);
@@ -1415,32 +1615,20 @@ export function createObjectModel(
     root.add(rootPivot);
     pivots.push(rootPivot);
 
-    // SOCKETS: exactly ONE, sign-mount. The generator names the Object3D positionally
-    // ('socket-0'); rename it to the MECHANISM name it declares, because a socket named
-    // after its ordinal tells a consumer nothing about what attaches there.
-    const sockets = Object.values((rt.sockets ?? {}) as Record<string, THREE.Object3D>);
-    for (const s of sockets) {
-      const declared = (s as any)?.userData?.socket?.name;
-      if (typeof declared === 'string' && declared) s.name = declared;
-    }
+    // Sockets: NONE. Nothing attaches to this prop and nothing is emitted from it.
 
-    // Colliders are plain DATA, not Object3D, so they carry no .name of their own and would
-    // stringify as [object Object] in any name-mapping consumer. Give each the id of the
-    // component it owns -- and drop the empty ones: the generator writes a collider entry
-    // for every component whether or not one was declared, and a nameless empty proxy in
-    // the runtime list reads as a physics shape that exists and does nothing.
+    // Colliders are plain DATA, not Object3D, so they carry no .name of their own. Give each the
+    // id of the component it owns and drop the empty ones -- a nameless empty proxy in the
+    // runtime list reads as a physics shape that exists and does nothing.
     const colliders = Object.entries((rt.colliders ?? {}) as Record<string, any>)
       .filter(([, c]) => c && typeof c === 'object' && Object.keys(c).length > 0)
       .map(([id, c]) => ({ name: id, ...(c as object) }));
 
-    // Destruction groups: this prop declares NONE, and promotion checks built against
-    // declared as an equality in BOTH directions. Derived rather than assumed empty, so a
-    // component that somehow carried a fractureGroup fails the gate loudly instead of
-    // being silently dropped here.
+    // Destruction groups: this prop declares NONE, and promotion checks built against declared as
+    // an equality in BOTH directions. Derived rather than assumed empty, so a component that
+    // somehow carried a fractureGroup fails the gate loudly instead of being dropped here.
     const grouped = new Map<string, THREE.Object3D[]>();
-    for (const [name, members] of Object.entries(
-      (rt.destructionGroups ?? {}) as Record<string, THREE.Object3D[]>,
-    )) {
+    for (const [name, members] of Object.entries((rt.destructionGroups ?? {}) as Record<string, THREE.Object3D[]>)) {
       grouped.set(name, [...members]);
     }
     for (const node of Object.values(nodes)) {
@@ -1452,10 +1640,13 @@ export function createObjectModel(
 
     root.userData.sculptRuntime = {
       ...rt,
-      // A COUNT, not the Record -- see the doc comment above.
+      // A COUNT, not the Record. thaikit's harness returns this field straight across the
+      // puppeteer bridge and its registry field is a number; a Record of Object3D is circular and
+      // fails to serialise, which surfaces as the whole stats object arriving undefined. The
+      // Record stays reachable under byId.
       nodes: Object.keys(nodes).length,
       pivots,
-      sockets,
+      sockets: Object.values((rt.sockets ?? {}) as Record<string, THREE.Object3D>),
       colliders,
       destructionGroups: [...grouped.entries()].map(([name, members]) => ({ name, members })),
       byId: { nodes, meshes: rt.meshes ?? {}, sockets: rt.sockets ?? {} },
@@ -1471,7 +1662,9 @@ export function createObjectModel(
  * the harness, the level editor and the Node-side gates carry on unchanged.
  * `spec` has never been passed by any caller -- it is inspection data that is
  * already baked into this module -- so this is the honest signature, and it is
- * what a vibe3d consumer installs and calls.
+ * what a vibe3d consumer installs and calls. The emitted `model.ts` beside this
+ * file IMPORTS it by name, so a factory without it fails the pack build with
+ * "No matching export ... for import createModel" -- which is how it was found.
  */
 export function createModel(options: ProceduralModelOptions = {}): THREE.Group {
   return createObjectModel(undefined, options);

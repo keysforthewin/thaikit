@@ -19,14 +19,6 @@ import * as THREE from 'three';
  */
 
 export type ProceduralModelOptions = {
-  /**
-   * Where this prop's shipped files live, with a trailing slash.
-   *
-   * The maps are recorded as bare filenames because the bundle is EVALUATED
-   * rather than imported: it has no import.meta and no currentScript, so it
-   * cannot see its own URL. Every host derives this from the module URL.
-   */
-  baseUrl?: string;
   wireframe?: boolean;
   castShadow?: boolean;
   receiveShadow?: boolean;
@@ -51,32 +43,32 @@ const CONFIG = {
     "materials": [
       {
         "id": "stone",
-        "color": 12428954,
+        "color": 13157564,
         "roughness": 0.92,
         "metalness": 0,
         "vertexColors": true
       },
       {
         "id": "red",
-        "color": 7418666,
+        "color": 10510414,
         "roughness": 0.8,
         "metalness": 0
       },
       {
         "id": "tile",
-        "color": 12814946,
+        "color": 14715461,
         "roughness": 0.78,
         "metalness": 0
       },
       {
         "id": "green",
-        "color": 7236168,
-        "roughness": 0.76,
+        "color": 6713436,
+        "roughness": 0.7,
         "metalness": 0
       },
       {
         "id": "gilt",
-        "color": 9071698,
+        "color": 10255434,
         "roughness": 0.36,
         "metalness": 0.3,
         "envMapIntensity": 1.2
@@ -139,15 +131,18 @@ const CONFIG = {
       "column": {
         "hw": 0.275,
         "y0": 1.3,
-        "y1": 6.6,
+        "y1": 6.9,
         "insetX": 5.95,
         "insetZ": 10.2,
         "longCount": 11,
-        "shortCount": 4
+        "shortCount": 4,
+        "capHw": 0.36,
+        "capH": 0.5,
+        "pedH": 0.62
       },
       "beam": {
-        "y0": 6.25,
-        "y1": 6.85,
+        "y0": 6.55,
+        "y1": 7.15,
         "thick": 0.65
       },
       "wall": {
@@ -177,45 +172,73 @@ const CONFIG = {
       "skirt": {
         "hx": 6.8,
         "hz": 10.9,
-        "y0": 6.9,
+        "y0": 7.2,
         "hxI": 4.7,
-        "hzI": 8.8,
-        "y1": 8.5,
-        "soffit": 6.5,
+        "hzI": 7.8,
+        "y1": 8.8,
+        "soffit": 6.8,
         "band": 0.45
       },
       "mid": {
         "hx": 5,
-        "y0": 9,
-        "drop": 8.05,
         "hxT": 3.15,
-        "y1": 10.85,
-        "hz": 8.95,
-        "band": 0.45
-      },
-      "top": {
-        "hx": 3.1,
-        "y0": 10.9,
-        "drop": 10.3,
         "band": 0.45,
-        "hz": 8.95,
         "sections": [
           [
             -6.03,
             6.03,
-            14.8
+            9,
+            10.85,
+            8.05
           ],
           [
             6,
-            8.95,
-            14
+            8.5,
+            8.65,
+            10.5,
+            7.7
           ],
           [
-            -8.95,
+            -8.5,
             -6,
-            14
+            8.65,
+            10.5,
+            7.7
           ]
         ]
+      },
+      "top": {
+        "hx": 3.1,
+        "band": 0.45,
+        "hz": 8.5,
+        "sections": [
+          [
+            -6.03,
+            6.03,
+            10.9,
+            14.8,
+            10.3
+          ],
+          [
+            6,
+            8.5,
+            10.55,
+            13.85,
+            9.95
+          ],
+          [
+            -8.5,
+            -6,
+            10.55,
+            13.85,
+            9.95
+          ]
+        ]
+      },
+      "rake": {
+        "w": 0.42,
+        "t": 0.05,
+        "proud": 0.004
       },
       "gable": {
         "slab": 0.15,
@@ -225,7 +248,13 @@ const CONFIG = {
       "horn": {
         "apexRise": 2.35,
         "footRise": 1.3,
-        "cornerRise": 1.4
+        "cornerRise": 1.4,
+        "phi0": 68,
+        "phi1": 118,
+        "w0": 0.3,
+        "w1": 0.05,
+        "across": 0.12,
+        "n": 10
       },
       "sema": {
         "h": 1.05,
@@ -237,14 +266,14 @@ const CONFIG = {
           "tile": 3,
           "bump": 0.035,
           "mottle": [
-            0.86,
-            0.86,
-            0.87
+            0.9,
+            0.9,
+            0.9
           ],
           "wash": [
-            0.55,
-            0.56,
-            0.58
+            0.62,
+            0.62,
+            0.63
           ],
           "streak": [
             0.62,
@@ -261,9 +290,9 @@ const CONFIG = {
           "tile": 2,
           "bump": 0.05,
           "clean": [
-            0.565,
-            0.31,
-            0.3
+            0.8,
+            0.58,
+            0.557
           ],
           "flake": [
             0.96,
@@ -271,33 +300,33 @@ const CONFIG = {
             0.95
           ],
           "rim": [
-            0.3,
-            0.16,
-            0.14
+            0.4,
+            0.26,
+            0.26
           ],
           "grime": [
-            0.34,
-            0.2,
-            0.18
+            0.46,
+            0.32,
+            0.33
           ],
           "grain": [
-            0.45,
-            0.25,
-            0.23
+            0.55,
+            0.38,
+            0.38
           ]
         },
         "roof": {
           "tile": 2.4,
-          "cols": 11,
-          "rows": 7,
-          "bump": 0.045,
-          "avg": 0.9,
+          "cols": 18,
+          "rows": 12,
+          "bump": 0.04,
+          "avg": 0.93,
           "joint": [
-            0.6,
-            0.58,
-            0.55
+            0.56,
+            0.52,
+            0.48
           ],
-          "loTone": 0.84,
+          "loTone": 0.86,
           "hiTone": 1,
           "moss": [
             0.62,
@@ -311,10 +340,10 @@ const CONFIG = {
           ]
         },
         "pediment": {
-          "ground": "#74402e",
-          "gold": "#a8865a",
-          "goldHi": "#c9a774",
-          "goldLo": "#7a5a3a"
+          "ground": "#4a2a1a",
+          "gold": "#9a7a42",
+          "goldHi": "#c49c5c",
+          "goldLo": "#6a4e2a"
         }
       }
     }
@@ -629,7 +658,7 @@ function hipRoof(hx: number, hz: number, ridgeHalfZ: number, y0: number, y1: num
  * distance a village skyline is read from -- a smooth green hemisphere reads as a water tank.
  */
 function ribbedDome(profile: number[][], ribs: number, amp: number, seg: number,
-                    valley?: number[]): THREE.BufferGeometry {
+                    valley?: number[], crest = 0.55): THREE.BufferGeometry {
   const tri: number[] = [];
   const col: number[] = [];
   // The ribs are not only a shape. On the mosque's domes the crests are pale and the valleys are
@@ -642,7 +671,9 @@ function ribbedDome(profile: number[][], ribs: number, amp: number, seg: number,
     // Raised to 0.55 rather than left linear. A cosine spends half its area near each extreme, and
     // that renders a dome that is pale overall where the plate's is green overall: the crest is a
     // narrow highlight on a real rib, not half of it. The exponent widens the valley.
-    const f = Math.pow((1 - Math.cos(ribs * ((j % seg) * Math.PI * 2 / seg))) / 2, 0.55);
+    // `crest` below 0.55 narrows the pale crest further: the mosque's plate at 3x shows the pale
+    // rib as about a quarter of the pitch, which is 0.35.
+    const f = Math.pow((1 - Math.cos(ribs * ((j % seg) * Math.PI * 2 / seg))) / 2, crest);
     return [1 + (valley[0] - 1) * f, 1 + (valley[1] - 1) * f, 1 + (valley[2] - 1) * f];
   };
   const push = (a: number[], b: number[], c: number[]) => tri.push(...a, ...b, ...c);
@@ -1051,6 +1082,16 @@ export function createUbosotModel(options: ProceduralModelOptions = {}): THREE.G
       mats.push(new THREE.Matrix4().setPosition(x, cy, C.insetZ));
     }
     addInst('columns', 'Peristyle columns', unit, 'red', mats);
+    // White capital under the eaves beam and white pedestal at the foot, on every column: the
+    // plate's columns are red between two white blocks. One more instanced system, sixty
+    // instances, one draw call.
+    const capUnit = mergeGeos([
+      boxAt(0, C.y0 + C.pedH / 2, 0, C.capHw * 2, C.pedH, C.capHw * 2),
+      boxAt(0, C.y1 - 0.30 - C.capH / 2, 0, C.capHw * 2, C.capH, C.capHw * 2),
+    ]);
+    projUv(capUnit, G.wear.stone.tile);
+    addInst('column-caps', 'Column capitals and pedestals', capUnit, 'stone',
+      mats.map((m) => { const e = m.elements; return new THREE.Matrix4().setPosition(e[12], 0, e[14]); }));
   }
 
   /* ---------------------------------------------------------------- roof
@@ -1063,37 +1104,62 @@ export function createUbosotModel(options: ProceduralModelOptions = {}): THREE.G
    * below the layer beneath so it reads as the wall between roofs), a GLAZE BAND prism (the first
    * 0.45 m of rise), and the TILE field above it. Consecutive solids meet as opposed faces. The
    * skirt is built as quad rings instead of prisms because it hips round the ends. */
-  const SK = G.skirt, MD = G.mid, TP = G.top;
+  const SK = G.skirt, MD = G.mid, TP = G.top, RK = G.rake;
   const skPitch = (SK.y1 - SK.y0) / (SK.hx - SK.hxI);
-  const mdPitch = (MD.y1 - MD.y0) / (MD.hx - MD.hxT);
+  const mdPitch = (MD.sections[0][3] - MD.sections[0][2]) / (MD.hx - MD.hxT);
+  /** A green rake stripe: a thin box lying ON a slope from (hb, yb) to (ht, yt) on side xs, at
+   *  z = zc, standing 'proud' off the surface. rotateZ maps a box's +Y to (-sin, cos), so aiming
+   *  it up the rake takes atan2(RUN, RISE), the complement of the pitch angle. */
+  function rakeStrip(hb: number, yb: number, ht: number, yt: number, xs: number, zc: number, w: number): THREE.BufferGeometry {
+    const run = hb - ht, rise = yt - yb, len = Math.hypot(run, rise);
+    const ang = Math.atan2(run, rise);
+    const px = rise / len, py = run / len;
+    const b = new THREE.BoxGeometry(RK.t, len - 0.02, w);
+    b.rotateZ(xs * ang);
+    const off = RK.t / 2 + RK.proud;
+    b.translate(xs * (hb + ht) / 2 + xs * px * off, (yb + yt) / 2 + py * off, zc);
+    return b;
+  }
   {
     const tile: THREE.BufferGeometry[] = [], band: THREE.BufferGeometry[] = [], riser: THREE.BufferGeometry[] = [];
-    // skirt
+    // skirt: eaves band, tile field, TOP strip (green frame all round), soffit, inner wall, riser
     const bi = SK.band / skPitch;
-    // The band's outer edge, the fascia strip's face and the soffit's outer edge are pulled
-    // apart by a few millimetres: an EDGE lying in a face's plane is not a z-fight, but the
-    // coplanar check compares bounding boxes and cannot tell the two apart.
-    const outer = [SK.hx + 0.003, SK.hz + 0.003, SK.y0], midR = [SK.hx - bi, SK.hz - bi, SK.y0 + SK.band], innerR = [SK.hxI, SK.hzI, SK.y1];
+    const outer = [SK.hx + 0.003, SK.hz + 0.003, SK.y0], midR = [SK.hx - bi, SK.hz - bi, SK.y0 + SK.band];
+    const topR = [SK.hxI + bi, SK.hzI + bi, SK.y1 - SK.band], innerR = [SK.hxI, SK.hzI, SK.y1];
     band.push(ring(outer, midR, outUp));
-    tile.push(ring(midR, innerR, outUp));
+    tile.push(ring(midR, topR, outUp));
+    band.push(ring(topR, innerR, outUp));
     tile.push(ring([SK.hx - 0.005, SK.hz - 0.005, SK.soffit], [SK.hxI, SK.hzI, SK.soffit], down));
     tile.push(ring([SK.hxI, SK.hzI, SK.soffit], [SK.hxI, SK.hzI, SK.y1], inward));
     riser.push(ring([SK.hx, SK.hz, SK.soffit - 0.005], [SK.hx, SK.hz, SK.y0], outward));
-    // middle layer
-    riser.push(boxAt(0, (MD.drop + MD.y0) / 2, 0, MD.hx * 2, MD.y0 - MD.drop, MD.hz * 2));
-    band.push(extrudeAlongZ(bandProfile(MD.hx, MD.y0, mdPitch, MD.band), -MD.hz, MD.hz));
-    tile.push(extrudeAlongZ(tierProfile(MD.hx - MD.band / mdPitch, MD.y0 + MD.band, MD.y1, mdPitch), -MD.hz + 0.01, MD.hz - 0.01));
-    // top gable, three sections
-    riser.push(boxAt(0, (TP.drop + TP.y0) / 2, 0, TP.hx * 2, TP.y0 - TP.drop, TP.hz * 2));
-    for (const [z0, z1, ridge] of TP.sections as number[][]) {
-      const pitch = (ridge - TP.y0) / TP.hx;
-      band.push(extrudeAlongZ(bandProfile(TP.hx, TP.y0, pitch, TP.band), z0, z1));
-      tile.push(extrudeAlongZ(tierProfile(TP.hx - TP.band / pitch, TP.y0 + TP.band, ridge, pitch), z0 + 0.01, z1 - 0.01));
+    // middle layer, three telescoped sections: riser, eaves band, tile field, top strip, and a
+    // green rake stripe at each end of each section on both slopes
+    for (const [z0, z1, y0, y1, drop] of MD.sections as number[][]) {
+      riser.push(boxAt(0, (drop + y0) / 2, (z0 + z1) / 2, MD.hx * 2, y0 - drop, z1 - z0));
+      const hb1 = MD.hx - MD.band / mdPitch, hb2 = MD.hxT + MD.band / mdPitch;
+      band.push(extrudeAlongZ(bandProfile(MD.hx, y0, mdPitch, MD.band), z0, z1));
+      tile.push(extrudeAlongZ(tierProfile(hb1, y0 + MD.band, y1 - MD.band, mdPitch), z0 + 0.01, z1 - 0.01));
+      band.push(extrudeAlongZ(tierProfile(hb2, y1 - MD.band, y1, mdPitch), z0 + 0.005, z1 - 0.005));
+      for (const xs of [-1, 1]) for (const zc of [z0 + RK.w / 2 + 0.02, z1 - RK.w / 2 - 0.02]) {
+        band.push(rakeStrip(MD.hx - 0.02, y0 + 0.02, MD.hxT + 0.02, y1 - 0.02, xs, zc, RK.w));
+      }
+    }
+    // top gable, three sections: riser, eaves band, tile field to below the ridge, a green ridge
+    // strip closing to the point, rake stripes
+    for (const [z0, z1, y0, ridge, drop] of TP.sections as number[][]) {
+      const pitch = (ridge - y0) / TP.hx;
+      riser.push(boxAt(0, (drop + y0) / 2, (z0 + z1) / 2, TP.hx * 2, y0 - drop, z1 - z0));
+      band.push(extrudeAlongZ(bandProfile(TP.hx, y0, pitch, TP.band), z0, z1));
+      tile.push(extrudeAlongZ(tierProfile(TP.hx - TP.band / pitch, y0 + TP.band, ridge - TP.band, pitch), z0 + 0.01, z1 - 0.01));
+      band.push(extrudeAlongZ(tierProfile(TP.band / pitch, ridge - TP.band, ridge, pitch), z0 + 0.005, z1 - 0.005));
+      for (const xs of [-1, 1]) for (const zc of [z0 + RK.w / 2 + 0.02, z1 - RK.w / 2 - 0.02]) {
+        band.push(rakeStrip(TP.hx - 0.02, y0 + 0.02, 0.10, ridge - 0.10, xs, zc, RK.w));
+      }
     }
     const tg = mergeGeos(tile), bg = mergeGeos(band), rg = mergeGeos(riser);
     projUv(tg, G.wear.roof.tile); projUv(bg, G.wear.roof.tile); projUv(rg, G.wear.stone.tile);
     add('roof-tile', 'Tile roof fields', tg, 'tile');
-    add('roof-band', 'Glazed eaves bands', bg, 'green');
+    add('roof-band', 'Glazed green frames', bg, 'green');
     add('roof-risers', 'Roof fascia bands', rg, 'stone');
   }
 
@@ -1105,11 +1171,12 @@ export function createUbosotModel(options: ProceduralModelOptions = {}): THREE.G
    * end sections' ridges -- which is exactly the telescoped step the plate shows. */
   const GB = G.gable;
   const gables: { z: number, ridge: number, full: boolean }[] = [];
-  for (const [z0, z1, ridge] of TP.sections as number[][]) {
+  for (const [z0, z1, , ridge] of TP.sections as number[][]) {
     const zo = Math.abs(z0) > Math.abs(z1) ? z0 : z1;
-    if (Math.abs(zo) > 8.9) gables.push({ z: Math.sign(zo) * 9.0, ridge, full: true });
+    if (Math.abs(zo) > 8.4) gables.push({ z: Math.sign(zo) * (TP.hz + 0.05), ridge, full: true });
     else { gables.push({ z: 6.0, ridge, full: false }); gables.push({ z: -6.0, ridge, full: false }); }
   }
+  const MDc = MD.sections[0], MDe = MD.sections[1], TPc = TP.sections[0];
   {
     const slabs: THREE.BufferGeometry[] = [], boards: THREE.BufferGeometry[] = [], reds: THREE.BufferGeometry[] = [];
     const peds: THREE.BufferGeometry[] = [];
@@ -1117,27 +1184,40 @@ export function createUbosotModel(options: ProceduralModelOptions = {}): THREE.G
     // pediment spans the whole gable, and the top layer's step shows only on the side slopes (the
     // end sections' top pitch of 1.0 is the middle layer's 45 degrees continued). The centre
     // section's gables at z = +-6 start at the top layer's own eaves.
+    // END gables: one rake from the middle END section's eaves (8.65) to the end ridge (13.85),
+    // slope 1.04, the pediment filling it. CENTRE gables at z = +-6: the STEPPED outline of the
+    // centre sections -- middle eaves, its top edge, the top register's eaves, the ridge -- so the
+    // white fin that shows above each end section is exactly the telescoped step, 0.35 m on the
+    // middle register and 0.95 m at the ridge. Both run down to 7.8, inside the skirt's volume.
     const rakeOf = (g: { z: number, ridge: number, full: boolean }) =>
-      g.full ? [MD.hx + 0.05, MD.y0, MD.drop + 0.10] : [TP.hx + 0.05, TP.y0 + 0.02, TP.drop + 0.10];   // [hb, yb, yBottom]
+      g.full ? [MD.hx + 0.05, MDe[2] + 0.02, MDe[4] + 0.10] : [MD.hx + 0.05, MDc[2] + 0.02, MDe[4] + 0.10];   // [hb, yb, yBottom]
     for (const g of gables) {
       const zs = Math.sign(g.z);
       const [hb, yb, yBot] = rakeOf(g);
       const s = new THREE.Shape();
-      s.moveTo(-hb, yBot); s.lineTo(hb, yBot); s.lineTo(hb, yb); s.lineTo(0, g.ridge + 0.01); s.lineTo(-hb, yb);
+      if (g.full) {
+        s.moveTo(-hb, yBot); s.lineTo(hb, yBot); s.lineTo(hb, yb); s.lineTo(0, g.ridge + 0.01); s.lineTo(-hb, yb);
+      } else {
+        const hT = MD.hxT + 0.05, yT = MDc[3] + 0.02, yE = TPc[2] + 0.02;
+        s.moveTo(-hb, yBot); s.lineTo(hb, yBot); s.lineTo(hb, yb); s.lineTo(hT, yT); s.lineTo(hT, yE);
+        s.lineTo(0, g.ridge + 0.01); s.lineTo(-hT, yE); s.lineTo(-hT, yT); s.lineTo(-hb, yb);
+      }
       s.closePath();
       const zIn = Math.abs(g.z) - 0.07, zOut = Math.abs(g.z) + GB.slab - 0.07;
       slabs.push(extrudeAlongZ(s, zs > 0 ? zIn : -zOut, zs > 0 ? zOut : -zIn));
-      // bargeboards and their red outer strips, up each rake
+      // bargeboards (GILT lamyong, the plate's) and their red outer strips, up each rake. The
+      // centre gables board only the top register's rake, from its own eaves to the ridge.
       {
+        const [bhb, byb] = g.full ? [hb, yb] : [TP.hx + 0.05, TPc[2] + 0.02];
         const ht = 0, yt = g.ridge;
-        const run = hb - ht, rise = yt - yb, len = Math.hypot(run, rise) + 0.12;
+        const run = bhb - ht, rise = yt - byb, len = Math.hypot(run, rise) + 0.12;
         // atan2(RUN, RISE): rotateZ maps a box's +Y to (-sin, cos), so aiming it along the rake
         // needs the COMPLEMENT of the pitch angle -- three degrees off at 46 degrees, twenty-four
         // at 33, which is how it survived a whole prop before the reclining hall caught it.
         const ang = Math.atan2(run, rise);
         const px = rise / len, py = run / len;   // unit perpendicular, outward-and-up
         for (const xs of [-1, 1]) {
-          const cx = xs * (hb + ht) / 2, cy = (yb + yt) / 2;
+          const cx = xs * (bhb + ht) / 2, cy = (byb + yt) / 2;
           const b = new THREE.BoxGeometry(GB.boardW, len, GB.boardT);
           b.rotateZ(xs * ang);
           b.translate(cx + xs * px * GB.boardW / 2, cy + py * GB.boardW / 2, zs * (zOut + GB.boardT / 2));
@@ -1148,9 +1228,11 @@ export function createUbosotModel(options: ProceduralModelOptions = {}): THREE.G
           reds.push(r);
         }
       }
-      // pediment: the carved field, inset from the rakes, proud of the slab
-      const inset = 0.50, base = yb + 0.30;
-      const hw = hb - inset - 0.30 * hb / (g.ridge - yb), apex = g.ridge - inset * (g.ridge - yb) / hb - 0.15;
+      // pediment: the carved field, inset from the rakes, proud of the slab. Centre gables carry
+      // it in the top register's triangle only (what shows above the end ridges).
+      const [phb, pyb] = g.full ? [hb, yb] : [TP.hx + 0.05, TPc[2] + 0.02];
+      const inset = 0.50, base = pyb + 0.30;
+      const hw = phb - inset - 0.30 * phb / (g.ridge - pyb), apex = g.ridge - inset * (g.ridge - pyb) / phb - 0.15;
       const t = new THREE.Shape();
       t.moveTo(-hw, base); t.lineTo(hw, base); t.lineTo(0, apex); t.closePath();
       const pg = extrudeAlongZ(t, zs > 0 ? zOut : -zOut - 0.18, zs > 0 ? zOut + 0.18 : -zOut);
@@ -1166,7 +1248,7 @@ export function createUbosotModel(options: ProceduralModelOptions = {}): THREE.G
     const sg = mergeGeos(slabs); projUv(sg, G.wear.stone.tile);
     add('gable-walls', 'Gable walls', sg, 'stone');
     const bg = mergeGeos(boards); projUv(bg, G.wear.stone.tile);
-    add('barge-boards', 'Bargeboards', bg, 'stone');
+    add('barge-boards', 'Gilt bargeboards', bg, 'gilt');
     add('pediment', 'Carved gable pediments', mergeGeos(peds), 'carved');
 
     /* red trim: eaves fascias on every layer, the eaves beam on the columns, ridge caps, and the
@@ -1178,14 +1260,14 @@ export function createUbosotModel(options: ProceduralModelOptions = {}): THREE.G
     };
     fasciaRing(SK.hx, SK.hz, SK.y0 - 0.20, 0.36, 0.14);
     for (const xs of [-1, 1]) {
-      reds.push(boxAt(xs * (MD.hx + 0.07), MD.y0 - 0.20, 0, 0.14, 0.36, MD.hz * 2 + 0.10));
-      reds.push(boxAt(xs * (TP.hx + 0.07), TP.y0 - 0.20, 0, 0.14, 0.36, TP.hz * 2 + 0.10));
+      for (const [z0, z1, y0] of MD.sections as number[][]) reds.push(boxAt(xs * (MD.hx + 0.07), y0 - 0.20, (z0 + z1) / 2, 0.14, 0.36, z1 - z0 - 0.02));
+      for (const [z0, z1, y0] of TP.sections as number[][]) reds.push(boxAt(xs * (TP.hx + 0.07), y0 - 0.20, (z0 + z1) / 2, 0.14, 0.36, z1 - z0 - 0.02));
     }
     const C = G.column, B = G.beam;
     const by = (B.y0 + B.y1) / 2, bh = B.y1 - B.y0;
     for (const xs of [-1, 1]) reds.push(boxAt(xs * C.insetX, by, 0, B.thick, bh, C.insetZ * 2 + B.thick));
     for (const zs of [-1, 1]) reds.push(boxAt(0, by - 0.01, zs * C.insetZ, C.insetX * 2 - B.thick, bh, B.thick));
-    for (const [z0, z1, ridge] of TP.sections as number[][]) {
+    for (const [z0, z1, , ridge] of TP.sections as number[][]) {
       reds.push(boxAt(0, ridge + 0.06, (z0 + z1) / 2, 0.36, 0.24, z1 - z0 + 0.24));
     }
     const rg = mergeGeos(reds); projUv(rg, G.wear.red.tile);
@@ -1200,7 +1282,24 @@ export function createUbosotModel(options: ProceduralModelOptions = {}): THREE.G
    * rise and hand; a NEGATIVE X scale mirrors the curl. */
   {
     const H = G.horn;
-    const unit = curledHorn(0.46, 1.0, 0.20, 9);
+    /** A spiral horn: n box segments along a heading that turns from phi0 to phi1 degrees (past
+     *  90 the tip curls BACK), tapering w0 -> w1. Unit length 1, scaled per instance. */
+    const spiralHorn = (len: number, phi0: number, phi1: number, w0: number, w1: number, across: number, n: number) => {
+      const segs: THREE.BufferGeometry[] = [];
+      let x = 0, y = 0;
+      const L = len / n;
+      for (let j = 0; j < n; j++) {
+        const phi = (phi0 + (phi1 - phi0) * (j + 0.5) / n) * Math.PI / 180;
+        const w = w0 + (w1 - w0) * (j + 0.5) / n;
+        const g = new THREE.BoxGeometry(w, L + w * 0.35, across);
+        g.rotateZ(phi - Math.PI / 2);
+        g.translate(x + Math.cos(phi) * L / 2, y + Math.sin(phi) * L / 2, 0);
+        segs.push(g);
+        x += Math.cos(phi) * L; y += Math.sin(phi) * L;
+      }
+      return mergeGeos(segs);
+    };
+    const unit = spiralHorn(1.0, H.phi0, H.phi1, H.w0, H.w1, H.across, H.n);
     const mats: THREE.Matrix4[] = [];
     const place = (x: number, y: number, z: number, yaw: number, rise: number, mirror = 1) => {
       const sxz = 0.55 + 0.32 * rise;
@@ -1214,7 +1313,7 @@ export function createUbosotModel(options: ProceduralModelOptions = {}): THREE.G
       // apex, curling outward along the ridge
       place(0, g.ridge - 0.30, zs * zf, zs > 0 ? -Math.PI / 2 : Math.PI / 2, g.full ? H.apexRise * (g.ridge > 14.5 ? 1 : 0.92) : H.apexRise);
       // rake feet, curling outward across the building
-      const [fhb, fyb] = g.full ? [MD.hx, MD.y0] : [TP.hx, TP.y0];
+      const [fhb, fyb] = g.full ? [MD.hx, MDe[2]] : [TP.hx, TPc[2]];
       for (const xs of [-1, 1]) {
         place(xs * (fhb + 0.14), fyb + 0.02, zs * (zf - 0.02), xs > 0 ? 0 : Math.PI, H.footRise);
       }
@@ -1375,9 +1474,9 @@ export function createUbosotModel(options: ProceduralModelOptions = {}): THREE.G
         ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, S, S);
         cloud(ctx, r, S, wrapped, P.mottle, 10, 0.18, 0.40, 16);
         grain(ctx, r, S, wrapped, P.grain, 6000, 0.07);
-        washes(ctx, r, S, wrapped, P.wash, 9, 0.42, 9, 30, 110);
-        washes(ctx, r, S, wrapped, P.streak, 7, 0.45, 3, 5, 16);
-        cloud(ctx, r, S, wrapped, P.wash, 4, 0.10, 0.28, 20);
+        washes(ctx, r, S, wrapped, P.wash, 7, 0.35, 9, 30, 110);
+        washes(ctx, r, S, wrapped, P.streak, 7, 0.40, 3, 5, 16);
+        cloud(ctx, r, S, wrapped, P.wash, 3, 0.10, 0.22, 20);
       }), P.bump);
     }
     // Red lacquer: re-based to the plaster envelope, the clean red painted as its ratio, then the
@@ -1388,8 +1487,8 @@ export function createUbosotModel(options: ProceduralModelOptions = {}): THREE.G
       bind(materials.red, makeTile(8261403, (ctx, r, S, wrapped) => {
         ctx.fillStyle = css(P.clean, 1); ctx.fillRect(0, 0, S, S);
         cloud(ctx, r, S, wrapped, [P.clean[0] * 0.8, P.clean[1] * 0.8, P.clean[2] * 0.8], 10, 0.14, 0.5, 12);
-        washes(ctx, r, S, wrapped, P.grime, 18, 0.50, 6, 16, 70);
-        flakes(ctx, r, S, wrapped, P.flake, P.rim, 6, 0.028);
+        washes(ctx, r, S, wrapped, P.grime, 12, 0.40, 6, 16, 70);
+        flakes(ctx, r, S, wrapped, P.flake, P.rim, 4, 0.026);
         grain(ctx, r, S, wrapped, P.grain, 3000, 0.10);
       }), P.bump);
     }
@@ -1408,16 +1507,20 @@ export function createUbosotModel(options: ProceduralModelOptions = {}): THREE.G
         for (let row = 0; row < P.rows; row++) {
           const off = (row % 2) * cw / 2;
           for (let col = 0; col < P.cols; col++) {
-            const x0 = col * cw + off + 1.5, x1 = x0 + cw - 3, y0 = row * rh + 1, y1 = y0 + rh - 2;
+            // Equal 1 px joints on both axes: 3 px vertical joints against 2 px horizontal read
+            // as bright vertical stripes down every slope at prop distance.
+            const x0 = col * cw + off + 1, x1 = x0 + cw - 2, y0 = row * rh + 1, y1 = y0 + rh - 2;
             const p = new Path2D();
             p.moveTo(x0, y0); p.lineTo(x1, y0); p.lineTo(x1, y1 - cw * 0.25);
             p.quadraticCurveTo((x0 + x1) / 2, y1 + cw * 0.12, x0, y1 - cw * 0.25); p.closePath();
             tiles.push({ p, t: P.loTone + (P.hiTone - P.loTone) * r() });
           }
         }
-        wrapped(() => { for (const t of tiles) { ctx.fillStyle = css([t.t, t.t * (0.97 + 0.03 * r()), t.t * 0.96], 1); ctx.fill(t.p); } });
-        cloud(ctx, r, S, wrapped, P.moss, 9, 0.12, 0.45, 10);
-        cloud(ctx, r, S, wrapped, P.grime, 6, 0.16, 0.35, 16);
+        wrapped(() => { for (const t of tiles) { ctx.fillStyle = css([t.t, t.t * (0.96 + 0.04 * r()), t.t * 0.95], 1); ctx.fill(t.p); } });
+        // a few darker fired tiles scattered through the field, as the plate's roof has
+        wrapped(() => { for (const t of tiles) if (r() < 0.07) { ctx.fillStyle = css([0.72, 0.68, 0.66], 1); ctx.fill(t.p); } });
+        cloud(ctx, r, S, wrapped, P.moss, 6, 0.10, 0.35, 10);
+        cloud(ctx, r, S, wrapped, P.grime, 4, 0.14, 0.25, 16);
         grain(ctx, r, S, wrapped, P.joint, 2500, 0.08);
       });
       bind(materials.tile, cv, P.bump);
@@ -1559,13 +1662,8 @@ export function createObjectModel(spec?: unknown, options: ProceduralModelOption
 }
 
 /**
- * The one-argument entry point: vibe3d's contract, and img2threejs's own.
- *
- * `createObjectModel` above keeps thaikit's historical (spec, options) shape so
- * the harness, the level editor and the Node-side gates carry on unchanged.
- * `spec` has never been passed by any caller -- it is inspection data that is
- * already baked into this module -- so this is the honest signature, and it is
- * what a vibe3d consumer installs and calls.
+ * vibe3d's one-argument entry: the same factory under the name a pack consumer installs and
+ * calls. `model.ts` beside this file re-exports it as the item's `createModel`.
  */
 export function createModel(options: ProceduralModelOptions = {}): THREE.Group {
   return createObjectModel(undefined, options);

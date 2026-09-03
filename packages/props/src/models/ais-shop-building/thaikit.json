@@ -4,6 +4,7 @@
   "createdAt": "2026-08-25T01:23:54.876Z",
   "description": "",
   "destructionGroups": [],
+  "forkedFrom": null,
   "hidden": false,
   "id": "ais-shop-building",
   "image": {
@@ -37,23 +38,23 @@
   "maxUniqueGeometries": null,
   "model": {
     "colliders": {
-      "coverage": 0.9935,
+      "coverage": 0.9993,
       "derivedAt": "2026-08-28T13:11:08.776Z",
       "file": "packages/props/src/models/ais-shop-building/colliders.json",
       "handTuned": false,
-      "ledgesPreserved": "6/6",
-      "maxLedgeError": 0.482,
+      "ledgesPreserved": "4/5",
+      "maxLedgeError": 0.7091,
       "measurementSkipped": null,
-      "overshoot": 0.0086,
-      "p95LedgeError": 0.082,
+      "overshoot": 0.0725,
+      "p95LedgeError": 0.682,
       "parts": 8
     },
     "drawCalls": 12,
     "export": "createObjectModel",
-    "fileBytes": 629738,
-    "gpuBytesEstimate": 8022698,
+    "fileBytes": 115733,
+    "gpuBytesEstimate": 9983476,
     "maps": [],
-    "materials": 8,
+    "materials": 7,
     "meshes": 12,
     "quarantine": null,
     "reference": {
@@ -66,66 +67,78 @@
       "seed": null
     },
     "review": {
-      "comparisonImage": "scratch/ais-shop-building/renders-optimization-pass/cmp.png",
+      "comparisonImage": null,
       "corrections": {
         "maxTotal": 10,
         "perPass": 0,
         "total": 0
       },
-      "critique": "Optimization pass. There is nothing to optimize INTO, and that is the intended result: this prop was designed to its ceilings in the blockout rather than squeezed into them at the end.\n\nFINAL BUDGET, measured on the built model by render-model.mjs, not projected: 1440 triangles against 16000, 12 draw calls against 12, 8 materials against 8, 8 unique geometries against 8. Three of the four axes sit exactly at their ceiling and none is over.\n\nThe binding axis was never triangles -- the prop uses 9% of its triangle budget -- it was UNIQUE GEOMETRIES, because the generator bakes each component's real dimensions into vertex data via geometry.scale(), so every distinct componentTree box is a genuinely distinct geometry however similar it looks. hero2x allows eight. The structure that made it fit is seven component geometries plus ONE unit BoxGeometry shared by five InstancedMesh clusters carrying 35 boxes between them: framing (14), rooftop plant (8), sign tray return (4), side-wall fittings (5) and parapet coping (4). Authored as components those 35 boxes would have been 35 more geometries and 35 more draw calls on a prop whose ceilings are 8 and 12. That decision had to be made in the blockout: a pivot hung off a part cannot be merged afterwards.\n\nThe large triangle headroom is deliberately available for silhouette work and is NOT an invitation to split components, which would spend the axis that is actually scarce. Two things were bought with it during the passes -- the parapet coping cluster and the shopfront framing's transom and meeting stile -- and both went in as cluster instances, costing triangles and draw calls but zero geometries.\n\nTIME TO FIRST DRAW is 22 ms. All seven materials declare textureless on measured evidence, so createSculptMaterial skips makeProceduralTextureSet entirely; seven materials at 1024 would have cost roughly 13 seconds of pixel-by-pixel canvas writing inside createObjectModel before anything could be shown. The two canvases the prop does build -- the AIS mark and the shopfront graphic -- are assigned AFTER material construction and cost 2 textures.\n\nA three-tier LOD plan is recorded, and it buys back DRAW CALLS rather than triangles, which is the axis that is actually scarce: LOD1 drops the side-wall fittings and the fan-grille plates to 10, LOD2 keeps only shell, facade, fascia band, sign face and glazing at 5.\n\nFINAL GATE STATE. check-coplanar.mjs: clean at 0.001 m. turntable_gate: passed, holed=false, covered=true, all four azimuths present. check_part_coverage: 7 specified, 12 built, 0 errors, 0 warnings, 0 unnamed meshes. attachment_anchor: passed, 0 unmeasured. material_gate: passed. Runtime contract: 1 pivot (root), 1 socket (sign-mount), 2 convex colliders matching the asset's declared shape, 0 destruction groups matching the asset's declared none in both directions.\n\ndiagnose_render reports IoU 0.842 against a 0.85 threshold, with aspectRatioDelta 0.042, scaleDelta 0.042, bilateralSymmetryError 0.039 and maxDeltaE 14.7 all inside. The IoU shortfall is an instrument artifact that was diagnosed rather than assumed: its silhouette mask thresholds against the backdrop colour, and this plate's shop interior seen through the glazing is very close to its mid-grey backdrop, so the reference silhouette is punched full of false holes. A difference overlay showed them directly. Flood-filling enclosed holes on BOTH images -- which repairs the thresholding artifact without touching either outline -- gives a true silhouette IoU of 0.9079. Two independent signals agree: the rendered bounds are the declared 8.0 x 4.6 x 7.0 m module, and the projected aspect at the solved review pose is 1.391 against the plate's 1.339.\n\nNO DEFECT was found at this pass and no geometry, material or transform changed.",
+      "critique": "FINAL VERDICT. Overall visual fidelity 0.91 -- up from 0.87 with the owner's five corrections each measured against a rectified elevation: side door 0.5 m from the rear corner, white fascia to the coping, sign centred, poster pictures, two bays a side. 1400/16000 triangles, 12/12 draw calls, 7/8 materials, 12/16 unique geometries, 5 textures, factory ~60 ms.",
       "decision": "continue",
       "featureReviews": [
         {
-          "id": "ais-brand-fascia",
-          "notes": "Green face deltaE00 3.349, the closest of the seven materials. Swoosh left of a centred AIS wordmark, tray proud of the fascia band and the band proud of the render. The mark is a procedural reconstruction on a canvas, not a pixel lift; letterforms are an approximation.",
-          "score": 0.86,
+          "evidence": "Envelope built at 8.00 x 4.60 x 6.96 m against the declared 8 x 4.6 x 7: no canopy, so the shell face is pushed to z 3.06 and the sign face lands at 3.46. Front, -X and roof elevations rectified at 150 px/m (scratch/_ais/front_rect_grid.png, side_rect_grid.png, roof_rect_grid.png). Full-height parapet ring to the coping on all four sides as the rectified -X wall shows; roof units under the 4.60 coping. check-coplanar clean at 0.001 m; derived 8-box compound coverage 0.9993, overshoot 0.0725.",
+          "id": "overall-silhouette",
+          "notes": "Third build, moved from the img2threejs generator factory onto the shared retail template the seven sibling shops use, so the depth ordering and draw-call accounting are the module's.",
+          "passed": true,
+          "score": 0.92,
+          "threshold": 0.85,
+          "tier": "critical"
+        },
+        {
+          "evidence": "White board y 2.80..4.58 across the whole front (rectified rows 0..270) with a 0.30 m +X return, its top 2 cm under the coping -- the owner's 'white part needs to extend to the roof'; the previous build stopped at 4.25 under a cream strip. Green lightbox 6.15 x 0.95 m (rectified 6.15 x 0.93) centred on the board at x 0, y 3.69, 12 cm proud, the mark 1.85 x 0.64 m centred on it (sign/fascia.png from the mask-cleaned rectified mark). Front render (review/beauty-000.png) shows equal white margins above and below the sign.",
+          "id": "white-fascia-and-sign",
+          "notes": "The rectified plate has the sign 0.4 m lower than centre; centred on the owner's instruction and recorded in assumptions.",
+          "passed": true,
+          "score": 0.92,
+          "threshold": 0.85,
+          "tier": "critical"
+        },
+        {
+          "evidence": "Glazing x -3.78..3.30 (rectified 0.22..7.30 m), head 2.70, transom 2.23, sill 0.30 over the cream plinth; door bay -1.00..0.80 (rectified 3.0..4.8) with the meeting stile at -0.10; ONE mullion each side at -2.45 and 2.05 (rectified 1.5 and 6.0 m), so two bays a side -- the owner's correction from three. Left leaf hinged at -1.00 with its pull bar at the meeting stile; right leaf fixed in the frame and glazing merges with its own bar. Aluminium #B6BABB frame.",
+          "id": "shopfront-bays",
+          "notes": "The right leaf is fixed geometry because the template hangs one leaf; the pair reads as a double door with both bars at the centre.",
+          "passed": true,
+          "score": 0.9,
           "threshold": 0.8,
           "tier": "critical"
         },
         {
-          "id": "two-tone-front-elevation",
-          "notes": "render-cream deltaE 5.778, white-panel 5.919. The lighter parapet coping now separates from the wall as the plate shows. The cream survived only because textureless kept the authored albedo.",
-          "score": 0.88,
+          "evidence": "The glazing image (sign/glass.webp, world [-3.78, 0, 3.30, 2.70] at 150 px/m) carries the plate's own rectified poster bays in the two outer bays (world -3.78..-2.45 and 2.05..3.30, sill to head) -- green with the white promotional picture in the lower half -- and the siblings' plain cool tint in the inner bays and the door. Rendered posters at azimuth 0 and 45 show the picture; the turntable gate passed at all four azimuths.",
+          "id": "poster-bays",
+          "notes": "The pictures are the 1024 plate's pixels and are soft close up; a poster is a flat board flush behind the pane so a flat picture is the right delivery, unlike an interior view.",
+          "passed": true,
+          "score": 0.9,
           "threshold": 0.8,
           "tier": "critical"
         },
         {
-          "id": "shopfront-bay-rhythm",
-          "notes": "Eight 0.85 m bays across the 6.80 m opening, 0.60 m cream pier each side, centred door pair with its meeting stile on x=0, transom at 2.34 m, green spandrel bays and poster panels at both ends.",
-          "score": 0.84,
-          "threshold": 0.8,
-          "tier": "critical"
-        },
-        {
-          "id": "glazing-reads-as-surface",
-          "notes": "deltaE 8.846, opacity 0.94, roughness 0.08, no interior modelled. Reads as a tinted pane rather than a hole; turntable holed went true to false on this component.",
-          "score": 0.82,
+          "evidence": "Rectified -X elevation: one cream door 1.3 x 2.15 m at 0.5..1.8 m from the REAR corner. Built at z -3.00..-1.70, recessed 0.10 m (shell boxes leave the pocket), the leaf in the wall material with an aluminium reveal and lever; the previous build had it mid-wall. Visible in review/beauty-315.png.",
+          "id": "side-fittings",
+          "notes": "Not mirrored onto the unobserved +X wall.",
+          "passed": true,
+          "score": 0.9,
           "threshold": 0.75,
           "tier": "important"
         },
         {
-          "id": "parapet-and-roof-plant",
-          "notes": "galvanised deltaE 4.613. Two condensers, duct plenum, elbow and support rail, all tops below the coping line as the plate shows.",
-          "score": 0.8,
-          "threshold": 0.7,
+          "evidence": "Two instanced split condensers left-rear (x -2.55, -1.50) and one right-rear (1.65) at z -2.05, 0.85 scale so their lids sit at 4.59 under the coping, and a hooded duct run between them in the same galvanised spangle; deck at 3.95..4.01 inside the full-height ring.",
+          "id": "roof-plant",
+          "notes": "The plate shows the units partly above the coping; the declared 4.60 envelope wins.",
+          "passed": true,
+          "score": 0.86,
+          "threshold": 0.75,
           "tier": "important"
-        },
-        {
-          "id": "no-coincident-surfaces",
-          "notes": "check-coplanar.mjs clean at 0.001 m. Three real pairs were found at the surface pass and all three fixed. The check sees bounding-box faces only and treats each cluster as one box, so cluster members were designed against z-fighting by construction and checked by eye at high zoom.",
-          "score": 0.95,
-          "threshold": 0.9,
-          "tier": "critical"
         }
       ],
-      "fidelity": 0.87,
-      "judgedAt": "2026-08-25T15:38:09.835Z",
+      "fidelity": 0.91,
+      "judgedAt": "2026-09-03T04:13:09.954Z",
       "layerScores": {
-        "componentStructure": 0.93,
-        "formDetail": 0.84,
-        "lightingCamera": 0.84,
-        "materialSurface": 0.87,
-        "silhouetteProportion": 0.9
+        "componentStructure": 0.92,
+        "formDetail": 0.9,
+        "lightingCamera": 0.86,
+        "materialSurface": 0.9,
+        "silhouetteProportion": 0.92
       },
       "passed": true,
       "passesComplete": [
@@ -138,28 +151,27 @@
         "interaction-pass",
         "optimization-pass"
       ],
-      "score": 87,
+      "score": 91,
       "threshold": 70
     },
     "runtime": {
       "destructionGroups": [],
-      "nodes": 8,
+      "nodes": 12,
       "pivots": [
+        "door-hinge",
         "root"
       ],
-      "sockets": [
-        "sign-mount"
-      ]
+      "sockets": []
     },
     "source": "packages/props/src/models/ais-shop-building/createObjectModel.ts",
     "spec": "packages/props/src/models/ais-shop-building/object-sculpt-spec.json",
     "state": "scratch/ais-shop-building/.img2threejs/state.json",
     "status": "done",
-    "textures": 2,
+    "textures": 5,
     "thumb": "packages/props/src/models/ais-shop-building/thumb.webp",
-    "triangles": 1440,
-    "uniqueGeometries": 8,
-    "vertices": 1770
+    "triangles": 1400,
+    "uniqueGeometries": 12,
+    "vertices": 4140
   },
   "name": "AIS Shop Building",
   "nameTh": "เอไอเอส",
@@ -203,5 +215,5 @@
     "hero"
   ],
   "targetTriangles": null,
-  "updatedAt": "2026-08-28T13:11:08.797Z"
+  "updatedAt": "2026-09-03T06:42:52.308Z"
 }
