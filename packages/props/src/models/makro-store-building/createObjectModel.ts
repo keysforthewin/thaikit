@@ -163,7 +163,7 @@ const CONFIG = {
       },
       "frameMaterial": "frame",
       "glazing": {
-        "cx": 0.19999999999999996,
+        "cx": 0,
         "w": 6.4,
         "h": 1.56,
         "cy": 1,
@@ -172,7 +172,7 @@ const CONFIG = {
       },
       "frame": [
         [
-          -3,
+          -3.2,
           1,
           2.605,
           0.09,
@@ -180,7 +180,7 @@ const CONFIG = {
           0.19
         ],
         [
-          3.4,
+          3.2,
           1,
           2.605,
           0.09,
@@ -188,7 +188,7 @@ const CONFIG = {
           0.19
         ],
         [
-          0.19999999999999996,
+          0,
           1.79,
           2.605,
           6.49,
@@ -196,7 +196,7 @@ const CONFIG = {
           0.19
         ],
         [
-          0.19999999999999996,
+          0,
           0.245,
           2.605,
           6.49,
@@ -204,7 +204,7 @@ const CONFIG = {
           0.19
         ],
         [
-          0.19999999999999996,
+          0,
           1.5,
           2.605,
           6.4,
@@ -212,28 +212,36 @@ const CONFIG = {
           0.19
         ],
         [
-          -0.055,
+          0,
           0.34,
           2.615,
-          1.69,
+          2.5,
           0.22,
           0.09
         ],
         [
-          3.96,
-          1.14,
-          0.020000000000000004,
-          0.03,
-          2.24,
-          0.06
+          3.9695,
+          1.165,
+          0.010000000000000002,
+          0.035,
+          2.33,
+          0.08
         ],
         [
-          3.96,
-          1.14,
-          2.03,
-          0.03,
-          2.24,
-          0.06
+          3.9695,
+          1.165,
+          2.04,
+          0.035,
+          2.33,
+          0.08
+        ],
+        [
+          3.9695,
+          2.29,
+          1.025,
+          0.035,
+          0.08,
+          2.11
         ]
       ],
       "mullions": {
@@ -242,19 +250,19 @@ const CONFIG = {
         "cy": 1,
         "cz": 2.58,
         "x": [
-          -2.31,
-          -1.61,
-          -0.9,
-          -0.33,
-          0.24,
-          0.79,
-          1.35,
-          2.05,
-          2.75
+          -2.56,
+          -1.9200000000000002,
+          -1.2800000000000002,
+          -0.6400000000000001,
+          0,
+          0.6399999999999997,
+          1.2800000000000002,
+          1.92,
+          2.5599999999999996
         ]
       },
       "sideFeature": {
-        "name": "Roller shutter, ducted rooftop units and duct run",
+        "name": "Roller shutter slats, ducted rooftop units and duct run",
         "material": "galv",
         "boxes": [
           [
@@ -546,14 +554,6 @@ const CONFIG = {
             1.93
           ],
           [
-            3.965,
-            2.33,
-            1.025,
-            0.04,
-            0.14,
-            2.07
-          ],
-          [
             1.55,
             4.52,
             -2.15,
@@ -670,18 +670,18 @@ const CONFIG = {
             0.2
           ],
           [
-            -3.47,
+            -3.585,
             2.35,
             2.58,
-            1,
+            0.77,
             4.3,
             0.2
           ],
           [
-            3.685,
+            3.585,
             2.35,
             2.58,
-            0.57,
+            0.77,
             4.3,
             0.2
           ],
@@ -776,7 +776,7 @@ const CONFIG = {
       "deckY": 4.16,
       "deckExtra": [
         [
-          0.19999999999999996,
+          0,
           1,
           2.506,
           6.6000000000000005,
@@ -1402,9 +1402,18 @@ export function createMakroStoreBuildingModel(options: ProceduralModelOptions = 
   // NO forward cantilever must push this out instead, or the prop is built short of its declared
   // envelope -- MK first came out 6.3 m deep against a declared 7.0 for exactly that reason.
   const SF = (G.shellFront ?? 2.50) as number;
-  add('building-shell', 'Building shell', boxAt(0, 1.775, (SF - 3.44) / 2, 7.88, 3.55, SF + 3.44), 'wall');
+  // `shellBox` [cx, cy, cz, w, h, d] replaces the full-module shell for a plate whose enclosed volume
+  // does not fill the slab -- the PTT kiosk sits under the rear-right of an 8 x 7 canopy slab.
+  const SB = (G.shellBox as number[] | undefined) ?? [0, 1.775, (SF - 3.44) / 2, 7.88, 3.55, SF + 3.44];
+  // `shellBoxes` replaces the shell with SEVERAL boxes in one submission, for a plate whose wall has
+  // a recess in it -- a service door set back into a reveal (MK). The pocket is left open by the
+  // boxes around it, so the leaf inside can sit BEHIND the wall face without a hole being cut.
+  add('building-shell', 'Building shell',
+      G.shellBoxes ? boxes(G.shellBoxes as number[][]) : boxAt(SB[0], SB[1], SB[2], SB[3], SB[4], SB[5]), 'wall');
   colliders['building-shell'] = {
-    shape: 'box', localCenter: [0, 2.3, 0], halfExtents: [4.0, 2.3, 3.5],
+    // Half-height follows the parapet coping, so a taller module (FamilyMart's 5.20) is not
+    // declared 2.3 m tall; every 4.60 sibling still gets exactly 2.3.
+    shape: 'box', localCenter: [0, ((G.fasciaWall?.cy ?? 4.075) + (G.fasciaWall?.h ?? 1.05) / 2) / 2, 0], halfExtents: [4.0, ((G.fasciaWall?.cy ?? 4.075) + (G.fasciaWall?.h ?? 1.05) / 2) / 2, 3.5],
     notes: 'Asset declares collider "box". One convex proxy over the whole envelope.',
   };
 
@@ -1420,7 +1429,9 @@ export function createMakroStoreBuildingModel(options: ProceduralModelOptions = 
   // `deckExtra` folds more boxes into the deck's submission -- a dark backdrop slab behind a glazed
   // opening, so a shopfront with no interior image shows a dark room through its glass and its
   // delivery hatch reads as a HOLE rather than as a patch of the render wall.
-  const deckGeo = boxAt(0, (G.deckY ?? 3.56) as number, (SF - 0.02 - 3.42) / 2, 7.8, 0.12, SF + 3.40);
+  // `deckBox` [cx, cy, cz, w, h, d] replaces the full-module deck the same way `shellBox` does.
+  const DB = (G.deckBox as number[] | undefined) ?? [0, (G.deckY ?? 3.56) as number, (SF - 0.02 - 3.42) / 2, 7.8, 0.12, SF + 3.40];
+  const deckGeo = boxAt(DB[0], DB[1], DB[2], DB[3], DB[4], DB[5]);
   // `deckExtraTones` (one per deckExtra box; the deck itself stays white) is how the backdrop is
   // DARK while the deck keeps its measured tone: one material, one draw call, a vertex colour.
   const tonedDeck = !!G.deckExtraTones;
@@ -1430,7 +1441,7 @@ export function createMakroStoreBuildingModel(options: ProceduralModelOptions = 
             // `deckTone` tints the deck box itself, for a plate whose plant rides the deck MATERIAL
             // (a galvanised tile shared by the units and the membrane) while the membrane keeps its
             // own measured tone. Left unset the deck is white, i.e. the material's authored colour.
-            ? tonedBoxes([[0, (G.deckY ?? 3.56) as number, (SF - 0.02 - 3.42) / 2, 7.8, 0.12, SF + 3.40], ...(G.deckExtra as number[][])],
+            ? tonedBoxes([DB, ...(G.deckExtra as number[][])],
                          [G.deckTone as number | undefined, ...(G.deckExtraTones as number[])])
             : mergeGeos([deckGeo, boxes(G.deckExtra as number[][])]))
         : deckGeo, 'deck');
@@ -1447,7 +1458,9 @@ export function createMakroStoreBuildingModel(options: ProceduralModelOptions = 
   // moving.
   const PW = (G.parapetW ?? 8.0) as number;
   const PCX = (PS.cx ?? 3.88) as number;
-  add('parapet', 'Parapet ring and fascia wall', boxes([
+  // `parapetBoxes` replaces the whole default ring (fascia wall + three upstands) for a plate whose
+  // roof edge is not the shared module's -- a canopy slab with its own fascia depths per side.
+  add('parapet', 'Parapet ring and fascia wall', boxes(G.parapetBoxes ? [...(G.parapetBoxes as number[][]), ...((G.parapetExtra ?? []) as number[][])] : [
     [0, G.fasciaWall.cy, G.fasciaWall.cz, PW, G.fasciaWall.h, G.fasciaWall.d],
     // Side and rear upstands. `parapetSides` overrides the default 0.40 m upstand for a plate whose
     // parapet is a full-height ring rather than a low kerb; the front is always the taller face and
@@ -1720,11 +1733,13 @@ export function createMakroStoreBuildingModel(options: ProceduralModelOptions = 
       for (const fx of [-0.4, 0.4]) for (const fz of [-0.35, 0.35]) parts.push(boxAt(fx, 0.05, fz, 0.08, 0.10, 0.08));
       unit = mergeGeos(parts);
     }
-    const mats = (G.condensers as number[][]).map(([x, z, yaw]) =>
+    // An optional fourth number is a UNIFORM SCALE, so one instanced unit can stand in for a plate
+    // that shows one large condenser beside two small ones without a second geometry.
+    const mats = (G.condensers as number[][]).map(([x, z, yaw, s]) =>
       new THREE.Matrix4().compose(
         new THREE.Vector3(x, (G.condenserY ?? 3.60) as number, z),
         new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), yaw),
-        new THREE.Vector3(1, 1, 1),
+        new THREE.Vector3(s ?? 1, s ?? 1, s ?? 1),
       ));
     // The plant material is CONFIGURABLE, not hard-coded. Referencing a 'galv' id that a config
     // does not define silently hands InstancedMesh an undefined material, three.js substitutes a

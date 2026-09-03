@@ -159,7 +159,7 @@ const CONFIG = {
             ],
             [
               5935208,
-              0.284,
+              0.27506349206349207,
               0.6,
               -0.04,
               0.014,
@@ -167,11 +167,11 @@ const CONFIG = {
               0.05,
               0,
               0,
-              0.012
+              -0.037284301149728215
             ],
             [
               5935208,
-              -0.284,
+              -0.27506349206349207,
               0.6,
               -0.04,
               0.014,
@@ -179,11 +179,11 @@ const CONFIG = {
               0.05,
               0,
               0,
-              -0.012
+              0.037284301149728215
             ],
             [
               5935208,
-              0.284,
+              0.27506349206349207,
               0.6,
               0.12,
               0.014,
@@ -191,11 +191,11 @@ const CONFIG = {
               0.05,
               0,
               0,
-              0.012
+              -0.037284301149728215
             ],
             [
               5935208,
-              -0.284,
+              -0.27506349206349207,
               0.6,
               0.12,
               0.014,
@@ -203,7 +203,7 @@ const CONFIG = {
               0.05,
               0,
               0,
-              -0.012
+              0.037284301149728215
             ],
             [
               4684378,
@@ -795,7 +795,7 @@ function hipRoof(hx: number, hz: number, ridgeHalfZ: number, y0: number, y1: num
  * distance a village skyline is read from -- a smooth green hemisphere reads as a water tank.
  */
 function ribbedDome(profile: number[][], ribs: number, amp: number, seg: number,
-                    valley?: number[]): THREE.BufferGeometry {
+                    valley?: number[], smooth = false): THREE.BufferGeometry {
   const tri: number[] = [];
   const col: number[] = [];
   // The ribs are not only a shape. On the mosque's domes the crests are pale and the valleys are
@@ -832,6 +832,17 @@ function ribbedDome(profile: number[][], ribs: number, amp: number, seg: number,
   g.setAttribute('uv', new THREE.BufferAttribute(new Float32Array((tri.length / 3) * 2), 2));
   if (valley) g.setAttribute('color', new THREE.BufferAttribute(new Float32Array(col), 3));
   g.computeVertexNormals();
+  // `smooth` averages the normals of every vertex sharing a position, so a low-sector flower head
+  // or pompom shades as a rounded solid rather than a cut gem. The soup is non-indexed, so the
+  // faceted default is what computeVertexNormals gives; the mosque's domes keep it.
+  if (smooth) {
+    const pos = g.getAttribute('position') as THREE.BufferAttribute, nrm = g.getAttribute('normal') as THREE.BufferAttribute;
+    const acc = new Map<string, number[]>();
+    const key = (i: number) => `${pos.getX(i).toFixed(5)},${pos.getY(i).toFixed(5)},${pos.getZ(i).toFixed(5)}`;
+    for (let i = 0; i < pos.count; i++) { const k = key(i), a = acc.get(k) ?? [0, 0, 0]; a[0] += nrm.getX(i); a[1] += nrm.getY(i); a[2] += nrm.getZ(i); acc.set(k, a); }
+    for (let i = 0; i < pos.count; i++) { const a = acc.get(key(i))!, l = Math.hypot(a[0], a[1], a[2]) || 1; nrm.setXYZ(i, a[0] / l, a[1] / l, a[2] / l); }
+    nrm.needsUpdate = true;
+  }
   return g;
 }
 
@@ -1564,9 +1575,12 @@ function paintTile(size: number, seed: number, o: any): THREE.CanvasTexture | nu
     const wrap = (draw: (dx: number, dy: number) => void) => {
       for (const dx of [-s, 0, s]) for (const dy of [-s, 0, s]) draw(dx, dy);
     };
-    const blob = (c: number[], x: number, y: number, r: number, a: number, ry = 1) => {
+    // `hard` keeps the mark at full alpha to 0.72 of its radius and drops it over the last quarter:
+    // a rust bloom over its COMPLEMENT (teal) blends to a neutral grey along a soft edge, and the
+    // turntable gate reads that ring as backdrop -- a real bloom has a granular, not a feathered, edge.
+    const blob = (c: number[], x: number, y: number, r: number, a: number, ry = 1, hard = false) => {
       const g = ctx.createRadialGradient(x, y, 0, x, y, r);
-      g.addColorStop(0, `rgba(${rgb(c)},${a})`); g.addColorStop(0.55, `rgba(${rgb(c)},${a * 0.45})`);
+      g.addColorStop(0, `rgba(${rgb(c)},${a})`); g.addColorStop(hard ? 0.72 : 0.55, `rgba(${rgb(c)},${hard ? a : a * 0.45})`);
       g.addColorStop(1, `rgba(${rgb(c)},0)`);
       ctx.fillStyle = g;
       wrap((dx, dy) => { ctx.beginPath(); ctx.ellipse(x + dx, y + dy, r, r * ry, 0, 0, Math.PI * 2); ctx.fill(); });
@@ -1589,18 +1603,19 @@ function paintTile(size: number, seed: number, o: any): THREE.CanvasTexture | nu
       // reach the authored rust -- which is right for a rust BLOOM on painted steel and wrong for
       // the bold chipped patches a peeling lid carries, where bare metal is simply exposed.
       // Defaults are the previous constants exactly, so no existing caller changes.
-      blob(rust, cx, cy, cr, (o.rustAlpha ?? 0.30) + rnd() * (o.rustAlphaVar ?? 0.35), 0.7 + rnd() * 0.6);
+      blob(rust, cx, cy, cr, (o.rustAlpha ?? 0.30) + rnd() * (o.rustAlphaVar ?? 0.35), 0.7 + rnd() * 0.6, o.hardEdges === true);
       for (let i = 0; i < (o.specksPerCluster ?? 40); i++) {
         const a = rnd() * Math.PI * 2, d = Math.sqrt(rnd()) * cr;
         const x = cx + Math.cos(a) * d, y = cy + Math.sin(a) * d, r = 0.8 + rnd() * 2.4;
-        ctx.fillStyle = `rgba(${rgb(rust)},${0.25 + rnd() * 0.5})`;
+        ctx.fillStyle = `rgba(${rgb(o.speckRun ? run : rust)},${(o.speckAlpha ?? 0.25) + rnd() * (o.speckAlphaVar ?? 0.5)})`;   // speckRun: darker specks that texture an opaque bloom
         wrap((dx, dy) => { ctx.beginPath(); ctx.arc(x + dx, y + dy, r, 0, Math.PI * 2); ctx.fill(); });
       }
       // the run it leaves below itself: rust bleeds DOWN a vertical panel and nowhere else
       if (rnd() < (o.runChance ?? 0.55)) {
         const w = 1 + rnd() * s * 0.010, len = s * (0.10 + rnd() * 0.35);
         const g = ctx.createLinearGradient(0, cy, 0, cy + len);
-        g.addColorStop(0, `rgba(${rgb(run)},${0.16 + rnd() * 0.18})`); g.addColorStop(1, `rgba(${rgb(run)},0)`);
+        const ra = (o.runAlpha ?? 0.16) + rnd() * 0.18;
+        g.addColorStop(0, `rgba(${rgb(run)},${ra})`); if (o.hardEdges) g.addColorStop(0.92, `rgba(${rgb(run)},${ra})`); g.addColorStop(1, `rgba(${rgb(run)},0)`);
         ctx.fillStyle = g;
         wrap((dx) => ctx.fillRect(cx + dx + (rnd() - 0.5) * cr, cy, w, len));
       }
@@ -1623,13 +1638,44 @@ function paintTile(size: number, seed: number, o: any): THREE.CanvasTexture | nu
     //    from the top edge (the top rail is where water sits and the paint goes first) and a dirt
     //    band along the bottom. Both are no-ops on a world-space tile, where there is no up.
     for (let i = 0; i < (o.topStreaks ?? 0); i++) {
-      const x = rnd() * s, w = 1 + rnd() * s * 0.014, len = s * (0.25 + rnd() * 0.55);
-      const a = 0.10 + rnd() * 0.22;
+      const x = rnd() * s, w = 1 + rnd() * s * (o.streakWidth ?? 0.014), len = s * (0.25 + rnd() * 0.55);
+      const a = (o.streakAlpha ?? 0.10) + rnd() * 0.22;
       const g = ctx.createLinearGradient(0, 0, 0, len);
-      g.addColorStop(0, `rgba(${rgb(run)},${a})`); g.addColorStop(0.25, `rgba(${rgb(rust)},${a * 0.8})`);
+      g.addColorStop(0, `rgba(${rgb(run)},${a})`); g.addColorStop(o.hardEdges ? 0.92 : 0.25, `rgba(${rgb(rust)},${o.hardEdges ? a : a * 0.8})`);
       g.addColorStop(1, `rgba(${rgb(rust)},0)`);
       ctx.fillStyle = g;
       for (const dx of [-s, 0, s]) ctx.fillRect(x + dx, 0, w, len);
+    }
+    // 4b. ATLAS marks for a tile mapped ONCE up a prop (cylUV with the tile height = the prop height):
+    //     `hbands` paints a tone across a horizontal band of v (a rusted chime, a worn hoop crown),
+    //     `bandStreaks` hangs runs from a given v (water sits on a rolling hoop and bleeds down from it,
+    //     exactly as it does from the top edge), and `stencil` a painted mark at (u, v). v is up.
+    for (const hb of (o.hbands ?? []) as any[]) {
+      const y0 = s * (1 - hb.v1), y1 = s * (1 - hb.v0), tone = hb.tone ?? rust;
+      ctx.fillStyle = `rgba(${rgb(tone)},${hb.alpha ?? 0.8})`; ctx.fillRect(0, y0, s, y1 - y0);
+      for (let i = 0; i < (hb.specks ?? 0); i++) {
+        const x = rnd() * s, y = y0 + rnd() * (y1 - y0), r = 0.8 + rnd() * 2.2;
+        ctx.fillStyle = `rgba(${rgb(rnd() < 0.5 ? run : base)},${0.2 + rnd() * 0.5})`;
+        for (const dx of [-s, 0, s]) { ctx.beginPath(); ctx.arc(x + dx, y, r, 0, Math.PI * 2); ctx.fill(); }
+      }
+    }
+    for (const bs of (o.bandStreaks ?? []) as any[]) {
+      const y0 = s * (1 - bs.v);
+      for (let i = 0; i < (bs.count ?? 12); i++) {
+        const x = rnd() * s, w = 1 + rnd() * s * (bs.width ?? 0.012), len = s * ((bs.len ?? 0.12) + rnd() * (bs.lenVar ?? 0.25));
+        const a = (bs.alpha ?? 0.14) + rnd() * 0.22;
+        const g = ctx.createLinearGradient(0, y0, 0, y0 + len);
+        g.addColorStop(0, `rgba(${rgb(run)},${a})`); g.addColorStop(o.hardEdges ? 0.92 : 0.3, `rgba(${rgb(rust)},${o.hardEdges ? a : a * 0.8})`);
+        g.addColorStop(1, `rgba(${rgb(rust)},0)`);
+        ctx.fillStyle = g;
+        for (const dx of [-s, 0, s]) ctx.fillRect(x + dx, y0 - 2, w, len);
+      }
+    }
+    if (o.stencil) {
+      const st = o.stencil, px = s * (st.size ?? 0.06);
+      ctx.font = `bold ${px}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillStyle = `rgba(${rgb(st.tone ?? chalk)},${st.alpha ?? 0.85})`;
+      for (const dx of [-s, 0, s]) ctx.fillText(st.text, s * (st.u ?? 0.5) + dx, s * (1 - (st.v ?? 0.5)));
     }
     if (o.groundBand) {
       const b = o.groundBand, g = ctx.createLinearGradient(0, s, 0, s * (1 - (o.groundHeight ?? 0.22)));
@@ -1749,7 +1795,11 @@ function frontAtlasUV(geo: THREE.BufferGeometry, a: any): THREE.BufferGeometry {
   const minNz = a.minNz ?? 0.7;
   for (let i = 0; i < p.count; i++) {
     const x = p.getX(i), y = p.getY(i);
-    const front = nrm.getZ(i) > minNz && x >= a.x0 && x <= a.x1 && y >= (a.yMin ?? a.y1) && y <= a.y0;
+    // 1e-4 tolerance: a cap vertex sitting exactly on the atlas boundary (the speed sign's disc at x = -aw/2)
+    // failed the test by float error, was pinned, and its three triangles smeared the whole atlas row down
+    // the disc's edge (2026-09-03).
+    const E = 1e-4;
+    const front = nrm.getZ(i) > minNz && x >= a.x0 - E && x <= a.x1 + E && y >= (a.yMin ?? a.y1) - E && y <= a.y0 + E;
     if (front) {
       uv[i * 2] = (x - a.x0) / (a.x1 - a.x0);
       uv[i * 2 + 1] = (y - a.y1) / (a.y0 - a.y1);
@@ -3050,7 +3100,7 @@ export function createMunicipalWheelieBinModel(options: ProceduralModelOptions =
     // reads as a plastic bubble -- the ribs are most of what says `glass` at prop distance. Authored
     // about +Y like a lathe, so a wall fitting lays it down with rx.
     for (const d of (c.domes ?? []) as any[]) {
-      const g = ribbedDome(d.pts, d.ribs, d.amp, d.seg ?? 24, d.valley);
+      const g = ribbedDome(d.pts, d.ribs, d.amp, d.seg ?? 24, d.valley, d.smooth === true);
       if (d.ry) g.rotateY(d.ry); if (d.rx) g.rotateX(d.rx); if (d.rz) g.rotateZ(d.rz);
       if (d.at) g.translate(d.at[0], d.at[1], d.at[2]);
       // A fluted dome writes its OWN colour attribute (the crest-to-valley multiplier), so tintGeo

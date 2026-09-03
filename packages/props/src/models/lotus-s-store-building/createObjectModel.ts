@@ -743,160 +743,192 @@ const CONFIG = {
         ]
       },
       "sideFeature": {
-        "name": "Roller shutter and head box",
+        "name": "Roller shutter, head box and hood",
         "material": "galv",
         "boxes": [
           [
             3.945,
-            0.20111111111111113,
-            0.35,
+            0.20833333333333334,
+            -1.75,
             0.09,
-            0.11244444444444446,
-            1.55
+            0.12573333333333334,
+            2.3
           ],
           [
             3.9375,
-            0.32333333333333336,
-            0.35,
+            0.345,
+            -1.75,
             0.075,
-            0.11244444444444446,
-            1.55
+            0.12573333333333334,
+            2.3
           ],
           [
             3.945,
-            0.4455555555555556,
-            0.35,
+            0.4816666666666667,
+            -1.75,
             0.09,
-            0.11244444444444446,
-            1.55
+            0.12573333333333334,
+            2.3
           ],
           [
             3.9375,
-            0.5677777777777778,
-            0.35,
+            0.6183333333333333,
+            -1.75,
             0.075,
-            0.11244444444444446,
-            1.55
+            0.12573333333333334,
+            2.3
           ],
           [
             3.945,
-            0.6900000000000001,
-            0.35,
+            0.755,
+            -1.75,
             0.09,
-            0.11244444444444446,
-            1.55
+            0.12573333333333334,
+            2.3
           ],
           [
             3.9375,
-            0.8122222222222223,
-            0.35,
+            0.8916666666666666,
+            -1.75,
             0.075,
-            0.11244444444444446,
-            1.55
+            0.12573333333333334,
+            2.3
           ],
           [
             3.945,
-            0.9344444444444445,
-            0.35,
+            1.0283333333333333,
+            -1.75,
             0.09,
-            0.11244444444444446,
-            1.55
+            0.12573333333333334,
+            2.3
           ],
           [
             3.9375,
-            1.0566666666666666,
-            0.35,
+            1.165,
+            -1.75,
             0.075,
-            0.11244444444444446,
-            1.55
+            0.12573333333333334,
+            2.3
           ],
           [
             3.945,
-            1.1788888888888889,
-            0.35,
+            1.3016666666666667,
+            -1.75,
             0.09,
-            0.11244444444444446,
-            1.55
+            0.12573333333333334,
+            2.3
           ],
           [
             3.9375,
-            1.301111111111111,
-            0.35,
+            1.4383333333333335,
+            -1.75,
             0.075,
-            0.11244444444444446,
-            1.55
+            0.12573333333333334,
+            2.3
           ],
           [
             3.945,
-            1.4233333333333333,
-            0.35,
+            1.5749999999999997,
+            -1.75,
             0.09,
-            0.11244444444444446,
-            1.55
+            0.12573333333333334,
+            2.3
           ],
           [
             3.9375,
-            1.5455555555555556,
-            0.35,
+            1.7116666666666664,
+            -1.75,
             0.075,
-            0.11244444444444446,
-            1.55
+            0.12573333333333334,
+            2.3
           ],
           [
             3.945,
-            1.6677777777777778,
-            0.35,
+            1.8483333333333332,
+            -1.75,
             0.09,
-            0.11244444444444446,
-            1.55
+            0.12573333333333334,
+            2.3
           ],
           [
             3.9375,
-            1.79,
-            0.35,
+            1.9849999999999999,
+            -1.75,
             0.075,
-            0.11244444444444446,
-            1.55
+            0.12573333333333334,
+            2.3
           ],
           [
             3.945,
-            1.9122222222222223,
-            0.35,
+            2.1216666666666666,
+            -1.75,
             0.09,
-            0.11244444444444446,
-            1.55
+            0.12573333333333334,
+            2.3
           ],
           [
             3.9375,
-            2.0344444444444445,
-            0.35,
+            2.2583333333333333,
+            -1.75,
             0.075,
-            0.11244444444444446,
-            1.55
+            0.12573333333333334,
+            2.3
           ],
           [
             3.945,
-            2.1566666666666667,
-            0.35,
+            2.395,
+            -1.75,
             0.09,
-            0.11244444444444446,
-            1.55
+            0.12573333333333334,
+            2.3
           ],
           [
             3.9375,
-            2.2788888888888894,
-            0.35,
+            2.5316666666666667,
+            -1.75,
             0.075,
-            0.11244444444444446,
-            1.55
+            0.12573333333333334,
+            2.3
           ],
           [
             3.935,
-            2.46,
-            0.35,
+            2.74,
+            -1.75,
             0.11,
             0.28,
-            1.65
+            2.4
+          ],
+          [
+            4.1,
+            2.93,
+            -1.75,
+            0.5,
+            0.1,
+            2.5999999999999996
+          ],
+          [
+            4.33,
+            2.85,
+            -1.75,
+            0.06,
+            0.12,
+            2.5999999999999996
+          ],
+          [
+            4.08,
+            2.82,
+            -2.8,
+            0.4,
+            0.06,
+            0.1
+          ],
+          [
+            4.08,
+            2.82,
+            -0.7,
+            0.4,
+            0.06,
+            0.1
           ]
         ]
       },
@@ -1176,6 +1208,42 @@ function boxes(list: (number[] | { cyl: number[] })[]) {
   }));
 }
 
+/** Merge a box list with a per-ENTRY tone written into a vertex colour attribute. The material
+ *  that draws it must then have `vertexColors` on -- see `finishVertexColors` -- and every other
+ *  geometry on that material needs a white attribute, or it renders black. Tones are sRGB hexes,
+ *  decoded to linear by setHex, which is the space the shader multiplies in. */
+function tonedBoxes(list: (number[] | { cyl: number[] })[], tones: (number | undefined)[]) {
+  const parts = list.map((b) => boxes([b]));
+  const geo = mergeGeos(parts.map((g) => g.clone()));
+  const col = new Float32Array(geo.getAttribute('position').count * 3);
+  const c = new THREE.Color();
+  let v = 0;
+  for (let i = 0; i < parts.length; i++) {
+    const n = parts[i].getAttribute('position').count;
+    c.setHex(tones[i] ?? 0xffffff);
+    for (let k = 0; k < n; k++) { col[(v + k) * 3] = c.r; col[(v + k) * 3 + 1] = c.g; col[(v + k) * 3 + 2] = c.b; }
+    v += n;
+    parts[i].dispose();
+  }
+  geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+  return geo;
+}
+/** Turn `vertexColors` on for a material and give every geometry that shares it a WHITE colour
+ *  attribute where one is missing. The shader reads an absent attribute as (0,0,0): one tinted
+ *  part makes its whole material poisonous to every untinted mesh on it. */
+function finishVertexColors(materials: Record<string, THREE.MeshStandardMaterial>, meshes: Record<string, THREE.Mesh>, matId: string) {
+  const m = materials[matId];
+  if (!m || m.vertexColors) return;
+  m.vertexColors = true; m.needsUpdate = true;
+  for (const mesh of Object.values(meshes)) {
+    if (mesh.material !== m) continue;
+    const geo = mesh.geometry as THREE.BufferGeometry;
+    if (geo.getAttribute('color')) continue;
+    const n = geo.getAttribute('position').count;
+    geo.setAttribute('color', new THREE.BufferAttribute(new Float32Array(n * 3).fill(1), 3));
+  }
+}
+
 /* ------------------------------------------------------------------ materials */
 
 /**
@@ -1261,16 +1329,50 @@ export function createLotussStoreBuildingModel(options: ProceduralModelOptions =
   // NO forward cantilever must push this out instead, or the prop is built short of its declared
   // envelope -- MK first came out 6.3 m deep against a declared 7.0 for exactly that reason.
   const SF = (G.shellFront ?? 2.50) as number;
-  add('building-shell', 'Building shell', boxAt(0, 1.775, (SF - 3.44) / 2, 7.88, 3.55, SF + 3.44), 'wall');
+  // `shellBox` [cx, cy, cz, w, h, d] replaces the full-module shell for a plate whose enclosed volume
+  // does not fill the slab -- the PTT kiosk sits under the rear-right of an 8 x 7 canopy slab.
+  const SB = (G.shellBox as number[] | undefined) ?? [0, 1.775, (SF - 3.44) / 2, 7.88, 3.55, SF + 3.44];
+  // `shellBoxes` replaces the shell with SEVERAL boxes in one submission, for a plate whose wall has
+  // a recess in it -- a service door set back into a reveal (MK). The pocket is left open by the
+  // boxes around it, so the leaf inside can sit BEHIND the wall face without a hole being cut.
+  add('building-shell', 'Building shell',
+      G.shellBoxes ? boxes(G.shellBoxes as number[][]) : boxAt(SB[0], SB[1], SB[2], SB[3], SB[4], SB[5]), 'wall');
   colliders['building-shell'] = {
-    shape: 'box', localCenter: [0, 2.3, 0], halfExtents: [4.0, 2.3, 3.5],
+    // Half-height follows the parapet coping, so a taller module (FamilyMart's 5.20) is not
+    // declared 2.3 m tall; every 4.60 sibling still gets exactly 2.3.
+    shape: 'box', localCenter: [0, ((G.fasciaWall?.cy ?? 4.075) + (G.fasciaWall?.h ?? 1.05) / 2) / 2, 0], halfExtents: [4.0, ((G.fasciaWall?.cy ?? 4.075) + (G.fasciaWall?.h ?? 1.05) / 2) / 2, 3.5],
     notes: 'Asset declares collider "box". One convex proxy over the whole envelope.',
   };
 
-  /* Roof deck spans y 3.50..3.62 so its underside is sunk INTO the shell rather than resting on
-   * it. Authored flush, the deck's bottom face and the parapet ring's bottom face were both at
-   * y=3.550 and both facing down -- 46 m2 of coplanar co-facing surface. */
-  add('roof-deck', 'Roof deck', boxAt(0, 3.56, (SF - 0.02 - 3.42) / 2, 7.8, 0.12, SF + 3.40), 'deck');
+  /* Roof deck spans y 3.50..3.62 by default, so its underside is sunk INTO the shell rather than
+   * resting on it. Authored flush, the deck's bottom face and the parapet ring's bottom face were
+   * both at y=3.550 and both facing down -- 46 m2 of coplanar co-facing surface.
+   *
+   * `deckY` raises it inside the parapet ring, which is what a plate showing a SHALLOW roof well
+   * needs: with the deck at the shell top and a ring that runs to the coping, the rooftop plant
+   * sits in a 0.8 m pit and only its lids clear the parapet, when the plate shows most of each
+   * unit standing above it. Raising the deck cannot raise the plant past the declared 4.60 m --
+   * that is what the coping is -- but it is what decides how much of it a viewer sees. */
+  // `deckExtra` folds more boxes into the deck's submission -- a dark backdrop slab behind a glazed
+  // opening, so a shopfront with no interior image shows a dark room through its glass and its
+  // delivery hatch reads as a HOLE rather than as a patch of the render wall.
+  // `deckBox` [cx, cy, cz, w, h, d] replaces the full-module deck the same way `shellBox` does.
+  const DB = (G.deckBox as number[] | undefined) ?? [0, (G.deckY ?? 3.56) as number, (SF - 0.02 - 3.42) / 2, 7.8, 0.12, SF + 3.40];
+  const deckGeo = boxAt(DB[0], DB[1], DB[2], DB[3], DB[4], DB[5]);
+  // `deckExtraTones` (one per deckExtra box; the deck itself stays white) is how the backdrop is
+  // DARK while the deck keeps its measured tone: one material, one draw call, a vertex colour.
+  const tonedDeck = !!G.deckExtraTones;
+  add('roof-deck', 'Roof deck',
+      G.deckExtra
+        ? (tonedDeck
+            // `deckTone` tints the deck box itself, for a plate whose plant rides the deck MATERIAL
+            // (a galvanised tile shared by the units and the membrane) while the membrane keeps its
+            // own measured tone. Left unset the deck is white, i.e. the material's authored colour.
+            ? tonedBoxes([DB, ...(G.deckExtra as number[][])],
+                         [G.deckTone as number | undefined, ...(G.deckExtraTones as number[])])
+            : mergeGeos([deckGeo, boxes(G.deckExtra as number[][])]))
+        : deckGeo, 'deck');
+  if (tonedDeck) deckGeo.dispose();
 
   /* Parapet: front fascia wall plus three upstands, MERGED into one component and one draw call.
    * The front is taller than the sides, which a plan extrusion cannot express. Outer faces stand
@@ -1283,7 +1385,9 @@ export function createLotussStoreBuildingModel(options: ProceduralModelOptions =
   // moving.
   const PW = (G.parapetW ?? 8.0) as number;
   const PCX = (PS.cx ?? 3.88) as number;
-  add('parapet', 'Parapet ring and fascia wall', boxes([
+  // `parapetBoxes` replaces the whole default ring (fascia wall + three upstands) for a plate whose
+  // roof edge is not the shared module's -- a canopy slab with its own fascia depths per side.
+  add('parapet', 'Parapet ring and fascia wall', boxes(G.parapetBoxes ? [...(G.parapetBoxes as number[][]), ...((G.parapetExtra ?? []) as number[][])] : [
     [0, G.fasciaWall.cy, G.fasciaWall.cz, PW, G.fasciaWall.h, G.fasciaWall.d],
     // Side and rear upstands. `parapetSides` overrides the default 0.40 m upstand for a plate whose
     // parapet is a full-height ring rather than a low kerb; the front is always the taller face and
@@ -1392,7 +1496,12 @@ export function createLotussStoreBuildingModel(options: ProceduralModelOptions =
   // `glazingExtra` folds further panes -- a side window, a clerestory -- into the SAME component:
   // one material, one draw call, however many openings the plate shows.
   {
-    const pane = boxAt(G.glazing.cx ?? 0, G.glazing.cy, G.glazing.cz ?? 2.51, G.glazing.w, G.glazing.h, G.glazing.d ?? 0.10);
+    // `boxes` lets the pane be several PANELS in one component -- a fixed run, a transom light
+    // over the door bay, and a gap where a delivery hatch opens -- without costing a draw call
+    // per panel. `glazingExtra` is the older single-pane-plus-extras form and still works.
+    const pane = G.glazing.boxes
+      ? boxes(G.glazing.boxes as number[][])
+      : boxAt(G.glazing.cx ?? 0, G.glazing.cy, G.glazing.cz ?? 2.51, G.glazing.w, G.glazing.h, G.glazing.d ?? 0.10);
     const extra = (G.glazingExtra ?? []) as number[][];
     add('shopfront-glazing', 'Shopfront glazing',
         extra.length ? mergeGeos([pane, ...extra.map((b) => boxAt(b[0], b[1], b[2], b[3], b[4], b[5]))]) : pane, 'glass');
@@ -1403,6 +1512,60 @@ export function createLotussStoreBuildingModel(options: ProceduralModelOptions =
    * optimisation deferred to the end -- a part split for authoring convenience cannot be merged
    * afterwards once a pivot hangs off it. Front face stands proud of glazing and mullions. */
   add('shopfront-frame', 'Shopfront framing and door bay', boxes(G.frame), G.frameMaterial);
+
+  /* Entrance door: a real LEAF on a real HINGE, not a rectangle painted into the glazing. The
+   * leaf is built in hinge-local coordinates (x runs from the hinge stile outward) under a pivot
+   * node at the jamb, so rotating that node about +Y swings the door. Two meshes -- stiles and
+   * rails in the frame metal, a pane in the glass -- and this is the one part of an otherwise
+   * static shell that earns a named pivot. The leaf sits in its own depth band between the
+   * glazing and the fixed frame so nothing on it is coplanar with a fixed face at any angle. */
+  const pivotNodes: THREE.Object3D[] = [];
+  if (G.door) {
+    const d = G.door;
+    const hinge = new THREE.Group();
+    hinge.name = 'door-hinge';
+    hinge.position.set(d.hinge[0], d.hinge[1], d.hinge[2]);
+    hinge.userData.actionProfile = {
+      animationRole: 'articulated',
+      pivot: { mode: 'custom', localPosition: [0, 0, 0], axis: [0, 1, 0], name: 'door-hinge',
+               note: 'Entrance door swings about the jamb stile. Closed at 0, opens outward toward +Z with negative yaw.' },
+    };
+    root.add(hinge);
+    pivotNodes.push(hinge);
+    const w = d.w as number, h = d.h as number, y0 = d.y0 as number, y1 = y0 + h, ym = (y0 + y1) / 2;
+    const st = d.stile ?? 0.08, D = d.depth ?? 0.12;
+    // `flip` hangs the leaf on the OTHER jamb: local +x runs toward -X instead of +X, so the
+    // handle lands on the correct edge for a plate whose door pull is on the left. It is a sign
+    // on the x coordinates rather than a mirrored transform, because a negative scale inverts
+    // every normal on the leaf and the glass then renders inside-out.
+    const sx = d.flip ? -1 : 1;
+    const hx = w - (d.handle ? (d.handle[0] ?? 0.16) : 0);
+    const leafFrame = boxes([
+      [sx * (st / 2), ym, 0, st, h, D],
+      [sx * (w - st / 2), ym, 0, st, h, D],
+      [sx * (w / 2), y1 - 0.04, 0, w, 0.08, D],
+      [sx * (w / 2), y0 + 0.16, 0, w, 0.32, D],
+      [sx * (w / 2), d.railY ?? 1.05, 0, w, 0.07, D],
+      // Pull handle: a vertical bar on two stand-offs, on the swinging edge. The plate shows one
+      // and it is the detail that reads a glass leaf as a door rather than as another pane.
+      ...(d.handle ? [
+        { cyl: [sx * hx, (d.handle[1] ?? 1.05), D / 2 + 0.05, 0.018, d.handle[2] ?? 0.80, 10] },
+        [sx * hx, (d.handle[1] ?? 1.05) + (d.handle[2] ?? 0.80) / 2 - 0.03, D / 2 + 0.025, 0.036, 0.036, 0.10],
+        [sx * hx, (d.handle[1] ?? 1.05) - (d.handle[2] ?? 0.80) / 2 + 0.03, D / 2 + 0.025, 0.036, 0.036, 0.10],
+      ] : []),
+    ] as any);
+    const leafPane = boxAt(sx * (w / 2), (y0 + 0.32 + y1 - 0.08) / 2, 0, w - 2 * st, y1 - 0.08 - (y0 + 0.32), 0.04);
+    for (const [id, name, geo, mat] of [
+      ['door-leaf-frame', 'Entrance door leaf frame', leafFrame, G.frameMaterial],
+      ['door-leaf-glass', 'Entrance door leaf glass', leafPane, 'glass'],
+    ] as [string, string, THREE.BufferGeometry, string][]) {
+      const node = new THREE.Group(); node.name = name + '__node';
+      const mesh = new THREE.Mesh(geo, materials[mat]);
+      mesh.name = name; mesh.castShadow = castShadow; mesh.receiveShadow = receiveShadow;
+      node.add(mesh); hinge.add(node);
+      nodes[id] = node; meshes[id] = mesh; colliders[id] = null;
+    }
+  }
 
   /* Side feature: shutter, service door or louvre, per plate. Stands proud of the wall face but
    * deliberately NOT out to the parapet plane at +-4.00 -- a face at exactly +-4.00 would be
@@ -1476,17 +1639,34 @@ export function createLotussStoreBuildingModel(options: ProceduralModelOptions =
    * that costs fidelity to save nothing. Such a plant deck comes in through `extraFeature` as
    * merged geometry: still ONE draw call, and every unit its own shape. */
   if ((G.condensers as number[][] ?? []).length) {
-    const parts: THREE.BufferGeometry[] = [
-      boxAt(0, 0.46, 0, 0.95, 0.72, 0.85),
-      cylAt(0, 0.87, 0, 0.30, 0.10, 16),
-    ];
-    for (const fx of [-0.4, 0.4]) for (const fz of [-0.35, 0.35]) parts.push(boxAt(fx, 0.05, fz, 0.08, 0.10, 0.08));
-    const unit = mergeGeos(parts);
-    const mats = (G.condensers as number[][]).map(([x, z, yaw]) =>
+    /* `condenserParts` replaces the default casing with an authored unit in the SAME box/cyl
+     * grammar, in unit-local coordinates (origin on the deck, the grille facing +Z before yaw).
+     * A packaged rooftop unit is not a plain box: the plate shows a recessed louvre panel with a
+     * fan disc behind it, a lidded top with a round cowl opening, and panel seams down the long
+     * side. All of it merges into the ONE instanced geometry, so the detail is free per unit. */
+    let unit: THREE.BufferGeometry;
+    if (G.condenserParts && G.condenserTones) {
+      // Per-part tones: a dark back plate and fan disc behind lighter blades is what makes a louvre
+      // grille read as an intake rather than as a panel of the casing. The tint rides a vertex
+      // colour on the plant material, and every other mesh on that material is filled white below.
+      unit = tonedBoxes(G.condenserParts as (number[] | { cyl: number[] })[], G.condenserTones as number[]);
+    } else if (G.condenserParts) {
+      unit = boxes(G.condenserParts as (number[] | { cyl: number[] })[]);
+    } else {
+      const parts: THREE.BufferGeometry[] = [
+        boxAt(0, 0.46, 0, 0.95, 0.72, 0.85),
+        cylAt(0, 0.87, 0, 0.30, 0.10, 16),
+      ];
+      for (const fx of [-0.4, 0.4]) for (const fz of [-0.35, 0.35]) parts.push(boxAt(fx, 0.05, fz, 0.08, 0.10, 0.08));
+      unit = mergeGeos(parts);
+    }
+    // An optional fourth number is a UNIFORM SCALE, so one instanced unit can stand in for a plate
+    // that shows one large condenser beside two small ones without a second geometry.
+    const mats = (G.condensers as number[][]).map(([x, z, yaw, s]) =>
       new THREE.Matrix4().compose(
-        new THREE.Vector3(x, 3.60, z),
+        new THREE.Vector3(x, (G.condenserY ?? 3.60) as number, z),
         new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), yaw),
-        new THREE.Vector3(1, 1, 1),
+        new THREE.Vector3(s ?? 1, s ?? 1, s ?? 1),
       ));
     // The plant material is CONFIGURABLE, not hard-coded. Referencing a 'galv' id that a config
     // does not define silently hands InstancedMesh an undefined material, three.js substitutes a
@@ -1508,7 +1688,13 @@ export function createLotussStoreBuildingModel(options: ProceduralModelOptions =
     addInst(e.id, e.name, unit, e.material, mats, e.tones ? mats.map((_, i) => e.tones[i % e.tones.length]) : undefined);
   }
 
-  root.userData.sculptRuntime = { nodes, meshes, sockets, colliders, destructionGroups } satisfies ProceduralModelRuntime;
+  /* Vertex-colour fill-in runs LAST, over every mesh that exists. It used to run right after the
+   * deck and the plant were added, so any later mesh on the same material -- Makro's concrete
+   * canopy and plinth on the toned deck material -- had no colour attribute and rendered BLACK. */
+  if (tonedDeck) finishVertexColors(materials, meshes, 'deck');
+  if (G.condenserTones && (G.condensers as number[][] ?? []).length) finishVertexColors(materials, meshes, G.plantMaterial ?? 'galv');
+
+  root.userData.sculptRuntime = { nodes, meshes, sockets, colliders, destructionGroups, pivotNodes } satisfies ProceduralModelRuntime & { pivotNodes: THREE.Object3D[] };
   return root;
 }
 
@@ -1649,19 +1835,31 @@ function applyGlassGraphic(root: THREE.Group): void {
   // module there: TextureLoader would throw, so the glazing keeps its flat fallback albedo.
   if (!g || typeof document === 'undefined') return;
   const rt = root.userData.sculptRuntime as ProceduralModelRuntime | undefined;
-  const mesh = rt?.meshes?.['shopfront-glazing'];
-  if (!mesh) return;
-  const material = mesh.material as THREE.MeshStandardMaterial;
-  if (!material) return;
-  const geo = mesh.geometry as THREE.BufferGeometry;
-  const pos = geo.getAttribute('position');
   const [x0, y0, x1, y1] = g.rect as number[];
-  const uv = new Float32Array(pos.count * 2);
-  for (let i = 0; i < pos.count; i++) {
-    uv[i * 2] = (pos.getX(i) - x0) / (x1 - x0);
-    uv[i * 2 + 1] = (pos.getY(i) - y0) / (y1 - y0);
+  // `also` extends the projection to panes that are NOT in the glazing component -- a hinged door
+  // leaf, whose geometry is authored in HINGE-local coordinates, so it names the offset from the
+  // hinge to the world origin and the same world rect then lands on it. Without this the leaf is
+  // the one pane in the shopfront with no interior behind it, which reads as a blind panel in
+  // the middle of a window.
+  const targets = [{ id: 'shopfront-glazing', off: [0, 0, 0] }, ...((g.also ?? []) as any[])];
+  let material: THREE.MeshStandardMaterial | null = null;
+  for (const t of targets) {
+    const mesh = rt?.meshes?.[t.id];
+    if (!mesh) continue;
+    const m = mesh.material as THREE.MeshStandardMaterial;
+    if (!m) continue;
+    material = material ?? m;
+    const geo = mesh.geometry as THREE.BufferGeometry;
+    const pos = geo.getAttribute('position');
+    const off = (t.off ?? [0, 0, 0]) as number[];
+    const uv = new Float32Array(pos.count * 2);
+    for (let i = 0; i < pos.count; i++) {
+      uv[i * 2] = (pos.getX(i) + off[0] - x0) / (x1 - x0);
+      uv[i * 2 + 1] = (pos.getY(i) + off[1] - y0) / (y1 - y0);
+    }
+    geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
   }
-  geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+  if (!material) return;
   const srgb = (THREE as any).SRGBColorSpace;
   const tex = new THREE.TextureLoader().load(g.baked);
   if (srgb) tex.colorSpace = srgb;
@@ -1692,11 +1890,26 @@ function applyGlassGraphic(root: THREE.Group): void {
  *  tile over each face, which puts a 7-metre-wide streak on the side wall and a 0.24-metre-wide one
  *  on the parapet coping. */
 function applyWallGraphic(root: THREE.Group): void {
-  const g = (CONFIG.graphic as any)?.wall;
-  if (!g || typeof document === 'undefined') return;
+  const gr = CONFIG.graphic as any;
+  if (!gr || typeof document === 'undefined') return;
+  // `graphic.wall` is the original single entry; `graphic.walls` is a list of further entries in
+  // the same shape, one per material that carries its own tile -- a grime tile on the coping and
+  // the shutter hood, a dirt tile on the yellow surround, a galvanised spangle on the plant.
+  const entries = [gr.wall, ...((gr.walls ?? []) as any[])].filter(Boolean);
   const rt = root.userData.sculptRuntime as ProceduralModelRuntime | undefined;
   if (!rt) return;
+  for (const g of entries) applyOneWallGraphic(rt, g);
+}
+
+function applyOneWallGraphic(rt: ProceduralModelRuntime, g: any): void {
   const tile = g.tile ?? 2.5;
+  const N = g.size ?? 512;
+  // `clean` is a world-space XY rectangle whose vertices are pinned to one texel the tile leaves
+  // untouched -- the delivery counter has to stay spotless yellow while the lintel and jambs it
+  // shares a material with take the weather. The pin lands on a corner the canvas fills with the
+  // base value after every mark is drawn (all four corners, since the tile wraps).
+  const clean = g.clean as number[] | undefined;
+  const pin = 6 / N;
   let tex: THREE.Texture | null = null;
   for (const id of (g.meshes as string[])) {
     const mesh = rt.meshes?.[id];
@@ -1706,20 +1919,32 @@ function applyWallGraphic(root: THREE.Group): void {
     if (!pos || !nrm) continue;
     const uv = new Float32Array(pos.count * 2);
     for (let i = 0; i < pos.count; i++) {
+      const x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i);
+      if (clean && x >= clean[0] && x <= clean[2] && y >= clean[1] && y <= clean[3]) {
+        uv[i * 2] = pin; uv[i * 2 + 1] = pin;
+        continue;
+      }
       const ax = Math.abs(nrm.getX(i)), ay = Math.abs(nrm.getY(i)), az = Math.abs(nrm.getZ(i));
       let u: number, v: number;
-      if (ax >= ay && ax >= az) { u = pos.getZ(i); v = pos.getY(i); }
-      else if (az >= ay) { u = pos.getX(i); v = pos.getY(i); }
-      else { u = pos.getX(i); v = pos.getZ(i); }
+      if (ax >= ay && ax >= az) { u = z; v = y; }
+      else if (az >= ay) { u = x; v = y; }
+      else { u = x; v = z; }
       uv[i * 2] = u / tile; uv[i * 2 + 1] = v / tile;
     }
     geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
     if (!tex) {
-      const canvas = drawWallCanvas(g);
-      if (!canvas) return;
-      tex = new THREE.CanvasTexture(canvas);
-      tex.wrapS = THREE.RepeatWrapping; tex.wrapT = THREE.RepeatWrapping;
       const srgb = (THREE as any).SRGBColorSpace;
+      if (g.image) {
+        // A BAKED tile -- a seamless, multiplier-normalised image embedded as a data URI, the way
+        // the fascia is -- for a surface whose finish a drawn canvas cannot reach: galvanised
+        // spangle. Assigned synchronously so the harness waits on the decode.
+        tex = new THREE.TextureLoader().load(g.image);
+      } else {
+        const canvas = drawWallCanvas(g);
+        if (!canvas) return;
+        tex = new THREE.CanvasTexture(canvas);
+      }
+      tex.wrapS = THREE.RepeatWrapping; tex.wrapT = THREE.RepeatWrapping;
       if (srgb) tex.colorSpace = srgb;
       tex.anisotropy = 4; tex.needsUpdate = true;
     }
@@ -1775,6 +2000,23 @@ function drawWallCanvas(g: any): HTMLCanvasElement | null {
     ctx.fillStyle = grad;
     for (const dx of [-N, 0, N]) ctx.fillRect(x + dx - w / 2, y0, w, len);
   }
+  // Board marks: the horizontal seams a shuttered concrete pour leaves, one per board. Faint --
+  // this is a rendered wall and the seam shows through the coat rather than on it -- and drawn as
+  // a soft pair (a dark line under a slightly lighter one) because that is what a lipped shutter
+  // joint does to the light. `seamPitch` is in TILE fractions, so it lands on the same metric
+  // spacing wherever the tile repeats.
+  if (g.seams) {
+    const pitch = (g.seamPitch ?? 0.375) * N;
+    const amp = g.seamAmp ?? 9;
+    for (let y = pitch * 0.5; y < N + pitch; y += pitch) {
+      const yy = y % N;
+      const d = base - amp, l = Math.min(255, base + amp * 0.35);
+      ctx.fillStyle = `rgba(${d | 0},${d | 0},${d | 0},0.5)`;
+      ctx.fillRect(0, yy, N, 1.6);
+      ctx.fillStyle = `rgba(${l | 0},${l | 0},${l | 0},0.35)`;
+      ctx.fillRect(0, yy + 1.6, N, 1.2);
+    }
+  }
   // Fine speckle: the aggregate in the render, at the limit of what a prop-distance viewer resolves.
   for (let i = 0; i < (g.specks ?? 2600); i++) {
     const x = rnd() * N, y = rnd() * N, r = 0.5 + rnd() * 1.6;
@@ -1782,6 +2024,10 @@ function drawWallCanvas(g: any): HTMLCanvasElement | null {
     ctx.fillStyle = `rgba(${v | 0},${v | 0},${v | 0},0.30)`;
     ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
   }
+  // A clean texel for `clean`-pinned vertices: every corner, because the tile wraps and the pin
+  // sits 6 px in from (0, 0).
+  ctx.fillStyle = `rgb(${base},${base},${base})`;
+  for (const [x, y] of [[0, 0], [N - 12, 0], [0, N - 12], [N - 12, N - 12]]) ctx.fillRect(x, y, 12, 12);
   return canvas;
 }
 
@@ -1804,11 +2050,11 @@ export function createObjectModel(spec?: unknown, options: ProceduralModelOption
   if (rt) {
     const nodes = (rt.nodes ?? {}) as Record<string, THREE.Object3D>;
 
-    // Pivots: ONE. A static exterior shell -- nothing opens, turns or swings. The doors and any
-    // shutter are authored as fixed geometry, so they get no axis: a named pivot is a promise
-    // that a part turns on it, and a prop that declares pivots it has no mechanisms for has
-    // described a machine that does not exist.
-    const pivots: THREE.Object3D[] = [];
+    // Pivots: the root, plus whatever the config actually hung a mechanism on -- `door-hinge`
+    // for a swinging entrance leaf, and nothing else. A roller shutter authored as fixed
+    // geometry gets no axis: a named pivot is a promise that a part turns on it, and a prop
+    // that declares pivots it has no mechanisms for has described a machine that does not exist.
+    const pivots: THREE.Object3D[] = [...(((rt as any).pivotNodes ?? []) as THREE.Object3D[])];
     const rootPivot = new THREE.Object3D();
     rootPivot.name = 'root';
     rootPivot.position.set(0, 0, 0);
@@ -1866,7 +2112,9 @@ export function createObjectModel(spec?: unknown, options: ProceduralModelOption
  * the harness, the level editor and the Node-side gates carry on unchanged.
  * `spec` has never been passed by any caller -- it is inspection data that is
  * already baked into this module -- so this is the honest signature, and it is
- * what a vibe3d consumer installs and calls.
+ * what a vibe3d consumer installs and calls. The emitted `model.ts` beside this
+ * file IMPORTS it by name, so a factory without it fails the pack build with
+ * "No matching export ... for import createModel" -- which is how it was found.
  */
 export function createModel(options: ProceduralModelOptions = {}): THREE.Group {
   return createObjectModel(undefined, options);

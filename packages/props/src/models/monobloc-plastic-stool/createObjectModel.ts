@@ -126,20 +126,16 @@ const CONFIG = {
                   0.199
                 ],
                 [
-                  0.128,
-                  0.198
-                ],
-                [
                   0.115,
-                  0.187
+                  0.199
                 ],
                 [
-                  0.11,
-                  0.177
+                  0.113,
+                  0.1965
                 ],
                 [
                   0,
-                  0.171
+                  0.1965
                 ]
               ],
               "seg": 18,
@@ -153,16 +149,16 @@ const CONFIG = {
             {
               "pts": [
                 [
-                  0.102,
-                  0.1745
+                  0.105,
+                  0.1972
                 ],
                 [
-                  0.107,
-                  0.1786
+                  0.11,
+                  0.198
                 ],
                 [
                   0,
-                  0.1725
+                  0.198
                 ]
               ],
               "seg": 18,
@@ -176,9 +172,9 @@ const CONFIG = {
           ],
           "cyls": [
             {
-              "rt": 0.035,
+              "rt": 0.018,
               "rb": 0.032,
-              "h": 0.165,
+              "h": 0.1821010948871455,
               "seg": 8,
               "hex": 14437950,
               "scale": [
@@ -186,17 +182,17 @@ const CONFIG = {
                 1,
                 1
               ],
-              "rz": 0.054823057864478206,
+              "rz": 0.0336951073460162,
               "at": [
-                0.1375,
-                0.082,
+                0.139,
+                0.087,
                 0
               ]
             },
             {
-              "rt": 0.035,
+              "rt": 0.018,
               "rb": 0.032,
-              "h": 0.165,
+              "h": 0.1821010948871455,
               "seg": 8,
               "hex": 14437950,
               "scale": [
@@ -204,17 +200,17 @@ const CONFIG = {
                 1,
                 0.78
               ],
-              "rx": -0.054823057864478206,
+              "rx": -0.0336951073460162,
               "at": [
                 0,
-                0.082,
-                0.1375
+                0.087,
+                0.139
               ]
             },
             {
-              "rt": 0.035,
+              "rt": 0.018,
               "rb": 0.032,
-              "h": 0.165,
+              "h": 0.1821010948871455,
               "seg": 8,
               "hex": 14437950,
               "scale": [
@@ -222,17 +218,17 @@ const CONFIG = {
                 1,
                 1
               ],
-              "rz": -0.054823057864478206,
+              "rz": -0.0336951073460162,
               "at": [
-                -0.1375,
-                0.082,
+                -0.139,
+                0.087,
                 0
               ]
             },
             {
-              "rt": 0.035,
+              "rt": 0.018,
               "rb": 0.032,
-              "h": 0.165,
+              "h": 0.1821010948871455,
               "seg": 8,
               "hex": 14437950,
               "scale": [
@@ -240,83 +236,11 @@ const CONFIG = {
                 1,
                 0.78
               ],
-              "rx": 0.054823057864478206,
+              "rx": 0.0336951073460162,
               "at": [
                 0,
-                0.082,
-                -0.1375
-              ]
-            },
-            {
-              "rt": 0.02,
-              "rb": 0.03,
-              "h": 0.03,
-              "seg": 8,
-              "hex": 14437950,
-              "scale": [
-                0.62,
-                1,
-                1
-              ],
-              "ry": 0,
-              "at": [
-                0.143,
-                0.1855,
-                0
-              ]
-            },
-            {
-              "rt": 0.02,
-              "rb": 0.03,
-              "h": 0.03,
-              "seg": 8,
-              "hex": 14437950,
-              "scale": [
-                0.62,
-                1,
-                1
-              ],
-              "ry": -1.5707963267948966,
-              "at": [
-                0,
-                0.1855,
-                0.143
-              ]
-            },
-            {
-              "rt": 0.02,
-              "rb": 0.03,
-              "h": 0.03,
-              "seg": 8,
-              "hex": 14437950,
-              "scale": [
-                0.62,
-                1,
-                1
-              ],
-              "ry": -3.141592653589793,
-              "at": [
-                -0.143,
-                0.1855,
-                0
-              ]
-            },
-            {
-              "rt": 0.02,
-              "rb": 0.03,
-              "h": 0.03,
-              "seg": 8,
-              "hex": 14437950,
-              "scale": [
-                0.62,
-                1,
-                1
-              ],
-              "ry": -4.71238898038469,
-              "at": [
-                0,
-                0.1855,
-                -0.143
+                0.087,
+                -0.139
               ]
             }
           ]
@@ -1680,7 +1604,11 @@ function frontAtlasUV(geo: THREE.BufferGeometry, a: any): THREE.BufferGeometry {
   const minNz = a.minNz ?? 0.7;
   for (let i = 0; i < p.count; i++) {
     const x = p.getX(i), y = p.getY(i);
-    const front = nrm.getZ(i) > minNz && x >= a.x0 && x <= a.x1 && y >= (a.yMin ?? a.y1) && y <= a.y0;
+    // 1e-4 tolerance: a cap vertex sitting exactly on the atlas boundary (the speed sign's disc at x = -aw/2)
+    // failed the test by float error, was pinned, and its three triangles smeared the whole atlas row down
+    // the disc's edge (2026-09-03).
+    const E = 1e-4;
+    const front = nrm.getZ(i) > minNz && x >= a.x0 - E && x <= a.x1 + E && y >= (a.yMin ?? a.y1) - E && y <= a.y0 + E;
     if (front) {
       uv[i * 2] = (x - a.x0) / (a.x1 - a.x0);
       uv[i * 2 + 1] = (y - a.y1) / (a.y0 - a.y1);
@@ -3142,6 +3070,18 @@ export function createMonoblocPlasticStoolModel(options: ProceduralModelOptions 
       if (s.at) g.translate(s.at[0], s.at[1], s.at[2]); gs.push(g);
     }
     for (const t of (r.tubes ?? []) as any[]) gs.push(tube(t.pts, t.r, t.seg ?? 8, t.hex));
+    // EXTRUDES on an instanced set, the same profile-in-XY-along-Z form as a component's: a chamfered
+    // lid plate that two instances share (the dumpster's lids, the right one yawed a half turn).
+    for (const e of (r.extrudes ?? []) as any[]) {
+      const shape = new THREE.Shape();
+      shape.moveTo(e.poly[0][0], e.poly[0][1]);
+      for (let i = 1; i < e.poly.length; i++) shape.lineTo(e.poly[i][0], e.poly[i][1]);
+      shape.closePath();
+      const g = extrudeAlongZ(shape, e.z0, e.z1);
+      if (e.rx) g.rotateX(e.rx); if (e.ry) g.rotateY(e.ry); if (e.rz) g.rotateZ(e.rz);
+      if (e.at) g.translate(e.at[0], e.at[1], e.at[2]);
+      gs.push(tintGeo(g, e.hex));
+    }
     let g = mergeGeos(gs);
     if (r.uv === 'world') g = worldUV(g, r.uvScale ?? 1);
     if (r.uv === 'height') g = heightUV(g, r.uvScale ?? 1);

@@ -103,8 +103,12 @@ class Soup {
       const p1 = v3(r0 * Math.cos(a1), cy0, r0 * Math.sin(a1));
       const q0 = v3(r1 * Math.cos(a0), cy1, r1 * Math.sin(a0)), q1 = v3(r1 * Math.cos(a1), cy1, r1 * Math.sin(a1));
       this.quad(p0, q0, q1, p1, hex);
-      if (capTop) this.tri(v3(0, cy1, 0), q0, q1, hex);
-      if (capBot) this.tri(v3(0, cy0, 0), p1, p0, hex);
+      // v3 (owner review, 2026-09-03): the caps were wound INSIDE OUT -- probed on the shipped bundle,
+      // the disc's top cap faced -Y (culled, so the boss read as an open crescent) and its bottom cap
+      // faced +Y at y 0, coincident and co-facing with the level's ground plane: that was the
+      // z-fighting in the base. The side quads were right; only the two fans are reversed here.
+      if (capTop) this.tri(v3(0, cy1, 0), q1, q0, hex);
+      if (capBot) this.tri(v3(0, cy0, 0), p0, p1, hex);
     }
   }
   /** A square-section bar from A to B, `w` across, its faces oriented with `up`. */

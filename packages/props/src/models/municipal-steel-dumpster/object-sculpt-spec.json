@@ -109,10 +109,10 @@
         "repetitionSystems": 1
       },
       "reasoning": [
-        "TWO static components, split on a real constraint rather than for convenience: `body` is the tapered frustum and the door seam alone, and `fittings` is the four rim rails and deck, the handle bar on two brackets, the lift handle, two trunnions with plates, four castor forks and four castors with hubs. The split exists because a canvas tile is a MULTIPLY: ratio(#8a4a22, #2f6a95) is (2.94, 0.70, 0.23), whose red is above 1 and clamps, so the plate's orange rust is unreachable on the blue body. The body therefore carries its own material re-based to the envelope #8a6a95 with the blue painted BY the tile, and that tile must not reach the orange handle bar. maxDrawCalls was raised 2 -> 3 on the asset to buy it.",
-        "ONE lids InstancedMesh of two instances at x +-0.255: panel, chamfer slab and hinge knuckle, so lid-hinge-l and lid-hinge-r each name an instance a host can rotate. Extents measured off a top-deck crop: the pair spans 0.764 of the deck at their own row, not the 0.924 first shipped.",
+        "TWO static components, split on a real constraint rather than for convenience: `body` is the tapered frustum and the door seam alone, and `fittings` is the rounded-plan deck (two rounded-rectangle extrudes, the upper inset 20 mm as a rolled edge) with its riveted flange line, the round handle bar on two flat lugs, the round lift grip on two stubs and a back plate, the two hinge barrels, two trunnions with plates, four castor forks and four castors with hubs. The split exists because a canvas tile is a MULTIPLY: ratio(#8a4a22, #2f6a95) is (2.94, 0.70, 0.23), whose red is above 1 and clamps, so the plate's orange rust is unreachable on the blue body. The body therefore carries its own material re-based to the envelope #8a6a95 with the blue painted BY the tile, and that tile must not reach the orange handle bar. maxDrawCalls was raised 2 -> 3 on the asset to buy it.",
+        "ONE lids InstancedMesh of two instances at x +-0.255: one flat 30 mm plate extruded from a six-point outline whose two OUTER corners are cut flat at 70 mm (v3, owner review: the plate's own lid outline), the right instance yawed a half turn so its chamfers sit outboard; lid-hinge-l and lid-hinge-r each name an instance a host can rotate. Extents measured off a top-deck crop: the pair spans 0.764 of the deck at their own row, not the 0.924 first shipped.",
         "TWO materials of 2: `bodypaint` for the body shell alone, re-based to the envelope #8a6a95 so its tile renders the shell back to #2f6a95 and its rust to the measured #8a4a22 exactly; and `steel` for the fittings and the lids, where the pale lids take orange by plain multiply (ratio 0.847, 0.363, 0.150) and need no re-basing.",
-        "Action readiness: one root pivot plus two lid hinges, zero sockets, one box collider on the root, not breakable. 3 of 3 draw calls, 2 of 2 materials, 3 of 4 unique geometries, 696 of 2,000 triangles."
+        "Action readiness: one root pivot plus two lid hinges, zero sockets, one box collider on the root, not breakable. 3 of 3 draw calls, 2 of 2 materials, 3 of 4 unique geometries, 1,068 of 2,000 triangles."
       ]
     },
     "specDepthDecision": {
@@ -126,7 +126,7 @@
       "needsMaterialLocalOverrides": true,
       "needsMultipleReviewViews": true,
       "needsActionReadyHierarchy": true,
-      "rationale": "The identity is the blue steel box with a paler rim and two paler lids, the orange bar across the front doors and the rust; every part is a box, frustum or cylinder, and the rust is a post-construction `paint` canvas whose clusters each bleed a vertical run, in the plate's own measured tones."
+      "rationale": "The identity is the blue steel box with a paler rim and two paler lids, the orange bar across the front doors and the rust; every part is a box, frustum, cylinder or a flat extrude, and the rust is a post-construction `paint` canvas whose clusters each bleed a vertical run, in the plate's own measured tones."
     },
     "unknownsToResolveBeforeImplementation": [],
     "detailInventory": {
@@ -681,8 +681,8 @@
       "h": 1.4,
       "d": 0.65
     },
-    "description": "Frustum 1.08 x 0.50 at 0.22 m to 1.30 x 0.60 at 1.32 m (measured plate taper 0.833); rim frame 1.32 x 0.62 x 0.04 m; two lids 0.50 x 0.03 x 0.46 m at x +-0.255 at 1.36-1.39 m; handle bar 1.02 m across the front at 0.70 m; lift handle 0.16 m tall at the seam at 0.93 m; trunnions at 1.15 m on both ends; four castors r 0.09 at x +-0.48, z +-0.18.",
-    "envelopeDerivation": "x spans -0.70..+0.70 at the lift trunnion plates over the 1.32 m rim frame, the declared 1.40 m; z -0.31..+0.3375 at the handle bar over the 0.62 m body; y 0.00 to 1.393 at the lids. Declared 1.40 x 1.40 x 0.65 (corrected from 1.80 x 1.30 x 1.10 at model time: the proxy band table reads w/h 0.91 and d/h 0.46 in every band, and the plate shows a container as tall as wide). Castors 0-0.18 m, body 0.22-1.32 m from 1.08 x 0.50 to 1.30 x 0.60, rim frame 1.32-1.36 m, lids 1.36-1.39 m. The TAPER is measured off the PLATE, not the proxy: the front face narrows 899 px at the rim to 628 px at the body base (0.699 raw), and the plate top deck's own recession (0.814 over 0.65 m, camera 2.85 m out) accounts for 0.838 of it, leaving a real 0.833. The proxy reads the sides vertical over bands 1-8 and is wrong.",
+    "description": "Frustum 1.08 x 0.50 at 0.22 m to 1.30 x 0.60 at 1.32 m (measured plate taper 0.833); rounded-plan deck 1.32 x 0.62 x 0.04 m (70 mm plan corners, rolled edge); two lids 0.50 x 0.03 x 0.47 m at x +-0.255 at 1.36-1.39 m with their outer corners chamfered 70 mm; round handle bar r 0.022 x 1.02 m across the front at 0.70 m on flat lugs; round lift grip r 0.020 x 0.16 m at the seam at 0.93 m; trunnions at 1.15 m on both ends; four castors r 0.09 at x +-0.48, z +-0.18.",
+    "envelopeDerivation": "x spans -0.70..+0.70 at the lift trunnion plates over the 1.32 m rim frame, the declared 1.40 m; z -0.31..+0.3375 at the handle bar over the 0.62 m body; y 0.00 to 1.393 at the lids. Declared 1.40 x 1.40 x 0.65 (corrected from 1.80 x 1.30 x 1.10 at model time: the proxy band table reads w/h 0.91 and d/h 0.46 in every band, and the plate shows a container as tall as wide). Castors 0-0.18 m, body 0.22-1.32 m from 1.08 x 0.50 to 1.30 x 0.60, rounded-plan deck 1.32-1.36 m with a rolled edge, lids 1.36-1.39 m. The TAPER is measured off the PLATE, not the proxy: the front face narrows 899 px at the rim to 628 px at the body base (0.699 raw), and the plate top deck's own recession (0.814 over 0.65 m, camera 2.85 m out) accounts for 0.838 of it, leaving a real 0.833. The proxy reads the sides vertical over bands 1-8 and is wrong.",
     "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate, and it is WRONG about the taper: it reads the body sides vertical (w 0.874-0.934 across bands 1-8), which the first build followed to B0W/BW 0.954. The plate shows a clear trapezoid, and a plate-only solve gives a real taper of 0.833. The band table now disagrees with the proxy BY CONSTRUCTION and that is the correct outcome -- its old 0.0186 mean |delta width| was agreement with a hallucinated straight box, not fidelity. Depth bands still read -0.04..-0.06 because the declared 0.65 m holds the handle bar and the body is 0.62 m deep behind it."
   },
   "viewEvidence": [
@@ -844,7 +844,7 @@
       "material": "steel",
       "parent": null,
       "geometryDescriptor": {
-        "topologyIntent": "Rails 0.07 x 0.04 around the top 1 cm proud; deck 5 mm below the rails; bar 1.02 x 0.045 at 0.70 m on brackets; lift handle 0.16 m at the seam at 0.93 m; trunnions at 1.15 m on both ends; castors r 0.09 x 0.05 with hubs r 0.04.",
+        "topologyIntent": "Deck as two rounded-rectangle extrudes, 1.32 x 0.62 r 0.07 over 1.32-1.348 and 1.28 x 0.58 r 0.05 over 1.348-1.36 (the rolled edge), with a 12 x 6 mm flange line 50 mm inside the edge; round bar r 0.022 x 1.02 at 0.70 m on two 0.05 x 0.07 lugs 15 mm into the tapered front; round lift grip r 0.020 x 0.16 at the seam at 0.93 m on two r 0.012 stubs and a 0.05 x 0.16 x 0.016 back plate; two hinge barrels 0.24 x 0.036 x 0.05 on the rear rail; trunnions at 1.15 m on both ends; castors r 0.09 x 0.05 with hubs r 0.04.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -853,14 +853,14 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "The deck top is 5 mm below the rail tops; the bar stands 27 mm proud on brackets 2 cm inside the face; hubs are 2 mm proud of the castor faces; trunnion plates 3 mm proud of the trunnions.",
+        "zFightingNote": "The upper deck slab is inset 20 mm all round on the lower one; the bar is seated 2 mm into its lugs, which run 15 mm into the tapered front face; the grip stubs run 20 mm into the back plate; hubs are 2 mm proud of the castor faces; trunnion plates 3 mm proud of the trunnions.",
         "mergeNote": "One merged BufferGeometry with height UVs at 1.35 m."
       },
       "localFeatures": [
         {
           "id": "d3-handles",
           "description": "handles",
-          "delivery": "boxes, vertex colour"
+          "delivery": "round cylinders on lug boxes, vertex colour"
         },
         {
           "id": "d5-castors",
@@ -1026,7 +1026,7 @@
       "placement": "two instances at x -0.255 and +0.255 on the deck; the geometry is authored at its world height",
       "instanced": true,
       "pivotPerInstance": true,
-      "notes": "One InstancedMesh of panel, chamfer slab and knuckle; each instance is a named hinge pivot on the rear rail."
+      "notes": "One InstancedMesh of a single chamfered-plate extrude, the right instance yawed PI; each instance is a named hinge pivot on the rear rail, where the fixed barrels sit on the fittings."
     }
   ],
   "buildPasses": [
@@ -1137,7 +1137,7 @@
   ],
   "visualEvidence": [
     {
-      "timestamp": "2026-09-01T12:22:13.005890+00:00",
+      "timestamp": "2026-09-03T13:05:15.740397+00:00",
       "passId": "blockout",
       "estimatedFidelity": 0.88,
       "aiVisionScore": 0.88,
@@ -1168,7 +1168,7 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-01T12:22:13.084154+00:00",
+      "timestamp": "2026-09-03T13:05:15.819135+00:00",
       "passId": "structural-pass",
       "estimatedFidelity": 0.94,
       "aiVisionScore": null,
@@ -1183,7 +1183,7 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-01T12:22:13.163520+00:00",
+      "timestamp": "2026-09-03T13:05:15.900871+00:00",
       "passId": "structural-pass",
       "estimatedFidelity": 0.94,
       "aiVisionScore": 0.94,
@@ -1214,7 +1214,7 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-01T12:22:13.242829+00:00",
+      "timestamp": "2026-09-03T13:05:15.985235+00:00",
       "passId": "form-refinement",
       "estimatedFidelity": 0.91,
       "aiVisionScore": null,
@@ -1229,7 +1229,7 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-01T12:22:13.324190+00:00",
+      "timestamp": "2026-09-03T13:05:16.075928+00:00",
       "passId": "form-refinement",
       "estimatedFidelity": 0.91,
       "aiVisionScore": null,
@@ -1244,7 +1244,22 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-01T12:22:13.407267+00:00",
+      "timestamp": "2026-09-03T13:05:16.156857+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-03T13:05:16.238658+00:00",
       "passId": "form-refinement",
       "estimatedFidelity": 0.91,
       "aiVisionScore": 0.91,
@@ -1263,7 +1278,7 @@
           "score": 0.93,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Two lids as a two-instance InstancedMesh at x +-0.255: panel 0.50 x 0.03 x 0.44, chamfer slab, knuckle; lid-hinge-l/-r at (+-0.255, 1.375, -0.26) axis X. Extents measured off a crop of the plate's top deck (scratch/_lidcrop.png) at the LIDS' OWN row, where the deck spans crop x 110-1000 and the lids 205-885: 0.764, against the 0.924 the first build shipped.",
+          "evidence": "Two lids as a two-instance InstancedMesh at x +-0.255: one flat 0.50 x 0.03 x 0.47 plate with its two outer corners chamfered 70 mm (v3), the right instance yawed PI, over fixed hinge barrels on the fittings; lid-hinge-l/-r at (+-0.255, 1.375, -0.26) axis X. Extents measured off a crop of the plate's top deck (scratch/_lidcrop.png) at the LIDS' OWN row, where the deck spans crop x 110-1000 and the lids 205-885: 0.764, against the 0.924 the first build shipped.",
           "notes": "The lids are on their OWN material now and their tone was PROBED rather than corrected. They had no `uv` directive at all, so the chipping on their material never reached them -- over the lid's own crop the plate is 16.7% warm pixels and the build returned 0.3%. And their top face is where the harness's additive term is largest: two authored values 32 counts apart came back 8 apart, fitting R = 0.5625A + 118, G = 0.50A + 116, B = 0.375A + 132, so the shipped #a3cce3 rendered them 216/219/221 -- neutral WHITE, 28 luma over the plate's 166/198/217, with the blue gone -- and no small correction reaches the measurement when a third of every channel arrives from the light. No swing flap: the plate has none, so no flap pivot."
         }
       ],
@@ -1275,7 +1290,7 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-01T12:22:13.488386+00:00",
+      "timestamp": "2026-09-03T13:05:16.319902+00:00",
       "passId": "material-pass",
       "estimatedFidelity": 0.94,
       "aiVisionScore": null,
@@ -1290,7 +1305,7 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-01T12:22:13.568736+00:00",
+      "timestamp": "2026-09-03T13:05:16.412682+00:00",
       "passId": "material-pass",
       "estimatedFidelity": 0.94,
       "aiVisionScore": null,
@@ -1305,7 +1320,7 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-01T12:22:13.649022+00:00",
+      "timestamp": "2026-09-03T13:05:16.501026+00:00",
       "passId": "material-pass",
       "estimatedFidelity": 0.94,
       "aiVisionScore": null,
@@ -1320,7 +1335,7 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-01T12:22:13.730556+00:00",
+      "timestamp": "2026-09-03T13:05:16.584361+00:00",
       "passId": "material-pass",
       "estimatedFidelity": 0.94,
       "aiVisionScore": 0.94,
@@ -1339,7 +1354,7 @@
           "score": 0.93,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Orange bar 1.02 m at 0.70 m and lift handle at 0.93 m (#b8703f from region-orange 0.829). The rust is now the plate's MEASURED #8a4a22 exactly, which the first build could not reach: a canvas tile is a MULTIPLY, and ratio(#8a4a22, #2f6a95) is (2.94, 0.70, 0.23) -- red above 1, so it clamped and left green dominant, which is what shipped as grey-green smudges. The body is now its own component on its own material re-based to the per-channel ENVELOPE #8a6a95, with the blue field painted BY the tile (base fill 0.341, 1, 1); that renders the body back to #2f6a95 and the rust to #8a4a22 exactly. The pale lids need no re-basing -- ratio(#8a4a22, #a3cce3) is (0.847, 0.363, 0.150), every channel under 1 -- so their chipping is a plain multiply on the shared material.",
+          "evidence": "Round orange bar r 0.022 x 1.02 m at 0.70 m on flat lugs and a round lift grip r 0.020 x 0.16 m at 0.93 m on two stubs (v3; #b8703f from region-orange 0.829). The rust is now the plate's MEASURED #8a4a22 exactly, which the first build could not reach: a canvas tile is a MULTIPLY, and ratio(#8a4a22, #2f6a95) is (2.94, 0.70, 0.23) -- red above 1, so it clamped and left green dominant, which is what shipped as grey-green smudges. The body is now its own component on its own material re-based to the per-channel ENVELOPE #8a6a95, with the blue field painted BY the tile (base fill 0.341, 1, 1); that renders the body back to #2f6a95 and the rust to #8a4a22 exactly. The pale lids need no re-basing -- ratio(#8a4a22, #a3cce3) is (0.847, 0.363, 0.150), every channel under 1 -- so their chipping is a plain multiply on the shared material.",
           "notes": "The LIDS are now re-based too, and for the same reason the body was: inverting their probed transfer, the plate's lid blue (151,198,227) wants (59,164,253) authored and its lid rust (225,173,143) wants (190,114,29), which are not orderings of each other. Envelope #bea4fd, base fill (0.308, 1, 1), rust (1, 0.695, 0.115). Shipped they measure 155/191/214 blue and 12.6% warm pixels against the plate's 151/198/227 and 16.8%. This is what maxMaterials 2 -> 3 buys and it costs no draw call: the lids are already their own InstancedMesh, and they cannot share `steel` (a re-based base fill of 0.308 in red would take the orange handle bar and the castors down with it) or `bodypaint` (a different envelope and a different fill). The cluster OPACITY is a new defaulted parameter on paintTile: the tile composites source-over, so at the 0.30 default a cluster blends to an intermediate tone and only its specks reach the authored rust -- right for a bloom on painted steel, wrong for a lid whose paint has come off. The BODY does not get that lift and the ceiling is the turntable gate: at 0.55 the cluster cores render 74/61/55 on the shaded front, 22 counts of city-block distance from the harness backdrop's own (58,58,58), and the gate segmented 3,890 px of the front face as interior HOLES at azimuth 0 in a pattern that overlays the clusters exactly. Castors and corner fittings are held on CHROMA, not lifted: the turntable gate's background test is |luma-58| <= 24 AND sat <= 0.16, so #3f4a5c (luma 76, sat 0.315) and #4a5568 (luma 87, sat 0.29) keep the plate's DARK hardware and still clear it. A neutral #6a6f76 was read as a 2,100 px hole at azimuth 90 and 270."
         }
       ],
@@ -1351,7 +1366,7 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-01T12:22:13.819621+00:00",
+      "timestamp": "2026-09-03T13:05:16.667108+00:00",
       "passId": "surface-pass",
       "estimatedFidelity": 0.93,
       "aiVisionScore": null,
@@ -1366,7 +1381,7 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-01T12:22:13.902407+00:00",
+      "timestamp": "2026-09-03T13:05:16.751326+00:00",
       "passId": "surface-pass",
       "estimatedFidelity": 0.93,
       "aiVisionScore": 0.93,
@@ -1385,7 +1400,7 @@
           "score": 0.93,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Orange bar 1.02 m at 0.70 m and lift handle at 0.93 m (#b8703f from region-orange 0.829). The rust is now the plate's MEASURED #8a4a22 exactly, which the first build could not reach: a canvas tile is a MULTIPLY, and ratio(#8a4a22, #2f6a95) is (2.94, 0.70, 0.23) -- red above 1, so it clamped and left green dominant, which is what shipped as grey-green smudges. The body is now its own component on its own material re-based to the per-channel ENVELOPE #8a6a95, with the blue field painted BY the tile (base fill 0.341, 1, 1); that renders the body back to #2f6a95 and the rust to #8a4a22 exactly. The pale lids need no re-basing -- ratio(#8a4a22, #a3cce3) is (0.847, 0.363, 0.150), every channel under 1 -- so their chipping is a plain multiply on the shared material.",
+          "evidence": "Round orange bar r 0.022 x 1.02 m at 0.70 m on flat lugs and a round lift grip r 0.020 x 0.16 m at 0.93 m on two stubs (v3; #b8703f from region-orange 0.829). The rust is now the plate's MEASURED #8a4a22 exactly, which the first build could not reach: a canvas tile is a MULTIPLY, and ratio(#8a4a22, #2f6a95) is (2.94, 0.70, 0.23) -- red above 1, so it clamped and left green dominant, which is what shipped as grey-green smudges. The body is now its own component on its own material re-based to the per-channel ENVELOPE #8a6a95, with the blue field painted BY the tile (base fill 0.341, 1, 1); that renders the body back to #2f6a95 and the rust to #8a4a22 exactly. The pale lids need no re-basing -- ratio(#8a4a22, #a3cce3) is (0.847, 0.363, 0.150), every channel under 1 -- so their chipping is a plain multiply on the shared material.",
           "notes": "The LIDS are now re-based too, and for the same reason the body was: inverting their probed transfer, the plate's lid blue (151,198,227) wants (59,164,253) authored and its lid rust (225,173,143) wants (190,114,29), which are not orderings of each other. Envelope #bea4fd, base fill (0.308, 1, 1), rust (1, 0.695, 0.115). Shipped they measure 155/191/214 blue and 12.6% warm pixels against the plate's 151/198/227 and 16.8%. This is what maxMaterials 2 -> 3 buys and it costs no draw call: the lids are already their own InstancedMesh, and they cannot share `steel` (a re-based base fill of 0.308 in red would take the orange handle bar and the castors down with it) or `bodypaint` (a different envelope and a different fill). The cluster OPACITY is a new defaulted parameter on paintTile: the tile composites source-over, so at the 0.30 default a cluster blends to an intermediate tone and only its specks reach the authored rust -- right for a bloom on painted steel, wrong for a lid whose paint has come off. The BODY does not get that lift and the ceiling is the turntable gate: at 0.55 the cluster cores render 74/61/55 on the shaded front, 22 counts of city-block distance from the harness backdrop's own (58,58,58), and the gate segmented 3,890 px of the front face as interior HOLES at azimuth 0 in a pattern that overlays the clusters exactly. Castors and corner fittings are held on CHROMA, not lifted: the turntable gate's background test is |luma-58| <= 24 AND sat <= 0.16, so #3f4a5c (luma 76, sat 0.315) and #4a5568 (luma 87, sat 0.29) keep the plate's DARK hardware and still clear it. A neutral #6a6f76 was read as a 2,100 px hole at azimuth 90 and 270."
         }
       ],
@@ -1397,7 +1412,7 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-01T12:22:13.987290+00:00",
+      "timestamp": "2026-09-03T13:05:16.835021+00:00",
       "passId": "lighting-pass",
       "estimatedFidelity": 0.86,
       "aiVisionScore": 0.86,
@@ -1418,7 +1433,7 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-01T12:22:14.071050+00:00",
+      "timestamp": "2026-09-03T13:05:16.917319+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.94,
       "aiVisionScore": 0.94,
@@ -1437,7 +1452,7 @@
           "score": 0.93,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Two lids as a two-instance InstancedMesh at x +-0.255: panel 0.50 x 0.03 x 0.44, chamfer slab, knuckle; lid-hinge-l/-r at (+-0.255, 1.375, -0.26) axis X. Extents measured off a crop of the plate's top deck (scratch/_lidcrop.png) at the LIDS' OWN row, where the deck spans crop x 110-1000 and the lids 205-885: 0.764, against the 0.924 the first build shipped.",
+          "evidence": "Two lids as a two-instance InstancedMesh at x +-0.255: one flat 0.50 x 0.03 x 0.47 plate with its two outer corners chamfered 70 mm (v3), the right instance yawed PI, over fixed hinge barrels on the fittings; lid-hinge-l/-r at (+-0.255, 1.375, -0.26) axis X. Extents measured off a crop of the plate's top deck (scratch/_lidcrop.png) at the LIDS' OWN row, where the deck spans crop x 110-1000 and the lids 205-885: 0.764, against the 0.924 the first build shipped.",
           "notes": "The lids are on their OWN material now and their tone was PROBED rather than corrected. They had no `uv` directive at all, so the chipping on their material never reached them -- over the lid's own crop the plate is 16.7% warm pixels and the build returned 0.3%. And their top face is where the harness's additive term is largest: two authored values 32 counts apart came back 8 apart, fitting R = 0.5625A + 118, G = 0.50A + 116, B = 0.375A + 132, so the shipped #a3cce3 rendered them 216/219/221 -- neutral WHITE, 28 luma over the plate's 166/198/217, with the blue gone -- and no small correction reaches the measurement when a third of every channel arrives from the light. No swing flap: the plate has none, so no flap pivot."
         }
       ],
@@ -1449,7 +1464,7 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-01T12:22:14.153656+00:00",
+      "timestamp": "2026-09-03T13:05:17.003886+00:00",
       "passId": "optimization-pass",
       "estimatedFidelity": 0.93,
       "aiVisionScore": 0.93,
@@ -1477,7 +1492,7 @@
           "score": 0.93,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Two lids as a two-instance InstancedMesh at x +-0.255: panel 0.50 x 0.03 x 0.44, chamfer slab, knuckle; lid-hinge-l/-r at (+-0.255, 1.375, -0.26) axis X. Extents measured off a crop of the plate's top deck (scratch/_lidcrop.png) at the LIDS' OWN row, where the deck spans crop x 110-1000 and the lids 205-885: 0.764, against the 0.924 the first build shipped.",
+          "evidence": "Two lids as a two-instance InstancedMesh at x +-0.255: one flat 0.50 x 0.03 x 0.47 plate with its two outer corners chamfered 70 mm (v3), the right instance yawed PI, over fixed hinge barrels on the fittings; lid-hinge-l/-r at (+-0.255, 1.375, -0.26) axis X. Extents measured off a crop of the plate's top deck (scratch/_lidcrop.png) at the LIDS' OWN row, where the deck spans crop x 110-1000 and the lids 205-885: 0.764, against the 0.924 the first build shipped.",
           "notes": "The lids are on their OWN material now and their tone was PROBED rather than corrected. They had no `uv` directive at all, so the chipping on their material never reached them -- over the lid's own crop the plate is 16.7% warm pixels and the build returned 0.3%. And their top face is where the harness's additive term is largest: two authored values 32 counts apart came back 8 apart, fitting R = 0.5625A + 118, G = 0.50A + 116, B = 0.375A + 132, so the shipped #a3cce3 rendered them 216/219/221 -- neutral WHITE, 28 luma over the plate's 166/198/217, with the blue gone -- and no small correction reaches the measurement when a third of every channel arrives from the light. No swing flap: the plate has none, so no flap pivot."
         },
         {
@@ -1486,7 +1501,7 @@
           "score": 0.93,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Orange bar 1.02 m at 0.70 m and lift handle at 0.93 m (#b8703f from region-orange 0.829). The rust is now the plate's MEASURED #8a4a22 exactly, which the first build could not reach: a canvas tile is a MULTIPLY, and ratio(#8a4a22, #2f6a95) is (2.94, 0.70, 0.23) -- red above 1, so it clamped and left green dominant, which is what shipped as grey-green smudges. The body is now its own component on its own material re-based to the per-channel ENVELOPE #8a6a95, with the blue field painted BY the tile (base fill 0.341, 1, 1); that renders the body back to #2f6a95 and the rust to #8a4a22 exactly. The pale lids need no re-basing -- ratio(#8a4a22, #a3cce3) is (0.847, 0.363, 0.150), every channel under 1 -- so their chipping is a plain multiply on the shared material.",
+          "evidence": "Round orange bar r 0.022 x 1.02 m at 0.70 m on flat lugs and a round lift grip r 0.020 x 0.16 m at 0.93 m on two stubs (v3; #b8703f from region-orange 0.829). The rust is now the plate's MEASURED #8a4a22 exactly, which the first build could not reach: a canvas tile is a MULTIPLY, and ratio(#8a4a22, #2f6a95) is (2.94, 0.70, 0.23) -- red above 1, so it clamped and left green dominant, which is what shipped as grey-green smudges. The body is now its own component on its own material re-based to the per-channel ENVELOPE #8a6a95, with the blue field painted BY the tile (base fill 0.341, 1, 1); that renders the body back to #2f6a95 and the rust to #8a4a22 exactly. The pale lids need no re-basing -- ratio(#8a4a22, #a3cce3) is (0.847, 0.363, 0.150), every channel under 1 -- so their chipping is a plain multiply on the shared material.",
           "notes": "The LIDS are now re-based too, and for the same reason the body was: inverting their probed transfer, the plate's lid blue (151,198,227) wants (59,164,253) authored and its lid rust (225,173,143) wants (190,114,29), which are not orderings of each other. Envelope #bea4fd, base fill (0.308, 1, 1), rust (1, 0.695, 0.115). Shipped they measure 155/191/214 blue and 12.6% warm pixels against the plate's 151/198/227 and 16.8%. This is what maxMaterials 2 -> 3 buys and it costs no draw call: the lids are already their own InstancedMesh, and they cannot share `steel` (a re-based base fill of 0.308 in red would take the orange handle bar and the castors down with it) or `bodypaint` (a different envelope and a different fill). The cluster OPACITY is a new defaulted parameter on paintTile: the tile composites source-over, so at the 0.30 default a cluster blends to an intermediate tone and only its specks reach the authored rust -- right for a bloom on painted steel, wrong for a lid whose paint has come off. The BODY does not get that lift and the ceiling is the turntable gate: at 0.55 the cluster cores render 74/61/55 on the shaded front, 22 counts of city-block distance from the harness backdrop's own (58,58,58), and the gate segmented 3,890 px of the front face as interior HOLES at azimuth 0 in a pattern that overlays the clusters exactly. Castors and corner fittings are held on CHROMA, not lifted: the turntable gate's background test is |luma-58| <= 24 AND sat <= 0.16, so #3f4a5c (luma 76, sat 0.315) and #4a5568 (luma 87, sat 0.29) keep the plate's DARK hardware and still clear it. A neutral #6a6f76 was read as a 2,100 px hole at azimuth 90 and 270."
         }
       ],
@@ -1500,7 +1515,7 @@
   ],
   "reviewHistory": [
     {
-      "timestamp": "2026-09-01T12:22:13.005890+00:00",
+      "timestamp": "2026-09-03T13:05:15.740397+00:00",
       "passId": "blockout",
       "estimatedFidelity": 0.88,
       "aiVisionScore": 0.88,
@@ -1541,7 +1556,7 @@
       }
     },
     {
-      "timestamp": "2026-09-01T12:22:13.084154+00:00",
+      "timestamp": "2026-09-03T13:05:15.819135+00:00",
       "passId": "structural-pass",
       "estimatedFidelity": 0.94,
       "aiVisionScore": null,
@@ -1565,7 +1580,7 @@
       }
     },
     {
-      "timestamp": "2026-09-01T12:22:13.163520+00:00",
+      "timestamp": "2026-09-03T13:05:15.900871+00:00",
       "passId": "structural-pass",
       "estimatedFidelity": 0.94,
       "aiVisionScore": 0.94,
@@ -1605,7 +1620,7 @@
       }
     },
     {
-      "timestamp": "2026-09-01T12:22:13.242829+00:00",
+      "timestamp": "2026-09-03T13:05:15.985235+00:00",
       "passId": "form-refinement",
       "estimatedFidelity": 0.91,
       "aiVisionScore": null,
@@ -1629,7 +1644,7 @@
       }
     },
     {
-      "timestamp": "2026-09-01T12:22:13.324190+00:00",
+      "timestamp": "2026-09-03T13:05:16.075928+00:00",
       "passId": "form-refinement",
       "estimatedFidelity": 0.91,
       "aiVisionScore": null,
@@ -1653,7 +1668,31 @@
       }
     },
     {
-      "timestamp": "2026-09-01T12:22:13.407267+00:00",
+      "timestamp": "2026-09-03T13:05:16.156857+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Owner review (v3): the orange fittings made ROUND -- the handle bar an r 0.022 tube on flat lugs seated into the tapered front, the lift handle an r 0.020 grip on two stubs and a back plate; the top rebuilt as a rounded-plan deck (two rounded-rectangle extrudes, 70 / 50 mm plan corners, the upper inset 20 mm as a rolled edge) with the plate's riveted flange line, in place of four square rails round a sunken panel; each lid one flat plate with its two OUTER corners cut flat at 70 mm, as the plate outlines them, replacing the stepped front slab that read as a notch. Hinge barrels moved to the fittings so one chamfered plate serves both lids, the right one yawed a half turn.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/municipal-steel-dumpster/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-03T13:05:16.238658+00:00",
       "passId": "form-refinement",
       "estimatedFidelity": 0.91,
       "aiVisionScore": 0.91,
@@ -1672,12 +1711,12 @@
           "score": 0.93,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Two lids as a two-instance InstancedMesh at x +-0.255: panel 0.50 x 0.03 x 0.44, chamfer slab, knuckle; lid-hinge-l/-r at (+-0.255, 1.375, -0.26) axis X. Extents measured off a crop of the plate's top deck (scratch/_lidcrop.png) at the LIDS' OWN row, where the deck spans crop x 110-1000 and the lids 205-885: 0.764, against the 0.924 the first build shipped.",
+          "evidence": "Two lids as a two-instance InstancedMesh at x +-0.255: one flat 0.50 x 0.03 x 0.47 plate with its two outer corners chamfered 70 mm (v3), the right instance yawed PI, over fixed hinge barrels on the fittings; lid-hinge-l/-r at (+-0.255, 1.375, -0.26) axis X. Extents measured off a crop of the plate's top deck (scratch/_lidcrop.png) at the LIDS' OWN row, where the deck spans crop x 110-1000 and the lids 205-885: 0.764, against the 0.924 the first build shipped.",
           "notes": "The lids are on their OWN material now and their tone was PROBED rather than corrected. They had no `uv` directive at all, so the chipping on their material never reached them -- over the lid's own crop the plate is 16.7% warm pixels and the build returned 0.3%. And their top face is where the harness's additive term is largest: two authored values 32 counts apart came back 8 apart, fitting R = 0.5625A + 118, G = 0.50A + 116, B = 0.375A + 132, so the shipped #a3cce3 rendered them 216/219/221 -- neutral WHITE, 28 luma over the plate's 166/198/217, with the blue gone -- and no small correction reaches the measurement when a third of every channel arrives from the light. No swing flap: the plate has none, so no flap pivot."
         }
       ],
       "action": "continue",
-      "summary": "Form refinement: lid extents measured to 0.764 of the deck; rim rails and deck, door seam tilted to the front face, brackets, trunnion plates, castor forks and hubs.",
+      "summary": "Form refinement: lid extents measured to 0.764 of the deck; rounded-plan deck with a rolled edge and flange line, chamfered lid plates, round orange bar and grip (v3), door seam tilted to the front face, trunnion plates, castor forks and hubs.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1693,7 +1732,7 @@
       }
     },
     {
-      "timestamp": "2026-09-01T12:22:13.488386+00:00",
+      "timestamp": "2026-09-03T13:05:16.319902+00:00",
       "passId": "material-pass",
       "estimatedFidelity": 0.94,
       "aiVisionScore": null,
@@ -1717,7 +1756,7 @@
       }
     },
     {
-      "timestamp": "2026-09-01T12:22:13.568736+00:00",
+      "timestamp": "2026-09-03T13:05:16.412682+00:00",
       "passId": "material-pass",
       "estimatedFidelity": 0.94,
       "aiVisionScore": null,
@@ -1741,7 +1780,7 @@
       }
     },
     {
-      "timestamp": "2026-09-01T12:22:13.649022+00:00",
+      "timestamp": "2026-09-03T13:05:16.501026+00:00",
       "passId": "material-pass",
       "estimatedFidelity": 0.94,
       "aiVisionScore": null,
@@ -1765,7 +1804,7 @@
       }
     },
     {
-      "timestamp": "2026-09-01T12:22:13.730556+00:00",
+      "timestamp": "2026-09-03T13:05:16.584361+00:00",
       "passId": "material-pass",
       "estimatedFidelity": 0.94,
       "aiVisionScore": 0.94,
@@ -1784,7 +1823,7 @@
           "score": 0.93,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Orange bar 1.02 m at 0.70 m and lift handle at 0.93 m (#b8703f from region-orange 0.829). The rust is now the plate's MEASURED #8a4a22 exactly, which the first build could not reach: a canvas tile is a MULTIPLY, and ratio(#8a4a22, #2f6a95) is (2.94, 0.70, 0.23) -- red above 1, so it clamped and left green dominant, which is what shipped as grey-green smudges. The body is now its own component on its own material re-based to the per-channel ENVELOPE #8a6a95, with the blue field painted BY the tile (base fill 0.341, 1, 1); that renders the body back to #2f6a95 and the rust to #8a4a22 exactly. The pale lids need no re-basing -- ratio(#8a4a22, #a3cce3) is (0.847, 0.363, 0.150), every channel under 1 -- so their chipping is a plain multiply on the shared material.",
+          "evidence": "Round orange bar r 0.022 x 1.02 m at 0.70 m on flat lugs and a round lift grip r 0.020 x 0.16 m at 0.93 m on two stubs (v3; #b8703f from region-orange 0.829). The rust is now the plate's MEASURED #8a4a22 exactly, which the first build could not reach: a canvas tile is a MULTIPLY, and ratio(#8a4a22, #2f6a95) is (2.94, 0.70, 0.23) -- red above 1, so it clamped and left green dominant, which is what shipped as grey-green smudges. The body is now its own component on its own material re-based to the per-channel ENVELOPE #8a6a95, with the blue field painted BY the tile (base fill 0.341, 1, 1); that renders the body back to #2f6a95 and the rust to #8a4a22 exactly. The pale lids need no re-basing -- ratio(#8a4a22, #a3cce3) is (0.847, 0.363, 0.150), every channel under 1 -- so their chipping is a plain multiply on the shared material.",
           "notes": "The LIDS are now re-based too, and for the same reason the body was: inverting their probed transfer, the plate's lid blue (151,198,227) wants (59,164,253) authored and its lid rust (225,173,143) wants (190,114,29), which are not orderings of each other. Envelope #bea4fd, base fill (0.308, 1, 1), rust (1, 0.695, 0.115). Shipped they measure 155/191/214 blue and 12.6% warm pixels against the plate's 151/198/227 and 16.8%. This is what maxMaterials 2 -> 3 buys and it costs no draw call: the lids are already their own InstancedMesh, and they cannot share `steel` (a re-based base fill of 0.308 in red would take the orange handle bar and the castors down with it) or `bodypaint` (a different envelope and a different fill). The cluster OPACITY is a new defaulted parameter on paintTile: the tile composites source-over, so at the 0.30 default a cluster blends to an intermediate tone and only its specks reach the authored rust -- right for a bloom on painted steel, wrong for a lid whose paint has come off. The BODY does not get that lift and the ceiling is the turntable gate: at 0.55 the cluster cores render 74/61/55 on the shaded front, 22 counts of city-block distance from the harness backdrop's own (58,58,58), and the gate segmented 3,890 px of the front face as interior HOLES at azimuth 0 in a pattern that overlays the clusters exactly. Castors and corner fittings are held on CHROMA, not lifted: the turntable gate's background test is |luma-58| <= 24 AND sat <= 0.16, so #3f4a5c (luma 76, sat 0.315) and #4a5568 (luma 87, sat 0.29) keep the plate's DARK hardware and still clear it. A neutral #6a6f76 was read as a 2,100 px hole at azimuth 90 and 270."
         }
       ],
@@ -1805,7 +1844,7 @@
       }
     },
     {
-      "timestamp": "2026-09-01T12:22:13.819621+00:00",
+      "timestamp": "2026-09-03T13:05:16.667108+00:00",
       "passId": "surface-pass",
       "estimatedFidelity": 0.93,
       "aiVisionScore": null,
@@ -1829,7 +1868,7 @@
       }
     },
     {
-      "timestamp": "2026-09-01T12:22:13.902407+00:00",
+      "timestamp": "2026-09-03T13:05:16.751326+00:00",
       "passId": "surface-pass",
       "estimatedFidelity": 0.93,
       "aiVisionScore": 0.93,
@@ -1848,7 +1887,7 @@
           "score": 0.93,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Orange bar 1.02 m at 0.70 m and lift handle at 0.93 m (#b8703f from region-orange 0.829). The rust is now the plate's MEASURED #8a4a22 exactly, which the first build could not reach: a canvas tile is a MULTIPLY, and ratio(#8a4a22, #2f6a95) is (2.94, 0.70, 0.23) -- red above 1, so it clamped and left green dominant, which is what shipped as grey-green smudges. The body is now its own component on its own material re-based to the per-channel ENVELOPE #8a6a95, with the blue field painted BY the tile (base fill 0.341, 1, 1); that renders the body back to #2f6a95 and the rust to #8a4a22 exactly. The pale lids need no re-basing -- ratio(#8a4a22, #a3cce3) is (0.847, 0.363, 0.150), every channel under 1 -- so their chipping is a plain multiply on the shared material.",
+          "evidence": "Round orange bar r 0.022 x 1.02 m at 0.70 m on flat lugs and a round lift grip r 0.020 x 0.16 m at 0.93 m on two stubs (v3; #b8703f from region-orange 0.829). The rust is now the plate's MEASURED #8a4a22 exactly, which the first build could not reach: a canvas tile is a MULTIPLY, and ratio(#8a4a22, #2f6a95) is (2.94, 0.70, 0.23) -- red above 1, so it clamped and left green dominant, which is what shipped as grey-green smudges. The body is now its own component on its own material re-based to the per-channel ENVELOPE #8a6a95, with the blue field painted BY the tile (base fill 0.341, 1, 1); that renders the body back to #2f6a95 and the rust to #8a4a22 exactly. The pale lids need no re-basing -- ratio(#8a4a22, #a3cce3) is (0.847, 0.363, 0.150), every channel under 1 -- so their chipping is a plain multiply on the shared material.",
           "notes": "The LIDS are now re-based too, and for the same reason the body was: inverting their probed transfer, the plate's lid blue (151,198,227) wants (59,164,253) authored and its lid rust (225,173,143) wants (190,114,29), which are not orderings of each other. Envelope #bea4fd, base fill (0.308, 1, 1), rust (1, 0.695, 0.115). Shipped they measure 155/191/214 blue and 12.6% warm pixels against the plate's 151/198/227 and 16.8%. This is what maxMaterials 2 -> 3 buys and it costs no draw call: the lids are already their own InstancedMesh, and they cannot share `steel` (a re-based base fill of 0.308 in red would take the orange handle bar and the castors down with it) or `bodypaint` (a different envelope and a different fill). The cluster OPACITY is a new defaulted parameter on paintTile: the tile composites source-over, so at the 0.30 default a cluster blends to an intermediate tone and only its specks reach the authored rust -- right for a bloom on painted steel, wrong for a lid whose paint has come off. The BODY does not get that lift and the ceiling is the turntable gate: at 0.55 the cluster cores render 74/61/55 on the shaded front, 22 counts of city-block distance from the harness backdrop's own (58,58,58), and the gate segmented 3,890 px of the front face as interior HOLES at azimuth 0 in a pattern that overlays the clusters exactly. Castors and corner fittings are held on CHROMA, not lifted: the turntable gate's background test is |luma-58| <= 24 AND sat <= 0.16, so #3f4a5c (luma 76, sat 0.315) and #4a5568 (luma 87, sat 0.29) keep the plate's DARK hardware and still clear it. A neutral #6a6f76 was read as a 2,100 px hole at azimuth 90 and 270."
         }
       ],
@@ -1869,7 +1908,7 @@
       }
     },
     {
-      "timestamp": "2026-09-01T12:22:13.987290+00:00",
+      "timestamp": "2026-09-03T13:05:16.835021+00:00",
       "passId": "lighting-pass",
       "estimatedFidelity": 0.86,
       "aiVisionScore": 0.86,
@@ -1899,7 +1938,7 @@
       }
     },
     {
-      "timestamp": "2026-09-01T12:22:14.071050+00:00",
+      "timestamp": "2026-09-03T13:05:16.917319+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.94,
       "aiVisionScore": 0.94,
@@ -1918,7 +1957,7 @@
           "score": 0.93,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Two lids as a two-instance InstancedMesh at x +-0.255: panel 0.50 x 0.03 x 0.44, chamfer slab, knuckle; lid-hinge-l/-r at (+-0.255, 1.375, -0.26) axis X. Extents measured off a crop of the plate's top deck (scratch/_lidcrop.png) at the LIDS' OWN row, where the deck spans crop x 110-1000 and the lids 205-885: 0.764, against the 0.924 the first build shipped.",
+          "evidence": "Two lids as a two-instance InstancedMesh at x +-0.255: one flat 0.50 x 0.03 x 0.47 plate with its two outer corners chamfered 70 mm (v3), the right instance yawed PI, over fixed hinge barrels on the fittings; lid-hinge-l/-r at (+-0.255, 1.375, -0.26) axis X. Extents measured off a crop of the plate's top deck (scratch/_lidcrop.png) at the LIDS' OWN row, where the deck spans crop x 110-1000 and the lids 205-885: 0.764, against the 0.924 the first build shipped.",
           "notes": "The lids are on their OWN material now and their tone was PROBED rather than corrected. They had no `uv` directive at all, so the chipping on their material never reached them -- over the lid's own crop the plate is 16.7% warm pixels and the build returned 0.3%. And their top face is where the harness's additive term is largest: two authored values 32 counts apart came back 8 apart, fitting R = 0.5625A + 118, G = 0.50A + 116, B = 0.375A + 132, so the shipped #a3cce3 rendered them 216/219/221 -- neutral WHITE, 28 luma over the plate's 166/198/217, with the blue gone -- and no small correction reaches the measurement when a third of every channel arrives from the light. No swing flap: the plate has none, so no flap pivot."
         }
       ],
@@ -1939,7 +1978,7 @@
       }
     },
     {
-      "timestamp": "2026-09-01T12:22:14.153656+00:00",
+      "timestamp": "2026-09-03T13:05:17.003886+00:00",
       "passId": "optimization-pass",
       "estimatedFidelity": 0.93,
       "aiVisionScore": 0.93,
@@ -1967,7 +2006,7 @@
           "score": 0.93,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Two lids as a two-instance InstancedMesh at x +-0.255: panel 0.50 x 0.03 x 0.44, chamfer slab, knuckle; lid-hinge-l/-r at (+-0.255, 1.375, -0.26) axis X. Extents measured off a crop of the plate's top deck (scratch/_lidcrop.png) at the LIDS' OWN row, where the deck spans crop x 110-1000 and the lids 205-885: 0.764, against the 0.924 the first build shipped.",
+          "evidence": "Two lids as a two-instance InstancedMesh at x +-0.255: one flat 0.50 x 0.03 x 0.47 plate with its two outer corners chamfered 70 mm (v3), the right instance yawed PI, over fixed hinge barrels on the fittings; lid-hinge-l/-r at (+-0.255, 1.375, -0.26) axis X. Extents measured off a crop of the plate's top deck (scratch/_lidcrop.png) at the LIDS' OWN row, where the deck spans crop x 110-1000 and the lids 205-885: 0.764, against the 0.924 the first build shipped.",
           "notes": "The lids are on their OWN material now and their tone was PROBED rather than corrected. They had no `uv` directive at all, so the chipping on their material never reached them -- over the lid's own crop the plate is 16.7% warm pixels and the build returned 0.3%. And their top face is where the harness's additive term is largest: two authored values 32 counts apart came back 8 apart, fitting R = 0.5625A + 118, G = 0.50A + 116, B = 0.375A + 132, so the shipped #a3cce3 rendered them 216/219/221 -- neutral WHITE, 28 luma over the plate's 166/198/217, with the blue gone -- and no small correction reaches the measurement when a third of every channel arrives from the light. No swing flap: the plate has none, so no flap pivot."
         },
         {
@@ -1976,12 +2015,12 @@
           "score": 0.93,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Orange bar 1.02 m at 0.70 m and lift handle at 0.93 m (#b8703f from region-orange 0.829). The rust is now the plate's MEASURED #8a4a22 exactly, which the first build could not reach: a canvas tile is a MULTIPLY, and ratio(#8a4a22, #2f6a95) is (2.94, 0.70, 0.23) -- red above 1, so it clamped and left green dominant, which is what shipped as grey-green smudges. The body is now its own component on its own material re-based to the per-channel ENVELOPE #8a6a95, with the blue field painted BY the tile (base fill 0.341, 1, 1); that renders the body back to #2f6a95 and the rust to #8a4a22 exactly. The pale lids need no re-basing -- ratio(#8a4a22, #a3cce3) is (0.847, 0.363, 0.150), every channel under 1 -- so their chipping is a plain multiply on the shared material.",
+          "evidence": "Round orange bar r 0.022 x 1.02 m at 0.70 m on flat lugs and a round lift grip r 0.020 x 0.16 m at 0.93 m on two stubs (v3; #b8703f from region-orange 0.829). The rust is now the plate's MEASURED #8a4a22 exactly, which the first build could not reach: a canvas tile is a MULTIPLY, and ratio(#8a4a22, #2f6a95) is (2.94, 0.70, 0.23) -- red above 1, so it clamped and left green dominant, which is what shipped as grey-green smudges. The body is now its own component on its own material re-based to the per-channel ENVELOPE #8a6a95, with the blue field painted BY the tile (base fill 0.341, 1, 1); that renders the body back to #2f6a95 and the rust to #8a4a22 exactly. The pale lids need no re-basing -- ratio(#8a4a22, #a3cce3) is (0.847, 0.363, 0.150), every channel under 1 -- so their chipping is a plain multiply on the shared material.",
           "notes": "The LIDS are now re-based too, and for the same reason the body was: inverting their probed transfer, the plate's lid blue (151,198,227) wants (59,164,253) authored and its lid rust (225,173,143) wants (190,114,29), which are not orderings of each other. Envelope #bea4fd, base fill (0.308, 1, 1), rust (1, 0.695, 0.115). Shipped they measure 155/191/214 blue and 12.6% warm pixels against the plate's 151/198/227 and 16.8%. This is what maxMaterials 2 -> 3 buys and it costs no draw call: the lids are already their own InstancedMesh, and they cannot share `steel` (a re-based base fill of 0.308 in red would take the orange handle bar and the castors down with it) or `bodypaint` (a different envelope and a different fill). The cluster OPACITY is a new defaulted parameter on paintTile: the tile composites source-over, so at the 0.30 default a cluster blends to an intermediate tone and only its specks reach the authored rust -- right for a bloom on painted steel, wrong for a lid whose paint has come off. The BODY does not get that lift and the ceiling is the turntable gate: at 0.55 the cluster cores render 74/61/55 on the shaded front, 22 counts of city-block distance from the harness backdrop's own (58,58,58), and the gate segmented 3,890 px of the front face as interior HOLES at azimuth 0 in a pattern that overlays the clusters exactly. Castors and corner fittings are held on CHROMA, not lifted: the turntable gate's background test is |luma-58| <= 24 AND sat <= 0.16, so #3f4a5c (luma 76, sat 0.315) and #4a5568 (luma 87, sat 0.29) keep the plate's DARK hardware and still clear it. A neutral #6a6f76 was read as a 2,100 px hole at azimuth 90 and 270."
         }
       ],
       "action": "continue",
-      "summary": "FINAL VERDICT. Overall visual fidelity 0.93 -- the five layers mean 0.922 and the three critical features 0.933. 744/2,000 triangles, 3/3 draw calls, 3/3 materials, 3/4 unique geometries, two 512 px canvases. The only budget axis this round moved was maxMaterials, 2 -> 3, and it is what let the lids be re-based to their own probed envelope. What is still simplified: the plate's corner hinge STRAPS are a bracket plate and a trunnion block rather than a strap, and its drips are more concentrated below the handle bar than the tile's.",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.93 -- the five layers mean 0.922 and the three critical features 0.933. 1,068/2,000 triangles, 3/3 draw calls, 3/3 materials, 3/4 unique geometries, two 512 px canvases. The only budget axis this round moved was maxMaterials, 2 -> 3, and it is what let the lids be re-based to their own probed envelope. What is still simplified: the plate's corner hinge STRAPS are a bracket plate and a trunnion block rather than a strap, and its drips are more concentrated below the handle bar than the tile's.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -2040,10 +2079,10 @@
         "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
       },
       "triangles": {
-        "measured": 696,
+        "measured": 1068,
         "budget": 2000,
-        "headroom": 1304,
-        "note": "696 of 2,000: one frustum, twenty boxes, eight 10-14 segment cylinders, and three boxes instanced twice."
+        "headroom": 932,
+        "note": "1,068 of 2,000: one frustum, two 28-point rounded-rectangle extrudes, twenty-four boxes, twelve 8-14 segment cylinders, and one six-point plate extrude instanced twice."
       }
     }
   },
@@ -2101,7 +2140,7 @@
   "proceduralStrategy": [
     {
       "id": "primitives",
-      "strategy": "A frustum for the body; boxes for the rails, deck, seam, handles, trunnions, forks and lids; cylinders for the castors and hubs."
+      "strategy": "A frustum for the body; rounded-rectangle extrudes for the deck and a chamfered-plate extrude for the lids; boxes for the seam, lugs, plates, trunnions, forks and barrels; cylinders for the handle bar, the lift grip and its stubs, the castors and hubs."
     },
     {
       "id": "instancing",
@@ -2195,34 +2234,34 @@
     {
       "passed": false,
       "checks": {
-        "silhouetteIoU": 0.626,
-        "aspectRatioDelta": 0.3287,
-        "scaleDelta": 0.2552,
-        "bilateralSymmetryError": 0.0978,
+        "silhouetteIoU": 0.6221,
+        "aspectRatioDelta": 0.3395,
+        "scaleDelta": 0.2857,
+        "bilateralSymmetryError": 0.0983,
         "colorDelta": {
           "checked": 2,
-          "maxDeltaE": 28.28,
+          "maxDeltaE": 28.22,
           "perComponent": [
             {
               "componentId": null,
-              "deltaE": 28.28
+              "deltaE": 28.22
             },
             {
               "componentId": null,
-              "deltaE": 28.0
+              "deltaE": 28.18
             }
           ],
           "gated": false
         }
       },
       "failures": [
-        "silhouette IoU 0.626 is below threshold 0.85",
-        "aspect-ratio delta 0.329 exceeds threshold 0.05",
-        "scale delta 0.255 exceeds threshold 0.08",
+        "silhouette IoU 0.622 is below threshold 0.85",
+        "aspect-ratio delta 0.340 exceeds threshold 0.05",
+        "scale delta 0.286 exceeds threshold 0.08",
         "blockout requires --map-stripped-render evidence"
       ],
       "maskWarnings": [],
-      "renderHash": "d427e9021618f7d1",
+      "renderHash": "c7abba416d891e23",
       "passId": "blockout"
     }
   ]

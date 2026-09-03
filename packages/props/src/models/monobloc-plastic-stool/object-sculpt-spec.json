@@ -70,11 +70,11 @@
       "primaryType": "monobloc-plastic-stool",
       "primaryDomain": "object",
       "formLanguage": [
-        "dished-round-seat",
+        "flat-moulded-seat",
         "rolled-rim",
         "flared-apron",
-        "four-stacking-lugs",
-        "splayed-tapered-legs"
+        "leg-top-stacking-pads",
+        "full-height-moulded-legs"
       ],
       "structureKind": [
         "lathe",
@@ -108,9 +108,9 @@
         "repetitionSystems": 0
       },
       "reasoning": [
-        "ONE closed shell lathe -- underside pan, flared apron, rolled rim and dished seat in a single profile -- plus ONE thin worn-seat pan, four splayed tapered leg cylinders and four lug pads: one merge on one material, the ONE draw call the small class allows.",
+        "ONE closed shell lathe -- underside pan, flared apron, rolled rim and FLAT moulded top in a single profile -- plus ONE thin worn-seat pan and four FULL-HEIGHT tapered leg cylinders whose tops are the stacking pads: one merge on one material, the ONE draw call the small class allows.",
         "One material: red polypropylene as a vertex colour on a WHITE material, the worn seat a second vertex colour, scuffing as one 256 px canvas bound after construction.",
-        "No repetition system at one draw call: four legs and four lugs are eight primitives inside the single merge.",
+        "No repetition system at one draw call: the four legs are four primitives inside the single merge.",
         "Action readiness: one root pivot, zero sockets, one declared box collider, not breakable."
       ]
     },
@@ -125,7 +125,7 @@
       "needsMaterialLocalOverrides": true,
       "needsMultipleReviewViews": true,
       "needsActionReadyHierarchy": true,
-      "rationale": "The identity is a LOW stool: a deeply recessed dished seat inside a fat rolled rim, a flared apron, and short straight legs. The plate centre column puts the recessed disc minor axis at 430 px against the outer rim 536, so the seat floor is 0.80 of the rim radius and the rim ring is 29 mm wide in plan -- a thinner ring is what stopped two earlier builds from reading as recessed at all."
+      "rationale": "The identity is a LOW stool: a flat moulded top inside a fat rolled rim, a flared apron, and four short legs moulded up the side as ribs that bury themselves in the apron flare (v6, owner review: no pads, no top face). The plate centre column puts the top disc minor axis at 430 px against the outer rim 536, so the flat top is 0.82 of the rim radius inside a 22 mm rim ring with a 2.5 mm moulded lip -- v5 (owner review 2026-09-03): the earlier 25 mm dish is gone, the owner reads the plate as a flat moulded top."
     },
     "unknownsToResolveBeforeImplementation": [],
     "detailInventory": {
@@ -138,7 +138,7 @@
           "zone": "top",
           "kind": "contour",
           "identityDefining": true,
-          "description": "dished seat recessed 25 mm inside a rolled rim",
+          "description": "flat moulded top with a 2.5 mm lip inside a rolled rim",
           "mapsTo": {
             "ref": "stool"
           },
@@ -149,7 +149,7 @@
           "zone": "legs",
           "kind": "contour",
           "identityDefining": true,
-          "description": "four tapered legs splayed 8.7 degrees to feet at the envelope edge",
+          "description": "four full-height tapered D-section legs moulded up the apron side to feet at the envelope edge",
           "mapsTo": {
             "ref": "stool"
           },
@@ -160,7 +160,7 @@
           "zone": "top",
           "kind": "contour",
           "identityDefining": true,
-          "description": "four stacking pads flush with the rim top, standing 4 mm outside it",
+          "description": "four leg ribs blending into the apron flare, their tops buried at 0.178 with no pad and no top face (v6)",
           "mapsTo": {
             "ref": "stool"
           },
@@ -268,19 +268,19 @@
         ],
         "failureModes": [
           "bar-stool proportions",
-          "splayed legs",
+          "legs in two pieces",
           "square seat"
         ]
       },
       {
         "id": "seat",
-        "name": "Dished seat, rim and lugs",
+        "name": "Flat moulded seat, rim and pads",
         "required": true,
         "threshold": 0.8,
         "qualityCriteria": [
-          "Seat floor 0.80 of the rim radius",
-          "25 mm recess",
-          "Four lugs",
+          "Flat top 0.82 of the rim radius with a 2.5 mm lip",
+          "Rim ring 22 mm",
+          "Leg ribs vanish into the apron side below the rim",
           "Worn pale scratched top"
         ],
         "evidenceRefs": [
@@ -288,9 +288,9 @@
           "region-rim"
         ],
         "failureModes": [
-          "flat disc",
+          "deep dish",
           "thin rim ring",
-          "no lugs"
+          "leg tops or pads standing above the rim"
         ]
       },
       {
@@ -653,8 +653,8 @@
       "h": 0.2,
       "d": 0.335
     },
-    "description": "A 0.335 m disc 0.06 m thick at 0.200 m -- a flared apron under a rolled rim around a 0.234 m dished seat recessed 25 mm -- carrying four stacking pads flush with the rim top and standing on four tapered legs splayed 8.7 degrees whose feet reach 0.167 from the axis. Owner review 2026-09-03: seat raised to meet the pads, legs splayed, handhold patches removed.",
-    "envelopeDerivation": "x and z +-0.166 at the apron, +-0.167 at the splayed feet, +-0.146 at the rim; y 0 to 0.2005 at the lug pads, the rim top at 0.199 flush with them. The LIST-TIME declaration of 0.32 x 0.43 x 0.32 was wrong and the previous build inherited it: w/h 0.74 is a BAR stool, and it shipped a thin flat seat on four long posts. Two independent measurements say the prop is squat. The Meshy proxy bbox is 1.899 x 1.135 x 1.900, w/h 1.674. The plate solves to the same family: the seat-top ellipse minor/major gives a camera elevation of 43.4 deg, and the 843 x 881 px silhouette with the near-foot / far-lug depth term (2r sin th = 550 px) removed leaves h 456 px against w 843, w/h 1.85. The declaration is now 0.335 / 0.200 = 1.675, the proxy figure. The vertical split is measured as well: proxy voxel occupancy over a 64 x 48 x 64 grid collapses from 1955 to 310 shell cells at y/H 0.94 (the seat lid ends and the apron ring begins) and from 256 to 121 at y/H 0.76 (the apron ends and four legs remain), so seat+apron is the top 24.5 percent and the legs the bottom 75.5. The plate agrees at 28 percent, its apron front wall measuring 94 px of the solved 456. Built at 30 percent -- apron bottom 0.140 of 0.200 -- the fuller of the two, because the plate shows a rolled band whose bottom curve the proxy 20 mm voxel cannot resolve. Radii follow the proxy rmax/H: rim 0.749 -> 0.150 built 0.146, apron 0.775 -> 0.155 built 0.166, feet 0.829 -> 0.166 built 0.162.",
+    "description": "A 0.335 m disc 0.06 m thick at 0.200 m -- a flared apron under a rolled rim around a 0.226 m FLAT moulded top with a 2.5 mm lip -- on four tapered D-section legs that rise from the feet (0.167 from the axis) up the apron side as ribs and bury their tops inside the flare at 0.178, below the rim, with no pad and no top face (v6). Owner reviews 2026-09-03: seat raised, legs out, handhold patches removed; legs made ONE piece; the top flattened; then v6 -- the legs lowered out of the rim and moulded into the side.",
+    "envelopeDerivation": "x and z +-0.166 at the apron, +-0.167 at the splayed feet, +-0.146 at the rim; y 0 to 0.2005 at the leg-top pads, the rim top at 0.199 flush with them. The LIST-TIME declaration of 0.32 x 0.43 x 0.32 was wrong and the previous build inherited it: w/h 0.74 is a BAR stool, and it shipped a thin flat seat on four long posts. Two independent measurements say the prop is squat. The Meshy proxy bbox is 1.899 x 1.135 x 1.900, w/h 1.674. The plate solves to the same family: the seat-top ellipse minor/major gives a camera elevation of 43.4 deg, and the 843 x 881 px silhouette with the near-foot / far-lug depth term (2r sin th = 550 px) removed leaves h 456 px against w 843, w/h 1.85. The declaration is now 0.335 / 0.200 = 1.675, the proxy figure. The vertical split is measured as well: proxy voxel occupancy over a 64 x 48 x 64 grid collapses from 1955 to 310 shell cells at y/H 0.94 (the seat lid ends and the apron ring begins) and from 256 to 121 at y/H 0.76 (the apron ends and four legs remain), so seat+apron is the top 24.5 percent and the legs the bottom 75.5. The plate agrees at 28 percent, its apron front wall measuring 94 px of the solved 456. Built at 30 percent -- apron bottom 0.140 of 0.200 -- the fuller of the two, because the plate shows a rolled band whose bottom curve the proxy 20 mm voxel cannot resolve. Radii follow the proxy rmax/H: rim 0.749 -> 0.150 built 0.146, apron 0.775 -> 0.155 built 0.166, feet 0.829 -> 0.166 built 0.162.",
     "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate: bbox 1.899 x 1.135 x 1.900, w/h 1.674, which is what condemned the previous build. Band table after the rebuild: mean |delta width| 0.0712 and |delta depth| 0.0729 of height, down from 1.018 / 1.017 against the old envelope. Eight of ten bands are inside 0.10. Band 9 remains +0.31 because the proxy fills the seat concavity -- it carries a solid lid where the plate measures a 25 mm recess -- and band 0 is -0.10, the proxy standing its feet 2 percent of height further out than the apron will let a straight leg reach."
   },
   "viewEvidence": [
@@ -700,12 +700,12 @@
       "confidence": 0.86,
       "primitive": "lathe",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "One closed shell lathe, one worn-seat pan, four splayed leg cylinders and four lug pads merged into one geometry on one material: one draw call.",
+      "topologyRationale": "One closed shell lathe, one worn-seat pan and four full-height leg cylinders merged into one geometry on one material: one draw call.",
       "materialId": "plastic",
       "material": "plastic",
       "parent": null,
       "geometryDescriptor": {
-        "topologyIntent": "Shell profile 0.000/0.142 -> 0.150/0.140 -> 0.166/0.168 (apron widest) -> 0.146/0.192 (rim outer top) -> 0.117/0.170 (dish floor edge) -> 0.000/0.164, at 18 segments. Worn pan 0.114 radius at 0.1716 falling to 0.1655 at the axis, 1.5 mm proud of the dish. Legs 0.164 tall at radius 0.140, radii 0.035 to 0.032 flattened 0.70 radially. Lugs 0.024 tall at radius 0.141, crowning at 0.200. Handholds 45 mm of arc at radius 0.1675.",
+        "topologyIntent": "Shell profile 0.000/0.142 -> 0.151/0.140 -> 0.157/0.168 (apron widest) -> 0.137/0.199 (rim outer top) -> 0.115/0.199 (rim ring) -> 0.113/0.1965 (lip) -> 0.000/0.1965 (flat top), at 18 segments. Worn pan 0.110 radius, flat at 0.198, 1.5 mm proud of the top. Legs ONE piece each (v6): 0.178 tall at axis radius 0.142 (foot) to 0.136 (top), radii 0.032 (foot) to 0.018 (top) flattened 0.78 radially, standing ~1 cm proud below the apron edge and tapering into the flare, the top cap 3.5 mm inside the shell (outer edge 0.150 against the shell's 0.1535 at 0.178) so no leg face shows above the apron.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -714,24 +714,24 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "The worn pan is 1.5 mm PROUD of the dish and parallel to it, never flush. The lug pads top out 1.5 mm above the rim ring, so no two bounding-box faces share a plane. Legs and lugs enter the apron and rim as interpenetrating solids. check-coplanar clean at 0.001 m.",
+        "zFightingNote": "The worn pan is 1.5 mm PROUD of the flat top, never flush. The leg tops are buried inside the apron flare as interpenetrating solids, below the rim ring, so no two bounding-box faces share a plane. check-coplanar clean at 0.001 m.",
         "mergeNote": "One merged BufferGeometry with world UVs at 0.30 m and a world-space y tint for the dust at the feet."
       },
       "localFeatures": [
         {
           "id": "d1-seat",
-          "description": "dished seat",
+          "description": "flat moulded top",
           "delivery": "shell lathe profile"
         },
         {
           "id": "d2-legs",
           "description": "legs",
-          "delivery": "flattened tapered cylinders"
+          "delivery": "full-height flattened tapered cylinders"
         },
         {
           "id": "d3-lugs",
-          "description": "lugs",
-          "delivery": "tapered pads"
+          "description": "pads",
+          "delivery": "the leg tops"
         },
         {
           "id": "d4-apron",
@@ -968,7 +968,7 @@
   ],
   "visualEvidence": [
     {
-      "timestamp": "2026-09-03T05:37:33.209638+00:00",
+      "timestamp": "2026-09-03T14:13:15.936460+00:00",
       "passId": "blockout",
       "estimatedFidelity": 0.93,
       "aiVisionScore": 0.93,
@@ -987,8 +987,8 @@
           "score": 0.95,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.335 x 0.200 x 0.335 m, w/h 1.675 against the proxy 1.674. Seat disc 0.312 m across at the apron and 0.275 at the rim INSIDE a 0.335 leg span, as the proxy band table reads it (seat bands 1.40-1.52 H, leg bands 1.55-1.66 H); legs splayed 3.8 degrees; rim top 0.199 flush with the four stacking pads at 0.2005. Band table mean |delta width| 0.071 -> 0.070 with bands 1-6 from -0.08..-0.13 to within 0.05.",
-          "notes": "Band 9 remains +0.25: the proxy carries a solid seat lid where the plate measures a 25 mm recess. Band 0 -0.10: the proxy's feet are thicker than a moulded D leg."
+          "evidence": "Envelope 0.335 x 0.200 x 0.335 m, w/h 1.675 against the proxy 1.674. Seat disc 0.312 m across at the apron and 0.275 at the rim INSIDE a 0.335 leg span, as the proxy band table reads it (seat bands 1.40-1.52 H, leg bands 1.55-1.66 H); legs splayed 3.8 degrees; rim top 0.199 with the legs ending inside the apron flare at 0.178 (v6, owner review: no pads above the rim). Band table mean |delta width| 0.071 -> 0.070 with bands 1-6 from -0.08..-0.13 to within 0.05.",
+          "notes": "Band 0 -0.10: the proxy's feet are thicker than a moulded D leg. Band 9 was +0.25 while the seat was dished; the v5 flat top matches the proxy's solid lid."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/reference.png",
@@ -999,7 +999,7 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-03T05:37:33.291712+00:00",
+      "timestamp": "2026-09-03T14:13:16.017759+00:00",
       "passId": "structural-pass",
       "estimatedFidelity": 0.95,
       "aiVisionScore": null,
@@ -1014,7 +1014,7 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-03T05:37:33.374378+00:00",
+      "timestamp": "2026-09-03T14:13:16.103237+00:00",
       "passId": "structural-pass",
       "estimatedFidelity": 0.95,
       "aiVisionScore": null,
@@ -1029,7 +1029,7 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-03T05:37:33.457305+00:00",
+      "timestamp": "2026-09-03T14:13:16.183999+00:00",
       "passId": "structural-pass",
       "estimatedFidelity": 0.95,
       "aiVisionScore": 0.95,
@@ -1048,8 +1048,8 @@
           "score": 0.95,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.335 x 0.200 x 0.335 m, w/h 1.675 against the proxy 1.674. Seat disc 0.312 m across at the apron and 0.275 at the rim INSIDE a 0.335 leg span, as the proxy band table reads it (seat bands 1.40-1.52 H, leg bands 1.55-1.66 H); legs splayed 3.8 degrees; rim top 0.199 flush with the four stacking pads at 0.2005. Band table mean |delta width| 0.071 -> 0.070 with bands 1-6 from -0.08..-0.13 to within 0.05.",
-          "notes": "Band 9 remains +0.25: the proxy carries a solid seat lid where the plate measures a 25 mm recess. Band 0 -0.10: the proxy's feet are thicker than a moulded D leg."
+          "evidence": "Envelope 0.335 x 0.200 x 0.335 m, w/h 1.675 against the proxy 1.674. Seat disc 0.312 m across at the apron and 0.275 at the rim INSIDE a 0.335 leg span, as the proxy band table reads it (seat bands 1.40-1.52 H, leg bands 1.55-1.66 H); legs splayed 3.8 degrees; rim top 0.199 with the legs ending inside the apron flare at 0.178 (v6, owner review: no pads above the rim). Band table mean |delta width| 0.071 -> 0.070 with bands 1-6 from -0.08..-0.13 to within 0.05.",
+          "notes": "Band 0 -0.10: the proxy's feet are thicker than a moulded D leg. Band 9 was +0.25 while the seat was dished; the v5 flat top matches the proxy's solid lid."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/reference.png",
@@ -1060,7 +1060,7 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-03T05:37:33.541220+00:00",
+      "timestamp": "2026-09-03T14:13:16.265793+00:00",
       "passId": "form-refinement",
       "estimatedFidelity": 0.95,
       "aiVisionScore": null,
@@ -1075,7 +1075,7 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-03T05:37:33.628241+00:00",
+      "timestamp": "2026-09-03T14:13:16.348242+00:00",
       "passId": "form-refinement",
       "estimatedFidelity": 0.95,
       "aiVisionScore": null,
@@ -1090,7 +1090,7 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-03T05:37:33.714772+00:00",
+      "timestamp": "2026-09-03T14:13:16.431087+00:00",
       "passId": "form-refinement",
       "estimatedFidelity": 0.95,
       "aiVisionScore": null,
@@ -1105,7 +1105,52 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-03T05:37:33.801503+00:00",
+      "timestamp": "2026-09-03T14:13:16.514062+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-03T14:13:16.596599+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-03T14:13:16.682760+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-03T14:13:16.771719+00:00",
       "passId": "form-refinement",
       "estimatedFidelity": 0.95,
       "aiVisionScore": 0.95,
@@ -1124,8 +1169,8 @@
           "score": 0.95,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Dished seat recessed 25 mm inside a rolled rim, floor at 0.80 of the rim radius. The whole shell raised 7 mm so the rim top meets the four stacking pads, which now stand 1.5 mm proud of the rim ring and 4 mm outside it in plan, as the plate's corner pads do. Worn pan probed earlier at (211, 154, 135) against the plate (200, 130, 118).",
-          "notes": "Owner review: 'the seat needs to rise up a bit so it is flush with the top of the legs' -- the pads were 8 mm proud; they are the tops of the legs in the plate, and the seat surface meets them."
+          "evidence": "FLAT moulded top at 0.1965 inside a 22 mm rim ring at 0.199 -- a 2.5 mm lip, not a dish -- with the worn pan flat and 1.5 mm proud of it (probed earlier at (211, 154, 135) against the plate (200, 130, 118)). The four stacking pads are the tops of the legs, 1.5 mm above the rim ring.",
+          "notes": "Owner review v5 (2026-09-03): 'the top surface of the seat should be flat and moulded' -- the 25 mm dish is gone. Earlier owner review: seat raised 7 mm to meet the pads."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/reference.png",
@@ -1136,7 +1181,7 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-03T05:37:33.883501+00:00",
+      "timestamp": "2026-09-03T14:13:16.860950+00:00",
       "passId": "material-pass",
       "estimatedFidelity": 0.94,
       "aiVisionScore": 0.94,
@@ -1152,10 +1197,10 @@
         {
           "id": "legs",
           "tier": "critical",
-          "score": 0.94,
+          "score": 0.95,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Four tapered D-section legs (0.78 radial) splayed 3.8 degrees, axis 0.133 at the top (flush inside the 0.156 apron) to 0.142 at the foot, outer edge 0.167 -- 1 cm proud of the apron. No handhold patches on the apron.",
+          "evidence": "Four tapered D-section legs (0.78 radial), each ONE moulded piece 0.178 tall (v6): axis 0.142 at the foot (outer edge 0.167, the envelope) to 0.136 at the top, r 0.032 -> 0.018, standing ~1 cm proud below the apron edge and tapering into the flare with its cap 3.5 mm inside the shell -- a rib moulded into the side with no top face. v5 ran the legs through the rim to pads at 0.2005, and the owner read those pads as flat parts sticking out of the legs on top. The v4 leg stopped at 0.164 under a separate pad on the rim, which read as a leg in two pieces from the hero angle. No handhold patches on the apron.",
           "notes": "Owner review: 'the legs all need to come out a bit' and 'weird squares on the sides of the seat'. The first splay tried 8.7 degrees with the tops pulled IN to 0.120 and the band table got worse (bands 3-6 -0.10..-0.13): the proxy's legs are wider than its seat at every height, so the fix was to narrow the SHELL 6% and move the whole leg out, not to lean it. The squares were the moulded handholds authored as raised partial cylinders; removed."
         }
       ],
@@ -1167,7 +1212,7 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-03T05:37:33.970450+00:00",
+      "timestamp": "2026-09-03T14:13:16.943331+00:00",
       "passId": "surface-pass",
       "estimatedFidelity": 0.94,
       "aiVisionScore": 0.94,
@@ -1186,8 +1231,8 @@
           "score": 0.95,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Dished seat recessed 25 mm inside a rolled rim, floor at 0.80 of the rim radius. The whole shell raised 7 mm so the rim top meets the four stacking pads, which now stand 1.5 mm proud of the rim ring and 4 mm outside it in plan, as the plate's corner pads do. Worn pan probed earlier at (211, 154, 135) against the plate (200, 130, 118).",
-          "notes": "Owner review: 'the seat needs to rise up a bit so it is flush with the top of the legs' -- the pads were 8 mm proud; they are the tops of the legs in the plate, and the seat surface meets them."
+          "evidence": "FLAT moulded top at 0.1965 inside a 22 mm rim ring at 0.199 -- a 2.5 mm lip, not a dish -- with the worn pan flat and 1.5 mm proud of it (probed earlier at (211, 154, 135) against the plate (200, 130, 118)). The four stacking pads are the tops of the legs, 1.5 mm above the rim ring.",
+          "notes": "Owner review v5 (2026-09-03): 'the top surface of the seat should be flat and moulded' -- the 25 mm dish is gone. Earlier owner review: seat raised 7 mm to meet the pads."
         }
       ],
       "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/reference.png",
@@ -1198,7 +1243,7 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-03T05:37:34.060021+00:00",
+      "timestamp": "2026-09-03T14:13:17.026050+00:00",
       "passId": "lighting-pass",
       "estimatedFidelity": 0.92,
       "aiVisionScore": 0.92,
@@ -1219,7 +1264,7 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-03T05:37:34.145386+00:00",
+      "timestamp": "2026-09-03T14:13:17.108666+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.95,
       "aiVisionScore": 0.95,
@@ -1240,7 +1285,7 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-03T05:37:34.230893+00:00",
+      "timestamp": "2026-09-03T14:13:17.192493+00:00",
       "passId": "optimization-pass",
       "estimatedFidelity": 0.95,
       "aiVisionScore": 0.95,
@@ -1259,8 +1304,8 @@
           "score": 0.95,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.335 x 0.200 x 0.335 m, w/h 1.675 against the proxy 1.674. Seat disc 0.312 m across at the apron and 0.275 at the rim INSIDE a 0.335 leg span, as the proxy band table reads it (seat bands 1.40-1.52 H, leg bands 1.55-1.66 H); legs splayed 3.8 degrees; rim top 0.199 flush with the four stacking pads at 0.2005. Band table mean |delta width| 0.071 -> 0.070 with bands 1-6 from -0.08..-0.13 to within 0.05.",
-          "notes": "Band 9 remains +0.25: the proxy carries a solid seat lid where the plate measures a 25 mm recess. Band 0 -0.10: the proxy's feet are thicker than a moulded D leg."
+          "evidence": "Envelope 0.335 x 0.200 x 0.335 m, w/h 1.675 against the proxy 1.674. Seat disc 0.312 m across at the apron and 0.275 at the rim INSIDE a 0.335 leg span, as the proxy band table reads it (seat bands 1.40-1.52 H, leg bands 1.55-1.66 H); legs splayed 3.8 degrees; rim top 0.199 with the legs ending inside the apron flare at 0.178 (v6, owner review: no pads above the rim). Band table mean |delta width| 0.071 -> 0.070 with bands 1-6 from -0.08..-0.13 to within 0.05.",
+          "notes": "Band 0 -0.10: the proxy's feet are thicker than a moulded D leg. Band 9 was +0.25 while the seat was dished; the v5 flat top matches the proxy's solid lid."
         },
         {
           "id": "seat",
@@ -1268,16 +1313,16 @@
           "score": 0.95,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Dished seat recessed 25 mm inside a rolled rim, floor at 0.80 of the rim radius. The whole shell raised 7 mm so the rim top meets the four stacking pads, which now stand 1.5 mm proud of the rim ring and 4 mm outside it in plan, as the plate's corner pads do. Worn pan probed earlier at (211, 154, 135) against the plate (200, 130, 118).",
-          "notes": "Owner review: 'the seat needs to rise up a bit so it is flush with the top of the legs' -- the pads were 8 mm proud; they are the tops of the legs in the plate, and the seat surface meets them."
+          "evidence": "FLAT moulded top at 0.1965 inside a 22 mm rim ring at 0.199 -- a 2.5 mm lip, not a dish -- with the worn pan flat and 1.5 mm proud of it (probed earlier at (211, 154, 135) against the plate (200, 130, 118)). The four stacking pads are the tops of the legs, 1.5 mm above the rim ring.",
+          "notes": "Owner review v5 (2026-09-03): 'the top surface of the seat should be flat and moulded' -- the 25 mm dish is gone. Earlier owner review: seat raised 7 mm to meet the pads."
         },
         {
           "id": "legs",
           "tier": "critical",
-          "score": 0.94,
+          "score": 0.95,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Four tapered D-section legs (0.78 radial) splayed 3.8 degrees, axis 0.133 at the top (flush inside the 0.156 apron) to 0.142 at the foot, outer edge 0.167 -- 1 cm proud of the apron. No handhold patches on the apron.",
+          "evidence": "Four tapered D-section legs (0.78 radial), each ONE moulded piece 0.178 tall (v6): axis 0.142 at the foot (outer edge 0.167, the envelope) to 0.136 at the top, r 0.032 -> 0.018, standing ~1 cm proud below the apron edge and tapering into the flare with its cap 3.5 mm inside the shell -- a rib moulded into the side with no top face. v5 ran the legs through the rim to pads at 0.2005, and the owner read those pads as flat parts sticking out of the legs on top. The v4 leg stopped at 0.164 under a separate pad on the rim, which read as a leg in two pieces from the hero angle. No handhold patches on the apron.",
           "notes": "Owner review: 'the legs all need to come out a bit' and 'weird squares on the sides of the seat'. The first splay tried 8.7 degrees with the tops pulled IN to 0.120 and the band table got worse (bands 3-6 -0.10..-0.13): the proxy's legs are wider than its seat at every height, so the fix was to narrow the SHELL 6% and move the whole leg out, not to lean it. The squares were the moulded handholds authored as raised partial cylinders; removed."
         }
       ],
@@ -1291,7 +1336,7 @@
   ],
   "reviewHistory": [
     {
-      "timestamp": "2026-09-03T05:37:33.209638+00:00",
+      "timestamp": "2026-09-03T14:13:15.936460+00:00",
       "passId": "blockout",
       "estimatedFidelity": 0.93,
       "aiVisionScore": 0.93,
@@ -1310,12 +1355,12 @@
           "score": 0.95,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.335 x 0.200 x 0.335 m, w/h 1.675 against the proxy 1.674. Seat disc 0.312 m across at the apron and 0.275 at the rim INSIDE a 0.335 leg span, as the proxy band table reads it (seat bands 1.40-1.52 H, leg bands 1.55-1.66 H); legs splayed 3.8 degrees; rim top 0.199 flush with the four stacking pads at 0.2005. Band table mean |delta width| 0.071 -> 0.070 with bands 1-6 from -0.08..-0.13 to within 0.05.",
-          "notes": "Band 9 remains +0.25: the proxy carries a solid seat lid where the plate measures a 25 mm recess. Band 0 -0.10: the proxy's feet are thicker than a moulded D leg."
+          "evidence": "Envelope 0.335 x 0.200 x 0.335 m, w/h 1.675 against the proxy 1.674. Seat disc 0.312 m across at the apron and 0.275 at the rim INSIDE a 0.335 leg span, as the proxy band table reads it (seat bands 1.40-1.52 H, leg bands 1.55-1.66 H); legs splayed 3.8 degrees; rim top 0.199 with the legs ending inside the apron flare at 0.178 (v6, owner review: no pads above the rim). Band table mean |delta width| 0.071 -> 0.070 with bands 1-6 from -0.08..-0.13 to within 0.05.",
+          "notes": "Band 0 -0.10: the proxy's feet are thicker than a moulded D leg. Band 9 was +0.25 while the seat was dished; the v5 flat top matches the proxy's solid lid."
         }
       ],
       "action": "continue",
-      "summary": "Blockout: one component at 1 draw call of 1; a closed shell lathe, a worn-seat pan, four legs and four lugs.",
+      "summary": "Blockout: one component at 1 draw call of 1; a closed shell lathe, a worn-seat pan and four full-height legs whose tops are the pads.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1332,7 +1377,7 @@
       }
     },
     {
-      "timestamp": "2026-09-03T05:37:33.291712+00:00",
+      "timestamp": "2026-09-03T14:13:16.017759+00:00",
       "passId": "structural-pass",
       "estimatedFidelity": 0.95,
       "aiVisionScore": null,
@@ -1356,7 +1401,7 @@
       }
     },
     {
-      "timestamp": "2026-09-03T05:37:33.374378+00:00",
+      "timestamp": "2026-09-03T14:13:16.103237+00:00",
       "passId": "structural-pass",
       "estimatedFidelity": 0.95,
       "aiVisionScore": null,
@@ -1380,7 +1425,7 @@
       }
     },
     {
-      "timestamp": "2026-09-03T05:37:33.457305+00:00",
+      "timestamp": "2026-09-03T14:13:16.183999+00:00",
       "passId": "structural-pass",
       "estimatedFidelity": 0.95,
       "aiVisionScore": 0.95,
@@ -1399,8 +1444,8 @@
           "score": 0.95,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.335 x 0.200 x 0.335 m, w/h 1.675 against the proxy 1.674. Seat disc 0.312 m across at the apron and 0.275 at the rim INSIDE a 0.335 leg span, as the proxy band table reads it (seat bands 1.40-1.52 H, leg bands 1.55-1.66 H); legs splayed 3.8 degrees; rim top 0.199 flush with the four stacking pads at 0.2005. Band table mean |delta width| 0.071 -> 0.070 with bands 1-6 from -0.08..-0.13 to within 0.05.",
-          "notes": "Band 9 remains +0.25: the proxy carries a solid seat lid where the plate measures a 25 mm recess. Band 0 -0.10: the proxy's feet are thicker than a moulded D leg."
+          "evidence": "Envelope 0.335 x 0.200 x 0.335 m, w/h 1.675 against the proxy 1.674. Seat disc 0.312 m across at the apron and 0.275 at the rim INSIDE a 0.335 leg span, as the proxy band table reads it (seat bands 1.40-1.52 H, leg bands 1.55-1.66 H); legs splayed 3.8 degrees; rim top 0.199 with the legs ending inside the apron flare at 0.178 (v6, owner review: no pads above the rim). Band table mean |delta width| 0.071 -> 0.070 with bands 1-6 from -0.08..-0.13 to within 0.05.",
+          "notes": "Band 0 -0.10: the proxy's feet are thicker than a moulded D leg. Band 9 was +0.25 while the seat was dished; the v5 flat top matches the proxy's solid lid."
         }
       ],
       "action": "continue",
@@ -1420,7 +1465,79 @@
       }
     },
     {
-      "timestamp": "2026-09-03T05:37:33.541220+00:00",
+      "timestamp": "2026-09-03T14:13:16.265793+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "OWNER REVIEW v6 (2026-09-03): \"the legs are too high; lower them and make them look moulded into the plastic on the side; no flat part sticking out on top\". The v5 leg ran through the rim to a pad at 0.2005. Each leg now ends at 0.178 inside the apron flare, tapering r 0.032 -> 0.018 with its axis leaning in to 0.136, so its cap sits 3.5 mm inside the shell and nothing shows above the apron.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-03T14:13:16.348242+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "OWNER REVIEW v5 (2026-09-03): \"the leg pieces are too high and look like two pieces; each leg should be one moulded piece that connects to the side\". The v4 leg stopped at 0.164 under the apron with a separate lug pad on the rim above it. Each leg is now ONE tapered D-section cylinder the full 0.2005 height, foot at 0.142 to pad at 0.140, rising through the apron and rim as a rib 1 cm proud of the side; its top is the pad. The four lugs are deleted (724 -> 560 triangles).",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-03T14:13:16.431087+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "OWNER REVIEW v5: \"the top surface of the seat should be flat and moulded\". The 25 mm dish (floor 0.171, rolled inner rim) is replaced by a flat top at 0.1965 inside a 22 mm rim ring at 0.199 -- a 2.5 mm moulded lip -- with the worn pan flat and 1.5 mm proud of it.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/monobloc-plastic-stool/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-03T14:13:16.514062+00:00",
       "passId": "form-refinement",
       "estimatedFidelity": 0.95,
       "aiVisionScore": null,
@@ -1444,7 +1561,7 @@
       }
     },
     {
-      "timestamp": "2026-09-03T05:37:33.628241+00:00",
+      "timestamp": "2026-09-03T14:13:16.596599+00:00",
       "passId": "form-refinement",
       "estimatedFidelity": 0.95,
       "aiVisionScore": null,
@@ -1468,7 +1585,7 @@
       }
     },
     {
-      "timestamp": "2026-09-03T05:37:33.714772+00:00",
+      "timestamp": "2026-09-03T14:13:16.682760+00:00",
       "passId": "form-refinement",
       "estimatedFidelity": 0.95,
       "aiVisionScore": null,
@@ -1492,7 +1609,7 @@
       }
     },
     {
-      "timestamp": "2026-09-03T05:37:33.801503+00:00",
+      "timestamp": "2026-09-03T14:13:16.771719+00:00",
       "passId": "form-refinement",
       "estimatedFidelity": 0.95,
       "aiVisionScore": 0.95,
@@ -1511,12 +1628,12 @@
           "score": 0.95,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Dished seat recessed 25 mm inside a rolled rim, floor at 0.80 of the rim radius. The whole shell raised 7 mm so the rim top meets the four stacking pads, which now stand 1.5 mm proud of the rim ring and 4 mm outside it in plan, as the plate's corner pads do. Worn pan probed earlier at (211, 154, 135) against the plate (200, 130, 118).",
-          "notes": "Owner review: 'the seat needs to rise up a bit so it is flush with the top of the legs' -- the pads were 8 mm proud; they are the tops of the legs in the plate, and the seat surface meets them."
+          "evidence": "FLAT moulded top at 0.1965 inside a 22 mm rim ring at 0.199 -- a 2.5 mm lip, not a dish -- with the worn pan flat and 1.5 mm proud of it (probed earlier at (211, 154, 135) against the plate (200, 130, 118)). The four stacking pads are the tops of the legs, 1.5 mm above the rim ring.",
+          "notes": "Owner review v5 (2026-09-03): 'the top surface of the seat should be flat and moulded' -- the 25 mm dish is gone. Earlier owner review: seat raised 7 mm to meet the pads."
         }
       ],
       "action": "continue",
-      "summary": "Form refinement (owner review 2026-09-03): shell raised 7 mm so the rim top meets the stacking pads; legs moved out and splayed 3.8 degrees to feet at the envelope edge, 1 cm proud of the apron; handhold patches removed.",
+      "summary": "Form refinement (owner reviews 2026-09-03): shell raised 7 mm so the rim top meets the pads; legs moved out to feet at the envelope edge; handhold patches removed; then v5 -- each leg ONE full-height moulded piece ending in its pad (the separate lugs gone) and the dished seat replaced by a FLAT moulded top with a 2.5 mm lip; then v6 -- the legs lowered out of the rim and tapered into the apron flare, no pads.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1532,7 +1649,7 @@
       }
     },
     {
-      "timestamp": "2026-09-03T05:37:33.883501+00:00",
+      "timestamp": "2026-09-03T14:13:16.860950+00:00",
       "passId": "material-pass",
       "estimatedFidelity": 0.94,
       "aiVisionScore": 0.94,
@@ -1548,10 +1665,10 @@
         {
           "id": "legs",
           "tier": "critical",
-          "score": 0.94,
+          "score": 0.95,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Four tapered D-section legs (0.78 radial) splayed 3.8 degrees, axis 0.133 at the top (flush inside the 0.156 apron) to 0.142 at the foot, outer edge 0.167 -- 1 cm proud of the apron. No handhold patches on the apron.",
+          "evidence": "Four tapered D-section legs (0.78 radial), each ONE moulded piece 0.178 tall (v6): axis 0.142 at the foot (outer edge 0.167, the envelope) to 0.136 at the top, r 0.032 -> 0.018, standing ~1 cm proud below the apron edge and tapering into the flare with its cap 3.5 mm inside the shell -- a rib moulded into the side with no top face. v5 ran the legs through the rim to pads at 0.2005, and the owner read those pads as flat parts sticking out of the legs on top. The v4 leg stopped at 0.164 under a separate pad on the rim, which read as a leg in two pieces from the hero angle. No handhold patches on the apron.",
           "notes": "Owner review: 'the legs all need to come out a bit' and 'weird squares on the sides of the seat'. The first splay tried 8.7 degrees with the tops pulled IN to 0.120 and the band table got worse (bands 3-6 -0.10..-0.13): the proxy's legs are wider than its seat at every height, so the fix was to narrow the SHELL 6% and move the whole leg out, not to lean it. The squares were the moulded handholds authored as raised partial cylinders; removed."
         }
       ],
@@ -1572,7 +1689,7 @@
       }
     },
     {
-      "timestamp": "2026-09-03T05:37:33.970450+00:00",
+      "timestamp": "2026-09-03T14:13:16.943331+00:00",
       "passId": "surface-pass",
       "estimatedFidelity": 0.94,
       "aiVisionScore": 0.94,
@@ -1591,12 +1708,12 @@
           "score": 0.95,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Dished seat recessed 25 mm inside a rolled rim, floor at 0.80 of the rim radius. The whole shell raised 7 mm so the rim top meets the four stacking pads, which now stand 1.5 mm proud of the rim ring and 4 mm outside it in plan, as the plate's corner pads do. Worn pan probed earlier at (211, 154, 135) against the plate (200, 130, 118).",
-          "notes": "Owner review: 'the seat needs to rise up a bit so it is flush with the top of the legs' -- the pads were 8 mm proud; they are the tops of the legs in the plate, and the seat surface meets them."
+          "evidence": "FLAT moulded top at 0.1965 inside a 22 mm rim ring at 0.199 -- a 2.5 mm lip, not a dish -- with the worn pan flat and 1.5 mm proud of it (probed earlier at (211, 154, 135) against the plate (200, 130, 118)). The four stacking pads are the tops of the legs, 1.5 mm above the rim ring.",
+          "notes": "Owner review v5 (2026-09-03): 'the top surface of the seat should be flat and moulded' -- the 25 mm dish is gone. Earlier owner review: seat raised 7 mm to meet the pads."
         }
       ],
       "action": "continue",
-      "summary": "Surface pass: streak canvas at 130 streaks and bump 0.35; worn pan 1.5 mm proud of the dish.",
+      "summary": "Surface pass: streak canvas at 130 streaks and bump 0.35; worn pan flat and 1.5 mm proud of the top.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1612,7 +1729,7 @@
       }
     },
     {
-      "timestamp": "2026-09-03T05:37:34.060021+00:00",
+      "timestamp": "2026-09-03T14:13:17.026050+00:00",
       "passId": "lighting-pass",
       "estimatedFidelity": 0.92,
       "aiVisionScore": 0.92,
@@ -1642,7 +1759,7 @@
       }
     },
     {
-      "timestamp": "2026-09-03T05:37:34.145386+00:00",
+      "timestamp": "2026-09-03T14:13:17.108666+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.95,
       "aiVisionScore": 0.95,
@@ -1672,7 +1789,7 @@
       }
     },
     {
-      "timestamp": "2026-09-03T05:37:34.230893+00:00",
+      "timestamp": "2026-09-03T14:13:17.192493+00:00",
       "passId": "optimization-pass",
       "estimatedFidelity": 0.95,
       "aiVisionScore": 0.95,
@@ -1691,8 +1808,8 @@
           "score": 0.95,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.335 x 0.200 x 0.335 m, w/h 1.675 against the proxy 1.674. Seat disc 0.312 m across at the apron and 0.275 at the rim INSIDE a 0.335 leg span, as the proxy band table reads it (seat bands 1.40-1.52 H, leg bands 1.55-1.66 H); legs splayed 3.8 degrees; rim top 0.199 flush with the four stacking pads at 0.2005. Band table mean |delta width| 0.071 -> 0.070 with bands 1-6 from -0.08..-0.13 to within 0.05.",
-          "notes": "Band 9 remains +0.25: the proxy carries a solid seat lid where the plate measures a 25 mm recess. Band 0 -0.10: the proxy's feet are thicker than a moulded D leg."
+          "evidence": "Envelope 0.335 x 0.200 x 0.335 m, w/h 1.675 against the proxy 1.674. Seat disc 0.312 m across at the apron and 0.275 at the rim INSIDE a 0.335 leg span, as the proxy band table reads it (seat bands 1.40-1.52 H, leg bands 1.55-1.66 H); legs splayed 3.8 degrees; rim top 0.199 with the legs ending inside the apron flare at 0.178 (v6, owner review: no pads above the rim). Band table mean |delta width| 0.071 -> 0.070 with bands 1-6 from -0.08..-0.13 to within 0.05.",
+          "notes": "Band 0 -0.10: the proxy's feet are thicker than a moulded D leg. Band 9 was +0.25 while the seat was dished; the v5 flat top matches the proxy's solid lid."
         },
         {
           "id": "seat",
@@ -1700,21 +1817,21 @@
           "score": 0.95,
           "threshold": 0.8,
           "passed": true,
-          "evidence": "Dished seat recessed 25 mm inside a rolled rim, floor at 0.80 of the rim radius. The whole shell raised 7 mm so the rim top meets the four stacking pads, which now stand 1.5 mm proud of the rim ring and 4 mm outside it in plan, as the plate's corner pads do. Worn pan probed earlier at (211, 154, 135) against the plate (200, 130, 118).",
-          "notes": "Owner review: 'the seat needs to rise up a bit so it is flush with the top of the legs' -- the pads were 8 mm proud; they are the tops of the legs in the plate, and the seat surface meets them."
+          "evidence": "FLAT moulded top at 0.1965 inside a 22 mm rim ring at 0.199 -- a 2.5 mm lip, not a dish -- with the worn pan flat and 1.5 mm proud of it (probed earlier at (211, 154, 135) against the plate (200, 130, 118)). The four stacking pads are the tops of the legs, 1.5 mm above the rim ring.",
+          "notes": "Owner review v5 (2026-09-03): 'the top surface of the seat should be flat and moulded' -- the 25 mm dish is gone. Earlier owner review: seat raised 7 mm to meet the pads."
         },
         {
           "id": "legs",
           "tier": "critical",
-          "score": 0.94,
+          "score": 0.95,
           "threshold": 0.75,
           "passed": true,
-          "evidence": "Four tapered D-section legs (0.78 radial) splayed 3.8 degrees, axis 0.133 at the top (flush inside the 0.156 apron) to 0.142 at the foot, outer edge 0.167 -- 1 cm proud of the apron. No handhold patches on the apron.",
+          "evidence": "Four tapered D-section legs (0.78 radial), each ONE moulded piece 0.178 tall (v6): axis 0.142 at the foot (outer edge 0.167, the envelope) to 0.136 at the top, r 0.032 -> 0.018, standing ~1 cm proud below the apron edge and tapering into the flare with its cap 3.5 mm inside the shell -- a rib moulded into the side with no top face. v5 ran the legs through the rim to pads at 0.2005, and the owner read those pads as flat parts sticking out of the legs on top. The v4 leg stopped at 0.164 under a separate pad on the rim, which read as a leg in two pieces from the hero angle. No handhold patches on the apron.",
           "notes": "Owner review: 'the legs all need to come out a bit' and 'weird squares on the sides of the seat'. The first splay tried 8.7 degrees with the tops pulled IN to 0.120 and the band table got worse (bands 3-6 -0.10..-0.13): the proxy's legs are wider than its seat at every height, so the fix was to narrow the SHELL 6% and move the whole leg out, not to lean it. The squares were the moulded handholds authored as raised partial cylinders; removed."
         }
       ],
       "action": "continue",
-      "summary": "FINAL VERDICT. Overall visual fidelity 0.95, up from 0.93 on the owner's three corrections: seat flush with the leg-top pads, legs outside the seat disc and splayed, handhold squares gone. 724/800 triangles, 1/1 draw calls, 1/1 materials, 1/2 unique geometries, one 256 px canvas.",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.95 carried; v5/v6 owner corrections: legs one piece, flat moulded top, legs buried in the apron flare with no pads. 560/800 triangles (the four lug pads gone), 1/1 draw calls, 1/1 materials, 1/2 unique geometries, one 256 px canvas.",
       "matched": [],
       "mismatches": [],
       "specFixes": [],
@@ -1773,10 +1890,10 @@
         "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
       },
       "triangles": {
-        "measured": 756,
+        "measured": 560,
         "budget": 800,
-        "headroom": 44,
-        "note": "724 of 800: an 18-segment shell lathe of 10 profile points, an 18-segment worn pan, four 8-segment leg cylinders and four 8-segment lug pads."
+        "headroom": 240,
+        "note": "560 of 800: an 18-segment shell lathe of 9 profile points, an 18-segment worn pan and four 8-segment full-height leg cylinders; the four lug pads are gone."
       }
     }
   },
@@ -1834,7 +1951,7 @@
   "proceduralStrategy": [
     {
       "id": "primitives",
-      "strategy": "One closed lathe for the whole shell, a thin lathe for the worn seat, flattened tapered cylinders for the legs (tilted about their tangent) and lugs."
+      "strategy": "One closed lathe for the whole shell, a thin lathe for the worn seat, and full-height flattened tapered cylinders for the legs whose tops are the stacking pads."
     },
     {
       "id": "instancing",
@@ -1855,7 +1972,7 @@
     {
       "id": "seat-concavity-vs-proxy",
       "severity": "low",
-      "description": "Band 9 sits +0.31 against the proxy because the proxy carries a solid seat lid where the plate measures a 25 mm recess.",
+      "description": "Band 9 read +0.31 against the proxy while the seat was dished; the v5 flat top is closer to the proxy solid lid.",
       "mitigation": "The plate centre-column scan is the stronger evidence for a concavity a generative reconstruction routinely fills; recorded rather than chased."
     },
     {
@@ -1910,30 +2027,30 @@
     {
       "passed": false,
       "checks": {
-        "silhouetteIoU": 0.3399,
+        "silhouetteIoU": 0.3239,
         "aspectRatioDelta": 0.2075,
         "scaleDelta": 0.6219,
-        "bilateralSymmetryError": 0.0069,
+        "bilateralSymmetryError": 0.007,
         "colorDelta": {
           "checked": 1,
-          "maxDeltaE": 10.32,
+          "maxDeltaE": 11.6,
           "perComponent": [
             {
               "componentId": null,
-              "deltaE": 10.32
+              "deltaE": 11.6
             }
           ],
           "gated": false
         }
       },
       "failures": [
-        "silhouette IoU 0.340 is below threshold 0.85",
+        "silhouette IoU 0.324 is below threshold 0.85",
         "aspect-ratio delta 0.207 exceeds threshold 0.05",
         "scale delta 0.622 exceeds threshold 0.08",
         "blockout requires --map-stripped-render evidence"
       ],
       "maskWarnings": [],
-      "renderHash": "c70655f7fd97582e",
+      "renderHash": "131e4ffc7f94d247",
       "passId": "blockout"
     }
   ]

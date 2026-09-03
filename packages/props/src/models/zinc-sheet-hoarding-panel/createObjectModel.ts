@@ -2142,43 +2142,34 @@ const CONFIG = {
           "boxes": [
             [
               7566708,
-              0.03,
+              0.03500000000000003,
               0.47500000000000003,
               0.043000000000000003,
-              2.83,
+              2.9299999999999997,
               0.05,
               0.05
             ],
             [
               7566708,
-              0.03,
+              0.03500000000000003,
               2.275,
               0.043000000000000003,
-              2.83,
+              2.9299999999999997,
               0.05,
               0.05
             ],
             [
               7566708,
-              0.03,
+              0.03500000000000003,
               1.4304999999999999,
               0.043000000000000003,
-              2.83,
+              2.9299999999999997,
               0.05,
-              0.05
-            ],
-            [
-              7566708,
-              1.475,
-              1.375,
-              0.043000000000000003,
-              0.05,
-              1.8499999999999999,
               0.05
             ],
             [
               6974055,
-              -1.44,
+              -1.45,
               1.2,
               0.046000000000000006,
               0.06,
@@ -3752,7 +3743,7 @@ function grimeTile(size: number, seed: number, o: any): THREE.CanvasTexture | nu
     ctx.globalCompositeOperation = 'multiply';
     // rain streaks from the top
     for (let i = 0; i < (o.streaks ?? 26); i++) {
-      const x = rnd() * s, w = 1 + rnd() * s * 0.012, len = s * (0.15 + rnd() * 0.6), a = 0.05 + rnd() * 0.12;
+      const x = rnd() * s, w = 1 + rnd() * s * (o.streakW ?? 0.012), len = s * (0.15 + rnd() * 0.6), a = (o.streakAlpha ?? [0.05, 0.12])[0] + rnd() * (o.streakAlpha ?? [0.05, 0.12])[1];   // `streakAlpha` [min, add]
       const g2 = ctx.createLinearGradient(0, 0, 0, len);
       g2.addColorStop(0, `rgba(${rgb(wash)},${a})`); g2.addColorStop(1, `rgba(${rgb(wash)},0)`);
       ctx.fillStyle = g2; ctx.fillRect(x, 0, w, len); ctx.fillRect(x - s, 0, w, len);
@@ -3762,8 +3753,16 @@ function grimeTile(size: number, seed: number, o: any): THREE.CanvasTexture | nu
     grad.addColorStop(0, `rgba(${rgb(wash)},${washA})`); grad.addColorStop(0.5, `rgba(${rgb(wash)},${washA * 0.45})`); grad.addColorStop(1, `rgba(${rgb(wash)},0)`);
     ctx.fillStyle = grad; ctx.fillRect(0, 0, s, s);
     // blotches
+    // `clusters` masses the blotches round a few centres low on the tile (the plate's mildew is a
+    // handful of hard black colonies, not an even scatter); `blotchAlpha` [min, add] and `blotchR`
+    // [min, add] (tile fractions) override the soft defaults. All three default to the old behaviour.
+    const cc: number[][] = [];
+    for (let i = 0; i < (o.clusters ?? 0); i++) cc.push([rnd() * s, s - Math.pow(rnd(), 1.8) * s * (o.clusterBand ?? 0.5), s * (0.04 + rnd() * 0.10)]);
+    const bA = o.blotchAlpha ?? [0.08, 0.3], bR = o.blotchR ?? [3 / s, 0.06];
     for (let i = 0; i < (o.blotches ?? 40); i++) {
-      const x = rnd() * s, y = s - Math.pow(rnd(), 1.6) * s, r = 3 + rnd() * s * 0.06, a = 0.08 + rnd() * 0.3;
+      let x = rnd() * s, y = s - Math.pow(rnd(), 1.6) * s;
+      if (cc.length) { const c = cc[Math.floor(rnd() * cc.length)]; const ang = rnd() * Math.PI * 2, d = Math.sqrt(rnd()) * c[2]; x = c[0] + Math.cos(ang) * d * 1.4; y = c[1] + Math.sin(ang) * d; }
+      const r = s * (bR[0] + rnd() * bR[1]), a = bA[0] + rnd() * bA[1];
       const g2 = ctx.createRadialGradient(x, y, 0, x, y, r);
       g2.addColorStop(0, `rgba(${rgb(wash)},${a})`); g2.addColorStop(1, `rgba(${rgb(wash)},0)`);
       ctx.fillStyle = g2;
@@ -3899,13 +3898,14 @@ function grimeTile(size: number, seed: number, o: any): THREE.CanvasTexture | nu
 /** CHAIN-LINK tile: a diamond wire lattice drawn opaque over a TRANSPARENT ground, bound as map
  *  on an alpha-tested material so the cells are open. One tile is one diamond cell; the pane's
  *  UVs repeat it at the real mesh pitch. `wire` is the wire width as a fraction of the cell. */
-function chainlinkTile(size: number, wire: number, seed: number): THREE.CanvasTexture | null {
+function chainlinkTile(size: number, wire: number, seed: number, tone?: number): THREE.CanvasTexture | null {
   return canvasTile(size, (ctx, s) => {
     const rnd = lcg(seed);
     ctx.clearRect(0, 0, s, s);
     ctx.lineWidth = Math.max(1.5, wire * s);
     ctx.lineCap = 'round';
-    const v = 150 + Math.round(rnd() * 30);
+    // `tone` sets the wire's grey (the material colour multiplies it); the default keeps every existing caller
+    const v = (tone ?? 150) + Math.round(rnd() * 30);
     ctx.strokeStyle = `rgb(${v},${v + 2},${v + 4})`;
     // two diagonals through the tile, offset so the wrap makes a continuous diamond lattice
     ctx.beginPath();
@@ -3959,14 +3959,18 @@ function weatherPatches(ctx: CanvasRenderingContext2D, rnd: () => number, s: num
  *  bamboo -- dense at a few spots, absent elsewhere. Alpha capped so the darkest speck over the
  *  measured albedo stays well clear of the hole gate's luma 58. Wraps in y. */
 function mouldClusters(ctx: CanvasRenderingContext2D, rnd: () => number, s: number, spots: number[][], rx: number, ry: number, n: number, aMax: number): void {
+  // Owner review (bamboo fence, 2026-09-03): 'dark patches I don't see in the reference -- smooth them out and
+  // lighten them so they are barely visible'. The speck floor now scales with aMax (it was a fixed 0.08, so a
+  // faint cluster still carried hard dark specks) and the core gradient runs to the full ellipse, so a low
+  // aMax is a soft even veil rather than a blotch with a rim.
   for (const [cx, cy] of spots) {
-    const g2 = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(rx, ry) * 0.8);
+    const g2 = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(rx, ry) * 1.0);
     g2.addColorStop(0, `rgba(28,26,22,${(aMax * 0.9).toFixed(3)})`); g2.addColorStop(1, 'rgba(28,26,22,0)');
     ctx.fillStyle = g2;
     for (const dy of [-s, 0, s]) { ctx.beginPath(); ctx.ellipse(cx, cy + dy, rx, ry, 0, 0, Math.PI * 2); ctx.fill(); }
     for (let i = 0; i < n; i++) {
       const x = cx + (rnd() + rnd() - 1) * rx, y = cy + (rnd() + rnd() - 1) * ry;
-      ctx.fillStyle = `rgba(28,26,22,${(0.08 + rnd() * aMax).toFixed(3)})`;
+      ctx.fillStyle = `rgba(28,26,22,${(aMax * 0.2 + rnd() * aMax * 0.8).toFixed(3)})`;
       const w = 1 + rnd() * 2, h = 1 + rnd() * 3;
       for (const dy of [-s, 0, s]) ctx.fillRect(x, y + dy, w, h);
     }
@@ -3978,7 +3982,7 @@ function mouldClusters(ctx: CanvasRenderingContext2D, rnd: () => number, s: numb
  *  grain, lengthwise weathering patches, a soft dark joint against its neighbour, and a plain-weave
  *  crossing band a few times per tile that passes over every other strip. Mould speckle in
  *  clusters. A multiplier on the measured silver-grey; the reference weave crop is the evidence. */
-function bambooTile(size: number, strips: number, seed: number, crossings = 3): THREE.CanvasTexture | null {
+function bambooTile(size: number, strips: number, seed: number, crossings = 3, mould = 0.40, mouldSpots = 6): THREE.CanvasTexture | null {
   return canvasTile(size, (ctx, s) => {
     const rnd = lcg(seed);
     ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, s, s);
@@ -4033,8 +4037,8 @@ function bambooTile(size: number, strips: number, seed: number, crossings = 3): 
       }
     }
     const spots: number[][] = [];
-    for (let i = 0; i < 6; i++) spots.push([rnd() * s, rnd() * s]);
-    mouldClusters(ctx, rnd, s, spots, s * 0.10, s * 0.16, 90, 0.40);
+    for (let i = 0; i < mouldSpots; i++) spots.push([rnd() * s, rnd() * s]);
+    if (mould > 0 && mouldSpots > 0) mouldClusters(ctx, rnd, s, spots, s * 0.12, s * 0.18, Math.round(90 * Math.min(1, mould / 0.4)), mould);
   });
 }
 
@@ -4043,7 +4047,7 @@ function bambooTile(size: number, strips: number, seed: number, crossings = 3): 
  *  pale raised ridge, the grain breaking at each -- with fine longitudinal grain between them, a
  *  long drying split, lengthwise weathering patches and black mould gathered just below each node,
  *  as in the plate's post and rail crops. A multiplier on the measured culm grey. */
-function culmTile(size: number, seed: number): THREE.CanvasTexture | null {
+function culmTile(size: number, seed: number, mould = 0.60): THREE.CanvasTexture | null {
   return canvasTile(size, (ctx, s) => {
     const rnd = lcg(seed);
     const DARK = '92,78,62', LIGHT = '255,255,255';
@@ -4085,7 +4089,7 @@ function culmTile(size: number, seed: number): THREE.CanvasTexture | null {
     // heavier than the first build: the plate's culms carry near-black mould sheets below the joints
     // aMax 0.60: the core multiplies at ~0.46, which on the #b8b3ac envelope renders near luma 75 -- black
     // enough to read as the plate's mould sheets, clear of the turntable gate's backdrop band at 58
-    mouldClusters(ctx, rnd, s, spots, s * 0.16, s * 0.10, 180, 0.60);
+    mouldClusters(ctx, rnd, s, spots, s * 0.16, s * 0.10, Math.round(180 * Math.min(1, mould / 0.6)), mould);
   });
 }
 
@@ -4243,7 +4247,9 @@ export function createZincSheetHoardingPanelModel(options: ProceduralModelOption
     for (const cy of (c.cyls ?? []) as any[]) {
       // `open` drops both caps (a cut culm whose hollow is a lathe of its own); `uvScale` overrides
       // the component's tile length for this one culm, so a rail's nodes sit further apart than a post's
-      const g = new THREE.CylinderGeometry(cy.rt, cy.rb, cy.h, cy.seg ?? 12, 1, !!cy.open);
+      let g: THREE.BufferGeometry = new THREE.CylinderGeometry(cy.rt, cy.rb, cy.h, cy.seg ?? 12, 1, !!cy.open);
+      // `flat` un-shares the ring vertices so a 4-segment "cylinder" shades as a faceted diamond spear rather than a cone
+      if (cy.flat) { g = g.toNonIndexed(); g.computeVertexNormals(); }
       if (c.uv === 'culm') culmUV(g, cy.rt, cy.h, cy.uvScale ?? c.uvScale ?? 1, cy.vOff ?? 0);   // around x along, before it is placed
       if (cy.rx) g.rotateX(cy.rx); if (cy.rz) g.rotateZ(cy.rz);
       g.translate(cy.at[0], cy.at[1], cy.at[2]); gs.push(tintGeo(g, cy.hex));
@@ -4261,7 +4267,22 @@ export function createZincSheetHoardingPanelModel(options: ProceduralModelOption
     for (const p of (c.planes ?? []) as any[]) {
       // A PANE: a single quad in the XY plane at depth z, double-sided by its material. Its UVs run
       // 0..1 across the pane so an alpha-cut tile repeats `rep` times across and down.
-      const g = new THREE.PlaneGeometry(p.w, p.h, 1, 1);
+      // `segs: [nx, ny]` with `sagTop` / `sagBot` (metres) drape the pane: the top edge drops by
+      // sagTop * sin(pi u) between its ties and the bottom edge by sagBot, blended linearly through
+      // the height -- a chain-link mesh hangs from its rail and follows its tension wire.
+      const g = new THREE.PlaneGeometry(p.w, p.h, p.segs?.[0] ?? 1, p.segs?.[1] ?? 1);
+      if (p.sagTop || p.sagBot) {
+        const pos = g.getAttribute('position');
+        for (let i = 0; i < pos.count; i++) {
+          const u = pos.getX(i) / p.w + 0.5, v = pos.getY(i) / p.h + 0.5;
+          // `sagSpans` divides the TOP edge into that many tie-to-tie spans, each sagging on its own
+          // (a chain-link mesh is hog-ringed to the rail every 0.6 m and droops between rings); the
+          // bottom edge follows the tension wire, which sags once across the bay.
+          const top = (p.sagTop ?? 0) * Math.sin(Math.PI * (((u * (p.sagSpans ?? 1)) % 1 + 1) % 1));
+          const d = top * v + (p.sagBot ?? 0) * (1 - v) * Math.sin(Math.PI * u);
+          pos.setY(i, pos.getY(i) - d);
+        }
+      }
       g.translate(p.at[0], p.at[1], p.at[2]);
       const uv = g.getAttribute('uv');
       for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * (p.rep?.[0] ?? 1), uv.getY(i) * (p.rep?.[1] ?? 1));
@@ -4315,7 +4336,8 @@ export function createZincSheetHoardingPanelModel(options: ProceduralModelOption
     for (const b of (r.boxes ?? []) as number[][]) gs.push(tintGeo(rbox(b.slice(1)), b[0]));
     for (const s of (r.spikes ?? []) as any[]) gs.push(tintGeo(spike(s.at, s.w, s.h), s.hex));
     for (const cy of (r.cyls ?? []) as any[]) {
-      const g = new THREE.CylinderGeometry(cy.rt, cy.rb, cy.h, cy.seg ?? 12);
+      let g: THREE.BufferGeometry = new THREE.CylinderGeometry(cy.rt, cy.rb, cy.h, cy.seg ?? 12);
+      if (cy.flat) { g = g.toNonIndexed(); g.computeVertexNormals(); }
       if (cy.rx) g.rotateX(cy.rx); if (cy.rz) g.rotateZ(cy.rz);
       g.translate(cy.at[0], cy.at[1], cy.at[2]); gs.push(tintGeo(g, cy.hex));
     }
@@ -4344,9 +4366,9 @@ export function createZincSheetHoardingPanelModel(options: ProceduralModelOption
     if (t.kind === 'corrugation') tex = corrugationTile(t.size ?? 512, t.pitch ?? 12, t.low ?? 0.7, t.seed ?? 3);
     if (t.kind === 'grime') tex = grimeTile(t.size ?? 512, t.seed ?? 11, t);
     if (t.kind === 'paint') tex = paintTile(t.size ?? 512, t.seed ?? 17, t);
-    if (t.kind === 'chainlink') tex = chainlinkTile(t.size ?? 256, t.wire ?? 0.09, t.seed ?? 4);
-    if (t.kind === 'bamboo') tex = bambooTile(t.size ?? 512, t.strips ?? 10, t.seed ?? 6, t.crossings ?? 3);
-    if (t.kind === 'culm') tex = culmTile(t.size ?? 512, t.seed ?? 9);
+    if (t.kind === 'chainlink') tex = chainlinkTile(t.size ?? 256, t.wire ?? 0.09, t.seed ?? 4, t.tone);
+    if (t.kind === 'bamboo') tex = bambooTile(t.size ?? 512, t.strips ?? 10, t.seed ?? 6, t.crossings ?? 3, t.mould ?? 0.40, t.mouldSpots ?? 6);
+    if (t.kind === 'culm') tex = culmTile(t.size ?? 512, t.seed ?? 9, t.mould ?? 0.60);
     if (t.kind === 'poster') tex = posterTile(t.size ?? 512, t.seed ?? 8, t.lines ?? []);
     bindTile(mat, tex, t.bump ?? 0);
   }
