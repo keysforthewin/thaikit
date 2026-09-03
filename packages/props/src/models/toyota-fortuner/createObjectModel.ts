@@ -327,14 +327,23 @@ const CONFIG = {
         ]
       ],
       "shape": {
-        "steps": 10,
-        "edgeBias": 0.6,
+        "steps": 14,
+        "edgeBias": 0.5,
         "shoulder": {
           "r": 0.1,
           "zMin": -2.3,
           "zMax": 0.93,
           "fade": 0.15
         },
+        "shoulders": [
+          {
+            "r": 0.1,
+            "zMin": 1.42,
+            "fadeIn": 0.1,
+            "zMax": 2.2,
+            "fade": 0.2
+          }
+        ],
         "nose": {
           "r": 0.34
         },
@@ -398,23 +407,28 @@ const CONFIG = {
         {
           "poly": [
             [
-              1.3,
+              1.3854,
               1.17
             ],
             [
-              1.41,
+              1.2653999999999999,
               1.17
             ],
             [
-              0.94,
-              1.7
+              0.888,
+              1.68
             ],
             [
-              0.83,
-              1.7
+              0.9,
+              1.68
+            ],
+            [
+              1.0228,
+              1.66
             ]
           ],
-          "strip": 0.1
+          "strip": 0.1,
+          "proud": 0.008
         },
         {
           "poly": [
@@ -510,7 +524,7 @@ const CONFIG = {
           0,
           0.58,
           2.395,
-          1.2,
+          1.16768,
           0.28,
           0.13
         ],
@@ -518,8 +532,8 @@ const CONFIG = {
           6973538,
           0,
           0.745,
-          2.42,
-          1.2,
+          2.458,
+          1.16768,
           0.06,
           0.02
         ],
@@ -662,47 +676,135 @@ const CONFIG = {
       "trimMirrored": [
         [
           7105642,
-          0.72,
+          0.637,
           0.58,
-          2.305,
-          0.36,
+          2.3899,
+          0.145,
           0.28,
           0.13,
           0,
-          0.62
+          0.1745
+        ],
+        [
+          7105642,
+          0.7463,
+          0.58,
+          2.3501,
+          0.145,
+          0.28,
+          0.13,
+          0,
+          0.5236
+        ],
+        [
+          7105642,
+          0.8355,
+          0.58,
+          2.2753,
+          0.145,
+          0.28,
+          0.13,
+          0,
+          0.8727
+        ],
+        [
+          7105642,
+          0.8936,
+          0.58,
+          2.1746,
+          0.145,
+          0.28,
+          0.13,
+          0,
+          1.2217
+        ],
+        [
+          7105642,
+          0.9138,
+          0.58,
+          2.06,
+          0.145,
+          0.28,
+          0.13,
+          0,
+          1.5708
         ],
         [
           6973538,
-          0.741,
+          0.648,
           0.745,
-          2.333,
-          0.36,
+          2.452,
+          0.145,
           0.06,
           0.02,
           0,
-          0.62
+          0.1745
+        ],
+        [
+          6973538,
+          0.7778,
+          0.745,
+          2.4047,
+          0.145,
+          0.06,
+          0.02,
+          0,
+          0.5236
+        ],
+        [
+          6973538,
+          0.8837,
+          0.745,
+          2.3158,
+          0.145,
+          0.06,
+          0.02,
+          0,
+          0.8727
+        ],
+        [
+          6973538,
+          0.9528,
+          0.745,
+          2.1961,
+          0.145,
+          0.06,
+          0.02,
+          0,
+          1.2217
         ],
         [
           14212576,
-          0.7,
-          0.88,
-          2.375,
-          0.28,
-          0.18,
-          0.03,
-          0,
-          0.5
+          0.51,
+          0.87,
+          2.415,
+          0.3,
+          0.14,
+          0.04,
+          -0.45,
+          0
+        ],
+        [
+          14212576,
+          0.7563,
+          0.87,
+          2.3674,
+          0.25,
+          0.14,
+          0.04,
+          -0.45,
+          0.5236
         ],
         [
           12089914,
-          0.905,
+          0.8891,
           0.7,
-          2.268,
+          2.3203,
           0.08,
           0.05,
           0.02,
           0,
-          0.62
+          0.8727
         ],
         [
           9068118,
@@ -1371,9 +1473,11 @@ function sideExtrude(profile: number[][], width: number, opts: ShapeOpts = {}): 
  *  roof line every shoulder hangs off is read. All optional: unset, the sweep is the old slab. */
 type ShapeOpts = { tumble?: { belt: number, roof: number, k: number }, plan?: number[][],
                    curveSegments?: number, steps?: number,
-                   shoulder?: { r: number, zMin?: number, zMax?: number, fade?: number },
+                   shoulder?: { r: number, zMin?: number, zMax?: number, fade?: number, fadeIn?: number },
+                   shoulders?: { r: number, zMin?: number, zMax?: number, fade?: number, fadeIn?: number }[],
                    nose?: { r: number }, tail?: { r: number },
-                   smooth?: number, edgeBias?: number, baseWidth?: number, topOf?: number[][] };
+                   smooth?: number, edgeBias?: number, baseWidth?: number, topOf?: number[][],
+                   crown?: { yMin: number, dy: number, fade?: number } };
 
 /** Highest y of a closed [z, y] profile on the vertical line at z -- the roof line at that
  *  station. Vertical edges count by their own top; a z outside the profile returns -Infinity. */
@@ -1431,13 +1535,16 @@ function shapeWidth(g: THREE.BufferGeometry, opts: ShapeOpts, width = 0): void {
     let x = p.getX(i), y = p.getY(i), z = p.getZ(i);
     const tf = tumbleAt(y), pf = planAt(z);
     x *= tf * pf;
-    if (opts.shoulder && top) {
-      const sh = opts.shoulder;
+    // `shoulders` adds further fillets on their own z-ranges (a bonnet edge behind the nose, say,
+    // with the cab's fillet stopping at the rake); `fadeIn` ramps one in over its first metres the
+    // way `fade` ramps it out. Default-off: a cfg with only `shoulder` is unchanged.
+    for (const sh of (top ? [opts.shoulder, ...(opts.shoulders ?? [])] : []) as any[]) {
+      if (!sh) continue;
       // The fillet lives on a z-range: hard at zMin (the cab back), faded over `fade` metres at
       // zMax (the top of the windscreen rake -- a rake is a plane, its edge a crease, and a fade
       // keyed on the roof line's SLOPE varied inside the rear corner and folded it).
-      const zLo = sh.zMin ?? -Infinity, zHi = sh.zMax ?? Infinity, fd = sh.fade ?? 0;
-      const w = z < zLo || z > zHi ? 0 : fd > 0 ? Math.min(1, (zHi - z) / fd) : 1;
+      const zLo = sh.zMin ?? -Infinity, zHi = sh.zMax ?? Infinity, fd = sh.fade ?? 0, fi = sh.fadeIn ?? 0;
+      const w = z < zLo || z > zHi ? 0 : Math.min(1, fd > 0 ? (zHi - z) / fd : 1, fi > 0 ? (z - zLo) / fi : 1);
       const yt = profileTop(top, z, 0.03);
       if (w > 0 && isFinite(yt)) {
         const r = sh.r + extra, cy = yt - sh.r;
@@ -1474,6 +1581,15 @@ function shapeWidth(g: THREE.BufferGeometry, opts: ShapeOpts, width = 0): void {
         // which z-fights -- the Commuter van's wrapped A-pillars crumpled from exactly that.
         if (d >= r - 1e-4) { x = Math.sign(x || 1) * (cx + dx / d * r); z = end.zc + end.s * (dz / d * r); }
       }
+    }
+    if (opts.crown && y > opts.crown.yMin) {
+      // CROWN across the width: a roof is a shallow dome in BOTH axes, and a side extrusion is flat
+      // across x. Vertices above `yMin` (the roof band, never a rear wall below it) rise by
+      // dy * (1 - (x/hw)^2), faded in over `fade` metres above yMin so the band's underside and top
+      // crown together and the edge stays where the shoulder put it. Default-off.
+      const hwc = Math.max(1e-3, baseHalf * tf * pf) + extra;
+      const t = Math.min(1, Math.abs(x) / hwc), f = opts.crown.fade ? Math.min(1, (y - opts.crown.yMin) / opts.crown.fade) : 1;
+      y += opts.crown.dy * (1 - t * t) * f;
     }
     p.setXYZ(i, x, y, z);
   }
