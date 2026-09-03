@@ -45,10 +45,6 @@ extra tooling. The source of truth is the tree at
 [`packages/props/src/models/`](https://github.com/keysforthewin/thaikit) in the thaikit
 repo; this registry is built from it.
 
-## Licence and trademarks
+## Licence
 
 MIT. The geometry is fully synthetic — no scanned or scraped meshes.
-
-Some props depict **real commercial marks** (7-Eleven, Big C, PTT, Toyota and others).
-MIT covers the code, not the trademark. Those props carry a notice at the head of their
-description; read it before shipping one in a commercial product.

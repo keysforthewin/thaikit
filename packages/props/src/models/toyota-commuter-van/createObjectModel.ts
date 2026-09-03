@@ -348,8 +348,8 @@ const CONFIG = {
         "shoulder": {
           "r": 0.28,
           "zMin": -2.7,
-          "zMax": 1.8,
-          "fade": 0.3
+          "zMax": 2.1,
+          "fade": 0.25
         },
         "nose": {
           "r": 0.42
@@ -550,43 +550,44 @@ const CONFIG = {
               1.2178
             ],
             [
-              2.5462,
-              1.4118
+              2.5532,
+              1.3977
             ],
             [
-              2.4354,
-              1.5892
+              2.4539,
+              1.5638
             ],
             [
-              2.2954,
-              1.7446
+              2.3292,
+              1.7118
             ],
             [
-              2.1306,
-              1.8734
+              2.1823,
+              1.8378
             ],
             [
-              2.0306,
-              1.8734
+              2.0823,
+              1.8378
             ],
             [
-              2.1954,
-              1.7446
+              2.2292,
+              1.7118
             ],
             [
-              2.3354,
-              1.5892
+              2.3539,
+              1.5638
             ],
             [
-              2.4462,
-              1.4118
+              2.4532,
+              1.3977
             ],
             [
               2.5246,
               1.2178
             ]
           ],
-          "strip": 0.1
+          "strip": 0.1,
+          "proud": 0.006
         },
         {
           "poly": [
@@ -1554,7 +1555,8 @@ type ShapeOpts = { tumble?: { belt: number, roof: number, k: number }, plan?: nu
                    curveSegments?: number, steps?: number,
                    shoulder?: { r: number, zMin?: number, zMax?: number, fade?: number },
                    nose?: { r: number }, tail?: { r: number },
-                   smooth?: number, edgeBias?: number, baseWidth?: number, topOf?: number[][] };
+                   smooth?: number, edgeBias?: number, baseWidth?: number, topOf?: number[][],
+                   crown?: { yMin: number, dy: number, fade?: number } };
 
 /** Highest y of a closed [z, y] profile on the vertical line at z -- the roof line at that
  *  station. Vertical edges count by their own top; a z outside the profile returns -Infinity. */
@@ -1655,6 +1657,15 @@ function shapeWidth(g: THREE.BufferGeometry, opts: ShapeOpts, width = 0): void {
         // which z-fights -- the Commuter van's wrapped A-pillars crumpled from exactly that.
         if (d >= r - 1e-4) { x = Math.sign(x || 1) * (cx + dx / d * r); z = end.zc + end.s * (dz / d * r); }
       }
+    }
+    if (opts.crown && y > opts.crown.yMin) {
+      // CROWN across the width: a roof is a shallow dome in BOTH axes, and a side extrusion is flat
+      // across x. Vertices above `yMin` (the roof band, never a rear wall below it) rise by
+      // dy * (1 - (x/hw)^2), faded in over `fade` metres above yMin so the band's underside and top
+      // crown together and the edge stays where the shoulder put it. Default-off.
+      const hwc = Math.max(1e-3, baseHalf * tf * pf) + extra;
+      const t = Math.min(1, Math.abs(x) / hwc), f = opts.crown.fade ? Math.min(1, (y - opts.crown.yMin) / opts.crown.fade) : 1;
+      y += opts.crown.dy * (1 - t * t) * f;
     }
     p.setXYZ(i, x, y, z);
   }
