@@ -50,7 +50,7 @@ export function Toolbar({ onAdd, onAddLight, onAddSpawn, onJoin }) {
         <select value={snap.rotateDeg ?? 15} onChange={(e) => setSetting('snap.rotateDeg', Number(e.target.value))} title="rotate step">
           {[5, 15, 30, 45, 90].map((v) => <option key={v} value={v}>{v}°</option>)}
         </select>
-        <Btn on={snap.surface?.enabled !== false} onClick={() => setSetting('snap.surface.enabled', snap.surface?.enabled === false)} title="snap faces flush and edges aligned to neighbours while moving — V">surface</Btn>
+        <Btn on={snap.surface?.enabled !== false} onClick={() => setSetting('snap.surface.enabled', snap.surface?.enabled === false)} title="while moving: rest on the surface beneath (objects or the ground; a vertical drag snaps onto it when within the gap threshold), and snap faces flush and edges aligned to neighbours — V">surface</Btn>
       </div>
       <div className="group">
         <Btn on={view.grid} onClick={() => toggleView('grid')} title="grid — G">grid</Btn>

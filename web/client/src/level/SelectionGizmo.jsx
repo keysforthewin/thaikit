@@ -3,9 +3,10 @@ import { TransformControls } from '@react-three/drei';
 import * as THREE from 'three';
 
 import { useLevel } from './store.js';
-import { nodeFor, allNodes } from './nodes.js';
+import { nodeFor, allNodes, geometryOf } from './nodes.js';
 import { findEntity, ownerOf, isTargetId, kindOf } from './ids.js';
-import { obbFromBox, snapTranslation } from './snap.js';
+import { obbFromBox, snapTranslation, dropToSurface, thinLift } from './snap.js';
+import { groundOf } from './ground.js';
 import { roundVec, norm } from './defaults.js';
 import { cloneEntities } from './duplicate.js';
 import { mods } from './modifiers.js';
@@ -17,6 +18,7 @@ const _delta = new THREE.Matrix4();
 const _pos = new THREE.Vector3();
 const _quat = new THREE.Quaternion();
 const _scl = new THREE.Vector3();
+const _box = new THREE.Box3();
 
 /**
  * One gizmo at the scene root, driving a pivot that stands in for the selection.
@@ -25,6 +27,16 @@ const _scl = new THREE.Vector3();
  * multi-select scales and turns about a common point. Snapping adds a
  * correction to the FOLLOWERS only -- TransformControls rewrites the pivot's
  * own position every pointer move, so writing to it mid-drag is a fight.
+ *
+ * With the surface toggle on, a translate drag does two things in order. First
+ * the primary object is RESTED on whatever is beneath its footprint -- another
+ * placement's real meshes or the ground plane -- so a crate dragged across a
+ * rooftop rides the roof and a lamp pushed onto a table climbs onto it; it can
+ * step up by `climb` metres and drop any distance. A drag whose handle has a Y
+ * component is the user choosing a height, so there the surface is a MAGNET
+ * rather than a floor: the base snaps onto a surface within the gap threshold
+ * and is otherwise left exactly where the drag put it. Then the bounding-box
+ * snap butts faces flush and lines edges up with neighbours.
  *
  * Two modifiers change what a drag means. SHIFT leaves a copy behind: the
  * duplicates are made at MOUSEDOWN, at the selection's current transform, and
@@ -120,19 +132,25 @@ export function SelectionGizmo() {
     const nodes = leaves.map((id) => nodeFor(id)).filter(Boolean);
     for (const o of nodes) o.updateMatrix();
     const candidates = [];
+    const surfaces = [];
     if (mode === 'translate' && snapSettings.surface?.enabled !== false && kindOfPrimary === 'placement') {
       const selected = new Set(leaves.map(ownerOf));
       for (const [id, o] of allNodes()) {
         if (selected.has(ownerOf(id)) || kindOf(id) !== 'placement' || !o.userData.bbox) continue;
         o.updateMatrixWorld(true);
         candidates.push(obbFromBox(o.userData.bbox, o.matrixWorld));
+        const geo = geometryOf(o);
+        if (geo) surfaces.push({ geo, box: o.userData.bbox.clone().applyMatrix4(o.matrixWorld) });
       }
     }
+    const ground = groundOf(s.doc);
     drag.current = {
       pivotStart: pivot.matrix.clone(),
       pivotInv: pivot.matrix.clone().invert(),
       starts: nodes.map((o) => ({ o, m: o.matrix.clone() })),
       candidates,
+      surfaces,
+      groundY: ground.enabled ? ground.y : null,
       duplicated,
       before,
     };
@@ -147,16 +165,47 @@ export function SelectionGizmo() {
       _m.multiplyMatrices(_delta, m).decompose(o.position, o.quaternion, o.scale);
       o.updateMatrixWorld(true);
     }
-    if (mode === 'translate' && d.candidates.length) {
+    const surfaceOn = mode === 'translate' && snapSettings.surface?.enabled !== false && kindOfPrimary === 'placement';
+    if (surfaceOn && d.starts.length) {
+      const opt = snapSettings.surface ?? {};
       const first = d.starts[d.starts.length - 1].o;
-      const obb = obbFromBox(first.userData.bbox, first.matrixWorld);
-      const hit = snapTranslation(obb, d.candidates, snapSettings.surface ?? {});
       const s = useLevel.getState();
-      if (hit) {
-        for (const { o } of d.starts) { o.position.add(hit.corr); o.updateMatrixWorld(true); }
-        if (!s.snapHint || s.snapHint.key !== hit.hits.map((h) => h.face.id).join('|') + first.position.toArray().map((n) => n.toFixed(2)).join(',')) {
-          s.setSnapHint({ key: hit.hits.map((h) => h.face.id).join('|') + first.position.toArray().map((n) => n.toFixed(2)).join(','), hits: hit.hits });
+      let surface = null;
+      let hit = null;
+
+      // Rest on the surface beneath. `axis` is the handle under the pointer:
+      // X, Z and XZ ride the surface (step up by `climb`, drop any distance);
+      // Y, XY, YZ and the free XYZ handle set the height themselves, so they
+      // only snap when the base comes within the gap threshold of a surface.
+      const axis = getGizmo()?.axis ?? '';
+      const vertical = axis.includes('Y');
+      const reach = vertical ? opt.threshold ?? 0.3 : opt.climb ?? 2;
+      if (first.userData.bbox && (d.surfaces.length || d.groundY != null)) {
+        _box.copy(first.userData.bbox).applyMatrix4(first.matrixWorld);
+        const x = (_box.min.x + _box.max.x) / 2;
+        const z = (_box.min.z + _box.max.z) / 2;
+        const targets = d.surfaces.filter((t) => t.box.min.x <= x && x <= t.box.max.x && t.box.min.z <= z && z <= t.box.max.z).map((t) => t.geo);
+        let drop = dropToSurface({ x, z, bottomY: _box.min.y, climb: reach, targets, groundY: d.groundY });
+        if (drop && vertical && drop.dy < -reach) drop = null;
+        if (drop) {
+          // A quad resting exactly on the ground z-fights it: lift it clear.
+          drop.dy += thinLift(_box.max.y - _box.min.y);
+          if (Math.abs(drop.dy) > 1e-6) for (const { o } of d.starts) { o.position.y += drop.dy; o.updateMatrixWorld(true); }
+          const radius = Math.max(0.15, Math.min(_box.max.x - _box.min.x, _box.max.z - _box.min.z) / 2);
+          surface = { point: drop.point, on: drop.on, radius };
         }
+      }
+
+      // Then flush faces and aligned edges against the neighbours' boxes.
+      if (d.candidates.length) {
+        const obb = obbFromBox(first.userData.bbox, first.matrixWorld);
+        hit = snapTranslation(obb, d.candidates, opt);
+        if (hit) for (const { o } of d.starts) { o.position.add(hit.corr); o.updateMatrixWorld(true); }
+      }
+
+      if (hit || surface) {
+        const key = (hit ? hit.hits.map((h) => h.face.id).join('|') : '') + (surface ? `~${surface.on}` : '') + first.position.toArray().map((n) => n.toFixed(2)).join(',');
+        if (!s.snapHint || s.snapHint.key !== key) s.setSnapHint({ key, hits: hit ? hit.hits : [], surface });
       } else if (s.snapHint) s.setSnapHint(null);
     }
   };

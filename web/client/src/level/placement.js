@@ -1,8 +1,9 @@
 import * as THREE from 'three';
 
 import { getViewport } from './viewportRef.js';
-import { nodeFor } from './nodes.js';
+import { nodeFor, geometryOf } from './nodes.js';
 import { groundOf } from './ground.js';
+import { thinLift } from './snap.js';
 
 /**
  * Where a newly added object goes: under the crosshair.
@@ -43,9 +44,12 @@ export function placementPoint(doc, item, { fallback = [0, 0, 0] } = {}) {
 
   raycaster.setFromCamera(centre, camera);
 
-  // Placements only. Lights and spawns register nodes too, and dropping a crate
-  // onto a light's helper gizmo is not what anyone means by "on that surface".
-  const targets = doc.placements.map((p) => nodeFor(p.id)).filter(Boolean);
+  // Placements only, and only their real meshes. Lights and spawns register
+  // nodes too, and dropping a crate onto a light's helper gizmo is not what
+  // anyone means by "on that surface"; nor is a placement's own pick box, which
+  // would land the crate on the bounding box of a pitched roof rather than on
+  // the roof.
+  const targets = doc.placements.map((p) => geometryOf(nodeFor(p.id))).filter(Boolean);
   const hit = raycaster.intersectObjects(targets, true).find((h) => h.object.visible);
 
   let best = hit ? { point: hit.point.clone(), distance: hit.distance, on: 'object' } : null;
@@ -61,7 +65,11 @@ export function placementPoint(doc, item, { fallback = [0, 0, 0] } = {}) {
     }
   }
 
-  if (best) return { position: best.point.toArray(), on: best.on };
+  if (best) {
+    // A quad dropped exactly on a surface z-fights it: lift it clear.
+    best.point.y += thinLift(item?.size?.h ?? 1);
+    return { position: best.point.toArray(), on: best.on };
+  }
 
   // Nothing under the crosshair. r / sin(fov/2) is the distance at which the
   // item's bounding sphere is exactly tangent to the frustum, so a little more

@@ -125,13 +125,19 @@ export function PlayMode() {
     };
   }, [gl, setPlay]);
 
-  // Remember the editor's camera so leaving play mode puts it back where it was.
-  useEffect(() => {
-    const saved = { position: camera.position.clone(), quaternion: camera.quaternion.clone() };
-    return () => {
-      camera.position.copy(saved.position);
-      camera.quaternion.copy(saved.quaternion);
-    };
+  // Leaving play mode hands the editor the PLAYER's view, not the one it had
+  // before: walk somewhere, press Escape, and you are editing what you were
+  // just looking at. It is always the first-person eye, even from the
+  // third-person view -- the boom camera sits five metres behind the body and
+  // an editor camera parked there is looking at where you stood, not from it.
+  // FlyControls notices the camera has moved under it and re-adopts the pose,
+  // so the first mouse movement afterwards does not snap the view back.
+  useEffect(() => () => {
+    const c = controller.current;
+    if (!c) return;
+    const at = c.eye(new THREE.Vector3());
+    camera.position.copy(at);
+    camera.quaternion.setFromEuler(new THREE.Euler(c.pitch, c.yaw, 0, 'YXZ'));
   }, [camera]);
 
   const eye = useMemo(() => new THREE.Vector3(), []);

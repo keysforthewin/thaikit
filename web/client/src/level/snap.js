@@ -1,15 +1,21 @@
 import * as THREE from 'three';
 
 /**
- * Surface and edge snapping between oriented bounding boxes.
+ * Surface and edge snapping between oriented bounding boxes, and the drop onto
+ * whatever stands beneath.
  *
- * Pure maths, no React and no scene graph: the gizmo hands in the moving
- * object's OBB and every candidate's, and gets back the smallest translation
- * that lands a face of the mover flush against a face of a neighbour, then
- * slides it along that face so an edge lines up. That is what butts two road
- * tiles or two wall pieces together with one drag.
+ * Pure maths, no React: the gizmo hands in the moving object's OBB and every
+ * candidate's, and gets back the smallest translation that lands a face of the
+ * mover flush against a face of a neighbour, then slides it along that face so
+ * an edge lines up. That is what butts two road tiles or two wall pieces
+ * together with one drag. `dropToSurface` is the other half: a ray straight
+ * down from the mover's footprint onto the REAL geometry of the level, so a
+ * crate dragged across a rooftop rides the roof and a lamp dragged onto a
+ * table climbs onto it.
  */
 const _v = new THREE.Vector3();
+const _down = new THREE.Vector3(0, -1, 0);
+const _ray = new THREE.Raycaster();
 
 /** An OBB from a local AABB and a world matrix. */
 export function obbFromBox(box, matrixWorld) {
@@ -115,4 +121,45 @@ export function snapTranslation(moving, candidates, opt) {
   const corr = first.corr.clone();
   if (second) corr.add(second.corr);
   return { corr, hits: second ? [first, second] : [first] };
+}
+
+/**
+ * A quad has no thickness, so resting it EXACTLY on a surface puts two faces
+ * in one plane and they z-fight. Anything thinner than `THIN` metres is lifted
+ * by `THIN_LIFT` when it lands; a real solid sits flush.
+ */
+export const THIN = 0.01;
+export const THIN_LIFT = 0.02;
+export const thinLift = (height) => (height < THIN ? THIN_LIFT : 0);
+
+/**
+ * The vertical correction that rests a footprint on the surface beneath it.
+ *
+ * Casts from `climb` metres above the mover's base straight down, so the mover
+ * can climb onto anything up to that much higher than where it stands and can
+ * drop any distance -- gravity, with a step height. The ray tests the real
+ * meshes in `targets` (never the pick boxes: a pitched roof is not its bounding
+ * box) and the ground plane at `groundY`, and the first thing it meets is the
+ * answer. Callers pre-filter `targets` to the nodes whose footprint holds
+ * (x, z); the raycaster's own sphere test would do it, but a building is
+ * twenty thousand triangles and this runs on every pointer move.
+ *
+ * @returns { dy, point, on: 'object' | 'ground' } or null when nothing is
+ *          beneath -- no ground and no object, so the height is left alone.
+ */
+export function dropToSurface({ x, z, bottomY, climb = 2, targets = [], groundY = null }) {
+  const top = bottomY + climb;
+  _ray.set(_v.set(x, top, z), _down);
+  _ray.near = 0;
+  _ray.far = Infinity;
+  let best = null;
+  if (targets.length) {
+    const hit = _ray.intersectObjects(targets, true).find((h) => h.object.visible);
+    if (hit) best = { y: hit.point.y, point: hit.point.clone(), on: 'object' };
+  }
+  if (groundY != null && groundY <= top && (!best || groundY > best.y)) {
+    best = { y: groundY, point: new THREE.Vector3(x, groundY, z), on: 'ground' };
+  }
+  if (!best) return null;
+  return { dy: best.y - bottomY, point: best.point, on: best.on };
 }

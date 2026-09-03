@@ -9,7 +9,7 @@ export const DEFAULT_SETTINGS = {
   gridSize: 1,
   snap: {
     enabled: true, translate: 0.5, rotateDeg: 15, scale: 0.1,
-    surface: { enabled: true, threshold: 0.3, edgeThreshold: 0.25, angleDeg: 5, minOverlap: 0.05 },
+    surface: { enabled: true, threshold: 0.3, edgeThreshold: 0.25, angleDeg: 5, minOverlap: 0.05, climb: 2 },
   },
   showGrid: true,
   showAxes: true,

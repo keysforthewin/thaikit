@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import { applyBillboard, isBillboard } from '@thai-kit/level-runtime/billboard';
 
 import { useLevel } from './store.js';
-import { registerNode } from './nodes.js';
+import { registerNode, GEOMETRY_NAME } from './nodes.js';
 import { getPrototype, instantiate, releaseInstance } from '../three/instances.js';
 import { unitGeometry, COLLIDER_COLORS } from '../three/colliderGeometry.js';
 import { gizmoOwnsPointer } from './gizmoRef.js';
@@ -14,8 +14,9 @@ const MISSING = 0xe2686d;
 const SELECTED = 0x7ee787;
 
 /**
- * One placed object: the cached clone, an invisible box that is the only thing
- * the raycaster tests, and the overlays. The group's transform is written
+ * One placed object: the cached clone (named `__geometry`, the only thing a
+ * surface-seeking ray tests), an invisible box that is the only thing the
+ * PICK raycaster tests, and the overlays. The group's transform is written
  * imperatively by the gizmo during a drag and re-synced from the doc after a
  * commit, undo, or a typed value.
  *
@@ -115,7 +116,7 @@ export function PlacementNode({ placement }) {
 
   return (
     <group ref={groupRef} name={placement.id}>
-      <group ref={facingRef}>
+      <group ref={facingRef} name={GEOMETRY_NAME}>
         {instance && <primitive object={instance} />}
         {fallback && <primitive object={fallback} />}
       </group>

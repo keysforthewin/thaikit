@@ -119,7 +119,10 @@ export function PropertiesPanel() {
           <div className="field"><label>gap threshold (m)</label><Num value={s.snap.surface.threshold} step={0.05} onCommit={(n) => setSetting('snap.surface.threshold', n)} /></div>
           <div className="field"><label>edge threshold (m)</label><Num value={s.snap.surface.edgeThreshold} step={0.05} onCommit={(n) => setSetting('snap.surface.edgeThreshold', n)} /></div>
         </div>
-        <div className="field"><label>angle tolerance (°)</label><Num value={s.snap.surface.angleDeg} step={1} onCommit={(n) => setSetting('snap.surface.angleDeg', n)} /></div>
+        <div className="row">
+          <div className="field"><label>angle tolerance (°)</label><Num value={s.snap.surface.angleDeg} step={1} onCommit={(n) => setSetting('snap.surface.angleDeg', n)} /></div>
+          <div className="field"><label>climb (m)</label><Num value={s.snap.surface.climb ?? 2} step={0.25} min={0} onCommit={(n) => setSetting('snap.surface.climb', n)} title="while moving, an object rests on whatever is beneath it and may step up onto anything this much higher; it drops any distance" /></div>
+        </div>
         <h4>environment</h4>
         <div className="row">
           <div className="field"><label>background</label><input type="color" value={s.environment.background} onChange={(e) => setSetting('environment.background', e.target.value)} /></div>

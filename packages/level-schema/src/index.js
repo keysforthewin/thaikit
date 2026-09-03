@@ -93,6 +93,8 @@ export const SnapSettings = z.object({
       edgeThreshold: num.positive().default(0.25),
       angleDeg: num.positive().default(5),
       minOverlap: num.nonnegative().default(0.05),
+      /** How far UP a dragged object may step onto a surface; it drops any distance. */
+      climb: num.nonnegative().default(2),
     })
     .default({}),
 });
