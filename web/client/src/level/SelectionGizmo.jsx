@@ -19,6 +19,16 @@ const _pos = new THREE.Vector3();
 const _quat = new THREE.Quaternion();
 const _scl = new THREE.Vector3();
 const _box = new THREE.Box3();
+const _axis = new THREE.Vector3();
+
+/**
+ * How far a quaternion already turns about `axis` (its swing-twist "twist"),
+ * so a world-space snap can quantise the ABSOLUTE angle rather than the drag.
+ */
+const twistAbout = (q, axis) => {
+  const p = q.x * axis.x + q.y * axis.y + q.z * axis.z;
+  return 2 * Math.atan2(p, q.w);
+};
 
 /**
  * One gizmo at the scene root, driving a pivot that stands in for the selection.
@@ -107,6 +117,7 @@ export function SelectionGizmo() {
   if (!primaryNode) return null;
 
   const snapSettings = doc?.settings?.snap ?? {};
+  const snap = snapSettings.enabled !== false;
   const kindOfPrimary = kindOf(ownerOf(primary));
   const lightLike = kindOfPrimary !== 'placement';
   const mode = lightLike && tool === 'scale' ? 'translate' : tool;
@@ -159,6 +170,27 @@ export function SelectionGizmo() {
   const onObjectChange = () => {
     const d = drag.current;
     if (!d) return;
+    // Snap is done here rather than by three's rotationSnap, because the two
+    // spaces mean different things by it. WORLD quantises the ABSOLUTE angle
+    // about the world axis (0, 15, 30 ...), so a prop sitting at 7 degrees
+    // lands on 15, not 22. LOCAL quantises the DRAG: a relative step from
+    // wherever the object already stands. three's own snap is neither -- it
+    // rounds the object's Euler to the step at mousedown, then steps the delta.
+    const g = getGizmo();
+    if (mode === 'rotate' && snap && g?.dragging) {
+      const step = THREE.MathUtils.degToRad(snapSettings.rotateDeg ?? 15);
+      _axis.copy(g.rotationAxis);
+      const handle = g.axis ?? '';
+      const localAxis = space === 'local' && (handle === 'X' || handle === 'Y' || handle === 'Z');
+      if (localAxis) {
+        const delta = Math.round(g.rotationAngle / step) * step;
+        pivot.quaternion.copy(g.quaternionStart).multiply(_quat.setFromAxisAngle(_axis, delta)).normalize();
+      } else {
+        const was = twistAbout(g.quaternionStart, _axis);
+        const total = Math.round((was + g.rotationAngle) / step) * step;
+        pivot.quaternion.setFromAxisAngle(_axis, total - was).multiply(g.quaternionStart).normalize();
+      }
+    }
     pivot.updateMatrix();
     _delta.multiplyMatrices(pivot.matrix, d.pivotInv);
     for (const { o, m } of d.starts) {
@@ -255,7 +287,6 @@ export function SelectionGizmo() {
     if (leaves.length === 1) primaryNode.matrixWorld.decompose(pivot.position, pivot.quaternion, pivot.scale);
   };
 
-  const snap = snapSettings.enabled !== false;
   return (
     <>
       <primitive object={pivot} />
@@ -265,7 +296,7 @@ export function SelectionGizmo() {
         mode={mode}
         space={space}
         translationSnap={snap ? snapSettings.translate ?? null : null}
-        rotationSnap={snap ? THREE.MathUtils.degToRad(snapSettings.rotateDeg ?? 15) : null}
+        rotationSnap={null}
         scaleSnap={snap ? snapSettings.scale ?? null : null}
         onMouseDown={onMouseDown}
         onObjectChange={onObjectChange}

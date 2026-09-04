@@ -37,10 +37,10 @@ export function Toolbar({ onAdd, onAddLight, onAddSpawn, onJoin }) {
   return (
     <div className="toolbar">
       <div className="group">
-        <Btn on={tool === 'translate'} onClick={() => setTool('translate')} title={`move — 1${GIZMO_MODS}`}>move</Btn>
+        <Btn on={tool === 'translate'} onClick={() => setTool('translate')} title={`move — 1 or Q${GIZMO_MODS}`}>move</Btn>
         <Btn on={tool === 'rotate'} onClick={() => setTool('rotate')} title={`rotate — 2 or E${GIZMO_MODS}`}>rotate</Btn>
         <Btn on={tool === 'scale'} onClick={() => setTool('scale')} title={`scale — 3 or R${GIZMO_MODS}`}>scale</Btn>
-        <Btn onClick={() => setSpace(space === 'world' ? 'local' : 'world')} title="gizmo space — Q">{space}</Btn>
+        <Btn onClick={() => setSpace(space === 'world' ? 'local' : 'world')} title="gizmo space — T. World: rotate snaps to absolute world angles. Local: rotate snaps by steps from the current angle">{space}</Btn>
       </div>
       <div className="group">
         <Btn on={snap.enabled !== false} onClick={() => setSetting('snap.enabled', snap.enabled === false)} title="grid snap for move / rotate / scale">snap</Btn>

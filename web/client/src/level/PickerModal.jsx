@@ -4,7 +4,7 @@ import { Modal } from './Modal.jsx';
 import { useLevel } from './store.js';
 
 const PREFS_KEY = 'thaikit.level.picker';
-const EMPTY_PREFS = { q: '', pack: '', category: '', tag: '', scroll: 0 };
+const EMPTY_PREFS = { q: '', pack: '', category: '', tag: '', unused: false, scroll: 0 };
 
 /** The picker unmounts on close, so its filters live outside it -- and across reloads. */
 const loadPrefs = () => {
@@ -16,6 +16,7 @@ const loadPrefs = () => {
       pack: typeof raw.pack === 'string' ? raw.pack : '',
       category: typeof raw.category === 'string' ? raw.category : '',
       tag: typeof raw.tag === 'string' ? raw.tag : '',
+      unused: raw.unused === true,
       scroll: Number.isFinite(raw.scroll) ? raw.scroll : 0,
     };
   } catch {
@@ -54,6 +55,7 @@ export function PickerModal({ onClose, onPick }) {
     !catalogue.packs.length || catalogue.packs.some((p) => p.id === saved.pack) ? saved.pack : '');
   const [category, setCategory] = useState(saved.category);
   const [tag, setTag] = useState(saved.tag);
+  const [unused, setUnused] = useState(saved.unused);
   const gridRef = useRef(null);
 
   const inPack = useMemo(() => catalogue.items.filter((it) => !pack || it.pack === pack), [catalogue, pack]);
@@ -62,12 +64,25 @@ export function PickerModal({ onClose, onPick }) {
   const visible = useMemo(() => {
     const needle = q.trim().toLowerCase();
     return inPack.filter((it) => {
+      if (unused && placed.get(it.ref) > 0) return false;
       if (category && it.category !== category) return false;
       if (tag && !it.tags.includes(tag)) return false;
       if (!needle) return true;
       return [it.name, it.title, it.description, it.category, it.pack, ...it.tags].join(' ').toLowerCase().includes(needle);
     });
-  }, [inPack, q, category, tag]);
+  }, [inPack, q, category, tag, unused, placed]);
+
+  /** How many of the otherwise-matching items are not yet in the level -- what the chip would show. */
+  const unusedCount = useMemo(() => {
+    const needle = q.trim().toLowerCase();
+    return inPack.filter((it) => {
+      if (placed.get(it.ref) > 0) return false;
+      if (category && it.category !== category) return false;
+      if (tag && !it.tags.includes(tag)) return false;
+      if (!needle) return true;
+      return [it.name, it.title, it.description, it.category, it.pack, ...it.tags].join(' ').toLowerCase().includes(needle);
+    }).length;
+  }, [inPack, q, category, tag, placed]);
 
   // Only a real change of pack clears the narrower filters -- the restored pack must not.
   const lastPack = useRef(pack);
@@ -88,8 +103,8 @@ export function PickerModal({ onClose, onPick }) {
 
   useEffect(() => {
     const grid = gridRef.current;
-    savePrefs({ q, pack, category, tag, scroll: grid ? grid.scrollTop : saved.scroll });
-  }, [q, pack, category, tag]);
+    savePrefs({ q, pack, category, tag, unused, scroll: grid ? grid.scrollTop : saved.scroll });
+  }, [q, pack, category, tag, unused]);
 
   // Restore the scroll position once the grid has the restored filters' cards in it.
   const restored = useRef(false);
@@ -99,7 +114,7 @@ export function PickerModal({ onClose, onPick }) {
     gridRef.current.scrollTop = saved.scroll;
   }, [visible]);
 
-  const rememberScroll = (e) => savePrefs({ q, pack, category, tag, scroll: e.currentTarget.scrollTop });
+  const rememberScroll = (e) => savePrefs({ q, pack, category, tag, unused, scroll: e.currentTarget.scrollTop });
 
   const chips = (list, value, set, all) => (
     <div className="filters compact">
@@ -118,6 +133,14 @@ export function PickerModal({ onClose, onPick }) {
       {chips(catalogue.packs.map((p) => [p.id, p.items]), pack, setPack, 'all packs')}
       {chips(categories, category, setCategory, 'all categories')}
       {chips(tags, tag, setTag, 'any tag')}
+      <div className="filters compact">
+        <span className={`chip ${!unused ? 'on' : ''}`} onClick={() => setUnused(false)}>all items</span>
+        <span
+          className={`chip ${unused ? 'on' : ''}`}
+          title="hide everything already placed in this level"
+          onClick={() => setUnused((v) => !v)}
+        >unused only <span className="muted">{unusedCount}</span></span>
+      </div>
       <div className="picker-grid" ref={gridRef} onScroll={rememberScroll}>
         {visible.map((it) => (
           <div

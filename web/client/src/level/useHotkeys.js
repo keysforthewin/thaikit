@@ -14,7 +14,8 @@ const inField = () => {
  * is live the whole time the editor is -- it is not gated on holding a mouse
  * button -- so every key it uses had to be given up here:
  *
- *   translate   W       -> 1   (E and R stay as aliases for rotate and scale)
+ *   translate   W       -> 1   (Q is the letter alias, beside E and R for rotate and scale)
+ *   gizmo space Q       -> T   (Q went to translate so Q/E/R sit together)
  *   add object  A       -> N
  *   cells       C       -> B
  *   surfaceSnap Shift+S -> V
@@ -41,10 +42,10 @@ export function useHotkeys(handlers, disabled = false) {
       else if (ctrl && k === 'g' && e.shiftKey) handlers.unjoin?.();
       else if (ctrl && k === 'g') handlers.join?.();
       else if (!ctrl && (e.key === 'Delete' || e.key === 'Backspace')) handlers.remove?.();
-      else if (!ctrl && k === '1') handlers.tool?.('translate');
+      else if (!ctrl && (k === '1' || k === 'q')) handlers.tool?.('translate');
       else if (!ctrl && (k === '2' || k === 'e')) handlers.tool?.('rotate');
       else if (!ctrl && (k === '3' || k === 'r')) handlers.tool?.('scale');
-      else if (!ctrl && k === 'q') handlers.space?.();
+      else if (!ctrl && k === 't') handlers.space?.();
       else if (!ctrl && k === 'g') handlers.toggle?.('grid');
       else if (!ctrl && k === 'b') handlers.toggle?.('cells');
       else if (!ctrl && k === 'x') handlers.toggle?.('colliders');
