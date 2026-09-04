@@ -165,6 +165,7 @@ export async function bakeWithBlender({ io, doc, bake, skyImages = null, outDir,
   const spec = blenderBakeSpec({ bake, cpu, hasEnv: Boolean(envFile) });
   if (spec.env) onProgress?.(`world lit by the level's own sky (1024x512 equirect, strength ${spec.env.strength.toFixed(3)})`);
   else onProgress?.('no sky image; the world is the hemisphere ramp');
+  onProgress?.(`${spec.lights.length} authored lamp(s) go into the bake (direct + bounce); the moon stays live, masked by alpha`);
 
   const paths = { script: SCRIPT, glb: inFile, out: outDir, env: envFile };
   const where = `up to ${spec.size}², ${spec.texelsPerMeter} texels/m, ${spec.samples} samples, cpu ${cpu ? 'on' : 'off'}`;

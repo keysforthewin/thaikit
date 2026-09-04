@@ -193,6 +193,8 @@ levelsApi.bake = async (id, glbBytes, { baker = 'blender', cpu = false, signal }
   }, null);
   return res.json();
 };
+/** The running or last bake of a level with its log; null when none has run. */
+levelsApi.bakeJob = (id) => request(`/api/levels/${id}/bake`, {}, null).catch((e) => { if (e.status === 404) return null; throw e; });
 levelsApi.cancelBake = (id) => request(`/api/levels/${id}/bake`, { method: 'DELETE' }, null);
 levelsApi.bakeAgent = () => request('/api/levels/bake-agent', {}, null);
 levelsApi.build = (id) => request(`/api/levels/${id}/build`, {}, null);

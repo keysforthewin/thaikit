@@ -97,6 +97,14 @@ function validate(body) {
   if (!CYCLES_DEVICES.includes(spec.device)) throw new Error(`spec.device must be one of ${CYCLES_DEVICES.join(', ')}`);
   for (const k of ['size', 'samples', 'texelsPerMeter', 'exposure']) if (!Number.isFinite(spec[k])) throw new Error(`spec.${k} must be a number`);
   for (const k of ['moon', 'sky', 'ground']) if (!Array.isArray(spec[k]) || !spec[k].every(Number.isFinite)) throw new Error(`spec.${k} must be numbers`);
+  if (spec.lights != null) {
+    if (!Array.isArray(spec.lights) || spec.lights.length > 256) throw new Error('spec.lights must be an array of at most 256 lamps');
+    for (const l of spec.lights) {
+      if (!l || typeof l !== 'object' || !['point', 'spot'].includes(l.type)) throw new Error('spec.lights[].type must be point or spot');
+      for (const k of ['position', 'color']) if (!Array.isArray(l[k]) || l[k].length < 3 || !l[k].every(Number.isFinite)) throw new Error(`spec.lights[].${k} must be numbers`);
+      if (!Number.isFinite(l.intensity)) throw new Error('spec.lights[].intensity must be a number');
+    }
+  }
   return { level: typeof level === 'string' ? level : '?', spec, paths };
 }
 

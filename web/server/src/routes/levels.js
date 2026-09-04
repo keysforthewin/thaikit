@@ -277,6 +277,18 @@ export function levelsRouter(state) {
     },
   );
 
+  /**
+   * The bake of this level, running or last settled, WITH its log -- what a
+   * reopened export dialog reads to pick up where it left off. Every entry
+   * carries `seq`; SSE events arriving after this answer carry the same
+   * numbering, so the client drops the overlap and misses nothing.
+   */
+  router.get('/levels/:id/bake', (req, res) => {
+    const job = bakeStatus(req.params.id);
+    if (!job) return res.status(404).json({ error: 'no bake has run for this level since the server started' });
+    res.json(job);
+  });
+
   /** Cancel the running bake: SIGTERM to its process group, `cancelled` over SSE when it closes. */
   router.delete('/levels/:id/bake', guard, (req, res) => {
     const job = cancelBake(req.params.id);
@@ -292,7 +304,9 @@ export function levelsRouter(state) {
       try { stat = await fs.stat(file); } catch { /* no build yet */ }
       let verify = null;
       try { verify = JSON.parse(await fs.readFile(path.join(levelDir(id), 'build', 'verify.json'), 'utf8')); } catch { /* none */ }
-      res.json({ exists: Boolean(stat), bytes: stat?.size ?? 0, generatedAt: stat?.mtime ?? null, verify, job: bakeStatus(id) });
+      const job = bakeStatus(id);
+      if (job) delete job.log; // GET /levels/:id/bake carries the log; this is the summary
+      res.json({ exists: Boolean(stat), bytes: stat?.size ?? 0, generatedAt: stat?.mtime ?? null, verify, job });
     } catch (err) {
       next(err);
     }

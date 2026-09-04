@@ -57,6 +57,8 @@ export const useLevel = create((set, get) => ({
   playView: 'first',
   lastGroundHit: [0, 0, 0],
   dragging: false,
+  /** The open level's bake as the server last reported it: { status, jobId } or null. Drives the export button's indicator. */
+  bake: null,
   /** Bumps whenever a prototype resolves, so stats and cells recompute. */
   protoRev: 0,
   /**

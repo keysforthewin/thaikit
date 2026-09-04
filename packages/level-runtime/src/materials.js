@@ -16,6 +16,15 @@ const HEMI_LINE = 'irradiance += getHemisphereLightIrradiance( hemisphereLights[
 
 const IBL_LINE = 'iblIrradiance += getIBLIrradiance( geometryNormal );';
 
+// The `#if` that opens each punctual-light loop. Guarding the whole block is
+// safer than zeroing `directLight.color` inside it: `unrollLoops` expands the
+// `#pragma unroll_loop` region textually BEFORE the preprocessor runs, so the
+// added clause survives unrolling and the preprocessor then drops the loop,
+// its shadow lookups and all; the `pointLights[]` uniforms simply go inactive.
+const POINT_GUARD = '#if ( NUM_POINT_LIGHTS > 0 ) && defined( RE_Direct )';
+const SPOT_GUARD = '#if ( NUM_SPOT_LIGHTS > 0 ) && defined( RE_Direct )';
+const BAKED_PUNCTUAL = '&& !defined( THAIKIT_BAKED_PUNCTUAL )';
+
 /**
  * Patch a chunk's BODY, then substitute it for its unresolved include token.
  *
@@ -40,12 +49,21 @@ function splice(shader, chunk, edits) {
 /**
  * Attach the baked lightmap to a static material.
  *
- * RGB is indirect + sky + emissive bounce, added as irradiance the normal
- * way (three's lightMap path). A is the moon's visibility, which masks the
- * real-time directional light's DIRECT term -- so the moon stays a live light
- * for dynamic objects and a small dynamic shadow map, while static geometry
- * gets Cycles' soft shadows for free. The hemisphere term is zeroed on static
- * materials because the bake already contains the sky.
+ * RGB is indirect + sky + emissive bounce -- and, when the bake says
+ * `bakedLights`, every authored point and spot lamp's direct light, shadows
+ * and bounce -- added as irradiance the normal way (three's lightMap path).
+ * A is the moon's visibility, which masks the real-time directional light's
+ * DIRECT term -- so the moon stays a live light for dynamic objects and a
+ * small dynamic shadow map, while static geometry gets Cycles' soft shadows
+ * for free. The hemisphere term is zeroed on static materials because the
+ * bake already contains the sky.
+ *
+ * `bakedPunctual` is the lamps' half of the same bargain: the bake holds
+ * them, so their live direct term is cut here by dropping the point and spot
+ * loops from the fragment shader. Dynamic objects never pass through this
+ * and keep every lamp live, which is what a baked FPS level does. It is an
+ * opt-in so a level baked before the lamps went into the atlas renders
+ * exactly as it did.
  *
  * The mask is injected after the shadow lookup, which sits inside
  * `#if defined( USE_SHADOWMAP ) && ( UNROLLED_LOOP_INDEX < NUM_DIR_LIGHT_SHADOWS )`
@@ -53,7 +71,7 @@ function splice(shader, chunk, edits) {
  * is the light the alpha channel was baked against; a directional with no shadow
  * map has no baked visibility to mask it with.
  */
-export function attachLightmap(material, texture, { intensity = 1, iblDiffuse = 0 } = {}) {
+export function attachLightmap(material, texture, { intensity = 1, iblDiffuse = 0, bakedPunctual = false } = {}) {
   material.lightMap = texture;
   material.lightMapIntensity = intensity;
   material.userData.thaikitLightmap = true;
@@ -62,6 +80,7 @@ export function attachLightmap(material, texture, { intensity = 1, iblDiffuse = 
     shader.defines = shader.defines ?? {};
     shader.defines.THAIKIT_LIGHTMAP = 1;
     shader.defines.THAIKIT_IBL_DIFFUSE = factor;
+    if (bakedPunctual) shader.defines.THAIKIT_BAKED_PUNCTUAL = 1;
     splice(shader, 'lights_fragment_begin', [
       [
         DIRECT_LINE,
@@ -71,6 +90,13 @@ export function attachLightmap(material, texture, { intensity = 1, iblDiffuse = 
       // The sky is baked in: drop the live hemisphere light's contribution here.
       // `irradiance` is a vec3, so the zero has to be one too.
       [HEMI_LINE, 'irradiance += vec3( 0.0 );', 'the baked sky is counted twice'],
+      // The lamps are in the bake (direct + bounce) on static geometry, so
+      // their live loops go. Spliced only when asked, so an older level's
+      // shader source is byte-identical to what it was.
+      ...(bakedPunctual ? [
+        [POINT_GUARD, `${POINT_GUARD} ${BAKED_PUNCTUAL}`, 'baked point lights are counted twice'],
+        [SPOT_GUARD, `${SPOT_GUARD} ${BAKED_PUNCTUAL}`, 'baked spot lights are counted twice'],
+      ] : []),
     ]);
     // ...and for the same reason, drop the ENVIRONMENT's diffuse half. Verified
     // in three r185: `lights_fragment_end` hands `iblIrradiance` only to
@@ -89,7 +115,7 @@ export function attachLightmap(material, texture, { intensity = 1, iblDiffuse = 
   // Static and dynamic materials happen to differ by USE_LIGHTMAP today, but
   // that accident is not a cache key -- name the patch so it cannot collide,
   // and vary it with anything that changes the generated source.
-  material.customProgramCacheKey = () => `thaikit-lightmap-1:${factor}`;
+  material.customProgramCacheKey = () => `thaikit-lightmap-2:${factor}:${bakedPunctual ? 1 : 0}`;
   material.needsUpdate = true;
 }
 
@@ -106,4 +132,4 @@ export function eachMaterial(root, fn) {
   });
 }
 
-export { THREE, DIRECT_LINE, HEMI_LINE, IBL_LINE };
+export { THREE, DIRECT_LINE, HEMI_LINE, IBL_LINE, POINT_GUARD, SPOT_GUARD, BAKED_PUNCTUAL };

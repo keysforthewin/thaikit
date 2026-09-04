@@ -81,6 +81,7 @@ async function main() {
             // it as sRGB -- so a container claiming linear is mislabelled.
             transferFunction: k.dataFormatDescriptor?.[0]?.transferFunction ?? null,
             range: manifest.lightmap.range ?? 1,
+            bakedLights: manifest.lightmap.bakedLights ?? false,
           };
           if (report.lightmap.transferFunction === 1) {
             warnings.push('the lightmap KTX2 is labelled linear but holds sRGB; re-bake to correct the label');

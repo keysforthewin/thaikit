@@ -7,6 +7,7 @@ import { readRegistry, etagFor, MODELS_DIR, REPO_ROOT } from '@thaikit/registry-
 
 import { createApp } from './app.js';
 import { startWatcher } from './watcher.js';
+import { adoptBakes } from './lib/bake.js';
 import { PORT, IS_DEV, WATCH_POLL } from './paths.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -57,6 +58,8 @@ async function main() {
   }
 
   startWatcher(state);
+  // Bakes a previous server process (a --watch restart, say) left running.
+  adoptBakes(state).catch((e) => console.error(`[bake] adopt failed: ${e.message}`));
 
   server.listen(PORT, '0.0.0.0', async () => {
     let count = '?';

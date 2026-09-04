@@ -17,7 +17,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
 
-import { attachLightmap, DIRECT_LINE, HEMI_LINE, IBL_LINE } from '../src/materials.js';
+import { attachLightmap, DIRECT_LINE, HEMI_LINE, IBL_LINE, POINT_GUARD, SPOT_GUARD, BAKED_PUNCTUAL } from '../src/materials.js';
 
 test('three still contains every anchor we splice against', () => {
   const begin = THREE.ShaderChunk.lights_fragment_begin;
@@ -27,6 +27,8 @@ test('three still contains every anchor we splice against', () => {
   assert.equal(begin.split(DIRECT_LINE).length - 1, 1, 'directional shadow line');
   assert.equal(begin.split(HEMI_LINE).length - 1, 1, 'hemisphere irradiance line');
   assert.equal(maps.split(IBL_LINE).length - 1, 1, 'IBL irradiance line');
+  assert.equal(begin.split(POINT_GUARD).length - 1, 1, 'point light loop guard');
+  assert.equal(begin.split(SPOT_GUARD).length - 1, 1, 'spot light loop guard');
 });
 
 test('onBeforeCompile receives UNRESOLVED includes', () => {
@@ -93,7 +95,38 @@ test('the zero we splice in is a vec3, not a float', () => {
 test('the patch is named in the program cache key', () => {
   const m = new THREE.MeshStandardMaterial();
   attachLightmap(m, new THREE.Texture());
-  assert.equal(m.customProgramCacheKey(), 'thaikit-lightmap-1:0.000');
+  assert.equal(m.customProgramCacheKey(), 'thaikit-lightmap-2:0.000:0');
+});
+
+test('bakedPunctual drops the live point and spot loops on static materials', () => {
+  // The bake carries the lamps' direct light, shadows and bounce, so a static
+  // material that ALSO ran three's point/spot loops would light them twice.
+  const m = new THREE.MeshStandardMaterial();
+  attachLightmap(m, new THREE.Texture(), { bakedPunctual: true });
+  const { shader, warnings } = compile(m);
+  assert.deepEqual(warnings, [], 'no anchor missed');
+  assert.ok(shader.fragmentShader.includes(`${POINT_GUARD} ${BAKED_PUNCTUAL}`), 'point loop guarded');
+  assert.ok(shader.fragmentShader.includes(`${SPOT_GUARD} ${BAKED_PUNCTUAL}`), 'spot loop guarded');
+  assert.equal(shader.defines.THAIKIT_BAKED_PUNCTUAL, 1);
+  // The moon's own mask is still there: the lamps are baked, the moon is live.
+  assert.ok(shader.fragmentShader.includes('directLight.color *= texture2D( lightMap, vLightMapUv ).a;'));
+});
+
+test('without bakedPunctual an older level compiles exactly what it always did', () => {
+  const plain = new THREE.MeshStandardMaterial();
+  attachLightmap(plain, new THREE.Texture());
+  const explicit = new THREE.MeshStandardMaterial();
+  attachLightmap(explicit, new THREE.Texture(), { bakedPunctual: false });
+  const a = compile(plain).shader;
+  const b = compile(explicit).shader;
+  assert.equal(a.fragmentShader, b.fragmentShader);
+  assert.ok(!a.fragmentShader.includes('THAIKIT_BAKED_PUNCTUAL'), 'no guard spliced');
+  assert.equal(a.defines.THAIKIT_BAKED_PUNCTUAL, undefined);
+  assert.ok(a.fragmentShader.includes(POINT_GUARD), 'point loop intact');
+  // Different source, different program.
+  const baked = new THREE.MeshStandardMaterial();
+  attachLightmap(baked, new THREE.Texture(), { bakedPunctual: true });
+  assert.notEqual(plain.customProgramCacheKey(), baked.customProgramCacheKey());
 });
 
 test('env diffuse is suppressed on lightmapped materials, specular is not', () => {

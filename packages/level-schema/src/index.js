@@ -451,6 +451,13 @@ export const ManifestExtras = z.object({
        * as it did -- no schema-version bump.
        */
       range: num.positive().default(1),
+      /**
+       * True when the atlas carries the authored point and spot lamps (direct,
+       * shadows and bounce), so the runtime must cut their live direct term on
+       * lightmapped materials. Defaults to false, so a level baked before the
+       * lamps went into the bake keeps its live lamps and renders unchanged.
+       */
+      bakedLights: z.boolean().default(false),
       layout: z.string().default('rgb=indirect+sky,a=moonVisibility'),
     })
     .nullable()

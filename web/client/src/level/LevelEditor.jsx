@@ -32,7 +32,7 @@ const snapTo = (v, step) => (step > 0 ? Math.round(v / step) * step : v);
 
 export default function LevelEditor({ initialId }) {
   const s = useLevel();
-  const { doc, levelId, dirty, modal, setModal, catalogue, selection } = s;
+  const { doc, levelId, dirty, modal, setModal, catalogue, selection, bake } = s;
   const [texturesOpen, setTexturesOpen] = useState(false);
   const [error, setError] = useState(null);
 
@@ -59,6 +59,17 @@ export default function LevelEditor({ initialId }) {
     source.addEventListener('pack', (e) => {
       try { if (JSON.parse(e.data).phase === 'done') reload(); } catch { /* not ours */ }
     });
+    // The bake runs on the server whether or not its dialog is open; the
+    // export button carries its state so a bake left running in the
+    // background is never out of sight.
+    source.addEventListener('level:bake', (e) => {
+      try {
+        const evt = JSON.parse(e.data);
+        if (evt.level !== useLevel.getState().levelId) return;
+        const settled = ['done', 'failed', 'cancelled'].includes(evt.phase) && (evt.result || evt.phase !== 'cancelled');
+        useLevel.setState({ bake: { jobId: evt.jobId, status: settled ? evt.phase : 'running', message: evt.message } });
+      } catch { /* not ours */ }
+    });
     return () => { clearTimeout(timer); source.close(); };
   }, [loadCatalogue]);
 
@@ -68,6 +79,8 @@ export default function LevelEditor({ initialId }) {
       const bytes = await levelsApi.load(id);
       const { doc: next, orphans } = await parseLevelGlb(bytes);
       s.openDoc({ levelId: id, doc: next, orphans });
+      useLevel.setState({ bake: null });
+      levelsApi.bakeJob(id).then((job) => { if (job && useLevel.getState().levelId === id) useLevel.setState({ bake: { jobId: job.id, status: job.status, message: job.log[job.log.length - 1]?.message } }); }).catch(() => {});
       window.history.replaceState(null, '', `/level/${id}`);
       document.title = `${next.name} — thaikit level`;
     } catch (e) {
@@ -233,7 +246,14 @@ export default function LevelEditor({ initialId }) {
         )}
         <span className="grow" />
         <button onClick={() => setModal('packs')}>packs ({catalogue.packs.length})</button>
-        <button disabled={!doc} title="bake and export a self-contained GLB (cells, LOD, KTX2, lightmap)" onClick={() => setModal('export')}>export…</button>
+        <button
+          disabled={!doc}
+          className={bake?.status === 'running' ? 'bake-running' : bake?.status === 'failed' ? 'bake-failed' : ''}
+          title={bake?.status === 'running' ? `a bake is running in the background — ${bake.message ?? ''}\nopen to see its log or cancel it` : 'bake and export a self-contained GLB (cells, LOD, KTX2, lightmap)'}
+          onClick={() => setModal('export')}
+        >
+          {bake?.status === 'running' ? 'export… ● baking' : bake?.status === 'failed' ? 'export… ✗ failed' : 'export…'}
+        </button>
       </div>
       {doc ? <Toolbar onAdd={() => setModal('picker')} onAddLight={addLight} onAddSpawn={addSpawn} onJoin={() => setModal('join')} /> : <div className="toolbar" />}
       {(error || s.catalogueError) && (

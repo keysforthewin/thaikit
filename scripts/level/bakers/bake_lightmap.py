@@ -3,22 +3,28 @@ Bake a level's lightmap in Blender, headless.
 
     blender -b --python bake_lightmap.py -- --glb in.glb --out <dir> --size 4096 --samples 128
         --moon dx,dy,dz,r,g,b,strength --sky r,g,b,strength [--exposure 1.0]
-        [--device GPU|GPU+CPU|CPU] [--gutter 2] [--texels-per-meter 8]
+        [--lights '[...]'] [--device GPU|GPU+CPU|CPU] [--gutter 2] [--texels-per-meter 8]
 
 Reads the level's static geometry (the lod0 meshes under every cell_* node),
 unwraps a second UV layer across all of them into ONE atlas, and bakes two
 passes with Cycles:
 
-  RGB  diffuse direct+indirect with the moon OFF: sky light, bounce, and every
-       emissive surface in the level (a neon sign lights its wall).
+  RGB  diffuse direct+indirect with the moon OFF and every authored point and
+       spot lamp ON: sky light, bounce, every emissive surface in the level (a
+       neon sign lights its wall), and the lamps -- their direct light, their
+       shadows and their bounce. This is what a lightmap is FOR: static
+       geometry gets all of it for the price of one texture fetch, and the
+       runtime cuts the lamps' live direct term on lightmapped materials.
   A    the moon's visibility (Cycles' SHADOW bake with only the sun present),
        so the runtime can keep the moon as a real-time light, masked by this,
        and put a small dynamic shadow map on top for players.
 
-Every light that arrived WITH the glTF is hidden for both passes. The runtime
-re-creates all of them from the manifest, so anything baked here would be
-counted twice; the sun this script builds from --moon is the only light Cycles
-sees, and it is the one the alpha channel measures.
+Every light that arrived WITH the glTF is hidden for both passes -- not
+because lights are excluded, but because Blender's importer converts them
+through its lighting mode (dividing by 683 lm/W) and they arrive at the wrong
+brightness. The lights Cycles sees are the ones this script builds itself in
+three's units: the sun from --moon (pass 2 only) and the lamps from --lights
+(pass 1 only). Dynamic objects still get every lamp live from the manifest.
 
 Writes <out>/lightmap.png (16-bit RGBA) and <out>/out.glb -- the same objects
 re-exported with the lightmap UVs as TEXCOORD_1 so the Node side can swap the
@@ -51,6 +57,14 @@ ap.add_argument('--env', default=None)
 ap.add_argument('--env-strength', type=float, default=1.0)
 ap.add_argument('--env-rotation', type=float, default=0.0)
 ap.add_argument('--exposure', type=float, default=1.0)
+# The level's authored point and spot lights, as a JSON array in THREE's units:
+#   [{name, type: 'point'|'spot', position: [x,y,z] (glTF, Y-up),
+#     direction: [x,y,z]|null (spot, the direction it shines), color: [r,g,b]
+#     linear, intensity: candela, angle: spot HALF-angle in radians, penumbra:
+#     0..1, distance: m (0 = infinite), decay}]
+# Built here rather than read from the glTF so the units are ours; see the
+# lamp block below. Callers pass it as `--lights=[...]`.
+ap.add_argument('--lights', default='[]')
 ap.add_argument('--margin', type=float, default=0.004)
 # Gap between packed islands, in TEXELS of the final atlas. The old pack used
 # `--margin` as a FRACTION of the atlas around every island, which is 16 px at
@@ -379,25 +393,78 @@ scene.collection.objects.link(sun)
 d_bl = Vector((md.x, -md.z, md.y))
 sun.rotation_euler = d_bl.to_track_quat('-Z', 'Y').to_euler()
 
-# The level's OWN lights came in with the glTF and must not be baked. The
-# exporter writes every authored light as KHR_lights_punctual and nothing
-# strips them before this stage, so Blender instantiates the moon a SECOND
-# time alongside the sun built above, plus every point and spot light -- all
-# of which the runtime then re-creates live from the manifest. Baking them
-# here is double counting: static geometry was lit twice by the moon and
-# twice by every lamp, and pass 2's SHADOW bake saw all of them, so the
-# alpha channel was a mixture rather than the moon's visibility.
+# The level's OWN lights came in with the glTF, and every one of them is
+# hidden -- for UNITS, not because they are unwanted. The exporter writes each
+# authored light as KHR_lights_punctual and nothing strips them before this
+# stage, so Blender instantiates the moon a second time beside the sun built
+# above, plus every point and spot lamp -- all converted through the importer's
+# lighting mode, which divides by 683 lm/W and lands them at the wrong
+# brightness. The lamps that ARE baked are rebuilt below from --lights in
+# three's units, exactly as the sun is rebuilt from --moon.
 #
-# The deliberate cost: a punctual light's BOUNCE is no longer baked. A neon
-# sign still lights its wall if it is emissive geometry (pass 1 keeps every
-# emitter); it does not if it is only a point light. That is the right trade
-# against counting its direct term twice.
+# (This block used to hide the lamps on purpose, so that RGB held sky + bounce
+# + emissive only, because the runtime re-created every lamp live on static
+# geometry too and baking them was double counting. That was the wrong side to
+# fix: the runtime now cuts the lamps' live direct term on lightmapped
+# materials, so the bake carries their direct light, shadows AND bounce.)
 hidden = 0
 for obj in bpy.data.objects:
     if obj.type == 'LIGHT' and obj is not sun:
         obj.hide_render = True
         hidden += 1
-log(f'hid {hidden} imported light(s); RGB is sky + bounce + emissive only')
+
+# --- authored lamps: baked, direct + bounce, pass 1 only -------------------------
+#
+# Units. three (physically correct lights): a lamp's intensity I is candela,
+# the irradiance at distance d is I/d^2, and a Lambertian surface renders
+# I * albedo / (pi d^2). three's LIGHTMAP path treats the texel as irradiance
+# and multiplies by the same albedo/pi -- so the texel must equal I/d^2.
+# Blender: a point lamp of power P watts radiates I = P/(4 pi) W/sr, so the
+# irradiance is P/(4 pi d^2); and Cycles' DIFFUSE pass with colour OFF writes
+# irradiance/pi (DiffuseColor x pass = beauty), i.e. P/(4 pi^2 d^2). Equating
+# the two: P = 4 pi^2 I. One factor of pi more than the "4 pi I" a
+# steradian argument alone gives; `calibrate-lamp-bake.mjs` measures it.
+# The sky term needs no such factor because three's HemisphereLight also adds
+# its colour straight into `irradiance` with no pi; and the sun's
+# `energy = moon strength` was never exposed to it, being used only for the
+# SHADOW pass. A spot's power in Blender is the flux of the equivalent
+# omnidirectional point (the cone masks, it does not renormalise), so both
+# kinds share the constant -- which is also three's convention.
+#
+# Not honoured, because Cycles has no such thing: three's `distance` (a hard
+# range cutoff) and a `decay` other than 2. A lamp with a short range reaches
+# further in the bake than it does on dynamic objects.
+LAMP_WATTS_PER_CANDELA = 4.0 * math.pi * math.pi
+LAMP_RADIUS = 0.1  # a hair of softness on the shadows; 1/d^2 is exact past a few radii
+
+
+def to_blender(v):
+    """glTF Y-up -> Blender Z-up, the swizzle the sun uses: (x, y, z) -> (x, -z, y)."""
+    return Vector((float(v[0]), -float(v[2]), float(v[1])))
+
+
+lamps = []
+for spec in json.loads(args.lights):
+    kind = 'SPOT' if spec.get('type') == 'spot' else 'POINT'
+    data = bpy.data.lights.new(f"thaikit_lamp_{spec.get('name', len(lamps))}", kind)
+    data.color = tuple(float(c) for c in spec['color'][0:3])
+    data.energy = float(spec['intensity']) * LAMP_WATTS_PER_CANDELA
+    data.shadow_soft_size = LAMP_RADIUS
+    if hasattr(data, 'use_soft_falloff'):
+        data.use_soft_falloff = False  # 4.0+: bends the near field away from 1/d^2
+    if kind == 'SPOT':
+        data.spot_size = 2.0 * float(spec.get('angle') or math.pi / 6)  # full cone; three's angle is the half-angle
+        data.spot_blend = float(spec.get('penumbra') or 0.0)  # both: the fraction of the cone that is feathered
+    obj = bpy.data.objects.new(data.name, data)
+    scene.collection.objects.link(obj)
+    obj.location = to_blender(spec['position'])
+    d = spec.get('direction')
+    if d:
+        # A Blender spot shines down its local -Z, as the sun does.
+        obj.rotation_euler = to_blender(d).normalized().to_track_quat('-Z', 'Y').to_euler()
+    lamps.append(obj)
+n_spot = sum(1 for o in lamps if o.data.type == 'SPOT')
+log(f'built {len(lamps)} authored lamp(s) to bake ({len(lamps) - n_spot} point, {n_spot} spot); hid {hidden} imported light(s)')
 
 world = scene.world or bpy.data.worlds.new('thaikit_world')
 scene.world = world
@@ -582,9 +649,11 @@ def bake_batched(label, bake_type, targets, batch_size):
 # are freshly allocated and therefore already zero.
 scene.render.bake.use_clear = False
 
-# Pass 1: sky + bounce + emission, moon off.
-log(f'bake 1/2: diffuse (sky + indirect + emission) at {size}², {args.samples} samples')
+# Pass 1: sky + bounce + emission + the authored lamps, moon off.
+log(f'bake 1/2: diffuse (sky + indirect + emission + {len(lamps)} lamp(s)) at {size}², {args.samples} samples')
 sun.hide_render = True
+for o in lamps:
+    o.hide_render = False
 # The world was built above (sky image or hemisphere ramp) and its Strength is
 # already set; pass 2 is the only thing that changes it.
 set_target(img_rgb)
@@ -593,9 +662,13 @@ scene.render.bake.use_pass_indirect = True
 scene.render.bake.use_pass_color = False
 bake_batched('bake 1/2 diffuse', 'DIFFUSE', static, args.batch)
 
-# Pass 2: moon visibility.
+# Pass 2: moon visibility. The lamps go OFF so alpha is the moon's alone; a
+# lamp left on here reads as a smear across the middle of the probe's alpha
+# histogram.
 log('bake 2/2: moon shadow mask')
 sun.hide_render = False
+for o in lamps:
+    o.hide_render = True
 bg.inputs['Strength'].default_value = 0.0
 set_target(img_shadow)
 bake_batched('bake 2/2 moon mask', 'SHADOW', static, args.batch)
@@ -632,7 +705,9 @@ lin = rgb[:, 0:3] * args.exposure
 # rather than the maximum, so one runaway specular texel cannot dim the whole
 # level; quantising to quarters keeps it a round number across re-bakes, and the
 # ceiling of 16 stops a pathological scene from crushing everything else into
-# the bottom of the 8-bit range.
+# the bottom of the 8-bit range. The baked lamps raise p99.9 (a 12 cd lamp is
+# 1.33 at 3 m), so `range` is usually above 1 on a lit level now; that is the
+# 8-bit atlas paying for the lamps with precision in the dark, and expected.
 covered = np.any(rgb[:, 0:3] > 0.0, axis=1)
 # The PER-CHANNEL peak, not the luminance. Clipping happens channel by channel,
 # and luminance weights blue at 0.0722 -- so on a blue night sky a texel can peg
@@ -657,6 +732,11 @@ stats = {
     'coverage': float(covered.sum()) / float(covered.size),
     'size': size,
     'samples': args.samples,
+    # How many authored lamps went into RGB. Its PRESENCE is what tells the
+    # manifest this atlas carries the lamps, so the runtime may cut their live
+    # direct term on static materials; a lightmap.json from an older bake has
+    # no key and the level renders as it did.
+    'bakedLights': len(lamps),
 }
 # --- write the PNG OURSELVES --------------------------------------------------
 #

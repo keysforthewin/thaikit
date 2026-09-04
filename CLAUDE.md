@@ -704,14 +704,39 @@ placed geometry. Export writes a second, self-contained GLB.
   which is why `packages/level-runtime/test/materials.test.mjs` asserts all three anchor strings
   exist verbatim AND that the patch lands in the shader a real compile would see, and why
   `smoke-level.mjs` now FAILS on any `[level-runtime]` console warning.
-- **Every authored light was baked AND re-created live.** `buildExportScene` writes each one as
-  `KHR_lights_punctual`, and nothing strips them before stage 2 -- `writeManifest` disposes them at
-  stage 4, after Blender has already imported the lot. `bake_lightmap.py`'s `sun.hide_render` hid
-  only the sun the script builds, so the MOON was baked a second time as an imported sun and every
-  point and spot light was baked too, then all of them added again at runtime. `bake_lightmap.py`
-  now hides every light that arrived with the glTF, for both passes. The deliberate cost: a
-  punctual light's BOUNCE is no longer baked (an emissive SURFACE still lights its wall; a bare
-  point light does not), which is the right trade against counting its direct term twice.
+- **Every authored point and spot lamp is BAKED -- direct, shadows and bounce -- and the runtime
+  cuts their live direct term on static materials.** That is what a lightmap is for, and for a
+  while it was the opposite: `bake_lightmap.py` hid every lamp for both passes and RGB held sky +
+  bounce + emissive only, because the runtime re-created every lamp live on static geometry too
+  and baking them was double counting. The hide was the wrong side to fix. Now
+  `blenderBakeSpec()` puts every enabled non-moon point/spot into `spec.lights` (linear colour,
+  three's units), `buildBlenderArgs()` passes it as one inline `--lights=<json>` flag (no path, so
+  both bakers emit it identically; both spawn with an argv array), and the Python BUILDS the lamps
+  itself in pass 1 and hides them in pass 2 so alpha stays the moon's alone. The glTF-imported
+  lights are still hidden, for UNITS: Blender's importer converts them through its lighting mode
+  (÷683 lm/W). The bake's `lightmap.json` carries `bakedLights`, the manifest records
+  `lightmap.bakedLights` (default false: an older level keeps its live lamps and renders
+  unchanged), and `attachLightmap(..., { bakedPunctual })` guards three's point and spot loops in
+  `lights_fragment_begin` with `&& !defined( THAIKIT_BAKED_PUNCTUAL )` -- the whole `#if`, not a
+  `*= 0.0`, because `unrollLoops` expands the pragma region textually before the preprocessor and
+  the guard drops the shadow lookups too. Dynamic objects never pass through it and keep every
+  lamp live. No per-light baked/realtime switch: three's shader cannot tell lights apart per
+  receiver. A non-moon directional stays live and unbaked; `distance` and `decay != 2` are
+  three-only (Cycles has neither), so a short-range lamp reaches further in the bake.
+  **The unit conversion is `P = 4π²·I` watts per candela, and the second π is real.** three's
+  lightmap path multiplies the texel by albedo/π exactly as it does a live lamp's `I/d²`, so the
+  texel must BE `I/d²`; Blender's point of P watts gives irradiance `P/(4π d²)` and Cycles'
+  DIFFUSE pass with colour off writes irradiance/π. The steradian argument alone (`4πI`) leaves
+  a static wall π times darker than the dynamic crate beside it. The sky needs no such factor
+  (three's HemisphereLight also skips the π) and the sun's `energy = moon strength` never met it
+  (SHADOW pass only). `scripts/level/calibrate-lamp-bake.mjs` measures it with no level at all:
+  one 10 m quad it writes itself, a black world, one 10 cd lamp at 4 m -- brightest texel
+  **0.6250 against I/h² = 0.6250 (ratio 1.000)**, mean over the quad 0.996 of the analytic
+  integral. Run it after touching the constant, the swizzle or either pass. Measured end to end
+  on `levels/lamptest` (wall, drum, bin, barrier, shrine, a 12 cd point and a 40 cd spot):
+  range 3, alpha 99.1% in the top bin with 0.5% penumbra, `verify-level` `bakedLights: true`,
+  `smoke-level` clean. A lit level's `range` is usually above 1 now (a 12 cd lamp is 1.33 at
+  3 m); that is the 8-bit atlas paying for the lamps with precision in the dark.
 - **A placement's `castShadow` / `receiveShadow` now reach the bake and the runtime -- for DYNAMIC
   placements only.** They used to stop at the three meshes `buildExportScene` built, which glTF
   cannot carry, so Cycles saw every billboard -- a kilometre-tall quad standing at its AUTHORED
@@ -830,6 +855,28 @@ placed geometry. Export writes a second, self-contained GLB.
   **Measured on `thepurge` at 512²/16 (2026-09-04): container CUDA and host OptiX both run 63 s
   per 47-object batch, cpu off** -- the cost is per-object bake-operator overhead, so the backend
   is not what a large level's bake time is made of.
+- **A bake is FILE-BACKED and outlives both the dialog and the server process.** The dev
+  server runs under `node --watch-path`, so an edit to a server file restarts it mid-bake -- and a
+  pipeline whose stderr was a pipe to the dead parent died with it on EPIPE. `web/server/src/lib/bake.js`
+  now spawns the pipeline with its stdio ON FILES under `levels/<id>/build/` (`bake.log` is the
+  stderr event stream, `bake.out` the result line, `bake-job.json` the record with the pid) and
+  TAILS the log to broadcast; `adoptBakes()` at start-up re-adopts any record still `running`
+  whose pid is alive and whose `/proc/<pid>/cmdline` is still our `bake-level.mjs` for that level
+  (a zombie has an empty cmdline, so it reads as gone), and settles a dead one from `bake.out`.
+  Every event carries `seq`, its line index in the file -- the `start` line is WRITTEN INTO THE
+  FILE for that reason, so the original process and an adopter count the same lines. The export
+  dialog reads `GET /api/levels/:id/bake` on mount (record plus log), subscribes to SSE first and
+  drops anything at or below the seq it has, attaches to the job a 409 hands back, and treats a
+  `start` for an unknown job as a bake begun in another window. Verified 2026-09-04: reload
+  mid-bake, server killed mid-bake, and two tabs. A CONTAINER restart is different: the pipeline
+  is in the container, so it dies, and the host agent kills blender.exe when the socket drops --
+  that record settles as failed with "the bake process is gone". The host agent keeps NO state
+  and needs none; what survives is the container-side record.
+  **The watcher does not see every edit.** In this container only a change to
+  `web/server/src/index.js` reliably restarted the server; edits under `lib/` and `routes/` from
+  the host, and even `touch` from inside the container, did not. `docker compose exec web touch
+  /app/web/server/src/index.js` is the sure way to restart it, and the adoption above is what
+  makes that safe during a bake.
 - **The bake runs on the GPU via CUDA, and OPTIX IS UNREACHABLE UNDER WSL2.**
   `compose.yaml` and `compose.prod.yaml` both reserve the GPU
   (`deploy.resources.reservations.devices`, `driver: nvidia`) and set

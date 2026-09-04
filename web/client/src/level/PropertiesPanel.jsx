@@ -289,6 +289,9 @@ export function PropertiesPanel() {
             <div className="field"><label>decay</label><Num value={l.decay ?? 2} step={0.1} min={0} onCommit={(n) => edit('decay', (x) => { x.decay = n; })} /></div>
           </div>
         )}
+        {l.type !== 'directional' && (
+          <div className="muted small">baked into the lightmap on static geometry (direct light, shadows and bounce); live only on dynamic objects, which is the only place range and decay apply</div>
+        )}
         {l.type === 'spot' && (
           <div className="row">
             <div className="field"><label>cone (°)</label><Num value={+THREE.MathUtils.radToDeg(l.angle ?? Math.PI / 6).toFixed(1)} step={1} min={1} max={89} onCommit={(n) => edit('cone', (x) => { x.angle = THREE.MathUtils.degToRad(n); })} /></div>

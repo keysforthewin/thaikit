@@ -34,6 +34,19 @@ export function blenderBakeSpec({ bake, cpu = false, hasEnv = false }) {
   const moonRgb = hexToLinear(moon?.color ?? '#b8c7f2');
   const hemi = bake.settings?.environment?.hemisphere ?? {};
   const skyRgb = hexToLinear(hemi.sky ?? '#8797c2');
+  // Every enabled point and spot lamp goes INTO the bake, in three's units;
+  // bake_lightmap.py rebuilds them itself (the glTF-imported copies arrive
+  // through Blender's lighting-mode conversion at the wrong brightness). The
+  // moon is the sun, handled above; a non-moon directional stays live and
+  // unbaked, because the runtime only cuts point/spot on static materials.
+  const lights = (bake.lights ?? [])
+    .filter((l) => l.role !== 'moon' && (l.type === 'point' || l.type === 'spot'))
+    .map((l) => ({
+      name: String(l.id ?? l.node ?? ''), type: l.type,
+      position: l.position, direction: l.direction ?? null,
+      color: hexToLinear(l.color ?? '#ffffff'), intensity: l.intensity ?? 1,
+      angle: l.angle ?? null, penumbra: l.penumbra ?? null, distance: l.distance ?? null, decay: l.decay ?? null,
+    }));
   return {
     size: lm.size ?? 4096,
     samples: lm.samples ?? 128,
@@ -43,6 +56,7 @@ export function blenderBakeSpec({ bake, cpu = false, hasEnv = false }) {
     ground: hexToLinear(hemi.ground ?? '#2a2620'),
     exposure: lm.exposure ?? 1,
     device: cpu ? 'GPU+CPU' : 'GPU',
+    lights,
     env: hasEnv ? {
       // `sky.base.intensity` ALONE; see blender-cycles.mjs for why the
       // hemisphere intensity no longer multiplies in.
@@ -74,6 +88,9 @@ export function buildBlenderArgs(spec, paths, mapPath) {
     `--ground=${spec.ground.map(f4).join(',')}`,
     '--exposure', String(spec.exposure),
     '--device', spec.device,
+    // Inline JSON, not a file: nothing in it is a path, so both bakers emit
+    // the identical flag, and both spawn with an argv ARRAY and no shell.
+    `--lights=${JSON.stringify(spec.lights ?? [])}`,
   ];
   if (spec.env) {
     if (!paths.env) throw new Error('spec has a sky env but no env path');

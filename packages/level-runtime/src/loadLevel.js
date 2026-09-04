@@ -89,7 +89,10 @@ export async function loadLevel(source, opts) {
     // 8-bit atlas. Folding it into the intensity costs nothing: three's
     // `lights_fragment_maps` already multiplies the lightmap by this uniform.
     const intensity = (lightmapIntensity ?? manifest.lightmap.intensity ?? 1) * (manifest.lightmap.range ?? 1);
-    for (const cell of cells.cells) for (const tier of cell.tiers) if (tier) eachMaterial(tier, (m) => { if (!m.userData.thaikitLightmap) attachLightmap(m, lightmap, { intensity }); });
+    // A bake that carried the lamps means static geometry must not ALSO get
+    // them live; an older bake did not, and keeps them.
+    const bakedPunctual = manifest.lightmap.bakedLights === true;
+    for (const cell of cells.cells) for (const tier of cell.tiers) if (tier) eachMaterial(tier, (m) => { if (!m.userData.thaikitLightmap) attachLightmap(m, lightmap, { intensity, bakedPunctual }); });
   }
 
   if (camera) camera.layers.disable(CASTER_LAYER);

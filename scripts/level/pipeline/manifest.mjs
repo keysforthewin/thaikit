@@ -162,7 +162,12 @@ export function writeManifest({ bake, lodStats, lightmapImage, lightmapStats = n
         // written; the runtime folds this back into lightMapIntensity, which is
         // already a plain multiply in the shader. 1 means the bake was LDR.
         range: lightmapStats?.range ?? 1,
-        layout: 'rgb=indirect+sky,a=moonVisibility',
+        // The bake reports how many lamps it put into RGB; the KEY's presence
+        // is what says the atlas carries them (an older lightmap.json has
+        // none), and it is what lets the runtime cut the lamps' live direct
+        // term on static materials without double counting.
+        bakedLights: lightmapStats?.bakedLights != null,
+        layout: lightmapStats?.bakedLights != null ? 'rgb=indirect+sky+lights,a=moonVisibility' : 'rgb=indirect+sky,a=moonVisibility',
       },
       lights,
       ambient: { sky: settings.environment?.hemisphere?.sky ?? '#8797c2', ground: settings.environment?.hemisphere?.ground ?? '#2a2620', intensity: settings.environment?.hemisphere?.intensity ?? 0.35 },
