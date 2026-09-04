@@ -907,6 +907,9 @@ placed geometry. Export writes a second, self-contained GLB.
 - `levels/` — level projects: `<id>/level.glb` (GITIGNORED since 2026-09-04 -- it is re-saved whole and
   `thepurge` reached 158 MB against GitHub's 100 MB limit; back it up yourself), `<id>/sky/` sidecars
   (tracked) and `build/` (gitignored).
+  A finished bake is COPIED to `$THAIKIT_EXPORT_DIR/<id>.glb` (the game's GLB folder, default
+  `../Operation-X/GLB`, mounted at `/export`); the result carries `exported.path` in the HOST's
+  spelling and the dialog prints it. Not mounted is a warning in the log, never a failed bake.
 - `packs/` — installed vibe3d packs (gitignored; `packs/index.json` is the record).
 - `scratch/` — gitignored; every build's working directory, and where
   img2threejs writes its state, spec and renders.

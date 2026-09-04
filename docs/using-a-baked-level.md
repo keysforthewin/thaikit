@@ -10,7 +10,10 @@ call you make. This document is how to wire it up and what changes on your side.
 
 ## 1. What you ship
 
-The bake writes `levels/<id>/build/level.glb`. **That file is self-contained.**
+The bake writes `levels/<id>/build/level.glb` and copies it to
+`$THAIKIT_EXPORT_DIR/<id>.glb` -- your game's GLB folder, set in `.env` (default
+`../Operation-X/GLB`); the export dialog prints the delivered path. **That file is
+self-contained.**
 Everything is inside it, including the images nothing in glTF has a slot for:
 
 | Thing | Where it lives in the file |

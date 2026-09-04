@@ -206,6 +206,28 @@ async function main() {
   const bytes = (await fs.stat(outFile)).size;
   progress('write', `${toRepoRelative(outFile)} (${(bytes / 1048576).toFixed(1)} MB)`);
 
+  // Deliver it. THAIKIT_EXPORT_DIR is the game's GLB folder as mounted in the
+  // container (compose maps the host's folder to /export); the finished level
+  // is copied there as <id>.glb so nothing has to be fished out of build/.
+  // THAIKIT_EXPORT_DIR_HOST is the same folder as the HOST spells it, which is
+  // what the dialog shows -- the container path means nothing to the person
+  // reading it. Missing or unwritable is a warning, never a failed bake.
+  let exported = null;
+  const exportDir = process.env.THAIKIT_EXPORT_DIR;
+  if (exportDir) {
+    const target = path.join(exportDir, `${id}.glb`);
+    try {
+      await fs.access(exportDir);
+      await fs.copyFile(outFile, target);
+      const hostDir = process.env.THAIKIT_EXPORT_DIR_HOST || exportDir;
+      // path.posix so a `${PWD}/../Operation-X/GLB` default reads as the folder it is.
+      exported = { path: path.posix.normalize(`${hostDir.replace(/[\\/]+$/, '')}/${id}.glb`), bytes };
+      progress('export', `copied to ${exported.path}`);
+    } catch (e) {
+      progress('export', `WARNING not copied to ${target}: ${e.code === 'ENOENT' ? 'folder is not mounted (THAIKIT_EXPORT_DIR)' : e.message}`);
+    }
+  }
+
   // ---- verify ----------------------------------------------------------------
   const verify = await new Promise((resolve) => {
     const child = spawn(process.execPath, [path.join(here, 'verify-level.mjs'), '--level', id], { stdio: ['ignore', 'pipe', 'inherit'] });
@@ -219,7 +241,7 @@ async function main() {
   const dc = lodStats.reduce((a, s) => a.map((v, i) => v + s.drawCalls[i]), [0, 0, 0]);
   const tri = lodStats.reduce((a, s) => a.map((v, i) => v + s.triangles[i]), [0, 0, 0]);
   return ok({
-    level: id, file: toRepoRelative(outFile), bytes, cells: manifest.cells.list.length, drawCalls: dc, triangles: tri,
+    level: id, file: toRepoRelative(outFile), exported, bytes, cells: manifest.cells.list.length, drawCalls: dc, triangles: tri,
     textures: count, lightmap: lightmapImage != null, colliders: manifest.colliders.reduce((n, c) => n + c.shapes.length, 0), dynamic: manifest.dynamic.length,
     verify,
   });

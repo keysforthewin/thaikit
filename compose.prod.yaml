@@ -64,6 +64,11 @@ services:
       # step to that agent over HTTP. host.docker.internal is mapped below.
       THAIKIT_BAKE_AGENT_URL: http://host.docker.internal:${THAIKIT_BAKE_AGENT_PORT:-3734}
       THAIKIT_BAKE_AGENT_TOKEN: ${THAIKIT_BAKE_AGENT_TOKEN:-}
+      # Where a finished level goes. The bake copies build/level.glb to
+      # $THAIKIT_EXPORT_DIR/<id>.glb -- the game's GLB folder, mounted below at
+      # /export -- and the dialog prints the HOST spelling of that path.
+      THAIKIT_EXPORT_DIR: /export
+      THAIKIT_EXPORT_DIR_HOST: ${THAIKIT_EXPORT_DIR:-${PWD}/../Operation-X/GLB}
     # The GPU reservation. `docker compose run` honours this too, which is what
     # makes `docker compose run --rm web node scripts/level/bake-level.mjs`
     # a GPU bake and not a very slow CPU one. Requires nvidia-container-toolkit
@@ -87,6 +92,8 @@ services:
       # is how it came to be missing @thai-kit/level-schema entirely.
       - ./:/repo
       - ./:/app
+      # The game's GLB folder, where every finished level is delivered.
+      - ${THAIKIT_EXPORT_DIR:-../Operation-X/GLB}:/export
     healthcheck:
       test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3733/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
       interval: 15s

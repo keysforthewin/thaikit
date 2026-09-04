@@ -115,7 +115,7 @@ export function ExportModal({ onClose }) {
   return (
     <Modal title="Export level" onClose={busy ? undefined : onClose} width="min(820px, 94vw)">
       <p className="muted" style={{ marginTop: 0 }}>
-        Writes <span className="mono">levels/{levelId}/build/level.glb</span>: one self-contained glTF with geometry merged per {doc?.settings?.cellSize ?? 24} m cell and material,
+        Delivers <span className="mono">{levelId}.glb</span> to the game's GLB folder (a copy stays at <span className="mono">levels/{levelId}/build/level.glb</span>): one self-contained glTF with geometry merged per {doc?.settings?.cellSize ?? 24} m cell and material,
         three LOD tiers per cell, every texture as KTX2, colliders and lights in the scene extras, and the lightmap if baked. It needs nothing from thaikit to load.
       </p>
       {dirty && <div className="banner">Unsaved changes are exported as they are on screen, but save first if you want the file and the level to match.</div>}
@@ -155,7 +155,10 @@ export function ExportModal({ onClose }) {
           <h4>result</h4>
           <table>
             <tbody>
-              <tr><th>file</th><td className="mono"><a href={`/levels/${levelId}/build/level.glb`} target="_blank" rel="noreferrer">levels/{levelId}/build/level.glb</a> · {(result.bytes / 1048576).toFixed(1)} MB</td></tr>
+              {result.exported
+                ? <tr><th>delivered to</th><td className="mono score-good">{result.exported.path} · {(result.exported.bytes / 1048576).toFixed(1)} MB</td></tr>
+                : <tr><th>delivered to</th><td className="score-mid small">not copied — set THAIKIT_EXPORT_DIR (see the export log)</td></tr>}
+              <tr><th>build copy</th><td className="mono"><a href={`/levels/${levelId}/build/level.glb`} target="_blank" rel="noreferrer">levels/{levelId}/build/level.glb</a> · {(result.bytes / 1048576).toFixed(1)} MB</td></tr>
               <tr><th>cells</th><td>{result.cells} · {result.drawCalls?.join(' / ')} draw calls at LOD 0 / 1 / 2</td></tr>
               <tr><th>triangles</th><td>{result.triangles?.map((t) => t.toLocaleString()).join(' / ')}</td></tr>
               <tr><th>textures</th><td>{result.textures} KTX2 {result.lightmap ? '+ lightmap' : '(no lightmap)'}</td></tr>
