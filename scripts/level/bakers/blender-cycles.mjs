@@ -2,27 +2,32 @@
  * The Blender Cycles lightmap baker.
  *
  * Batch Blender (`blender -b --python`), not the live-session addon: no
- * timers, no socket, a process that ends. On WSL the Windows Blender runs
- * straight from here and reads the repo over \\wsl.localhost, so every path
- * crosses through toBlenderPath(). See bake_lightmap.py for what happens
- * inside; this side prepares the input so node names round-trip, runs it, and
- * swaps the unwrapped vertex data back into the level document.
+ * timers, no socket, a process that ends. It runs in one of two places:
+ *
+ *   - `host: false` -- the container's own Linux Blender, spawned right here
+ *     with absolute paths (CUDA under WSL2; OptiX is unreachable there).
+ *   - `host: true`  -- the Windows Blender on the host, through the bake agent
+ *     (`scripts/level/bake-host-agent.mjs`), which respells the same spec over
+ *     \\wsl.localhost and streams Blender's progress back. OptiX lives there.
+ *
+ * Either way the argv comes from blender-args.mjs, so the two cannot drift.
+ * See bake_lightmap.py for what happens inside; this side prepares the input
+ * so node names round-trip, runs it, and swaps the unwrapped vertex data back
+ * into the level document.
  */
 import { spawn } from 'node:child_process';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { toBlenderPath, blenderExe } from '../../lib/blender.mjs';
+import { toBlenderPath, blenderExe, toRepoRelative } from '../../lib/blender.mjs';
 import { cubeToEquirect } from '../pipeline/sky.mjs';
+import { blenderBakeSpec, buildBlenderArgs, blenderLineSink } from './blender-args.mjs';
+import { runBlenderOnHost, agentUrl } from './host-agent-client.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const SCRIPT = path.join(here, 'bake_lightmap.py');
-
-const hexToLinear = (hex) => {
-  const n = parseInt(hex.slice(1), 16);
-  return [(n >> 16) & 255, (n >> 8) & 255, n & 255].map((c) => { const v = c / 255; return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; });
-};
+export const HOST_SCRIPT = 'scripts/level/bakers/bake_lightmap.py';
 
 /**
  * One node per primitive, uniquely named, so Blender's importer makes one
@@ -90,32 +95,26 @@ function splitForBlender(doc) {
   return map;
 }
 
-function runBlender(exe, args, onLine) {
+function runBlender(exe, args, onLine, { signal } = {}) {
   return new Promise((resolve, reject) => {
     const child = spawn(exe, args, { stdio: ['ignore', 'pipe', 'pipe'] });
-    let buf = '';
-    let tail = [];
-    const feed = (chunk) => {
-      buf += chunk;
-      let nl;
-      while ((nl = buf.indexOf('\n')) >= 0) {
-        const line = buf.slice(0, nl).replace(/\r$/, '');
-        buf = buf.slice(nl + 1);
-        tail.push(line);
-        if (tail.length > 40) tail.shift();
-        if (line.startsWith('[thaikit]')) onLine(line.slice(10).trim());
-      }
-    };
-    child.stdout.on('data', (d) => feed(d.toString()));
-    child.stderr.on('data', (d) => feed(d.toString()));
+    const sink = blenderLineSink(onLine);
+    child.stdout.on('data', (d) => sink.feed(d.toString()));
+    child.stderr.on('data', (d) => sink.feed(d.toString()));
+    const onAbort = () => child.kill('SIGTERM');
+    signal?.addEventListener('abort', onAbort, { once: true });
     child.on('error', reject);
-    child.on('close', (code) => (code === 0 ? resolve() : reject(new Error(`blender exited ${code}:\n${tail.join('\n')}`))));
+    child.on('close', (code, sig) => {
+      signal?.removeEventListener('abort', onAbort);
+      if (signal?.aborted) return reject(new Error('cancelled'));
+      code === 0 ? resolve() : reject(new Error(`blender exited ${code ?? sig}:\n${sink.tail()}`));
+    });
   });
 }
 
-export async function bakeWithBlender({ io, doc, bake, skyImages = null, outDir, onProgress }) {
-  const exe = await blenderExe();
-  if (!exe) throw new Error('no Blender executable found (set THAIKIT_BLENDER_EXE); export with --baker none to skip the lightmap');
+export async function bakeWithBlender({ io, doc, bake, skyImages = null, outDir, onProgress, host = false, cpu = false, signal }) {
+  const exe = host ? null : await blenderExe();
+  if (!host && !exe) throw new Error('no Blender executable found (set THAIKIT_BLENDER_EXE); export with --baker none to skip the lightmap');
   await fs.mkdir(outDir, { recursive: true });
 
   const map = splitForBlender(doc);
@@ -123,25 +122,6 @@ export async function bakeWithBlender({ io, doc, bake, skyImages = null, outDir,
   const inFile = path.join(outDir, 'in.glb');
   await io.write(inFile, doc);
   onProgress?.(`${map.size} static meshes to unwrap and bake`);
-
-  const lm = bake.settings?.lightmap ?? {};
-  const moon = bake.lights.find((l) => l.role === 'moon') ?? null;
-  const moonDir = moon?.direction ?? [-0.4, -1, -0.3];
-  const moonRgb = hexToLinear(moon?.color ?? '#b8c7f2');
-  const hemi = bake.settings?.environment?.hemisphere ?? {};
-  const skyRgb = hexToLinear(hemi.sky ?? '#8797c2');
-  const args = [
-    '-b', '--python', toBlenderPath(SCRIPT), '--',
-    '--glb', toBlenderPath(inFile), '--out', toBlenderPath(outDir),
-    // `--size` is the CEILING now; the atlas is derived from the density below.
-    '--size', String(lm.size ?? 4096), '--samples', String(lm.samples ?? 128),
-    `--texels-per-meter=${lm.texelsPerMeter ?? 8}`,
-    // '=' form: a value starting with '-' (a downward moon) reads as an option otherwise.
-    `--moon=${[...moonDir, ...moonRgb, moon?.intensity ?? 0.6].map((n) => n.toFixed(4)).join(',')}`,
-    `--sky=${[...skyRgb, hemi.intensity ?? 0.35].map((n) => n.toFixed(4)).join(',')}`,
-    `--ground=${hexToLinear(hemi.ground ?? '#2a2620').map((n) => n.toFixed(4)).join(',')}`,
-    '--exposure', String(lm.exposure ?? 1),
-  ];
 
   // THE SKY LIGHTS THE BAKE.
   //
@@ -156,39 +136,50 @@ export async function bakeWithBlender({ io, doc, bake, skyImages = null, outDir,
   // therefore introduces no second interpretation of the source -- the bake is
   // lit by exactly the pixels the player will see behind the geometry.
   const faces = skyImages?.baseFaces ?? null;
+  let envFile = null;
   if (faces) {
-    const envFile = path.join(outDir, 'env.png');
+    envFile = path.join(outDir, 'env.png');
     // 1024 is plenty: diffuse GI is a low-pass filter, and the world dome is
     // only ever integrated over hemispheres. Paying for 2048 buys nothing.
     const equirect = await cubeToEquirect(faces, { width: 1024 });
     await fs.writeFile(envFile, equirect);
-    // `sky.base.intensity` ALONE. It used to be multiplied by
-    // `environment.hemisphere.intensity`, which made the ambient dial on the
-    // level tab a hidden second gain on the bake's world -- invisible in the
-    // editor (where the hemisphere light is retired the moment IBL is on and
-    // the probe prefilters the sky instead), so the one dial labelled "ambient
-    // intensity" changed nothing you could see and silently rescaled every
-    // future lightmap. The hemisphere settings are the NO-SKY fallback ramp
-    // now, nothing else, and they still reach Blender that way through
-    // `--sky` / `--ground` below.
-    const skyIntensity = bake.settings?.sky?.base?.intensity ?? 1;
-    args.push(`--env=${toBlenderPath(envFile)}`);
-    args.push(`--env-strength=${skyIntensity.toFixed(4)}`);
-    // NEGATED on purpose. The runtime turns the DOME by +rotationDeg, which
-    // moves the image with it; Blender's Mapping node (type POINT) rotates the
-    // LOOKUP VECTOR instead, and rotating the lookup by +phi makes the content
-    // appear to turn by -phi. glTF's +Y and Blender's +Z agree in handedness
-    // under the (x, y, z) -> (x, -z, y) swizzle used for the moon, so the only
-    // correction needed is the sign. `thepurge` bakes at rotationDeg 0, so this
-    // is derived rather than measured -- check it against a picture the first
-    // time a level actually turns its sky.
-    args.push(`--env-rotation=${(-(bake.settings?.sky?.base?.rotationDeg ?? 0)).toFixed(3)}`);
-    onProgress?.(`world lit by the level's own sky (1024x512 equirect, strength ${skyIntensity.toFixed(3)})`);
-  } else {
-    onProgress?.('no sky image; the world is the hemisphere ramp');
   }
-  onProgress?.(`running ${path.basename(exe)} (up to ${lm.size ?? 4096}², ${lm.texelsPerMeter ?? 8} texels/m, ${lm.samples ?? 128} samples)`);
-  await runBlender(exe, args, (line) => onProgress?.(line));
+  // `sky.base.intensity` ALONE. It used to be multiplied by
+  // `environment.hemisphere.intensity`, which made the ambient dial on the
+  // level tab a hidden second gain on the bake's world -- invisible in the
+  // editor (where the hemisphere light is retired the moment IBL is on and
+  // the probe prefilters the sky instead), so the one dial labelled "ambient
+  // intensity" changed nothing you could see and silently rescaled every
+  // future lightmap. The hemisphere settings are the NO-SKY fallback ramp
+  // now, nothing else, and they still reach Blender that way through
+  // `--sky` / `--ground`.
+  //
+  // The env ROTATION is NEGATED on purpose. The runtime turns the DOME by
+  // +rotationDeg, which moves the image with it; Blender's Mapping node (type
+  // POINT) rotates the LOOKUP VECTOR instead, and rotating the lookup by +phi
+  // makes the content appear to turn by -phi. glTF's +Y and Blender's +Z agree
+  // in handedness under the (x, y, z) -> (x, -z, y) swizzle used for the moon,
+  // so the only correction needed is the sign. `thepurge` bakes at rotationDeg
+  // 0, so this is derived rather than measured -- check it against a picture
+  // the first time a level actually turns its sky.
+  const spec = blenderBakeSpec({ bake, cpu, hasEnv: Boolean(envFile) });
+  if (spec.env) onProgress?.(`world lit by the level's own sky (1024x512 equirect, strength ${spec.env.strength.toFixed(3)})`);
+  else onProgress?.('no sky image; the world is the hemisphere ramp');
+
+  const paths = { script: SCRIPT, glb: inFile, out: outDir, env: envFile };
+  const where = `up to ${spec.size}², ${spec.texelsPerMeter} texels/m, ${spec.samples} samples, cpu ${cpu ? 'on' : 'off'}`;
+  if (host) {
+    // Repo-relative for the wire. The script is named by its FIXED repo path
+    // rather than through toRepoRelative(): in the container this module lives
+    // under /app while REPO_ROOT is /repo, so the relative form would be
+    // `../app/...` -- and the agent only runs the one script anyway.
+    const rel = { script: HOST_SCRIPT, glb: toRepoRelative(paths.glb), out: toRepoRelative(paths.out), env: paths.env ? toRepoRelative(paths.env) : null };
+    onProgress?.(`running blender.exe on the host via ${agentUrl() ?? 'THAIKIT_BAKE_AGENT_URL (unset)'} (${where})`);
+    await runBlenderOnHost({ spec, paths: rel, level: bake.id }, (line) => onProgress?.(line), { signal });
+  } else {
+    onProgress?.(`running ${path.basename(exe)} in the container (${where})`);
+    await runBlender(exe, buildBlenderArgs(spec, paths, toBlenderPath), (line) => onProgress?.(line), { signal });
+  }
 
   const outFile = path.join(outDir, 'out.glb');
   const baked = await io.read(outFile);

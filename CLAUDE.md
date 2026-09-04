@@ -649,6 +649,25 @@ placed geometry. Export writes a second, self-contained GLB.
   datablock with `users > 1`. **The thing that caught it was arithmetic, not looking**: the summed
   UV areas came to 115% of an atlas, and a correct pack cannot exceed 100%. That check is a warning
   in the bake now, and it is the standing test for this class of fault.
+- **The pack gutter is TEXELS, set after the atlas size is known -- never a fraction per island.**
+  `bake_lightmap.py` packed with `margin=0.004, margin_method='FRACTION'`: 16 px at 4096 around
+  EVERY island, which was fine for the 18 islands the ground-tile era had and impossible for the
+  **107,753** that smart-project makes of `thepurge`'s 466 merged static meshes (310k boxy polygons:
+  every box face is its own island, ~3 polygons each). The pack overflowed the unit square (u ran
+  to 2.98), `measure_density()` saw no UV area, the atlas was written at the ceiling and EMPTY --
+  probe coverage 0 -- and every multi-hour bake of that level shipped a black lightmap while the
+  log said only "no measurable UV area; using the ceiling". Measured on the same `in.glb` in
+  Blender 5.2.1: FRACTION 0.004 -> area 0.0000; the operator defaults (SCALED 0.001) -> 1.5% of
+  the atlas, in bounds; margin 0 -> 80%. The angle limit does not matter (66° and 89° both give
+  ~107k islands). Now it packs TWICE: gutterless to measure density and choose the size, then
+  with `--gutter` (default 2) texels at THAT size as an `ADD` margin (absolute UV units, half per
+  side), stepping the atlas up once if the gutter drops the density under half the request.
+  `thepurge` at 4096²: 60.1% covered, 10.0 texels/m against 8 requested, p90/p10 1.26. The
+  bake's own dilation (`render.bake.margin`, 8 px at 4096) still fills the gutter from the nearest
+  island, so 2 texels is enough for bilinear sampling. A 512² test ceiling cannot hold 107k
+  islands with any gutter -- use `--lightmap-size 2048` for the cheap round trip on this level;
+  the time is per-object anyway. The log now says `WARNING ... the lightmap will be EMPTY` when
+  the post-pack area is zero, and it names the island count.
 - **`texelsPerMeter` is real, and `--size` is now the CEILING.** It sat in the schema and the
   editor's defaults read by NOTHING, so the density a level got was an accident of how much surface
   it contained -- a small level wasted most of a 4096 atlas and a big one starved every prop.
@@ -782,6 +801,35 @@ placed geometry. Export writes a second, self-contained GLB.
   returns an absolute path unchanged unless it is actually bridging to Windows.
   Pass vector args as `--moon=-0.4,...`: a value starting with `-` reads as an
   option to argparse.
+- **Two bakers, and the host one is an AGENT.** The export dialog's `lightmap` dropdown offers
+  `blender` (the container's Linux Blender, CUDA) and `blender-host` (the Windows Blender on the
+  host, OptiX). The web server spawns every bake INSIDE the container, which cannot exec
+  `blender.exe` and does not see `/mnt/c`, so host mode hands the Blender step to
+  `scripts/level/bake-host-agent.mjs` (`npm run level:bake-agent`, run on the host and left
+  running) over HTTP at `host.docker.internal:3734` -- the one process in this repo that runs on
+  the host, because what it runs IS the host's Blender. The spec crosses the wire with
+  REPO-RELATIVE paths and the agent respells them with the existing `toBlenderPath()` UNC bridge;
+  `in.glb` and `out.glb` never move, they sit on the shared mount. Both bakers assemble their argv
+  from ONE function, `buildBlenderArgs()` in `scripts/level/bakers/blender-args.mjs`, so they
+  cannot drift on flags. The script path goes across as the fixed string
+  `scripts/level/bakers/bake_lightmap.py`, not through `toRepoRelative()`: in the container the
+  module lives under `/app` while `REPO_ROOT` is `/repo`, so the relative form is `../app/...`.
+  **`--cpu` is OFF by default in both.** `bake_lightmap.py` used to force every CPU device on
+  beside the GPU (`d.use = d.type == kind or d.type == 'CPU'`), which is Cycles' hybrid mode and
+  on a fast card is usually SLOWER -- the frame waits for the CPU's tiles. `--device GPU|GPU+CPU|CPU`
+  is the switch; the `cycles device:` line now names every enabled device and says `cpu on/off`,
+  and it also fires when NO backend matched (it used to fall through silently with
+  `compute_device_type` left at the last kind tried). Read that line, not the dropdown, to know
+  what ran. **Cancel** is `DELETE /api/levels/:id/bake`: the pipeline is spawned `detached` so one
+  SIGTERM to the process group takes the container's Blender down with it; in host mode the
+  pipeline drops the agent's request and the agent kills `blender.exe` -- by the PID Blender
+  logs on its own first line (`[thaikit] pid N`), because a signal to the WSL interop stub does
+  not reliably reach the Windows process and `taskkill /IM` would also kill a Blender the user
+  has open. The agent watches the RESPONSE's `close`, not the request's: an `IncomingMessage`
+  emits `close` once its body is consumed, so a listener on `req` never sees the socket drop.
+  **Measured on `thepurge` at 512²/16 (2026-09-04): container CUDA and host OptiX both run 63 s
+  per 47-object batch, cpu off** -- the cost is per-object bake-operator overhead, so the backend
+  is not what a large level's bake time is made of.
 - **The bake runs on the GPU via CUDA, and OPTIX IS UNREACHABLE UNDER WSL2.**
   `compose.yaml` and `compose.prod.yaml` both reserve the GPU
   (`deploy.resources.reservations.devices`, `driver: nvidia`) and set

@@ -14,7 +14,7 @@ import { exportGlb } from '../doc/toGlb.js';
  * Nothing here references thaikit at runtime -- that is the point of the file
  * this becomes.
  */
-export async function buildExportScene(doc, catalogue, orphans, { onProgress } = {}) {
+export async function buildExportScene(doc, catalogue, orphans, { onProgress, signal } = {}) {
   const scene = new THREE.Scene();
   scene.name = doc.name;
   const cellSize = doc.settings?.cellSize ?? 24;
@@ -22,6 +22,7 @@ export async function buildExportScene(doc, catalogue, orphans, { onProgress } =
   const missing = [];
 
   for (const [i, p] of doc.placements.entries()) {
+    if (signal?.aborted) throw new DOMException('export cancelled', 'AbortError');
     const item = catalogue.byRef[p.ref];
     let source = null;
     let proto = null;

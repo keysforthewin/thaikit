@@ -184,14 +184,17 @@ export const packsApi = {
   job: (id) => request(`/api/packs/jobs/${id}`, {}, null),
 };
 
-levelsApi.bake = async (id, glbBytes, { baker = 'blender' } = {}) => {
-  const res = await bytesRequest(`/api/levels/${id}/bake?baker=${encodeURIComponent(baker)}`, {
+levelsApi.bake = async (id, glbBytes, { baker = 'blender', cpu = false, signal } = {}) => {
+  const res = await bytesRequest(`/api/levels/${id}/bake?baker=${encodeURIComponent(baker)}&cpu=${cpu ? 1 : 0}`, {
     method: 'POST',
     headers: { 'content-type': 'model/gltf-binary' },
     body: glbBytes,
+    signal,
   }, null);
   return res.json();
 };
+levelsApi.cancelBake = (id) => request(`/api/levels/${id}/bake`, { method: 'DELETE' }, null);
+levelsApi.bakeAgent = () => request('/api/levels/bake-agent', {}, null);
 levelsApi.build = (id) => request(`/api/levels/${id}/build`, {}, null);
 
 /**

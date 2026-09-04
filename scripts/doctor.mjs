@@ -135,10 +135,18 @@ async function main() {
       return `gltf-transform ${core.VERSION ?? 'ok'}, meshopt ok`;
     }),
 
-    check('blender.exe (headless lightmap bake)', async () => {
+    check('blender (headless lightmap bake)', async () => {
       const exe = await blenderExe();
       if (!exe) throw new Error('no blender executable found; set THAIKIT_BLENDER_EXE');
       return exe;
+    }),
+
+    check('host bake agent (lightmap on the host Blender)', async () => {
+      const { probeAgent } = await import('./level/bakers/host-agent-client.mjs');
+      const a = await probeAgent();
+      if (!a.url) return 'THAIKIT_BAKE_AGENT_URL unset (container bake only)';
+      if (!a.reachable) throw new Error(`${a.url}: ${a.error}; on the host run: npm run level:bake-agent`);
+      return `${a.url} -> ${a.exe}`;
     }),
 
     // Kept, but no skill is on this path any more: generation is procedural

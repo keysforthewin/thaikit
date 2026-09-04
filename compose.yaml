@@ -65,11 +65,20 @@ services:
       # Blender and npm both want somewhere to write. Without it they land on /,
       # which the container user cannot write.
       HOME: /tmp
+      # The HOST bake agent (`npm run level:bake-agent`, on the host). The web
+      # server spawns every bake in here, and in here there is no blender.exe
+      # and no /mnt/c -- so "host Blender" in the export dialog hands the Blender
+      # step to that agent over HTTP. host.docker.internal is mapped below.
+      THAIKIT_BAKE_AGENT_URL: http://host.docker.internal:${THAIKIT_BAKE_AGENT_PORT:-3734}
+      THAIKIT_BAKE_AGENT_TOKEN: ${THAIKIT_BAKE_AGENT_TOKEN:-}
     # The GPU reservation. `docker compose run` honours this too, which is what
     # makes `docker compose run --rm web node scripts/level/bake-level.mjs`
     # a GPU bake and not a very slow CPU one. Requires nvidia-container-toolkit
     # on the host and `nvidia` registered as a docker runtime
     # (`sudo nvidia-ctk runtime configure --runtime=docker`).
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
     deploy:
       resources:
         reservations:

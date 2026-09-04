@@ -23,7 +23,8 @@ import { LevelExtras, emptyLevelGltf, CUBE_FACES, faceFromFilename } from '@thai
 
 import { parseGlb, buildGlb, rewriteGlbJson, levelExtrasOf } from '../../../../scripts/lib/glb.mjs';
 import { unzipSync } from '../../../../scripts/lib/unzip.mjs';
-import { runBake, bakeStatus } from '../lib/bake.js';
+import { runBake, bakeStatus, cancelBake, BAKERS } from '../lib/bake.js';
+import { probeAgent } from '../../../../scripts/level/bakers/host-agent-client.mjs';
 
 const CreateInput = z.object({ name: z.string().min(1), id: z.string().optional() });
 
@@ -180,6 +181,12 @@ export function levelsRouter(state) {
     }
   });
 
+  /** Is the host bake agent up? What the export dialog shows beside "host Blender". */
+  router.get('/levels/bake-agent', async (req, res) => {
+    res.json(await probeAgent());
+  });
+
+  // Registered BEFORE /levels/:id, or that pattern eats it.
   router.get('/levels/:id', async (req, res, next) => {
     try {
       const buf = await readLevel(req.params.id);
@@ -255,13 +262,23 @@ export function levelsRouter(state) {
         await fs.mkdir(buildDir, { recursive: true });
         await writeFileAtomic(path.join(buildDir, 'raw.glb'), req.body);
         const baker = typeof req.query.baker === 'string' ? req.query.baker : 'blender';
-        const job = runBake(state, { id, baker });
+        // Unvalidated, a typo here used to mean "no lightmap" with no error.
+        if (!BAKERS.includes(baker)) return res.status(400).json({ error: `baker must be one of ${BAKERS.join(', ')}` });
+        const cpu = req.query.cpu === '1' || req.query.cpu === 'true';
+        const job = runBake(state, { id, baker, cpu });
         res.status(202).json({ jobId: job.id, level: id, rawBytes: req.body.length });
       } catch (err) {
         next(err);
       }
     },
   );
+
+  /** Cancel the running bake: SIGTERM to its process group, `cancelled` over SSE when it closes. */
+  router.delete('/levels/:id/bake', guard, (req, res) => {
+    const job = cancelBake(req.params.id);
+    if (!job) return res.status(404).json({ error: 'no bake is running for this level' });
+    res.status(202).json({ jobId: job.id, level: req.params.id, status: job.status });
+  });
 
   router.get('/levels/:id/build', async (req, res, next) => {
     try {

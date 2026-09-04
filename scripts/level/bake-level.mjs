@@ -12,7 +12,14 @@
  * result is one JSON line on stdout.
  *
  * Usage:
- *   node scripts/level/bake-level.mjs --level <id> [--baker blender|none] [--resume-from 2|3|4]
+ *   node scripts/level/bake-level.mjs --level <id> [--baker blender|blender-host|none] [--cpu] [--resume-from 2|3|4]
+ *
+ * `blender` is the container's Linux Blender (CUDA); `blender-host` hands the
+ * Blender step to the host agent (`npm run level:bake-agent`, Windows Blender,
+ * OptiX). `--cpu` adds the CPU devices to the GPU -- off by default, because
+ * hybrid rendering on a fast card is usually slower than the GPU alone.
+ * SIGTERM cancels: the Blender child (or the host agent's request) is taken
+ * down with it and the process exits 130.
  */
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -38,6 +45,12 @@ import { findKtx, KTX_INSTALL_HINT } from './pipeline/ktx2.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const VERSION = '0.1.0';
+const BAKERS = ['blender', 'blender-host', 'none'];
+
+// One controller for the whole run: SIGTERM (the server's cancel) aborts it,
+// which kills the Blender child or drops the host agent's request.
+const cancel = new AbortController();
+process.on('SIGTERM', () => { if (!cancel.signal.aborted) { progress('cancelled', 'cancelled by user'); cancel.abort(); setTimeout(() => process.exit(130), 200).unref(); } });
 
 const progress = (phase, message, extra = {}) => process.stderr.write(`${JSON.stringify({ phase, message, ...extra })}\n`);
 
@@ -67,6 +80,8 @@ async function main() {
   const id = String(args.level ?? '');
   if (!id) return fail('need --level <id>');
   const baker = String(args.baker ?? 'blender');
+  if (!BAKERS.includes(baker)) return fail(`--baker must be one of ${BAKERS.join('|')}, got ${baker}`);
+  const cpu = Boolean(args.cpu);
   const resumeFrom = Number(args['resume-from'] ?? 1);
   // Test-time overrides for the lightmap; the level's own settings otherwise.
   const lightmapOverride = { size: args['lightmap-size'] ? Number(args['lightmap-size']) : null, samples: args.samples ? Number(args.samples) : null };
@@ -132,15 +147,15 @@ async function main() {
     if (lightmapOverride.size || lightmapOverride.samples) {
       bake.settings = { ...bake.settings, lightmap: { ...(bake.settings?.lightmap ?? {}), ...(lightmapOverride.size ? { size: lightmapOverride.size } : {}), ...(lightmapOverride.samples ? { samples: lightmapOverride.samples } : {}) } };
     }
-    if (baker === 'blender' && bake.settings?.lightmap?.enabled !== false) {
-      const result = await bakeWithBlender({ io, doc, bake, skyImages, outDir: path.join(buildDir, 'lightmap'), onProgress: (m) => progress('lightmap', m) });
+    if (baker !== 'none' && bake.settings?.lightmap?.enabled !== false) {
+      const result = await bakeWithBlender({ io, doc, bake, skyImages, outDir: path.join(buildDir, 'lightmap'), onProgress: (m) => progress('lightmap', m), host: baker === 'blender-host', cpu, signal: cancel.signal });
       doc = result.doc;
       lightmapPng = result.lightmapPng;
       lightmapStats = result.lightmapStats;
       if (lightmapStats) await fs.writeFile(path.join(buildDir, 'lightmap', 'lightmap.json'), JSON.stringify(lightmapStats));
       await fs.writeFile(path.join(buildDir, 'lightmap', 'lightmap.png'), lightmapPng);
     } else {
-      progress('lightmap', 'skipped (baker: none); static geometry will be lit by the real-time moon');
+      progress('lightmap', `skipped (${baker === 'none' ? 'baker: none' : 'lightmap disabled in the level settings'}); static geometry will be lit by the real-time moon`);
     }
     await io.write(stage(2), doc);
   } else {
@@ -210,4 +225,7 @@ async function main() {
   });
 }
 
-main().catch((err) => { progress('failed', err.message); fail(err); });
+main().catch((err) => {
+  if (cancel.signal.aborted) { fail(new Error('cancelled')); process.exit(130); }
+  progress('failed', err.message); fail(err);
+});

@@ -226,15 +226,26 @@ moves one item into `@thai-kit`. See `docs/adopting-packs.md`.
 ```
 npm run dev                                   # editor at /level
 npm run packs:install -- --source @scifi-kit/registry
-npm run level:bake -- --level <id> [--baker none]
+npm run level:bake -- --level <id> [--baker blender|blender-host|none] [--cpu]
 npm run level:verify -- --level <id> --strict
 npm run level:smoke -- --level <id>           # renders it through the runtime, headlessly
 npm run compress:maps -- --all                # KTX2 siblings for every shipped webp
 ```
 
-Requirements for the bake: [KTX-Software](https://github.com/KhronosGroup/KTX-Software/releases)
-for KTX2 (extract the .deb into `~/.local/opt/ktx`, no root needed) and Blender for the lightmap;
-`npm run doctor` checks both.
+The bake needs nothing on the host: `ktx` (KTX-Software) and a Linux Blender are in the image,
+and the container bakes the lightmap on the GPU through CUDA. To bake it on the **host's** Blender
+instead -- the Windows one, which under WSL2 is the only way to reach OptiX -- run the bake agent
+on the host and pick "host Blender" in the export dialog:
+
+```
+npm run level:bake-agent                      # on the host; leave it running
+npm run level:bake -- --level <id> --baker blender-host
+```
+
+The agent (`scripts/level/bake-host-agent.mjs`) is the one thing here that runs outside the
+container, because what it runs is the host's `blender.exe`; the container reaches it at
+`host.docker.internal:3734`. Both bakers take `--cpu` to add the CPU to the GPU (Cycles' hybrid
+mode, off by default: on a fast card it is usually slower). `npm run doctor` checks all of it.
 
 ## Using a level in your game
 

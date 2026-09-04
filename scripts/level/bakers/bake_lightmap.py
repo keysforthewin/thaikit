@@ -2,7 +2,8 @@
 Bake a level's lightmap in Blender, headless.
 
     blender -b --python bake_lightmap.py -- --glb in.glb --out <dir> --size 4096 --samples 128
-        --moon dx,dy,dz,r,g,b,strength --sky r,g,b,strength [--exposure 1.0] [--device GPU]
+        --moon dx,dy,dz,r,g,b,strength --sky r,g,b,strength [--exposure 1.0]
+        [--device GPU|GPU+CPU|CPU] [--gutter 2] [--texels-per-meter 8]
 
 Reads the level's static geometry (the lod0 meshes under every cell_* node),
 unwraps a second UV layer across all of them into ONE atlas, and bakes two
@@ -24,6 +25,7 @@ re-exported with the lightmap UVs as TEXCOORD_1 so the Node side can swap the
 vertex data back in by node name.
 """
 import argparse
+import os
 import json
 import math
 import struct
@@ -32,6 +34,7 @@ import sys
 import time
 
 import bpy
+import bmesh
 import numpy as np
 from mathutils import Vector
 
@@ -49,10 +52,21 @@ ap.add_argument('--env-strength', type=float, default=1.0)
 ap.add_argument('--env-rotation', type=float, default=0.0)
 ap.add_argument('--exposure', type=float, default=1.0)
 ap.add_argument('--margin', type=float, default=0.004)
+# Gap between packed islands, in TEXELS of the final atlas. The old pack used
+# `--margin` as a FRACTION of the atlas around every island, which is 16 px at
+# 4096 -- fine for 18 islands, impossible for the 107,740 that smart-project
+# makes of a real level's 310k boxy polygons: the pack overflowed the unit
+# square (u ran to 2.98) and every bake of that level shipped an EMPTY atlas.
+ap.add_argument('--gutter', type=float, default=2.0)
 # Requested lightmap density. `--size` is the CEILING the derived size is capped
 # at, not the size itself; see the atlas block below.
 ap.add_argument('--texels-per-meter', type=float, default=8.0)
-ap.add_argument('--device', default='AUTO')
+# Which Cycles devices to enable. GPU: the first working backend of
+# OPTIX/CUDA/HIP/ONEAPI/METAL and nothing else. GPU+CPU: the same plus every
+# CPU device -- Cycles' hybrid mode, which used to be forced here and is usually
+# SLOWER on a fast card (the CPU tiles hold up the frame). CPU: no probe at all.
+# AUTO is an alias for GPU, kept so an older caller still means what it meant.
+ap.add_argument('--device', default='GPU', choices=['AUTO', 'GPU', 'GPU+CPU', 'CPU'])
 # Objects per bake call. Cycles' bake operator is one blocking call with no
 # progress of its own, so the only way to report any is to hand it the work in
 # batches. See bake_batched() for why this does not change the result.
@@ -64,6 +78,11 @@ T0 = time.time()
 
 def log(msg):
     print(f'[thaikit] {time.time() - T0:6.1f}s {msg}', flush=True)
+
+# The host bake agent kills THIS process by PID on a cancel. Blender started
+# through WSL interop is the child of a stub whose PID is not the Windows one,
+# so the only reliable way to name it is to have it say so itself.
+log(f'pid {os.getpid()}')
 
 
 def floats(s):
@@ -169,12 +188,56 @@ bpy.context.view_layer.objects.active = static[0]
 log('unwrapping (smart project + pack)')
 bpy.ops.object.mode_set(mode='EDIT')
 bpy.ops.mesh.select_all(action='SELECT')
-bpy.ops.uv.smart_project(angle_limit=math.radians(66), island_margin=0.001, correct_aspect=True, scale_to_bounds=False)
-try:
-    bpy.ops.uv.pack_islands(margin=args.margin, rotate=True, scale=True, margin_method='FRACTION')
-except TypeError:
-    bpy.ops.uv.pack_islands(margin=args.margin, rotate=True)
+bpy.ops.uv.smart_project(angle_limit=math.radians(66), island_margin=0.0, correct_aspect=True, scale_to_bounds=False)
 bpy.ops.object.mode_set(mode='OBJECT')
+
+
+def pack(margin_uv):
+    """Pack every static island into the unit square with `margin_uv` added on
+    each side (ADD: absolute UV units, so the gap is the same for a 1 m box face
+    and the ground tile). scale=True so the islands FILL the square."""
+    bpy.ops.object.mode_set(mode='EDIT')
+    bpy.ops.mesh.select_all(action='SELECT')
+    try:
+        bpy.ops.uv.pack_islands(margin=margin_uv, rotate=True, scale=True, margin_method='ADD')
+    except TypeError:
+        bpy.ops.uv.pack_islands(margin=margin_uv, rotate=True)
+    bpy.ops.object.mode_set(mode='OBJECT')
+
+
+def count_islands():
+    """UV islands across the static set: faces joined by an edge whose UVs agree on both sides."""
+    n = 0
+    for obj in static:
+        bm = bmesh.new()
+        bm.from_mesh(obj.data)
+        uv = bm.loops.layers.uv['lightmap']
+        seen = set()
+        for f in bm.faces:
+            if f.index in seen:
+                continue
+            n += 1
+            seen.add(f.index)
+            stack = [f]
+            while stack:
+                cur = stack.pop()
+                for l in cur.loops:
+                    for l2 in l.edge.link_loops:
+                        g = l2.face
+                        if g is cur or g.index in seen:
+                            continue
+                        if (l[uv].uv - l2.link_loop_next[uv].uv).length < 1e-6 and (l.link_loop_next[uv].uv - l2[uv].uv).length < 1e-6:
+                            seen.add(g.index)
+                            stack.append(g)
+        bm.free()
+    return n
+
+
+# First pack with NO gutter: that measures how much surface there is per atlas
+# and decides the size. The gutter is then a known number of texels of THAT
+# size, and a second pack lays the islands out with it.
+pack(0.0)
+log(f'{count_islands():,} UV islands across {len(static)} static objects')
 
 # --- bake target -------------------------------------------------------------
 #
@@ -229,15 +292,32 @@ def measure_density():
     return mid, world_area, uv_area, (p10, p90)
 
 
+def choose_size(median):
+    needed = args.texels_per_meter / median
+    return int(min(args.size, max(512, 2 ** math.ceil(math.log2(max(1.0, needed)))))), needed
+
+
 median, world_area, uv_area, spread = measure_density()
 if median and median > 0:
-    needed = args.texels_per_meter / median
-    size = int(min(args.size, max(512, 2 ** math.ceil(math.log2(max(1.0, needed))))))
-    achieved = median * size
-    log(f'atlas {size}² (wanted {int(needed)}, ceiling {args.size}); '
-        f'{world_area:.0f} m² of surface, packing uses {uv_area * 100:.1f}% of the atlas')
-    log(f'density {achieved:.1f} texels/m requested {args.texels_per_meter:g} '
-        f'(p10 {spread[0] * size:.1f}, p90 {spread[1] * size:.1f})')
+    size, needed = choose_size(median)
+    log(f'atlas {size}² from the gutterless pack (wanted {int(needed)}, ceiling {args.size}); '
+        f'{world_area:.0f} m² of surface, islands cover {uv_area * 100:.1f}% of the atlas before the gutter')
+    # The real pack: `--gutter` texels between islands at this size. ADD margin
+    # is per SIDE, so half the gutter each. The gutter costs area, which drops
+    # the density; if that leaves the level under what it asked for and the
+    # ceiling allows, step the atlas up once and pack again for the new size.
+    for _ in range(3):
+        pack(args.gutter / (2.0 * size))
+        median, world_area, uv_area, spread = measure_density()
+        achieved = median * size
+        log(f'packed with a {args.gutter:g} texel gutter: islands cover {uv_area * 100:.1f}% of {size}², '
+            f'density {achieved:.1f} texels/m requested {args.texels_per_meter:g} '
+            f'(p10 {spread[0] * size:.1f}, p90 {spread[1] * size:.1f})')
+        bigger, _ = choose_size(median)
+        if achieved >= args.texels_per_meter * 0.5 or bigger <= size:
+            break
+        size = bigger
+        log(f'under half the requested density; stepping the atlas up to {size}² and packing again')
     if uv_area > 1.0:
         # A correct pack fits every island inside 0..1 exactly once, so the UV
         # areas cannot sum past the atlas. Over 100% means islands OVERLAP, and
@@ -254,7 +334,7 @@ if median and median > 0:
         log(f'WARNING density is under half what was asked for; raise --size above {args.size}')
 else:
     size = args.size
-    log(f'atlas {size}² (no measurable UV area; using the ceiling)')
+    log(f'WARNING atlas {size}² (no measurable UV area after packing; the lightmap will be EMPTY)')
 
 img_rgb = bpy.data.images.new('lm_rgb', size, size, alpha=False, float_buffer=True)
 img_shadow = bpy.data.images.new('lm_shadow', size, size, alpha=False, float_buffer=True)
@@ -401,23 +481,42 @@ except (AttributeError, TypeError):
     pass  # Blender < 3.1
 scene.render.bake.use_clear = True  # overridden to False before the batched bake
 scene.render.bake.use_selected_to_active = False
-if args.device in ('AUTO', 'GPU'):
+hybrid_cpu = args.device == 'GPU+CPU'
+if args.device in ('AUTO', 'GPU', 'GPU+CPU'):
     try:
         prefs = bpy.context.preferences.addons['cycles'].preferences
+        picked = None
         for kind in ('OPTIX', 'CUDA', 'HIP', 'ONEAPI', 'METAL'):
             try:
                 prefs.compute_device_type = kind
                 prefs.get_devices()
                 if any(d.type == kind for d in prefs.devices):
                     for d in prefs.devices:
-                        d.use = d.type == kind or d.type == 'CPU'
+                        d.use = d.type == kind or (hybrid_cpu and d.type == 'CPU')
                     scene.cycles.device = 'GPU'
-                    log(f'cycles device: {kind}')
+                    picked = kind
                     break
             except Exception:
                 continue
+        if picked:
+            enabled = [d.name for d in prefs.devices if d.use]
+            log(f'cycles device: {picked} ({", ".join(enabled)}; cpu {"on" if hybrid_cpu else "off"})')
+        else:
+            # The loop used to fall out here silently with compute_device_type
+            # left at the LAST kind tried, so a bake with no GPU printed nothing
+            # about it. Say so, and leave the preference honest.
+            try:
+                prefs.compute_device_type = 'NONE'
+            except Exception:
+                pass
+            scene.cycles.device = 'CPU'
+            log('cycles device: CPU (no GPU backend found)')
     except Exception as exc:
+        scene.cycles.device = 'CPU'
         log(f'no GPU ({exc}); CPU')
+else:
+    scene.cycles.device = 'CPU'
+    log('cycles device: CPU (requested)')
 
 def hms(seconds):
     """Compact duration: 45s, 6m12s, 1h04m."""
