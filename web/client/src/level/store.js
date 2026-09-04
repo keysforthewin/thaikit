@@ -33,7 +33,7 @@ export const useLevel = create((set, get) => ({
   // game does. That is why a sky authored here looked magnified next to the
   // same panorama in a 360 visualiser. Anchoring the horizontal instead means
   // the viewport shows the same slice of the world whatever the panels do.
-  view: { grid: true, axes: true, cells: false, colliders: false, helpers: true, wireframe: false, sockets: false, fov: 90 },
+  view: { grid: true, axes: true, cells: false, bounds: false, colliders: false, helpers: true, wireframe: false, sockets: false, fov: 90 },
 
   catalogue: { packs: [], items: [], byRef: {} },
   catalogueError: null,

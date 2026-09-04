@@ -48,6 +48,7 @@ export function useHotkeys(handlers, disabled = false) {
       else if (!ctrl && k === 't') handlers.space?.();
       else if (!ctrl && k === 'g') handlers.toggle?.('grid');
       else if (!ctrl && k === 'b') handlers.toggle?.('cells');
+      else if (!ctrl && k === 'u') handlers.toggle?.('bounds');
       else if (!ctrl && k === 'x') handlers.toggle?.('colliders');
       else if (!ctrl && k === 'n') handlers.add?.();
       else if (!ctrl && k === 'v') handlers.surfaceSnap?.();

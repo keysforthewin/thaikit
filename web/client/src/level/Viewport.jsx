@@ -14,6 +14,7 @@ import { LightNode, SpawnNode } from './Lights.jsx';
 import { SelectionGizmo } from './SelectionGizmo.jsx';
 import { SnapHint } from './SnapHint.jsx';
 import { CellOverlay } from './CellOverlay.jsx';
+import { BakeBoundsOverlay } from './BakeBoundsOverlay.jsx';
 import { PlayMode } from './play/PlayMode.jsx';
 import { FlyControls } from './FlyControls.jsx';
 
@@ -165,6 +166,7 @@ export function Viewport({ stats }) {
         {doc.lights.map((l) => <LightNode key={l.id} light={l} />)}
         {doc.spawns.map((s) => <SpawnNode key={s.id} spawn={s} />)}
         {view.cells && stats && !play && <CellOverlay stats={stats} cellSize={cellSize} />}
+        {view.bounds && !play && <BakeBoundsOverlay cellSize={cellSize} />}
         {!play && <SnapHint />}
         {!play && <SelectionGizmo />}
         {play && <PlayMode />}

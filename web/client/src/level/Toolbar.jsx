@@ -56,6 +56,7 @@ export function Toolbar({ onAdd, onAddLight, onAddSpawn, onJoin }) {
         <Btn on={view.grid} onClick={() => toggleView('grid')} title="grid — G">grid</Btn>
         <Btn on={view.axes} onClick={() => toggleView('axes')} title="axes at the origin">axes</Btn>
         <Btn on={view.cells} onClick={() => toggleView('cells')} title="the bake's spatial cells and what each merges to — B">cells</Btn>
+        <Btn on={view.bounds} onClick={() => toggleView('bounds')} title="the world box the bake unwraps: static placements plus the ground tiles, with its size — U">bounds</Btn>
         <Btn on={view.colliders} onClick={() => toggleView('colliders')} title="physics compounds — X">colliders</Btn>
         <Btn on={view.sockets} onClick={() => toggleView('sockets')} title="named sockets">sockets</Btn>
         <Btn on={view.helpers} onClick={() => toggleView('helpers')} title="light helpers">helpers</Btn>
