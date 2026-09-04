@@ -109,9 +109,22 @@ export function ExportModal({ onClose }) {
   };
 
   const busy = phase === 'building' || phase === 'baking';
+  const [copied, setCopied] = useState(false);
+  const copyStart = async () => {
+    try { await navigator.clipboard.writeText(agent.startCommand); setCopied(true); setTimeout(() => setCopied(false), 1500); } catch { /* no clipboard; the text is selectable */ }
+  };
   const hostHint = baker === 'blender-host' && agent && (agent.reachable
     ? <span className="score-good small">host agent: reachable · {agent.exe?.split(/[\\/]/).pop()}{agent.busy ? ` · busy with ${agent.busy.level}` : ''}</span>
-    : <span className="score-bad small">host agent not running — on the host run <span className="mono">npm run level:bake-agent</span></span>);
+    : (
+      <div className="small">
+        <div className="score-bad">host agent not running. Open a terminal on this machine (the WSL shell, not the container), paste this, and leave it running:</div>
+        <div className="row" style={{ alignItems: 'center', gap: 8, marginTop: 4 }}>
+          <code className="mono" style={{ flex: '0 1 auto', userSelect: 'all', padding: '4px 8px', background: 'rgba(127,127,127,0.15)', borderRadius: 4 }}>{agent.startCommand}</code>
+          <button type="button" style={{ flex: '0 0 auto' }} onClick={copyStart}>{copied ? 'copied' : 'copy'}</button>
+          <button type="button" style={{ flex: '0 0 auto' }} onClick={() => levelsApi.bakeAgent().then(setAgent).catch(() => {})}>check again</button>
+        </div>
+      </div>
+    ));
   return (
     <Modal title="Export level" onClose={busy ? undefined : onClose} width="min(820px, 94vw)">
       <p className="muted" style={{ marginTop: 0 }}>

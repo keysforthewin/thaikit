@@ -183,7 +183,11 @@ export function levelsRouter(state) {
 
   /** Is the host bake agent up? What the export dialog shows beside "host Blender". */
   router.get('/levels/bake-agent', async (req, res) => {
-    res.json(await probeAgent());
+    // `startCommand` is what a person pastes into a HOST terminal; the repo path
+    // is the host's spelling (compose passes $PWD), never the container's /app.
+    const repoHost = process.env.THAIKIT_REPO_HOST || null;
+    const startCommand = `cd ${repoHost ?? '<thaikit checkout>'} && npm run level:bake-agent`;
+    res.json({ ...(await probeAgent()), repoHost, startCommand });
   });
 
   // Registered BEFORE /levels/:id, or that pattern eats it.
