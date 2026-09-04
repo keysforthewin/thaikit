@@ -904,7 +904,9 @@ placed geometry. Export writes a second, self-contained GLB.
 - `packages/level-schema/` — zod schemas for the level GLB extras and the export manifest.
 - `packages/level-runtime/` — `loadLevel()` for a game (cells + LOD, lights, lightmap, Rapier
   colliders, per-cell BVH) and `loadLevelHeadless()` for a server.
-- `levels/` — level projects (`<id>/level.glb`, tracked) and their `build/` (gitignored).
+- `levels/` — level projects: `<id>/level.glb` (GITIGNORED since 2026-09-04 -- it is re-saved whole and
+  `thepurge` reached 158 MB against GitHub's 100 MB limit; back it up yourself), `<id>/sky/` sidecars
+  (tracked) and `build/` (gitignored).
 - `packs/` — installed vibe3d packs (gitignored; `packs/index.json` is the record).
 - `scratch/` — gitignored; every build's working directory, and where
   img2threejs writes its state, spec and renders.
