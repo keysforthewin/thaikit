@@ -90,3 +90,38 @@ test('the default ground is off, and grey enough to see when it is on', () => {
   assert.equal(DEFAULT_GROUND.enabled, false);
   assert.equal(DEFAULT_GROUND.color, '#8b909b');
 });
+
+test('the margin wraps the whole map, not only the sides that cross a cell line', () => {
+  // A 10 x 6 m map at (5..15, 10..16) with a 1 m margin: the floor must end
+  // exactly 1 m past every side. It used to snap out to whole 24 m cells, so
+  // the two sides nearest a cell line jumped a whole cell and the others did
+  // not move at all.
+  const e = groundExtent([box(10, 13, 10, 6)], { cellSize: 24, margin: 1 });
+  assert.deepEqual([e.minX, e.maxX, e.minZ, e.maxZ], [4, 16, 9, 17]);
+  assert.equal(e.width, 12);
+  assert.equal(e.depth, 8);
+  assert.equal(e.tiles.length, 1);
+  const [t] = e.tiles;
+  assert.deepEqual([t.minX, t.maxX, t.minZ, t.maxZ], [4, 16, 9, 17]);
+  assert.deepEqual([t.cx, t.cz, t.width, t.depth], [10, 13, 12, 8]);
+});
+
+test('tiles are cells clipped to the rectangle, and cover it exactly', () => {
+  const e = groundExtent([box(20, 30, 40, 20)], { cellSize: 24, margin: 2 });
+  // -2..42 in x spans cells -1, 0, 1; 18..42 in z spans cells 0 and 1.
+  assert.deepEqual([e.ix0, e.ix1, e.iz0, e.iz1], [-1, 1, 0, 1]);
+  const area = e.tiles.reduce((a, t) => a + t.width * t.depth, 0);
+  assert.ok(Math.abs(area - e.width * e.depth) < 1e-9, 'tile areas sum to the rectangle');
+  for (const t of e.tiles) {
+    assert.ok(t.width > 0 && t.depth > 0, 'no degenerate tile');
+    assert.ok(t.minX >= t.ix * 24 - 1e-9 && t.maxX <= (t.ix + 1) * 24 + 1e-9, 'tile stays inside its cell');
+    assert.ok(t.minX >= e.minX && t.maxX <= e.maxX && t.minZ >= e.minZ && t.maxZ <= e.maxZ, 'tile stays inside the rectangle');
+  }
+});
+
+test('an edge sitting exactly on a cell line claims no zero-width tile', () => {
+  // 0..24 after the margin: exactly one cell, not a second empty one at ix=1.
+  const e = groundExtent([box(12, 12, 22, 22)], { cellSize: 24, margin: 1 });
+  assert.deepEqual([e.minX, e.maxX], [0, 24]);
+  assert.equal(e.tiles.length, 1);
+});

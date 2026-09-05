@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import { useLevel } from './store.js';
 import { findEntity, ownerOf } from './ids.js';
 import { expandIds, groupMap, isGroupId, selectionRoots } from './groups.js';
+import { centroidOf, groupRotationOf, setGroupRotation, translateLeaves } from './groupTransform.js';
 import { isStatic } from './cells.js';
 import { isBillboard } from '@thai-kit/level-runtime/billboard';
 import { DEFAULT_GROUND } from './ground.js';
@@ -26,7 +27,7 @@ function Vec({ label, value, onCommit, step, scale = 1 }) {
       <label>{label}</label>
       <div className="vec">
         {['x', 'y', 'z'].map((axis, i) => (
-          <Num key={axis} value={+(value[i] * scale).toFixed(4)} step={step} onCommit={(n) => { const next = [...value]; next[i] = n / scale; onCommit(next); }} />
+          <Num key={axis} value={+(value[i] * scale).toFixed(scale === 1 ? 4 : 2)} step={step} onCommit={(n) => { const next = [...value]; next[i] = n / scale; onCommit(next); }} />
         ))}
       </div>
     </div>
@@ -324,9 +325,38 @@ export function PropertiesPanel() {
     );
   } else {
     const placements = found.filter((f) => f.kind === 'placement');
+    // A group or a multi-select has no transform node, so its position is the
+    // centroid of its members -- the point the gizmo turns them about -- and
+    // editing it moves them all by the difference. The rotation field is a
+    // single group's remembered turn; see groupTransform.js.
+    const centroid = centroidOf(doc, ids);
+    const group = selectedGroups.length === 1 ? selectedGroups[0] : null;
+    const what = group ? `group “${group.name}”` : `${found.length} objects`;
     body = (
       <>
         <div className="muted">{found.length} selected</div>
+        {centroid && (
+          <Vec
+            label="position (m)"
+            value={centroid}
+            step={0.05}
+            onCommit={(v) => commit(`move ${what}`, (d) => translateLeaves(d, ids, v.map((n, i) => n - centroid[i])))}
+          />
+        )}
+        {group && (
+          <Vec
+            label="rotation (°)"
+            value={groupRotationOf(group)}
+            step={1}
+            scale={180 / Math.PI}
+            onCommit={(v) => commit(`rotate ${what}`, (d) => setGroupRotation(d, group, ids, v))}
+          />
+        )}
+        {centroid && (
+          <div className="muted small">
+            position is the centre of the members; {group ? 'rotation turns them about it and remembers every turn given to the group' : 'editing it moves them together'}
+          </div>
+        )}
         {placements.length > 0 && (
           <>
             <Tri label="static" value={placements.every((f) => f.entity.static === placements[0].entity.static) ? placements[0].entity.static : null} inherit onChange={(v) => edit('static', (x, k) => { if (k === 'placement') x.static = v; })} />

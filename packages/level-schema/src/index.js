@@ -353,10 +353,14 @@ export const LevelExtras = z.object({
    * groups so they can be dragged, turned and scaled as one; it has NO
    * transform of its own and no geometry, so nothing in the bake, the manifest
    * or the runtime reads it. `children` holds entity ids or other group ids,
-   * and every id appears in at most one group.
+   * and every id appears in at most one group. `rotation` (radians, XYZ) is
+   * an accumulator for the properties panel's rotation field -- every turn
+   * the assembly has been given, composed -- not a transform anything applies.
    */
   groups: z
-    .array(z.object({ id: z.string().min(1), name: z.string().default('group'), children: z.array(z.string()).default([]) }))
+    .array(z.object({
+      id: z.string().min(1), name: z.string().default('group'), children: z.array(z.string()).default([]), rotation: Vec3.default([0, 0, 0]),
+    }))
     .default([]),
 });
 

@@ -78,7 +78,7 @@ export async function buildProjectScene(doc, catalogue, orphans, { onProgress } 
     updatedAt: now,
     settings: doc.settings,
     packs: [...packsInUse.values()],
-    groups: (doc.groups ?? []).map((g) => ({ id: g.id, name: g.name, children: g.children })),
+    groups: (doc.groups ?? []).map((g) => ({ id: g.id, name: g.name, children: g.children, rotation: g.rotation ?? [0, 0, 0] })),
     spawns: doc.spawns.map((s) => ({ name: s.name, position: s.position, yawDeg: s.yawDeg ?? 0, team: s.team ?? null })),
   };
   await settleImages(scene);

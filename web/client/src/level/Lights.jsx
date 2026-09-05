@@ -3,10 +3,10 @@ import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
 import { useLevel } from './store.js';
-import { rootOf, selectedSet } from './groups.js';
+import { selectedSet } from './groups.js';
 import { registerNode } from './nodes.js';
 import { targetIdOf } from './ids.js';
-import { gizmoOwnsPointer } from './gizmoRef.js';
+import { pickUnderPointer } from './pick.js';
 
 const HANDLE = 0xffd36b;
 const SELECTED = 0x7ee787;
@@ -89,18 +89,12 @@ export function LightNode({ light }) {
   }, [obj, light.type]);
   useEffect(() => { helperRef.current = helper; return () => helper.dispose(); }, [helper]);
 
-  // The gizmo has first claim on a click; Ctrl reaches past it. A light handle
-  // is drawn with depthTest off, so without this it is ALWAYS in front of the
-  // widget attached to it.
-  const onPick = (id) => (e) => {
-    if (e.button !== 0) return;
-    if (!e.ctrlKey && !e.metaKey && gizmoOwnsPointer(e)) return;
-    e.stopPropagation();
-    // A joined light picks up its group, like any other member. The aim handle
-    // is always its own: dragging a group by a light's target makes no sense.
-    const st = useLevel.getState();
-    select(e.altKey || id !== light.id ? id : rootOf(st.doc, id), { toggle: e.shiftKey });
-  };
+  // Selection is shared with everything else pickable -- see pick.js: the
+  // gizmo has first claim, Ctrl reaches past it, and a repeat click at the
+  // same spot cycles to what is behind. A light handle is drawn depthTest-off,
+  // so it is visible inside a building whose pick box is in front of it, and
+  // the cycle is how it gets clicked there.
+  const onPick = (e) => pickUnderPointer(e, { doc: useLevel.getState().doc, select });
   const color = selected ? SELECTED : HANDLE;
 
   return (
@@ -109,14 +103,14 @@ export function LightNode({ light }) {
       {light.direction && <primitive object={obj.target} />}
       {showHelpers && <primitive object={helper} />}
       <group ref={handleRef} name={light.id}>
-        <mesh onPointerDown={onPick(light.id)} renderOrder={996}>
+        <mesh onPointerDown={onPick} renderOrder={996}>
           {light.type === 'directional' ? <sphereGeometry args={[0.6, 16, 12]} /> : <sphereGeometry args={[0.25, 16, 12]} />}
           <meshBasicMaterial color={color} wireframe={!selected} transparent opacity={0.9} depthTest={false} />
         </mesh>
       </group>
       {targetPos && (
         <group ref={targetRef} name={targetIdOf(light.id)}>
-          <mesh onPointerDown={onPick(targetIdOf(light.id))} renderOrder={996}>
+          <mesh onPointerDown={onPick} renderOrder={996}>
             <torusGeometry args={[0.35, 0.05, 8, 24]} />
             <meshBasicMaterial color={color} depthTest={false} transparent opacity={0.9} />
           </mesh>
@@ -140,12 +134,7 @@ export function SpawnNode({ spawn }) {
     <group ref={ref} name={spawn.id}>
       <mesh
         position={[0, 0.9, 0]}
-        onPointerDown={(e) => {
-          if (!e.ctrlKey && !e.metaKey && gizmoOwnsPointer(e)) return;
-          e.stopPropagation();
-          const st = useLevel.getState();
-          select(e.altKey ? spawn.id : rootOf(st.doc, spawn.id), { toggle: e.shiftKey });
-        }}
+        onPointerDown={(e) => pickUnderPointer(e, { doc: useLevel.getState().doc, select })}
       >
         <capsuleGeometry args={[0.3, 1.2, 4, 8]} />
         <meshBasicMaterial color={selected ? SELECTED : 0x4ec98a} wireframe transparent opacity={0.8} />

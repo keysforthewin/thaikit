@@ -7,8 +7,8 @@ import { useLevel } from './store.js';
 import { registerNode, GEOMETRY_NAME } from './nodes.js';
 import { getPrototype, instantiate, releaseInstance } from '../three/instances.js';
 import { unitGeometry, COLLIDER_COLORS } from '../three/colliderGeometry.js';
-import { gizmoOwnsPointer } from './gizmoRef.js';
-import { rootOf, selectedSet } from './groups.js';
+import { pickUnderPointer } from './pick.js';
+import { selectedSet } from './groups.js';
 
 const MISSING = 0xe2686d;
 const SELECTED = 0x7ee787;
@@ -123,18 +123,7 @@ export function PlacementNode({ placement }) {
       <mesh
         position={center}
         scale={size}
-        onPointerDown={(e) => {
-          if (e.button !== 0) return;
-          // The widget wins the click. A gizmo handle sits inside the thing it
-          // moves as often as not, so depth cannot arbitrate; Ctrl is the way
-          // through to whatever is behind it.
-          if (!e.ctrlKey && !e.metaKey && gizmoOwnsPointer(e)) return;
-          e.stopPropagation();
-          // Clicking a joined object picks up the whole assembly; Alt is how
-          // you reach the individual piece inside it.
-          const st = useLevel.getState();
-          select(e.altKey ? placement.id : rootOf(st.doc, placement.id), { toggle: e.shiftKey });
-        }}
+        onPointerDown={(e) => pickUnderPointer(e, { doc: useLevel.getState().doc, select })}
       >
         <boxGeometry />
         <meshBasicMaterial transparent opacity={0} depthWrite={false} colorWrite={false} />

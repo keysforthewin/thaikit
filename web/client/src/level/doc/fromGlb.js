@@ -26,7 +26,7 @@ export async function parseLevelGlb(arrayBuffer) {
     // Editor-only grouping. Pruned on the first commit, so a group naming
     // objects an older file no longer has quietly disappears rather than
     // showing an empty folder.
-    groups: (extras.groups ?? []).map((g) => ({ id: g.id, name: g.name ?? 'group', children: [...(g.children ?? [])] })),
+    groups: (extras.groups ?? []).map((g) => ({ id: g.id, name: g.name ?? 'group', children: [...(g.children ?? [])], rotation: g.rotation ?? [0, 0, 0] })),
     placements: [], lights: [], spawns: [],
   };
   const orphans = new Map();

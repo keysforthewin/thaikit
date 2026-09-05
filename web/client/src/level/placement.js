@@ -30,11 +30,15 @@ function radiusOf(item) {
 }
 
 /**
+ * @param {object} [opts]
+ * @param {number[]} [opts.fallback] used when there is no camera yet.
+ * @param {number} [opts.standoff] metres to back a surface hit off along the
+ *        view ray (a light, which must not sit inside what it lights).
  * @returns { position:[x,y,z], on: 'object' | 'ground' | 'view' } -- `on` is
  *          what the status line tells the user, so a surprising placement
  *          explains itself.
  */
-export function placementPoint(doc, item, { fallback = [0, 0, 0] } = {}) {
+export function placementPoint(doc, item, { fallback = [0, 0, 0], standoff = 0 } = {}) {
   const view = getViewport();
   const camera = view?.camera;
   const ground = groundOf(doc);
@@ -68,6 +72,13 @@ export function placementPoint(doc, item, { fallback = [0, 0, 0] } = {}) {
   if (best) {
     // A quad dropped exactly on a surface z-fights it: lift it clear.
     best.point.y += thinLift(item?.size?.h ?? 1);
+    // `standoff` backs the point off the surface ALONG THE VIEW RAY, so it
+    // stays under the crosshair while clearing the geometry -- what a lamp
+    // wants, since a light sitting on a wall lights none of that wall.
+    if (standoff > 0) {
+      const back = Math.min(standoff, best.distance * 0.5);
+      best.point.addScaledVector(raycaster.ray.direction, -back);
+    }
     return { position: best.point.toArray(), on: best.on };
   }
 
@@ -82,6 +93,6 @@ export function placementPoint(doc, item, { fallback = [0, 0, 0] } = {}) {
   );
   // The prop's origin is its BASE, so lower it by half its height to put the
   // item itself on the camera axis rather than hanging above it.
-  centrePoint.y -= (item?.size?.h ?? 1) / 2;
+  if (item) centrePoint.y -= (item.size?.h ?? 1) / 2;
   return { position: centrePoint.toArray(), on: 'view' };
 }

@@ -30,7 +30,16 @@ export const DEFAULT_GROUND = { enabled: false, y: 0, color: '#8b909b', margin: 
 export const groundOf = (doc) => ({ ...DEFAULT_GROUND, ...(doc?.settings?.ground ?? {}) });
 
 /**
- * The cell rectangle the ground covers.
+ * The rectangle the ground covers, and the tiles that make it up.
+ *
+ * The rectangle is the walkable bounds grown by `margin` ON EVERY SIDE. It is
+ * NOT snapped to the cell grid: it used to be, and a 1 m margin then moved an
+ * edge only where bounds + margin happened to cross a cell line -- two sides of
+ * the floor jumped out by a whole 24 m cell and the other two did not move at
+ * all. The cells still decide how the floor is CUT (one tile per cell, so it
+ * merges, lightmaps and LODs like the props standing on it), but a tile is
+ * the intersection of its cell with the rectangle, so the edge tiles are
+ * narrower than a cell and the floor ends exactly `margin` past the last prop.
  *
  * BILLBOARDS ARE NOT GROUND. A yaw-billboarded quad is backdrop -- a skyline
  * imposter standing kilometres away to fill the horizon -- and nobody walks to
@@ -50,6 +59,7 @@ export const groundOf = (doc) => ({ ...DEFAULT_GROUND, ...(doc?.settings?.ground
  *
  * @param boxes  [{ min:[x,y,z], max:[x,y,z], billboard? }] -- every placement's footprint.
  * @returns { ix0, iz0, ix1, iz1, minX, minZ, maxX, maxZ, width, depth, tiles, truncated, excluded }
+ *   where each tile is { ix, iz, cx, cz, width, depth, minX, minZ, maxX, maxZ }.
  */
 export function groundExtent(boxes, { cellSize = 24, margin = 8 } = {}) {
   let minX = Infinity;
@@ -66,24 +76,40 @@ export function groundExtent(boxes, { cellSize = 24, margin = 8 } = {}) {
   // An empty level still gets a floor to stand on -- one cell at the origin.
   if (!Number.isFinite(minX)) { minX = -cellSize / 2; maxX = cellSize / 2; minZ = -cellSize / 2; maxZ = cellSize / 2; }
 
-  const ix0 = Math.floor((minX - margin) / cellSize);
-  const ix1 = Math.floor((maxX + margin) / cellSize);
-  const iz0 = Math.floor((minZ - margin) / cellSize);
-  const iz1 = Math.floor((maxZ + margin) / cellSize);
+  const m = Math.max(0, Number.isFinite(margin) ? margin : 0);
+  minX -= m; maxX += m; minZ -= m; maxZ += m;
+
+  // The cells the rectangle touches. The upper index is `ceil - 1` rather than
+  // `floor`, so an edge sitting exactly on a cell line does not claim a
+  // zero-width tile in the next cell over.
+  const ix0 = Math.floor(minX / cellSize);
+  const ix1 = Math.max(ix0, Math.ceil(maxX / cellSize) - 1);
+  const iz0 = Math.floor(minZ / cellSize);
+  const iz1 = Math.max(iz0, Math.ceil(maxZ / cellSize) - 1);
 
   const tiles = [];
   const count = (ix1 - ix0 + 1) * (iz1 - iz0 + 1);
   for (let ix = ix0; ix <= ix1 && tiles.length < MAX_TILES; ix += 1) {
     for (let iz = iz0; iz <= iz1 && tiles.length < MAX_TILES; iz += 1) {
-      tiles.push({ ix, iz, cx: (ix + 0.5) * cellSize, cz: (iz + 0.5) * cellSize });
+      // The cell, clipped to the rectangle: interior tiles are whole cells,
+      // edge tiles stop where the margin does.
+      const tMinX = Math.max(minX, ix * cellSize);
+      const tMaxX = Math.min(maxX, (ix + 1) * cellSize);
+      const tMinZ = Math.max(minZ, iz * cellSize);
+      const tMaxZ = Math.min(maxZ, (iz + 1) * cellSize);
+      tiles.push({
+        ix, iz,
+        cx: (tMinX + tMaxX) / 2, cz: (tMinZ + tMaxZ) / 2,
+        width: tMaxX - tMinX, depth: tMaxZ - tMinZ,
+        minX: tMinX, minZ: tMinZ, maxX: tMaxX, maxZ: tMaxZ,
+      });
     }
   }
   return {
     ix0, iz0, ix1, iz1,
-    minX: ix0 * cellSize, minZ: iz0 * cellSize,
-    maxX: (ix1 + 1) * cellSize, maxZ: (iz1 + 1) * cellSize,
-    width: (ix1 - ix0 + 1) * cellSize,
-    depth: (iz1 - iz0 + 1) * cellSize,
+    minX, minZ, maxX, maxZ,
+    width: maxX - minX,
+    depth: maxZ - minZ,
     tiles,
     truncated: count > MAX_TILES,
     wanted: count,

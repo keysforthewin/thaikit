@@ -25,6 +25,9 @@ import { cloneEntities } from './duplicate.js';
 import { defaultMoon, defaultPointLight, defaultSpotLight, round4 } from './defaults.js';
 import { nodeFor } from './nodes.js';
 import { placementPoint } from './placement.js';
+
+/** How far a new lamp stands off the surface under the crosshair, in metres. */
+const LIGHT_STANDOFF = 0.25;
 import { evictUnused, itemKey } from '../three/instances.js';
 import { PlayHud } from './play/PlayHud.jsx';
 
@@ -149,18 +152,26 @@ export default function LevelEditor({ initialId }) {
 
   const addLight = useCallback((type) => {
     const st = useLevel.getState();
-    const at = st.lastGroundHit;
-    const light = type === 'directional' ? defaultMoon() : type === 'point' ? defaultPointLight([at[0], 3, at[2]]) : defaultSpotLight([at[0], 5, at[2]]);
+    // Same answer as a prop: the point under the crosshair. A lamp exactly ON
+    // the surface it hit lights none of it, so it is backed off along the view
+    // ray -- which keeps it dead centre on screen -- rather than lifted in y.
+    const { position, on } = placementPoint(st.doc, null, { fallback: st.lastGroundHit, standoff: LIGHT_STANDOFF });
+    const at = position.map(round4);
+    const light = type === 'directional' ? defaultMoon() : type === 'point' ? defaultPointLight(at) : defaultSpotLight(at);
     st.commit(`add ${light.name}`, (d) => { d.lights.push(light); });
     st.select(light.id);
+    if (type !== 'directional') st.setStatus(on === 'view' ? 'placed in front of the camera' : 'placed under the crosshair');
   }, []);
 
   const addSpawn = useCallback(() => {
     const st = useLevel.getState();
-    const at = st.lastGroundHit;
+    // Under the crosshair, like a prop: a spawn's origin is the player's feet,
+    // so the surface the ray hit is exactly where they stand.
+    const { position, on } = placementPoint(st.doc, null, { fallback: st.lastGroundHit });
     const id = newSpawnId();
-    st.commit('add spawn', (d) => { d.spawns.push({ id, name: `spawn${d.spawns.length + 1}`, position: [round4(at[0]), 0, round4(at[2])], yawDeg: 0, team: null }); });
+    st.commit('add spawn', (d) => { d.spawns.push({ id, name: `spawn${d.spawns.length + 1}`, position: position.map(round4), yawDeg: 0, team: null }); });
     st.select(id);
+    st.setStatus(on === 'object' ? 'placed on the surface under the crosshair' : on === 'ground' ? 'placed on the ground' : 'placed in front of the camera');
   }, []);
 
   const removeSelected = useCallback(() => {

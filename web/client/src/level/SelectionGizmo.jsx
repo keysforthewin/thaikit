@@ -10,8 +10,10 @@ import { groundOf } from './ground.js';
 import { roundVec, norm } from './defaults.js';
 import { cloneEntities } from './duplicate.js';
 import { mods } from './modifiers.js';
-import { expandIds } from './groups.js';
+import { expandIds, isGroupId, selectionRoots } from './groups.js';
+import { composeGroupRotations } from './groupTransform.js';
 import { setGizmo, getGizmo } from './gizmoRef.js';
+import { gizmoShouldYield } from './pick.js';
 
 const _m = new THREE.Matrix4();
 const _delta = new THREE.Matrix4();
@@ -100,10 +102,12 @@ export function SelectionGizmo() {
    * nothing committed.
    */
   useEffect(() => {
-    const apply = () => {
+    const apply = (e) => {
       const c = getGizmo();
       if (!c || c.dragging) return;
-      c.enabled = !mods.ctrl;
+      // A repeat click cycling to what is behind the selection also takes the
+      // widget out of the way for that click -- see gizmoShouldYield.
+      c.enabled = !mods.ctrl && !(e.type === 'pointerdown' && gizmoShouldYield(e));
     };
     const types = ['keydown', 'keyup', 'pointerdown', 'pointermove', 'pointerup', 'blur'];
     for (const t of types) window.addEventListener(t, apply, true);
@@ -278,6 +282,16 @@ export function SelectionGizmo() {
         } else if (found.kind === 'spawn') {
           e.position = roundVec(o.position.toArray());
           e.yawDeg = +THREE.MathUtils.radToDeg(new THREE.Euler().setFromQuaternion(o.quaternion, 'YXZ').y).toFixed(2);
+        }
+      }
+      // A turn given to a group is remembered on it, so the panel's rotation
+      // field reads the assembly's accumulated turn rather than 0 for ever.
+      if (mode === 'rotate') {
+        const groups = selectionRoots(doc, selection.map(ownerOf)).filter(isGroupId);
+        if (groups.length) {
+          d.pivotStart.decompose(_pos, _quat, _scl);
+          const turn = pivot.quaternion.clone().multiply(_quat.invert());
+          composeGroupRotations(doc, groups, turn);
         }
       }
     });

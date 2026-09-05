@@ -144,18 +144,27 @@ function addGround(doc, scene, placements, cellSize) {
   if (extent.truncated) {
     console.warn(`[level] the ground wants ${extent.wanted} tiles and is capped at ${extent.tiles.length}; the floor will not cover the whole map`);
   }
-  const geometry = new THREE.PlaneGeometry(cellSize, cellSize);
   // One material for every tile: the pipeline dedups identical materials, and
-  // an identical one per tile is what lets the cells merge cleanly.
+  // an identical one per tile is what lets the cells merge cleanly. Geometry is
+  // shared per SIZE -- interior tiles are whole cells and dedup to one quad;
+  // the edge tiles, clipped to the margin, get a quad of their own size each.
   const material = new THREE.MeshStandardMaterial({ color: new THREE.Color(ground.color), roughness: 1, metalness: 0 });
-  const half = cellSize / 2;
+  const geometries = new Map();
+  const geometryFor = (w, d) => {
+    const key = `${w.toFixed(4)}x${d.toFixed(4)}`;
+    let g = geometries.get(key);
+    if (!g) { g = new THREE.PlaneGeometry(w, d); geometries.set(key, g); }
+    return g;
+  };
 
   for (const t of extent.tiles) {
     const id = `ground_${t.ix}_${t.iz}`;
     const cell = cellKey(t.ix, t.iz);
     const tk = { kind: 'placement', placement: id, asset: '@thaikit/ground', cell, static: true };
+    const hw = t.width / 2;
+    const hd = t.depth / 2;
 
-    const mesh = new THREE.Mesh(geometry, material);
+    const mesh = new THREE.Mesh(geometryFor(t.width, t.depth), material);
     mesh.rotation.x = -Math.PI / 2;
     mesh.receiveShadow = true;
     mesh.castShadow = false;
@@ -172,12 +181,12 @@ function addGround(doc, scene, placements, cellSize) {
     placements.push({
       id, ref: '@thaikit/ground', static: true, cell, ix: t.ix, iz: t.iz,
       position: [t.cx, ground.y, t.cz], rotation: [0, 0, 0], scale: [1, 1, 1],
-      bounds: { min: [t.cx - half, ground.y - GROUND_THICKNESS, t.cz - half], max: [t.cx + half, ground.y, t.cz + half] },
+      bounds: { min: [t.minX, ground.y - GROUND_THICKNESS, t.minZ], max: [t.maxX, ground.y, t.maxZ] },
       physics: { enabled: false, massKg: null },
       destructionGroups: [],
       // Half-extents, hanging BELOW the surface so the walkable face is exactly
       // the rendered one.
-      colliders: [{ name: 'ground', type: 'box', offset: [0, -GROUND_THICKNESS / 2, 0], scale: [half, GROUND_THICKNESS / 2, half], isTrigger: false }],
+      colliders: [{ name: 'ground', type: 'box', offset: [0, -GROUND_THICKNESS / 2, 0], scale: [hw, GROUND_THICKNESS / 2, hd], isTrigger: false }],
       colliderYaw: 0,
     });
   }

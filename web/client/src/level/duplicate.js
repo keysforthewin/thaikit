@@ -26,7 +26,7 @@ export function cloneEntities(draft, ids, offset = [0, 0, 0]) {
       if (!g) return null;
       const children = g.children.map(copyOne).filter(Boolean);
       if (!children.length) return null;
-      const clone = { id: newGroupId(), name: `${g.name} copy`, children };
+      const clone = { id: newGroupId(), name: `${g.name} copy`, children, rotation: [...(g.rotation ?? [0, 0, 0])] };
       (draft.groups ??= []).push(clone);
       return clone.id;
     }

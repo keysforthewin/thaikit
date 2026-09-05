@@ -238,3 +238,7 @@ export const useLevel = create((set, get) => ({
 /** Convenience selectors. */
 export const selectSelected = (s) => s.selection;
 export const selectDoc = (s) => s.doc;
+
+// The live store beside `window.__r3f`, so a debugging session can read the
+// selection and the doc off the page instead of inferring them from colours.
+if (import.meta.env.DEV && typeof window !== 'undefined') window.__level = useLevel;

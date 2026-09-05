@@ -183,8 +183,11 @@ placed geometry. Export writes a second, self-contained GLB.
 - **The ground plane is a SETTING that bakes as tiles.** `settings.ground` (enabled, y, colour,
   margin) is one flat walkable surface under the whole map -- there is exactly one, it cannot be
   rotated or scaled, and the only thing anyone moves is its height. Its extent is DERIVED from the
-  world bounds of everything placed, expanded by the margin and snapped out to whole cells, so
-  adding a prop at the edge extends the floor under it. `buildExportScene` emits it as one ordinary
+  world bounds of everything placed, expanded by the margin on EVERY side, so adding a prop at
+  the edge extends the floor under it. The rectangle is NOT snapped to the cell grid: it was, and
+  a 1 m margin then only moved the two sides where bounds + margin crossed a cell line, by a whole
+  24 m cell. The cells decide how the floor is CUT, so each tile is its cell clipped to the
+  rectangle and the edge tiles are narrower than a cell. `buildExportScene` emits it as one ordinary
   STATIC placement per cell (`ground_<ix>_<iz>`, `@thaikit/ground`), which is the whole trick:
   partition, join, LOD, the lightmap and the manifest's collider list all key off the placement
   rows, so the floor needs no special case in any of them and the runtime needs no change at all.
@@ -543,7 +546,9 @@ placed geometry. Export writes a second, self-contained GLB.
   cells, the colliders, the manifest and the runtime never learn that groups exist -- which is why
   `groups: [{id, name, children}]` can ride flat on `scene.extras.thaikitLevel` beside `placements`
   and children can be entity ids OR other group ids, to any depth. `web/client/src/level/groups.js`
-  is the whole model: `expandIds` turns the selection into the leaves the gizmo actually moves (it
+  is the whole model (`groupTransform.js` the numeric fields: position is the DERIVED centroid, and
+  `group.rotation` is an accumulator every rotate drag and field edit composes into, so the field
+  can read what the assembly has been turned by instead of 0 for ever): `expandIds` turns the selection into the leaves the gizmo actually moves (it
   drags them exactly as a hand-made multi-select), `rootOf` is what a viewport click resolves to
   (Alt-click reaches the piece inside), and `pruneGroups` -- run inside `commit` -- drops any group
   a delete has emptied, so the outliner never grows folders that name nothing. A group id is only
