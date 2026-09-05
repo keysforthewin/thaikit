@@ -1892,12 +1892,23 @@ function applyDetailPass(root: THREE.Group): void {
     // the leaf: check-coplanar compares the BOUNDING BOX of each merged group, so two groups whose
     // real parts are half a metre apart in z still report their shared x and y planes as a
     // flicker pair. Staggering the envelopes by 5 mm is what actually separates them.
-    reveal.push(box(0.05, FR, DW + 2 * FR, WX, DY0 + DH + FR / 2, DZ));
-    reveal.push(box(0.05, DH + 0.01, FR, WX, DY0 - 0.005 + (DH + 0.01) / 2, DZ - DW / 2 - FR / 2));
-    reveal.push(box(0.05, DH + 0.01, FR, WX, DY0 - 0.005 + (DH + 0.01) / 2, DZ + DW / 2 + FR / 2));
-    // lever handle: backplate and lever, on the leaf's +X face (leaf face at WX + 0.015)
-    reveal.push(box(0.012, 0.16, 0.04, WX + 0.015 + 0.006, DY0 + 0.95, DZ + DW / 2 - 0.10));
-    reveal.push(box(0.05, 0.02, 0.14, WX + 0.015 + 0.03, DY0 + 0.95, DZ + DW / 2 - 0.16));
+    // Door and architrave rebuilt 2026-09-05 the way the casement was: NOTHING behind the wall
+    // plane, every joint an opposed butt. The reveal used to span 3.975..4.025 and the leaf
+    // 3.985..4.015, both half inside the wall, and the jambs ran 5 mm INTO the plinth (top 0.15,
+    // and it stands 30 mm proud of the wall, so the jambs' feet were buried in it too).
+    // Now: leaf 4.000..4.015 with a 5 mm threshold gap over the plinth, architrave 4.004..4.025
+    // standing ON the plinth, backplate on the leaf's face and lever on the backplate's.
+    // The 4 mm float behind the architrave (and 2 mm behind the pane) is for
+    // check-coplanar, which reads each mesh's BOUNDING BOX and would otherwise report the three
+    // groups' backs as a co-facing pair at x = 4.000; nothing can see behind an architrave.
+    const RB = WX + 0.004, RD = 0.025 - 0.004;              // architrave back and depth
+    const LF = WX + 0.015;                                    // leaf face
+    reveal.push(box(RD, FR, DW + 2 * FR, RB + RD / 2, DY0 + DH + FR / 2, DZ));
+    reveal.push(box(RD, DH, FR, RB + RD / 2, DY0 + DH / 2, DZ - DW / 2 - FR / 2));
+    reveal.push(box(RD, DH, FR, RB + RD / 2, DY0 + DH / 2, DZ + DW / 2 + FR / 2));
+    // lever handle: backplate on the leaf's face, lever on the backplate's
+    reveal.push(box(0.012, 0.16, 0.04, LF + 0.006, DY0 + 0.95, DZ + DW / 2 - 0.10));
+    reveal.push(box(0.05, 0.02, 0.14, LF + 0.012 + 0.025, DY0 + 0.95, DZ + DW / 2 - 0.16));
     const fittings = replace('side-fittings', mergeGeos(reveal));
     if (fittings) {
       const m = (fittings.material as THREE.MeshStandardMaterial).clone();
@@ -1909,13 +1920,23 @@ function applyDetailPass(root: THREE.Group): void {
 
     // --- leaf + bulkhead lamp + casement frame and mullion, one geometry, one tone
     const leaf: THREE.BufferGeometry[] = [];
-    leaf.push(box(0.03, DH, DW, WX, DY0 + DH / 2, DZ));
+    leaf.push(box(LF - WX, DH - 0.005, DW, (WX + LF) / 2, DY0 + 0.005 + (DH - 0.005) / 2, DZ));   // 4.000..4.015, threshold gap 5 mm
     leaf.push(box(0.12, 0.09, 0.24, WX + 0.06, DY0 + DH + 0.32, DZ));
-    leaf.push(box(0.04, 0.05, PW + 0.10, WX, WY + PH / 2 + 0.025, WZ));
-    leaf.push(box(0.04, 0.05, PW + 0.10, WX, WY - PH / 2 - 0.025, WZ));
-    leaf.push(box(0.04, PH, 0.05, WX, WY, WZ - PW / 2 - 0.025));
-    leaf.push(box(0.04, PH, 0.05, WX, WY, WZ + PW / 2 + 0.025));
-    leaf.push(box(0.03, PH, 0.04, WX - 0.005, WY, WZ));
+    // Casement, rebuilt 2026-09-05 so that NOTHING passes through the wall plane and every joint
+    // is an opposed butt. It used to straddle x = 4.00: frame 3.98..4.02, mullion 3.98..4.01 and
+    // pane 3.99..4.01 -- so the mullion's +X face and the pane's +X face were coincident and
+    // co-facing over a 0.04 x 0.94 strip, which is the z-fight seen on the right elevation.
+    // Now the frame stands 4.00..4.03 on the wall, the pane 4.00..4.01 sits INSET 20 mm behind
+    // the frame's face, and the mullion 4.01..4.025 sits ON the pane and stops 5 mm short of
+    // the frame face. Pane edges meet the rails' inner faces and the mullion's ends meet the
+    // head and sill, all opposed; the only shared plane is x = 4.00, wall face out, pane and
+    // frame backs in.
+    const FD = 0.03;                                          // frame depth off the wall
+    leaf.push(box(FD, 0.05, PW + 0.10, WX + FD / 2, WY + PH / 2 + 0.025, WZ));
+    leaf.push(box(FD, 0.05, PW + 0.10, WX + FD / 2, WY - PH / 2 - 0.025, WZ));
+    leaf.push(box(FD, PH, 0.05, WX + FD / 2, WY, WZ - PW / 2 - 0.025));
+    leaf.push(box(FD, PH, 0.05, WX + FD / 2, WY, WZ + PW / 2 + 0.025));
+    leaf.push(box(0.013, PH, 0.04, WX + 0.012 + 0.0065, WY, WZ));   // 4.012..4.025, on the pane
     const door = replace('side-door', mergeGeos(leaf));
     if (door) {
       const m = (door.material as THREE.MeshStandardMaterial).clone();
@@ -1928,7 +1949,7 @@ function applyDetailPass(root: THREE.Group): void {
 
     // the pane, recessed inside the frame. It takes the glazing treatment in applyGlazing, which
     // runs after this and overrides the colour there -- see the note on side-window in that pass.
-    replace('side-window', box(0.02, PH, PW, WX, WY, WZ));   // faces 3.99 / 4.01: clear of the wall (4.00) and the frame (4.02)
+    replace('side-window', box(0.01, PH, PW, WX + 0.002 + 0.005, WY, WZ));   // 4.002..4.012: 2 mm off the wall, face 18 mm inside the frame
   }
 
   /* ---- parapet coping: the plate's M2, a flat cap projecting slightly proud of both faces of the

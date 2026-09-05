@@ -126,6 +126,8 @@ export default function App() {
   const [packData, setPackData] = useState(null);
   // So does the Unreal export: it builds every supported prop, not the filtered page.
   const [unrealOpen, setUnrealOpen] = useState(false);
+  // Refs the export dialog opens preselected to (the drawer's button); null is every prop.
+  const [unrealRefs, setUnrealRefs] = useState(null);
   useEffect(() => {
     if (!packsOpen && !unrealOpen) return;
     packsApi.items().then((r) => setPackData({ packs: r.packs, items: r.items })).catch(() => setPackData({ packs: [], items: [] }));
@@ -205,7 +207,7 @@ export default function App() {
         <button onClick={() => setPacksOpen(true)} title="install, refresh or remove vibe3d asset packs">
           packs{meta?.packs ? ` (${Object.keys(meta.packs).length})` : ''}
         </button>
-        <button onClick={() => setUnrealOpen(true)} title="export every built prop as Unreal-ready GLBs with collision and a manifest">
+        <button onClick={() => { setUnrealRefs(null); setUnrealOpen(true); }} title="export every built prop as Unreal-ready GLBs with collision and a manifest">
           export to Unreal
         </button>
         {!health?.readOnly && <button className="primary" onClick={() => setCreating(true)}>+ add asset</button>}
@@ -355,7 +357,7 @@ export default function App() {
         </div>
       )}
 
-      {open && <Drawer itemRef={open} rev={rev} onClose={() => setOpen(null)} onChanged={load} />}
+      {open && <Drawer itemRef={open} rev={rev} onClose={() => setOpen(null)} onChanged={load} onExportUnreal={(ref) => { setUnrealRefs([ref]); setUnrealOpen(true); }} />}
       </div>
       {facet === 'categories' && (
         <FacetDialog
@@ -387,6 +389,7 @@ export default function App() {
         <UnrealExportModal
           packs={packData?.packs ?? []}
           items={packData?.items ?? []}
+          initialRefs={unrealRefs}
           onClose={() => setUnrealOpen(false)}
         />
       )}

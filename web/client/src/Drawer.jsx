@@ -170,7 +170,7 @@ const splitList = (s) => String(s ?? '').split(',').map((t) => t.trim()).filter(
  * The preview, the compound and the runtime tab are the same for both: the
  * installer probed every item the same way.
  */
-export function Drawer({ itemRef, rev, onClose, onChanged }) {
+export function Drawer({ itemRef, rev, onClose, onChanged, onExportUnreal }) {
   const [item, setItem] = useState(null);
   const [asset, setAsset] = useState(null);
   const [override, setOverride] = useState(null);
@@ -460,6 +460,11 @@ export function Drawer({ itemRef, rev, onClose, onChanged }) {
         {!item.editable && <span className="badge" title="a third-party pack item; edits go to a local override">{override ? 'override' : 'pack item'}</span>}
         <span className="grow" />
         {readOnly && <span className="badge" title={readOnlyReason ?? 'this instance is read-only'}>read-only</span>}
+        {item.supported && onExportUnreal && (
+          <button onClick={() => onExportUnreal(item.ref)} title="export this prop alone as an Unreal-ready GLB; on a writable instance it updates exports/unreal/ in place">
+            export to Unreal
+          </button>
+        )}
         {!readOnly && item.editable && item.supported && (
           <button onClick={rebuild} disabled={rebuilding} title="rebuild this prop's bundle, probe and thumbnail from its source">
             {rebuilding ? 'rebuilding…' : 'rebuild'}

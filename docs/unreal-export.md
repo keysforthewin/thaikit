@@ -21,6 +21,11 @@ in the header. The dialog offers:
 | collision | on | The derived or hand-tuned compound ships as `UCX_` meshes Unreal turns into simple collision. |
 | skyline imposters | on | The fifteen yaw-billboarded skyline quads. Off if you have your own skyline. |
 | also write to `exports/unreal/` | on (writable instance only) | Unpacks the zip into the repo so an Unreal project on the same machine imports from disk. |
+| filter + checkboxes | every prop | Type to narrow the list by name, category or tag, then tick the props you want (*all shown* / *none shown*). Anything short of the whole kit is **merged** into `exports/unreal/` rather than replacing it. |
+
+A prop's own drawer has an **export to Unreal** button too: it opens the same dialog
+preselected to that one prop, so after fixing a building you re-export it alone,
+then right-click its `SM_TK_*` asset in Unreal and *Reimport*.
 
 The export runs **in the browser**, for the same reason the level bake starts
 there: the props' textures are canvases that exist only in a page. Every prop is
@@ -80,7 +85,7 @@ the Interchange framework. (5.0 needs the *glTF Importer* plugin turned on.)
    | Common Meshes → **Import Collision According To Mesh Name** | on (default) | Turns the `UCX_` meshes into simple collision. |
    | Materials → **Import Materials** / **Create Material Instances** | on | One material instance per slot, built from Unreal's glTF material functions, vertex-colour multiply included. |
    | Common Meshes → Uniform Scale | 1.0 | glTF is metres, Unreal centimetres; the translator converts. A 0.85 m oil drum arrives 85 cm tall. |
-   | Common Meshes → Build Nanite | off for low-end targets | These are game-ready low-poly meshes; Nanite buys nothing on 2 k triangles. |
+   | Common Meshes → **Build Nanite** | **off** | ON by default since UE 5.5. A Nanite mesh renders every translucent slot with the DEFAULT material (`Invalid material ... used on Nanite static mesh` in the Output Log) and simplifies a door's 15 mm of relief into its wall at distance. These are 2 k-triangle meshes; Nanite buys nothing. |
    | Common Meshes → Generate Lightmap UVs | on | The export ships one UV set; Unreal's baked lighting wants a second. |
 
 4. **Import All.** Each file becomes an `SM_TK_*` Static Mesh with its material
@@ -96,13 +101,23 @@ the Interchange framework. (5.0 needs the *glTF Importer* plugin turned on.)
   Mesh Name* off, or the mesh was renamed on import so the `UCX_` prefix no
   longer matches. Re-import with the option on, or add collision in the Static
   Mesh editor (*Collision → Add Box Simplified Collision*). The manifest's
-  `collisionParts` says how many shapes to expect.
+  `collisionParts` says how many shapes to expect. If the Output Log says
+  `Primitive Mode[LINES] ... Geometry won't be imported` the export is from before
+  2026-09-05, when the `UCX_` meshes were written with a wireframe material and
+  three's exporter wrote them as LINES; re-export.
 - **A flat, grey prop** — the material instance lost its vertex-colour multiply.
   Many props carry their tones in `COLOR_0` rather than a texture. Check the
   instance's parent is one of the `MF_glTF`/`M_glTF` parents Interchange creates.
-- **Glass sorting badly** — translucent slots (windows, shopfronts) export with
-  `alphaMode: BLEND`. Switch the instance's blend mode to *Masked*, or set
-  opacity to 1 with low roughness; the kit authors glass mostly opaque anyway.
+- **A window or sign face that renders as the grey default checker** — the mesh
+  was imported with Nanite on and that slot is translucent. Glass at or above
+  0.8 opacity now exports OPAQUE (the kit authors it as a near-opaque surface,
+  and buildings have no interiors), so only genuinely see-through slots stay
+  `BLEND` -- `manifest.json` lists them per prop as `translucentSlots`. Re-import
+  those props with *Build Nanite* off.
+- **`degenerate tangent bases` / `nearly zero bi-normals` warnings** — a face
+  with no UV area. The export now gives such faces a planar projection in
+  metres, so a current export should log none; an older one is harmless under
+  Lumen but starves those faces of lightmap space under baked lighting.
 - **Signs glow but light nothing** — emissive is colour, not a light. Add a
   Point or Spot Light at the fascia, or turn on Lumen's emissive contribution.
 

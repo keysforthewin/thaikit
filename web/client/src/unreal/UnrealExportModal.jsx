@@ -24,7 +24,7 @@ const fmtMb = (n) => `${(n / 1048576).toFixed(1)} MB`;
  * unpacks it into exports/unreal/ so an Unreal project on the same machine can
  * import straight from the repo.
  */
-export function UnrealExportModal({ packs, items, onClose }) {
+export function UnrealExportModal({ packs, items, onClose, initialRefs = null }) {
   const { readOnly } = useReadOnly();
   const packRows = packs.filter((p) => items.some((it) => it.pack === p.id && it.supported));
   // null means "every pack": the catalogue arrives AFTER the modal mounts, so a
@@ -35,6 +35,11 @@ export function UnrealExportModal({ packs, items, onClose }) {
   const [collision, setCollision] = useState(true);
   const [imposters, setImposters] = useState(true);
   const [saveToServer, setSaveToServer] = useState(true);
+  // Which props: `chosen` is a Set of refs, or null for every prop the pack and
+  // imposter switches let through. The drawer's button opens this preselected
+  // to one ref; the filter box narrows what the list SHOWS, never what it exports.
+  const [chosen, setChosen] = useState(() => (initialRefs?.length ? new Set(initialRefs) : null));
+  const [filter, setFilter] = useState('');
   const [busy, setBusy] = useState(false);
   const [progress, setProgress] = useState(null);
   const [log, setLog] = useState([]);
@@ -48,10 +53,27 @@ export function UnrealExportModal({ packs, items, onClose }) {
   useEffect(() => { logRef.current?.scrollTo(0, logRef.current.scrollHeight); }, [log]);
   useEffect(() => () => { abortRef.current = true; }, []);
 
-  const candidates = items.filter((it) =>
+  const pool = items.filter((it) =>
     it.supported && selected.has(it.pack) && (imposters || !(it.tags ?? []).includes('imposter')));
+  const needle = filter.trim().toLowerCase();
+  const matches = (it) => !needle || [it.title, it.name, it.ref, it.category, ...(it.tags ?? [])].some((s) => String(s ?? '').toLowerCase().includes(needle));
+  const shown = pool.filter(matches);
+  const candidates = pool.filter((it) => !chosen || chosen.has(it.ref));
+  // Anything short of every supported prop is MERGED into exports/unreal/ rather
+  // than replacing it, so a one-building re-export keeps the other 153 on disk.
+  const partial = candidates.length < items.filter((it) => it.supported).length;
 
   const toggle = (id) => { const n = new Set(selected); if (n.has(id)) n.delete(id); else n.add(id); setPicked(n); };
+  const toggleItem = (ref) => {
+    const n = new Set(chosen ?? pool.map((it) => it.ref));
+    if (n.has(ref)) n.delete(ref); else n.add(ref);
+    setChosen(n);
+  };
+  const chooseShown = (on) => {
+    const n = new Set(chosen ?? pool.map((it) => it.ref));
+    for (const it of shown) { if (on) n.add(it.ref); else n.delete(it.ref); }
+    setChosen(n);
+  };
 
   const run = async () => {
     setBusy(true); setError(null); setResult(null); setLog([]); abortRef.current = false;
@@ -90,6 +112,8 @@ export function UnrealExportModal({ packs, items, onClose }) {
             physics: item.physics ?? { enabled: false, massKg: null },
             pivots: item.pivots ?? [], sockets: item.sockets ?? [],
             triangles: built.triangles, materialSlots: built.materials, collisionParts: built.collision,
+            // Slots that stay translucent (BLEND); Nanite must be OFF for these to render.
+            translucentSlots: built.translucentSlots,
             // Emissive surfaces in root-local metres: where the Unreal lights go.
             emitters: built.emitters,
             // The compound as shipped, so a level exported BACK from Unreal can
@@ -98,7 +122,7 @@ export function UnrealExportModal({ packs, items, onClose }) {
             destructionGroups: item.destructionGroups ?? [],
             budgetClass: item.budgetClass ?? null,
           });
-          setLog((l) => [...l.slice(-400), { ok: true, text: `${built.asset}  ${built.triangles} tris · ${built.materials} slot(s) · ${built.collision} collider(s)${built.emitters.length ? ` · ${built.emitters.length} emitter(s)` : ''} · ${fmtMb(built.glb.byteLength)}` }]);
+          setLog((l) => [...l.slice(-400), { ok: true, text: `${built.asset}  ${built.triangles} tris · ${built.materials} slot(s) · ${built.collision} collider(s)${built.emitters.length ? ` · ${built.emitters.length} emitter(s)` : ''}${built.translucentSlots.length ? ` · ${built.translucentSlots.length} translucent slot(s), Nanite off` : ''} · ${fmtMb(built.glb.byteLength)}` }]);
         } catch (err) {
           failures.push({ ref: item.ref, error: err.message });
           setLog((l) => [...l.slice(-400), { ok: false, text: `${item.ref}: ${err.message}` }]);
@@ -132,7 +156,7 @@ export function UnrealExportModal({ packs, items, onClose }) {
       if (saveToServer && !readOnly && manifestItems.length) {
         setProgress({ i: candidates.length, n: candidates.length, name: 'uploading to the server' });
         try {
-          res.saved = await unrealApi.upload(zip);
+          res.saved = await unrealApi.upload(zip, { merge: partial });
           setServer(await unrealApi.status());
         } catch (err) {
           res.saveError = err.message;
@@ -192,12 +216,35 @@ export function UnrealExportModal({ packs, items, onClose }) {
           </label>
         )}
         <span className="grow" />
-        <span className="muted">{candidates.length} prop(s)</span>
+        <span className="muted">{candidates.length} of {pool.length} prop(s){partial && saveToServer && !readOnly ? ', merged into the folder' : ''}</span>
         {!busy ? (
           <button className="primary" onClick={run} disabled={!candidates.length}>export</button>
         ) : (
           <button onClick={() => { abortRef.current = true; }}>cancel</button>
         )}
+      </div>
+
+      <div className="row-inline" style={{ gap: 10 }}>
+        <input
+          type="search"
+          placeholder="filter by name, category or tag"
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+          disabled={busy}
+          style={{ flex: 1, minWidth: 180 }}
+        />
+        <button onClick={() => chooseShown(true)} disabled={busy || !shown.length} title="select every prop the filter shows">all shown</button>
+        <button onClick={() => chooseShown(false)} disabled={busy || !shown.length} title="deselect every prop the filter shows">none shown</button>
+        <button onClick={() => setChosen(null)} disabled={busy || !chosen} title="select every prop">all</button>
+      </div>
+      <div className="joblog" style={{ maxHeight: 180, overflowY: 'auto', margin: '6px 0' }}>
+        {shown.length === 0 && <div className="muted">no prop matches "{filter}"</div>}
+        {shown.map((it) => (
+          <label key={it.ref} style={{ display: 'block' }} title={it.ref}>
+            <input type="checkbox" checked={!chosen || chosen.has(it.ref)} onChange={() => toggleItem(it.ref)} disabled={busy} />{' '}
+            {it.title ?? it.name} <span className="muted mono">{it.category ?? ''}{it.tags?.length ? ` · ${it.tags.join(', ')}` : ''}</span>
+          </label>
+        ))}
       </div>
 
       {server?.exists && !result && (
@@ -225,7 +272,9 @@ export function UnrealExportModal({ packs, items, onClose }) {
               <tr><th>size</th><td>{fmtMb(result.bytes)} of GLB · {fmtMb(result.zipBytes)} zipped · {result.seconds.toFixed(1)} s</td></tr>
               {result.saved && (
                 <tr><th>on disk</th><td>
-                  <span className="mono">{result.saved.dir}</span> ({result.saved.files} files). Drag the <span className="mono">{result.saved.folders?.join(', ')}</span> folder(s) into Unreal's Content Browser.
+                  {result.saved.merged
+                    ? <><span className="mono">{result.saved.dir}</span>: {result.saved.merged.updated} prop(s) updated in place, {result.saved.merged.total} in the manifest. Right-click the changed <span className="mono">SM_TK_*</span> asset(s) in Unreal and <em>Reimport</em>.</>
+                    : <><span className="mono">{result.saved.dir}</span> ({result.saved.files} files). Drag the <span className="mono">{result.saved.folders?.join(', ')}</span> folder(s) into Unreal's Content Browser.</>}
                 </td></tr>
               )}
               {result.saveError && <tr><th>on disk</th><td className="score-bad">not written: {result.saveError}</td></tr>}
@@ -239,7 +288,7 @@ export function UnrealExportModal({ packs, items, onClose }) {
             <summary><strong>Getting these into Unreal Editor</strong></summary>
             <ol className="small">
               <li>Unzip (or open <span className="mono">exports/unreal/</span>). In the Content Browser make a folder such as <span className="mono">Content/ThaiKit</span> and drag the <span className="mono">ThaiKit</span> folder's <span className="mono">.glb</span> files onto it. Leave <span className="mono">_previews</span>, <span className="mono">manifest.json</span> and <span className="mono">README.md</span> out.</li>
-              <li>In the Interchange import dialog: <em>Combine Static Meshes</em> ON, <em>Import Collision According To Mesh Name</em> ON, <em>Import Materials</em> ON with material instances, scale untouched (glTF metres become Unreal centimetres). Tick "same options for all", Import All.</li>
+              <li>In the Interchange import dialog: <em>Build Nanite</em> <strong>OFF</strong> (it is on by default since UE 5.5; Nanite drops translucent slots to the default material and melts a door's 15 mm of relief into its wall), <em>Combine Static Meshes</em> ON, <em>Import Collision According To Mesh Name</em> ON, <em>Import Materials</em> ON with material instances, scale untouched (glTF metres become Unreal centimetres). Tick "same options for all", Import All.</li>
               <li>Each file becomes one <span className="mono">SM_TK_*</span> Static Mesh with a material slot per material and the compound as simple collision (Show → Simple Collision to check).</li>
               <li>Drag a Static Mesh into the level; <kbd>End</kbd> drops it to the floor. Every pivot is the base centre, so it lands standing. Emissive signs and lamp heads glow but need a Point or Spot Light to cast light; <span className="mono">manifest.json</span> lists the <span className="mono">lighting</span> props, sizes and sockets.</li>
               <li>To update: export again over the same folder and right-click → <em>Reimport</em> in the Content Browser.</li>

@@ -235,8 +235,8 @@ levelsApi.sky = {
  */
 export const unrealApi = {
   status: () => request('/api/exports/unreal', {}, null),
-  upload: async (zipBlob) => {
-    const res = await bytesRequest('/api/exports/unreal', {
+  upload: async (zipBlob, { merge = false } = {}) => {
+    const res = await bytesRequest(`/api/exports/unreal${merge ? '?mode=merge' : ''}`, {
       method: 'PUT',
       headers: { 'content-type': 'application/zip' },
       body: zipBlob,

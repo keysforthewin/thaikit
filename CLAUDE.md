@@ -1014,6 +1014,24 @@ placed geometry. Export writes a second, self-contained GLB.
   154 props, 37 s, 194 MB at 2048 px. `docs/unreal-export.md` is the import guide; the
   `thaikit-unreal-level` skill lays a Thai night street out of it over unreal-mcp. Verified by
   loading the files back through a stock `GLTFLoader`: colours, textures and sizes round-trip.
+  **A round trip through three proves nothing about Unreal; read the editor's Output Log.**
+  The 7-Eleven "looked fine in the level editor and broken in Unreal" (2026-09-05) and the GLB
+  was structurally clean -- no flipped winding, unit normals, identity nodes. `Saved/Logs/<Project>.log`
+  named three faults the file could not show: every `UCX_` mesh was written with a `wireframe`
+  material, which `GLTFExporter` emits as primitive mode LINES and Interchange drops (`Primitive
+  Mode[LINES] ... Geometry won't be imported` -- 662 colliders across 154 props, so NO prop had
+  collision, whatever the import dialog said); Interchange has built a NANITE mesh by default
+  since 5.5, and Nanite renders a BLEND slot with the default material (`Invalid material ...
+  used on Nanite static mesh`), which is what the two glazing panes were; and zero-area UV
+  triangles (`degenerate tangent bases`) on 88 props. Now: UCX is a plain material, glass at or
+  above 0.8 opacity with no alpha in its map ships OPAQUE (9 genuinely see-through slots stay
+  BLEND, listed per item as `manifest.translucentSlots`, and need Nanite off), a `polygonOffset`
+  decal is stood 3 mm off its wall (Unreal has no polygon offset), and any UV-degenerate face gets
+  a planar projection off its FACE normal in metres. `scratch/_unreal/scan.mjs` counts LINES
+  prims, BLEND slots and zero-area UV faces across the export; run it after touching propGlb.js.
+  The drawer's own **export to Unreal** button and the dialog's filter + checkboxes export a
+  SUBSET, and a subset is `PUT /api/exports/unreal?mode=merge`: files written over the live tree,
+  manifest items replaced by ref -- so a one-building re-export never wipes the other 153.
 
 - **An Unreal level reaches Operation X by becoming a thaikit RAW scene, never by a second loader.**
   `scripts/level/import-unreal-level.mjs` reads an Unreal glTF Exporter `.glb` (metres, Y up: uniform

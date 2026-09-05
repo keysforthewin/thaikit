@@ -40,7 +40,11 @@ Textures were baked at up to ${options.maxTextureSize} px; collision ${options.c
      included.
    - Leave the scale alone: glTF is metres, Unreal is centimetres, the importer
      converts (a 0.85 m oil drum arrives 85 cm tall).
-   - Nanite: off for a low-end target; on if you are shipping to a Nanite platform.
+   - Common Meshes -> **Build Nanite: OFF**. It has been ON by default since UE 5.5, and a
+     Nanite mesh renders any translucent slot (glass a cart can be seen through, a
+     rain-streak decal -- the log line says "Invalid material ... used on Nanite static
+     mesh") with the DEFAULT material, and simplifies a door's 15 mm of relief into the
+     wall at distance. These are 2 k-triangle props; Nanite buys nothing.
    Tick "Use the same options for every file" and Import All.
 4. Open any \`SM_TK_*\` asset: material slots on the right, collision under
    Show -> Simple Collision. Set **Collision Complexity** to *Use Simple Collision As
@@ -59,8 +63,13 @@ Textures were baked at up to ${options.maxTextureSize} px; collision ${options.c
   texture, meant to stand 150-300 m out and face the camera. Import them like the
   rest, then either place them as billboards (a Blueprint that yaws to the camera)
   or skip them and use your own skyline.
-- **Glass** exports as a translucent material. If it sorts badly, switch the
-  instance's blend mode to Masked or set Opacity to 1 and lower Roughness.
+- **Glass** ships OPAQUE: the kit authors it as a near-opaque surface (buildings have
+  no interiors) and Nanite would reject a translucent slot. Only genuinely see-through
+  slots stay translucent; \`manifest.json\` lists them per prop as \`translucentSlots\`
+  and those props need Nanite off.
+- **Collision missing** means the import dialog had *Import Collision According To Mesh
+  Name* off. Every file's \`UCX_\` meshes are plain triangle meshes; the Output Log
+  should show no "Primitive Mode[LINES]" warnings.
 - **Road and ground tiles** are 8 x 8 m (soi tiles 4 x 8) and butt-join on a metre
   grid; \`manifest.json\` carries each footprint in \`size\`.
 - Vertex colours are real: many props carry their tones in COLOR_0 rather than in
