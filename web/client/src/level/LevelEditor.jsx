@@ -253,6 +253,7 @@ export default function LevelEditor({ initialId }) {
     <div className="level">
       <div className="topbar">
         <a className="brand" href={url('/')} title="back to the registry">thaikit</a>
+        <a className="repo-link" href="https://github.com/keysforthewin/thaikit" target="_blank" rel="noopener noreferrer" title="thaikit on GitHub">GitHub ↗</a>
         <span className="muted">level editor</span>
         <button onClick={() => setModal('levels')}>levels</button>
         {doc && (
@@ -272,7 +273,6 @@ export default function LevelEditor({ initialId }) {
           </>
         )}
         <span className="grow" />
-        <a className="repo-link" href="https://github.com/keysforthewin/thaikit" target="_blank" rel="noopener noreferrer" title="thaikit on GitHub">GitHub ↗</a>
         {readOnly && <span className="badge" title={readOnlyReason ?? 'this instance is read-only'}>read-only</span>}
         <button onClick={() => setModal('packs')}>packs ({catalogue.packs.length})</button>
         <button

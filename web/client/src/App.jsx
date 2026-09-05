@@ -194,11 +194,11 @@ export default function App() {
     <div className="app">
       <div className="topbar">
         <span className="brand">thaikit</span>
+        <a className="repo-link" href="https://github.com/keysforthewin/thaikit" target="_blank" rel="noopener noreferrer" title="thaikit on GitHub">GitHub ↗</a>
         <span className="muted">{meta?.total ?? items.length} items · {health?.assetCount ?? '?'} thai-kit props</span>
         <span className="grow" />
         <input placeholder="search…" value={q} onChange={(e) => setQ(e.target.value)} style={{ width: 240 }} />
         <a href={url('/level')}><button title="build a level from these props">level editor</button></a>
-        <a className="repo-link" href="https://github.com/keysforthewin/thaikit" target="_blank" rel="noopener noreferrer" title="thaikit on GitHub">GitHub ↗</a>
         <button onClick={() => setPacksOpen(true)} title="install, refresh or remove vibe3d asset packs">
           packs{meta?.packs ? ` (${Object.keys(meta.packs).length})` : ''}
         </button>
