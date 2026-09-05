@@ -1,3 +1,5 @@
+import { url } from './base.js';
+
 /**
  * Thin API client. Captures ETags so PATCH can be optimistic and conflict-safe.
  *
@@ -8,7 +10,7 @@
 const etags = new Map();
 
 async function request(path, options = {}, etagKey = 'registry') {
-  const res = await fetch(path, {
+  const res = await fetch(url(path), {
     ...options,
     headers: { 'content-type': 'application/json', ...(options.headers ?? {}) },
   });
@@ -112,10 +114,10 @@ export function mediaUrl(repoPath) {
   if (!repoPath) return null;
   if (String(repoPath).startsWith('/')) return repoPath;
   const p = String(repoPath).replace(/^\.?\//, '');
-  if (p.startsWith('scratch/')) return '/scratch/' + p.slice('scratch/'.length);
-  if (p.startsWith('packs/')) return '/' + p;
-  if (p.startsWith('adopted/')) return '/' + p;
-  return '/media/' + p.replace(/^packages\/props\/src\/models\//, '').replace(/^assets\//, '');
+  if (p.startsWith('scratch/')) return url('/scratch/' + p.slice('scratch/'.length));
+  if (p.startsWith('packs/')) return url('/' + p);
+  if (p.startsWith('adopted/')) return url('/' + p);
+  return url('/media/' + p.replace(/^packages\/props\/src\/models\//, '').replace(/^assets\//, ''));
 }
 
 /**
@@ -124,7 +126,7 @@ export function mediaUrl(repoPath) {
  * bytes is refused with a 409, never merged.
  */
 async function bytesRequest(path, options = {}, etagKey) {
-  const res = await fetch(path, options);
+  const res = await fetch(url(path), options);
   const etag = res.headers.get('ETag');
   if (etag && res.ok && etagKey) etags.set(etagKey, etag);
   if (!res.ok) {

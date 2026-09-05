@@ -22,6 +22,7 @@ import { REPO_ROOT, PACKS_DIR, MODELS_DIR, modelDir, toRepoRelative, qualifiedId
 
 import { readSidecars, slimColliders } from '../../../../scripts/lib/packs/sidecar.mjs';
 import { readOverride } from './overrides.js';
+import { BASE_PATH } from '../paths.js';
 
 const MODELS_REL = toRepoRelative(MODELS_DIR);
 
@@ -36,15 +37,29 @@ const DEFAULTS = {
 
 const BUDGET_KEYS = ['targetTriangles', 'maxDrawCalls', 'maxMaterials', 'maxUniqueGeometries'];
 
+/**
+ * An app-root URL (`/packs/...`, as the pack index records it) -> the URL a
+ * browser can fetch, i.e. with THAIKIT_BASE_PATH in front when the app is
+ * mounted under a prefix. Idempotent, so a URL that already carries the prefix
+ * is left alone.
+ */
+export function publicUrl(appPath) {
+  if (!appPath) return appPath ?? null;
+  const p = String(appPath);
+  if (!p.startsWith('/') || !BASE_PATH) return p;
+  if (p === BASE_PATH || p.startsWith(`${BASE_PATH}/`)) return p;
+  return `${BASE_PATH}${p}`;
+}
+
 /** Repo-relative path -> the URL the static mounts answer. */
 export function mediaUrl(repoPath) {
   if (!repoPath) return null;
   const p = String(repoPath).replace(/^\.?\//, '');
-  if (p.startsWith('scratch/')) return `/scratch/${p.slice('scratch/'.length)}`;
-  if (p.startsWith('packs/')) return `/${p}`;
-  if (p.startsWith('adopted/')) return `/${p}`;
-  if (p.startsWith(`${MODELS_REL}/`)) return `/media/${p.slice(MODELS_REL.length + 1)}`;
-  return `/media/${p.replace(/^assets\//, '')}`;
+  if (p.startsWith('scratch/')) return publicUrl(`/scratch/${p.slice('scratch/'.length)}`);
+  if (p.startsWith('packs/')) return publicUrl(`/${p}`);
+  if (p.startsWith('adopted/')) return publicUrl(`/${p}`);
+  if (p.startsWith(`${MODELS_REL}/`)) return publicUrl(`/media/${p.slice(MODELS_REL.length + 1)}`);
+  return publicUrl(`/media/${p.replace(/^assets\//, '')}`);
 }
 
 export async function readPacksIndex() {
@@ -114,9 +129,9 @@ async function mergeItem(p, it) {
     category: merged.category ?? it.category ?? 'uncategorised',
     tags: merged.tags ?? it.tags ?? [],
     nameTh: merged.nameTh ?? '',
-    thumb: it.preview ?? null,
+    thumb: publicUrl(it.preview) ?? null,
     image: mediaUrl(record?.image?.file),
-    bundleUrl: it.bundle ?? null,
+    bundleUrl: publicUrl(it.bundle) ?? null,
     // The pack wrapper always exports this name, whatever the item's own entry exported.
     exportName: 'createObjectModel',
     // Per item once the installer records one; the pack's for older installs.

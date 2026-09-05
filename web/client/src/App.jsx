@@ -6,6 +6,7 @@ import { PackManagerModal } from './level/PackManagerModal.jsx';
 import { packsApi } from './api.js';
 import { FacetDialog } from './FacetDialog.jsx';
 import { budgetRows, useBudgetClasses } from './budgets.js';
+import { url } from './base.js';
 
 /**
  * The status presets only mean something for props that HAVE a pipeline state
@@ -162,7 +163,7 @@ export default function App() {
   // installer rewrites the pack index, so an open tab must reflect their work
   // without a manual refresh.
   useEffect(() => {
-    const source = new EventSource('/api/events');
+    const source = new EventSource(url('/api/events'));
     const bump = () => {
       load();
       // `rev` is what an open Drawer watches. The list refreshing behind a drawer
@@ -196,11 +197,11 @@ export default function App() {
         <span className="muted">{meta?.total ?? items.length} items · {health?.assetCount ?? '?'} thai-kit props</span>
         <span className="grow" />
         <input placeholder="search…" value={q} onChange={(e) => setQ(e.target.value)} style={{ width: 240 }} />
-        <a href="/level"><button title="build a level from these props">level editor</button></a>
+        <a href={url('/level')}><button title="build a level from these props">level editor</button></a>
         <button onClick={() => setPacksOpen(true)} title="install, refresh or remove vibe3d asset packs">
           packs{meta?.packs ? ` (${Object.keys(meta.packs).length})` : ''}
         </button>
-        <button className="primary" onClick={() => setCreating(true)}>+ add asset</button>
+        {!health?.readOnly && <button className="primary" onClick={() => setCreating(true)}>+ add asset</button>}
       </div>
 
       {health?.readOnly && (

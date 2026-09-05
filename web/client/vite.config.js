@@ -1,8 +1,16 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
+// THAIKIT_BASE_PATH=/thaikit serves the app under a prefix (a reverse proxy
+// mounting it at outdoordevs.com/thaikit). Vite bakes it into every asset URL
+// and exposes it to the client as import.meta.env.BASE_URL, which
+// src/base.js turns into the prefix for every fetch. The server reads the same
+// variable (web/server/src/paths.js), so the two cannot disagree.
+const basePath = (process.env.THAIKIT_BASE_PATH ?? '').trim().replace(/^\/+|\/+$/g, '');
+
 export default defineConfig({
   plugins: [react()],
+  base: basePath ? `/${basePath}/` : '/',
   build: { outDir: 'dist', emptyOutDir: true },
   // Vite's dependency pre-bundle defaults to <root>/node_modules/.vite, which
   // in the dev container sits INSIDE the tree `node --watch` is watching. Every

@@ -1,5 +1,6 @@
 import express from 'express';
 import { readRegistry, MODELS_DIR, etagFor } from '@thaikit/registry-core';
+import { BASE_PATH } from '../paths.js';
 
 export function healthRouter(state) {
   const router = express.Router();
@@ -15,7 +16,9 @@ export function healthRouter(state) {
         etag: etagFor(registry),
         writable: state.writable,
         readOnly: state.readOnly,
+        publicReadOnly: Boolean(state.publicReadOnly),
         readOnlyReason: state.readOnlyReason,
+        basePath: BASE_PATH,
         watching: state.watching,
       });
     } catch (err) {
@@ -27,7 +30,9 @@ export function healthRouter(state) {
         modelsDir: MODELS_DIR,
         assetCount: null,
         readOnly: true,
+        publicReadOnly: Boolean(state.publicReadOnly),
         readOnlyReason: err.message,
+        basePath: BASE_PATH,
         issues: err.issues ?? null,
         writable: state.writable,
       });

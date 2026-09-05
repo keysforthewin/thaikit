@@ -40,6 +40,15 @@ services:
       PORT: "3733"
       THAIKIT_REPO_ROOT: /repo
       THAIKIT_SCRATCH_DIR: /repo/scratch
+      # THAIKIT_READ_ONLY=1 (from .env) turns the whole instance read-only: every
+      # mutating /api call answers 403, the bake cannot be started, and the
+      # client hides its save, delete, upload and export controls. Unset, the
+      # stack is read/write -- the default for working locally.
+      THAIKIT_READ_ONLY: ${THAIKIT_READ_ONLY:-}
+      # THAIKIT_BASE_PATH=/thaikit serves the app under a URL prefix, for a
+      # reverse proxy that mounts it beside other sites. Vite bakes it into the
+      # client, so a PRODUCTION build must be made with the same value set.
+      THAIKIT_BASE_PATH: ${THAIKIT_BASE_PATH:-}
       # Required on WSL2 and macOS: host writes do not deliver inotify events
       # across a bind mount, so without polling the UI never sees the
       # generation skills' work at all.

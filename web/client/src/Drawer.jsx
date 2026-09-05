@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api, itemsApi, mediaUrl } from './api.js';
+import { useReadOnly } from './readOnly.js';
 import { budgetRows, describeClass, useBudgetClasses } from './budgets.js';
 import { Viewer } from './Viewer.jsx';
 
@@ -77,7 +78,7 @@ function PreviewImage({ image }) {
  * derivation's numbers beside it would present them as evidence for a shape
  * nobody checked.
  */
-function ColliderBar({ doc, parts, dirty, saving, onSave, item }) {
+function ColliderBar({ doc, parts, dirty, saving, onSave, item, readOnly }) {
   if (parts === null) return null;
   const check = doc?.selfCheck ?? null;
   const shapes = [...new Set((parts ?? []).map((p) => p.type))].join(', ');
@@ -91,9 +92,11 @@ function ColliderBar({ doc, parts, dirty, saving, onSave, item }) {
           {doc?.handTuned && ' · hand-tuned'}
           {doc?.source === 'installer' && ' · derived by the pack installer'}
         </span>
-        <button className={dirty ? 'primary' : ''} disabled={!dirty || saving} onClick={onSave}>
-          {saving ? 'saving…' : dirty ? 'save colliders' : 'saved'}
-        </button>
+        {!readOnly && (
+          <button className={dirty ? 'primary' : ''} disabled={!dirty || saving} onClick={onSave}>
+            {saving ? 'saving…' : dirty ? 'save colliders' : 'saved'}
+          </button>
+        )}
       </div>
       {!parts.length && (
         <p className="collider-note">
@@ -177,6 +180,7 @@ export function Drawer({ itemRef, rev, onClose, onChanged }) {
   const [saving, setSaving] = useState(false);
   const [rebuilding, setRebuilding] = useState(false);
   const budgetClasses = useBudgetClasses();
+  const { readOnly, reason: readOnlyReason } = useReadOnly();
 
   /**
    * The physics compound, which lives beside the source (or in the override)
@@ -455,19 +459,22 @@ export function Drawer({ itemRef, rev, onClose, onChanged }) {
         <span className="muted mono">{item.ref}</span>
         {!item.editable && <span className="badge" title="a third-party pack item; edits go to a local override">{override ? 'override' : 'pack item'}</span>}
         <span className="grow" />
-        {item.editable && item.supported && (
+        {readOnly && <span className="badge" title={readOnlyReason ?? 'this instance is read-only'}>read-only</span>}
+        {!readOnly && item.editable && item.supported && (
           <button onClick={rebuild} disabled={rebuilding} title="rebuild this prop's bundle, probe and thumbnail from its source">
             {rebuilding ? 'rebuilding…' : 'rebuild'}
           </button>
         )}
-        {item.editable && item.assetId?.startsWith('@') && (
+        {!readOnly && item.editable && item.assetId?.startsWith('@') && (
           <button onClick={fork} title={`move this item from ${item.pack} into thaikit's own kit, with forkedFrom recorded`}>fork into @thai-kit</button>
         )}
-        {item.editable && <button className="danger" onClick={remove}>delete</button>}
-        {!item.editable && override && <button className="danger" onClick={clearOverride} disabled={saving}>clear override</button>}
-        <button className="primary" onClick={save} disabled={saving}>
-          {saving ? 'saving…' : 'save'}
-        </button>
+        {!readOnly && item.editable && <button className="danger" onClick={remove}>delete</button>}
+        {!readOnly && !item.editable && override && <button className="danger" onClick={clearOverride} disabled={saving}>clear override</button>}
+        {!readOnly && (
+          <button className="primary" onClick={save} disabled={saving}>
+            {saving ? 'saving…' : 'save'}
+          </button>
+        )}
       </header>
 
       <div className="tabs">
@@ -751,6 +758,7 @@ export function Drawer({ itemRef, rev, onClose, onChanged }) {
               saving={saving}
               onSave={saveColliders}
               item={item}
+              readOnly={readOnly}
             />
             {!item.supported && item.error && (
               <p className="muted track-blurb unpromoted">This item did not build: {item.error}</p>

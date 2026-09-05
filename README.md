@@ -192,6 +192,31 @@ npm test                                 # registry concurrency
 - **Blender is no longer used.** The wiring (`npm run blender`, the MCP entry)
   is kept for ad-hoc work, so a closed Blender is expected and harmless.
 
+## Public read-only mode
+
+The stack is read/write by default. Two lines in `.env` turn an instance into
+a public mirror:
+
+```
+THAIKIT_READ_ONLY=1        # every write and the bake answer 403; the UI hides save/delete/upload/export
+THAIKIT_BASE_PATH=/thaikit # serve under a prefix behind a reverse proxy (rebuild the client after changing it)
+```
+
+`THAIKIT_READ_ONLY` is enforced on the server -- one middleware in front of
+`/api` refuses anything but GET, before any route runs -- and reported through
+`/api/health`, which is where the client learns to hide its controls. Browsing,
+the 3D previews, the level editor's viewport and play mode all still work; edits
+made in the browser simply never leave it.
+
+`compose.public.yaml` is the stack for a small VPS with no GPU: it defaults both
+switches on and drops the nvidia reservation, the bake agent and the export
+mount. `./deploy.sh` (with `DEPLOY_TARGET` and `DEPLOY_URL` in `.env`) builds
+the client with the base path inside the local container, rsyncs source, pack
+bundles and level GLBs to the server, runs `npm ci` there with the image's own
+npm, and brings the stack up. `deploy/nginx/thaikit.conf` is the location block
+to paste into the host's vhost. The live instance is
+<https://outdoordevs.com/thaikit/>.
+
 ## Licence
 
 MIT — code and assets. Every model is fully synthetic and procedurally authored;

@@ -4,6 +4,7 @@ import { Modal } from './Modal.jsx';
 import { useLevel } from './store.js';
 import { levelsApi } from '../api.js';
 import { buildExportScene, exportGlb } from './export/buildExportScene.js';
+import { url } from '../base.js';
 
 const PREFS_KEY = 'thaikit.level.bake';
 const BAKERS = ['blender', 'blender-host', 'none'];
@@ -86,7 +87,7 @@ export function ExportModal({ onClose }) {
   useEffect(() => { levelsApi.bakeAgent().then(setAgent).catch(() => setAgent({ reachable: false })); }, [phase === 'idle']);
 
   useEffect(() => {
-    const es = new EventSource('/api/events');
+    const es = new EventSource(url('/api/events'));
     es.addEventListener('level:bake', (e) => {
       const evt = JSON.parse(e.data);
       if (evt.level !== levelId) return;
@@ -242,7 +243,7 @@ export function ExportModal({ onClose }) {
               {result.exported
                 ? <tr><th>delivered to</th><td className="mono score-good">{result.exported.path} · {(result.exported.bytes / 1048576).toFixed(1)} MB</td></tr>
                 : <tr><th>delivered to</th><td className="score-mid small">not copied — set THAIKIT_EXPORT_DIR (see the export log)</td></tr>}
-              <tr><th>build copy</th><td className="mono"><a href={`/levels/${levelId}/build/level.glb`} target="_blank" rel="noreferrer">levels/{levelId}/build/level.glb</a> · {(result.bytes / 1048576).toFixed(1)} MB</td></tr>
+              <tr><th>build copy</th><td className="mono"><a href={url(`/levels/${levelId}/build/level.glb`)} target="_blank" rel="noreferrer">levels/{levelId}/build/level.glb</a> · {(result.bytes / 1048576).toFixed(1)} MB</td></tr>
               <tr><th>cells</th><td>{result.cells} · {result.drawCalls?.join(' / ')} draw calls at LOD 0 / 1 / 2</td></tr>
               <tr><th>triangles</th><td>{result.triangles?.map((t) => t.toLocaleString()).join(' / ')}</td></tr>
               <tr><th>textures</th><td>{result.textures} KTX2 {result.lightmap ? '+ lightmap' : '(no lightmap)'}</td></tr>
@@ -255,7 +256,7 @@ export function ExportModal({ onClose }) {
         </div>
       )}
       {!result && build?.exists && (
-        <p className="muted small">Last export: {new Date(build.generatedAt).toLocaleString()} · {(build.bytes / 1048576).toFixed(1)} MB · <a href={`/levels/${levelId}/build/level.glb`}>download</a></p>
+        <p className="muted small">Last export: {new Date(build.generatedAt).toLocaleString()} · {(build.bytes / 1048576).toFixed(1)} MB · <a href={url(`/levels/${levelId}/build/level.glb`)}>download</a></p>
       )}
     </Modal>
   );

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useLevel } from './store.js';
 import { levelsApi } from '../api.js';
+import { useReadOnly } from '../readOnly.js';
 import { CUBE_FACES, skyOf, baseSource, measurePanorama } from './sky.js';
 
 /**
@@ -27,6 +28,7 @@ import { CUBE_FACES, skyOf, baseSource, measurePanorama } from './sky.js';
  * previous faces, and the files stay where they were written.
  */
 function CubeZip({ levelId, onImported }) {
+  const { readOnly } = useReadOnly();
   const input = useRef(null);
   const [dragging, setDragging] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -67,6 +69,7 @@ function CubeZip({ levelId, onImported }) {
     await send(e.dataTransfer?.files?.[0]);
   };
 
+  if (readOnly) return null;
   return (
     <div className="field">
       <label>all six from a zip</label>
@@ -101,6 +104,7 @@ function CubeZip({ levelId, onImported }) {
 
 /** One upload slot: what is there, replace it, clear it. */
 function Slot({ levelId, slot, label, file, onUploaded, onCleared }) {
+  const { readOnly } = useReadOnly();
   const input = useRef(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
@@ -143,10 +147,12 @@ function Slot({ levelId, slot, label, file, onUploaded, onCleared }) {
     <div className="field">
       <label>{label}</label>
       <div className="row" style={{ gap: 6, alignItems: 'center' }}>
-        <button onClick={() => input.current?.click()} disabled={busy || !levelId} title={file ? 'replace this image' : 'upload an image'}>
-          {busy ? '…' : file ? 'replace' : 'upload'}
-        </button>
-        {file && <button onClick={clear} disabled={busy} title="remove this image">clear</button>}
+        {!readOnly && (
+          <button onClick={() => input.current?.click()} disabled={busy || !levelId} title={file ? 'replace this image' : 'upload an image'}>
+            {busy ? '…' : file ? 'replace' : 'upload'}
+          </button>
+        )}
+        {!readOnly && file && <button onClick={clear} disabled={busy} title="remove this image">clear</button>}
         <span className="muted small mono" style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
           {file ? `${file}${info ? ` · ${info}` : ''}` : 'none'}
         </span>

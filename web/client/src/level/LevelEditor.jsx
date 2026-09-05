@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 
 import { useLevel } from './store.js';
@@ -30,6 +30,8 @@ import { placementPoint } from './placement.js';
 const LIGHT_STANDOFF = 0.25;
 import { evictUnused, itemKey } from '../three/instances.js';
 import { PlayHud } from './play/PlayHud.jsx';
+import { url } from '../base.js';
+import { useReadOnly } from '../readOnly.js';
 
 const snapTo = (v, step) => (step > 0 ? Math.round(v / step) * step : v);
 
@@ -38,6 +40,13 @@ export default function LevelEditor({ initialId }) {
   const { doc, levelId, dirty, modal, setModal, catalogue, selection, bake } = s;
   const [texturesOpen, setTexturesOpen] = useState(false);
   const [error, setError] = useState(null);
+  // A public instance: the server refuses every write, so the controls that
+  // would only ever meet a 403 -- save, export/bake, new/delete level, sky
+  // uploads -- are not drawn. The scene can still be walked, inspected and
+  // edited in the browser; the edits simply never leave it.
+  const { readOnly, reason: readOnlyReason } = useReadOnly();
+  const readOnlyRef = useRef(readOnly);
+  readOnlyRef.current = readOnly;
 
   // Catalogue: every installed pack's items. Refetched when a pack job finishes.
   const loadCatalogue = useCallback(async () => {
@@ -55,7 +64,7 @@ export default function LevelEditor({ initialId }) {
   // level tab re-reads it on those events rather than only when a pack job
   // finishes in this tab's own pack manager.
   useEffect(() => {
-    const source = new EventSource('/api/events');
+    const source = new EventSource(url('/api/events'));
     let timer = null;
     const reload = () => { clearTimeout(timer); timer = setTimeout(loadCatalogue, 300); };
     source.addEventListener('catalogue', reload);
@@ -84,7 +93,7 @@ export default function LevelEditor({ initialId }) {
       s.openDoc({ levelId: id, doc: next, orphans });
       useLevel.setState({ bake: null });
       levelsApi.bakeJob(id).then((job) => { if (job && useLevel.getState().levelId === id) useLevel.setState({ bake: { jobId: job.id, status: job.status, message: job.log[job.log.length - 1]?.message } }); }).catch(() => {});
-      window.history.replaceState(null, '', `/level/${id}`);
+      window.history.replaceState(null, '', url(`/level/${id}`));
       document.title = `${next.name} — thaikit level`;
     } catch (e) {
       setError(`could not open ${id}: ${e.message}`);
@@ -98,6 +107,7 @@ export default function LevelEditor({ initialId }) {
   const save = useCallback(async () => {
     const st = useLevel.getState();
     if (!st.doc || !st.levelId || st.saving) return;
+    if (readOnlyRef.current) { useLevel.setState({ status: 'read-only instance: nothing is saved' }); setTimeout(() => useLevel.setState((x) => (x.status?.startsWith('read-only') ? { status: null } : {})), 3000); return; }
     useLevel.setState({ saving: true, status: 'building scene…' });
     let scene = null;
     try {
@@ -125,7 +135,7 @@ export default function LevelEditor({ initialId }) {
   }, []);
 
   useEffect(() => {
-    const onUnload = (e) => { if (useLevel.getState().dirty) { e.preventDefault(); e.returnValue = ''; } };
+    const onUnload = (e) => { if (useLevel.getState().dirty && !readOnlyRef.current) { e.preventDefault(); e.returnValue = ''; } };
     window.addEventListener('beforeunload', onUnload);
     return () => window.removeEventListener('beforeunload', onUnload);
   }, []);
@@ -242,14 +252,14 @@ export default function LevelEditor({ initialId }) {
   return (
     <div className="level">
       <div className="topbar">
-        <a className="brand" href="/" title="back to the registry">thaikit</a>
+        <a className="brand" href={url('/')} title="back to the registry">thaikit</a>
         <span className="muted">level editor</span>
         <button onClick={() => setModal('levels')}>levels</button>
         {doc && (
           <>
             <input value={doc.name} onChange={(e) => s.commit('rename level', (d) => { d.name = e.target.value; })} />
             <span className="mono muted small">{levelId}{dirty ? ' •' : ''}</span>
-            <button className={dirty ? 'primary' : ''} onClick={save} disabled={s.saving || !dirty} title="save the level GLB — Ctrl+S">{s.saving ? 'saving…' : 'save'}</button>
+            {!readOnly && <button className={dirty ? 'primary' : ''} onClick={save} disabled={s.saving || !dirty} title="save the level GLB — Ctrl+S">{s.saving ? 'saving…' : 'save'}</button>}
             <button onClick={() => useLevel.getState().undo()} disabled={!s.past.length} title="undo — Ctrl+Z">undo</button>
             <button onClick={() => useLevel.getState().redo()} disabled={!s.future.length} title="redo — Ctrl+Shift+Z">redo</button>
             <button
@@ -262,15 +272,16 @@ export default function LevelEditor({ initialId }) {
           </>
         )}
         <span className="grow" />
+        {readOnly && <span className="badge" title={readOnlyReason ?? 'this instance is read-only'}>read-only</span>}
         <button onClick={() => setModal('packs')}>packs ({catalogue.packs.length})</button>
-        <button
+        {!readOnly && <button
           disabled={!doc}
           className={bake?.status === 'running' ? 'bake-running' : bake?.status === 'failed' ? 'bake-failed' : ''}
           title={bake?.status === 'running' ? `a bake is running in the background — ${bake.message ?? ''}\nopen to see its log or cancel it` : 'bake and export a self-contained GLB (cells, LOD, KTX2, lightmap)'}
           onClick={() => setModal('export')}
         >
           {bake?.status === 'running' ? 'export… ● baking' : bake?.status === 'failed' ? 'export… ✗ failed' : 'export…'}
-        </button>
+        </button>}
       </div>
       {doc ? <Toolbar onAdd={() => setModal('picker')} onAddLight={addLight} onAddSpawn={addSpawn} onJoin={() => setModal('join')} /> : <div className="toolbar" />}
       {(error || s.catalogueError) && (
@@ -292,10 +303,11 @@ export default function LevelEditor({ initialId }) {
         <LevelsModal
           onClose={() => setModal(null)}
           current={levelId}
-          dirty={dirty}
+          dirty={dirty && !readOnly}
+          readOnly={readOnly}
           onOpen={async (id) => { setModal(null); await openLevel(id); }}
           onCreate={(name) => levelsApi.create(name)}
-          onDelete={async (id) => { await levelsApi.remove(id); if (id === useLevel.getState().levelId) { useLevel.setState({ doc: null, levelId: null, dirty: false }); window.history.replaceState(null, '', '/level'); } }}
+          onDelete={async (id) => { await levelsApi.remove(id); if (id === useLevel.getState().levelId) { useLevel.setState({ doc: null, levelId: null, dirty: false }); window.history.replaceState(null, '', url('/level')); } }}
         />
       )}
       {modal === 'picker' && <PickerModal onClose={() => setModal(null)} onPick={addItem} />}
@@ -307,7 +319,7 @@ export default function LevelEditor({ initialId }) {
         />
       )}
       {modal === 'packs' && <PackManagerModal onClose={() => setModal(null)} onChanged={onPackChanged} />}
-      {modal === 'export' && <ExportModal onClose={() => setModal(null)} />}
+      {modal === 'export' && !readOnly && <ExportModal onClose={() => setModal(null)} />}
       {texturesOpen && stats && (
         <Modal title="Textures in this level" onClose={() => setTexturesOpen(false)} width="min(900px, 94vw)">
           <TexturesPanel stats={stats} />

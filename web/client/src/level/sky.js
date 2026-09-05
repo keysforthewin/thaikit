@@ -18,6 +18,7 @@
  * `@thai-kit/level-runtime/sky`, so the editor previews exactly what the game
  * will render.
  */
+import { url } from '../base.js';
 
 /**
  * The six cube faces, in three's CubeTextureLoader order. Mirrored from
@@ -76,7 +77,7 @@ export const skyOf = (doc) => ({
 export function skyUrl(levelId, file, rev) {
   if (!levelId || !file) return null;
   const q = rev ? `?v=${encodeURIComponent(rev)}` : '';
-  return `/levels/${encodeURIComponent(levelId)}/sky/${encodeURIComponent(file)}${q}`;
+  return url(`/levels/${encodeURIComponent(levelId)}/sky/${encodeURIComponent(file)}${q}`);
 }
 
 /**

@@ -15,11 +15,19 @@ import { packsRouter } from './routes/packs.js';
 import { itemsRouter } from './routes/items.js';
 import { catalogue, facets } from './lib/catalogue.js';
 import { errorHandler } from './errors.js';
-import { CLIENT_DIST, IS_DEV } from './paths.js';
+import { CLIENT_DIST, IS_DEV, BASE_PATH } from './paths.js';
 import { budgets } from '../../../scripts/lib/config.mjs';
 
 export async function createApp(state) {
-  const app = express();
+  const root = express();
+  // Everything the app serves hangs off ONE router, mounted at THAIKIT_BASE_PATH
+  // (or at / when there is none), so a reverse proxy can put the whole site under
+  // outdoordevs.com/thaikit without a single route knowing. Express strips the
+  // mount point, so inside here `req.path` is still '/api/...'. Vite is the one
+  // exception below: it carries the prefix itself through its `base`.
+  const app = express.Router();
+  root.use(BASE_PATH || '/', app);
+  if (BASE_PATH) root.get('/', (req, res) => res.redirect(`${BASE_PATH}/`));
 
   app.use(
     morgan('dev', {
@@ -33,6 +41,17 @@ export async function createApp(state) {
     }),
   );
   app.use(express.json({ limit: '4mb' }));
+
+  // THAIKIT_READ_ONLY: refuse every write at the door, before any router sees
+  // it. The per-route guards below still exist for the fault case (a registry
+  // that is malformed or unwritable answers 503); this is the deliberate mode,
+  // and it covers the bake -- POST /api/levels/:id/bake is minutes of GPU time
+  // anyone on the internet could otherwise start on the public instance.
+  app.use('/api', (req, res, next) => {
+    if (!state.publicReadOnly) return next();
+    if (req.method === 'GET' || req.method === 'HEAD' || req.method === 'OPTIONS') return next();
+    res.status(403).json({ error: 'this instance is read-only', reason: state.readOnlyReason, readOnly: true });
+  });
 
   app.use('/api', healthRouter(state));
   app.use('/api', assetsRouter(state));
@@ -156,6 +175,9 @@ export async function createApp(state) {
     const { createServer } = await import('vite');
     const vite = await createServer({
       root: path.resolve(CLIENT_DIST, '..'),
+      // vite.config.js reads THAIKIT_BASE_PATH too; this keeps the two agreeing
+      // when the config is bypassed.
+      base: `${BASE_PATH}/`,
       server: {
         middlewareMode: true,
         // Hand Vite our HTTP server, or it opens a second socket that silently
@@ -164,7 +186,9 @@ export async function createApp(state) {
       },
       appType: 'spa',
     });
-    app.use(vite.middlewares);
+    // On the ROOT app, not the mounted router: Vite serves under its own base
+    // and expects the un-stripped URL.
+    root.use(vite.middlewares);
     state.vite = vite;
   } else {
     app.use(express.static(CLIENT_DIST, { index: false }));
@@ -183,7 +207,7 @@ export async function createApp(state) {
     });
   }
 
-  app.use(errorHandler);
-  return app;
+  root.use(errorHandler);
+  return root;
 }
 

@@ -127,6 +127,28 @@ that still says "mesh" means the model.
   corrupt a concurrent one. A record whose `schemaVersion` is not the current one,
   or whose `id` disagrees with its directory, is refused by name.
 
+- **`THAIKIT_READ_ONLY=1` is a deliberate mode; the registry-fault read-only is not.** Both set
+  `state.readOnly`, so the same `guard`s and the same client banner fire, but the env flag also sets
+  `state.publicReadOnly`, which is what the blanket `/api` middleware in `app.js` keys on: every
+  non-GET answers 403 before any router runs, and that is what disables the bake on the public
+  instance. The client asks `/api/health` once (`web/client/src/readOnly.js`) and HIDES its save,
+  delete, upload, fork, rebuild and export controls rather than disabling them. Local edits in the
+  level editor still work and the dirty flag still shows; nothing is uploaded.
+- **`THAIKIT_BASE_PATH` mounts the whole app under a prefix, and the client bundle bakes it in.**
+  `app.js` hangs every route off ONE router mounted at the prefix (Express strips it, so routes still
+  see `/api/...`); Vite sits on the ROOT app with `base` set, because it carries the prefix itself.
+  The server prefixes every URL it hands out (`publicUrl` in `lib/catalogue.js` -- thumbs and bundles
+  from `packs/index.json` are recorded app-root-absolute and prefixed at serve time) and the client
+  routes every URL it builds through `url()` in `src/base.js`. A production build made without the
+  variable serves `/assets/...` and 404s behind the proxy: `deploy.sh` builds into
+  `web/client/dist-public` with it set and rsyncs that to the server's `web/client/dist`.
+- **The public instance is `compose.public.yaml` on ssh.nonlocal.ca (`~/thaikit`), proxied at
+  outdoordevs.com/thaikit.** That host has NO GPU, so the nvidia reservation in the other two compose
+  files would refuse to start there; the public stack drops it along with the bake agent, the export
+  mount and the img2threejs mount. `./deploy.sh` is the whole round trip; the nginx block is
+  `deploy/nginx/thaikit.conf`. Pack bundles and level GLBs are rsynced up as build products rather
+  than rebuilt on a 4-core, 8 GB box.
+
 ## The level editor, packs, bake and runtime
 
 `/level` is a second page in the same client (a pathname switch in `web/client/src/main.jsx`, no

@@ -3,6 +3,8 @@ import { useEffect, useRef, useState } from 'react';
 import { Modal } from './Modal.jsx';
 import { useLevel } from './store.js';
 import { packsApi } from '../api.js';
+import { url } from '../base.js';
+import { useReadOnly } from '../readOnly.js';
 
 /**
  * The lines that say WHICH items did not build and why.
@@ -43,7 +45,7 @@ export function PackManagerModal({ onClose, onChanged, packs: packsProp, items: 
   const logRef = useRef(null);
 
   useEffect(() => {
-    const es = new EventSource('/api/events');
+    const es = new EventSource(url('/api/events'));
     es.addEventListener('pack', (e) => {
       const evt = JSON.parse(e.data);
       setLog((l) => [...l.slice(-300), evt, ...unsupportedLines(evt)]);
@@ -63,6 +65,7 @@ export function PackManagerModal({ onClose, onChanged, packs: packsProp, items: 
   };
 
   const usedRefs = new Set((doc?.placements ?? []).map((p) => p.ref.split('/')[0]));
+  const { readOnly } = useReadOnly();
 
   return (
     <Modal title="Asset packs" onClose={onClose} width="min(900px, 94vw)" disableEscape={Boolean(failuresFor)}>
@@ -73,13 +76,14 @@ export function PackManagerModal({ onClose, onChanged, packs: packsProp, items: 
         With <em>adopt</em> on, its source becomes a tree of its own under <span className="mono">adopted/</span> so the
         skills can edit every item like one of thaikit's; off, it stays a read-only download with local overrides.
       </p>
-      <form className="row-inline" onSubmit={(e) => { e.preventDefault(); if (source.trim()) start(() => packsApi.add(source.trim(), { adopt })); }}>
+      {readOnly && <div className="banner">Read-only instance: packs can be browsed here but not installed, rebuilt or removed.</div>}
+      {!readOnly && <form className="row-inline" onSubmit={(e) => { e.preventDefault(); if (source.trim()) start(() => packsApi.add(source.trim(), { adopt })); }}>
         <input placeholder="@scifi-kit/registry" value={source} onChange={(e) => setSource(e.target.value)} style={{ flex: 1 }} disabled={Boolean(busy)} />
         <label className="muted" style={{ whiteSpace: 'nowrap' }} title="copy the pack's source into adopted/<ns>/ and build from there, so its props are editable in place">
           <input type="checkbox" checked={adopt} onChange={(e) => setAdopt(e.target.checked)} disabled={Boolean(busy)} /> adopt
         </label>
         <button className="primary" type="submit" disabled={!source.trim() || Boolean(busy)}>add pack</button>
-      </form>
+      </form>}
       {error && <div className="banner">{error}</div>}
       <table>
         <thead><tr><th>pack</th><th>version</th><th>source</th><th>items</th><th /></tr></thead>
@@ -101,7 +105,7 @@ export function PackManagerModal({ onClose, onChanged, packs: packsProp, items: 
                 {p.adopted
                   ? <span className="muted" title={`adopted into ${p.adopted}; its props are editable in the object editor and with the skills`}>adopted · </span>
                   : p.editable && <span className="muted" title={`installed from the source tree ${p.tree}; edit its props in the object editor`}>source tree · </span>}
-                {(
+                {!readOnly && (
                   <>
                     <button disabled={Boolean(busy)} onClick={() => start(() => packsApi.refresh(p.id))} title={p.editable ? 'rebuild every item from the source tree' : 're-resolve the source, download the latest version and rebuild'}>refresh</button>{' '}
                     {p.adopted && p.upstream && (

@@ -8,7 +8,7 @@ import { readRegistry, etagFor, MODELS_DIR, REPO_ROOT } from '@thaikit/registry-
 import { createApp } from './app.js';
 import { startWatcher } from './watcher.js';
 import { adoptBakes } from './lib/bake.js';
-import { PORT, IS_DEV, WATCH_POLL } from './paths.js';
+import { PORT, IS_DEV, WATCH_POLL, READ_ONLY, BASE_PATH } from './paths.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 
@@ -35,9 +35,14 @@ async function main() {
     writable: boot.writable !== false,
     // A malformed registry starts the server read-only with a banner rather
     // than crash-looping -- that is exactly when you need the UI to look at it.
-    readOnly: boot.valid === false || boot.writable === false,
-    readOnlyReason:
-      boot.valid === false
+    readOnly: READ_ONLY || boot.valid === false || boot.writable === false,
+    // THAIKIT_READ_ONLY is a deliberate mode, not a fault, so it is named first
+    // and separately: the UI hides its save controls on `readOnly` alone, and
+    // the reason is what the banner says.
+    publicReadOnly: READ_ONLY,
+    readOnlyReason: READ_ONLY
+      ? 'this is a public, read-only instance: browse and inspect, but nothing can be saved or baked here'
+      : boot.valid === false
         ? 'an asset record (packages/props/src/models/*/thaikit.json) does not validate against the schema'
         : boot.writable === false
           ? 'packages/props/src/models is not writable by this process (check THAIKIT_UID)'
@@ -69,11 +74,12 @@ async function main() {
       /* read-only mode already reported */
     }
     console.log('');
-    console.log(`  thaikit -> http://localhost:${PORT}`);
+    console.log(`  thaikit -> http://localhost:${PORT}${BASE_PATH}/`);
     console.log(`  models:   ${MODELS_DIR} (${count} assets)`);
     console.log(`  repo:     ${REPO_ROOT}`);
     console.log(`  mode:     ${IS_DEV ? 'development (Vite middleware, HMR)' : 'production'}`);
     console.log(`  watch:    ${WATCH_POLL ? 'polling (bind-mount safe)' : 'inotify'}`);
+    if (BASE_PATH) console.log(`  base:     ${BASE_PATH}`);
     if (state.readOnly) console.log(`  READ-ONLY: ${state.readOnlyReason}`);
     console.log('');
   });

@@ -13,6 +13,7 @@ import {
   assetFile, parseId, storeOptionsFor } from '@thaikit/registry-core';
 
 import { afterTreeEdit } from '../lib/refresh.js';
+import { publicUrl } from '../lib/catalogue.js';
 
 /** What a client may send when creating an asset; the server fills the rest. */
 const CreateInput = z.object({
@@ -237,7 +238,7 @@ export function assetsRouter(state) {
         return registry;
       });
       afterTreeEdit(state, { id: created.id, kind: 'meta', path: assetFile(created.id) }).catch(() => {});
-      res.status(201).set('ETag', etag).location(`/api/assets/${created.id}`).json(created);
+      res.status(201).set('ETag', etag).location(publicUrl(`/api/assets/${created.id}`)).json(created);
     } catch (err) {
       if (err instanceof z.ZodError) err.status = 400;
       next(err);

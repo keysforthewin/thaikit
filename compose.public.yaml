@@ -1,0 +1,56 @@
+name: thaikit
+
+# The PUBLIC stack: a read-only mirror of the kit for anyone to browse, at
+# outdoordevs.com/thaikit. It is compose.prod.yaml with everything that makes a
+# WORKSTATION stack taken out, because a rented VPS has none of it -- no GPU (the
+# nvidia reservation would refuse to start here), no host Blender agent, no game
+# GLB folder to deliver bakes into, no img2threejs checkout. What it keeps is
+# the same image, the same bind mounts and the same server; the two switches
+# that make it public live in .env and reach the server as plain environment:
+#
+#   THAIKIT_READ_ONLY=1        every write and the bake answer 403; the UI hides its save controls
+#   THAIKIT_BASE_PATH=/thaikit served under a prefix, behind the host's nginx
+#
+# deploy.sh does the whole round trip: builds the client with that base path
+# inside the local container, rsyncs source + build products + data to
+# DEPLOY_TARGET, installs node_modules THERE with the image's own npm, and
+# brings this stack up. Nothing is ever run with a host Node.
+#
+#   docker compose -f compose.public.yaml up -d
+services:
+  web:
+    build:
+      context: .
+      target: runtime
+    image: thaikit/web:public
+    container_name: thaikit-web
+    # Loopback only; nginx on the host proxies /thaikit/ to it.
+    ports:
+      - "127.0.0.1:${THAIKIT_PORT:-3733}:3733"
+    user: "${THAIKIT_UID:-1000}:${THAIKIT_GID:-1000}"
+    environment:
+      NODE_ENV: production
+      PORT: "3733"
+      THAIKIT_REPO_ROOT: /repo
+      THAIKIT_SCRATCH_DIR: /repo/scratch
+      # Default ON for this stack: a public instance with a writable API is a
+      # public instance somebody will write to.
+      THAIKIT_READ_ONLY: ${THAIKIT_READ_ONLY:-1}
+      THAIKIT_BASE_PATH: ${THAIKIT_BASE_PATH:-/thaikit}
+      # No generation skills write this tree from the host; an inotify watch is
+      # plenty and costs nothing. Polling is for WSL2 bind mounts.
+      THAIKIT_WATCH_POLL: "0"
+      HOME: /tmp
+    volumes:
+      - ./:/repo
+      - ./:/app
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3733' + (process.env.THAIKIT_BASE_PATH || '') + '/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 3s
+      start_period: 15s
+      retries: 3
+    # Comes back after a reboot or a crash; stays down only when told to stop.
+    restart: unless-stopped
+    init: true
+    stop_grace_period: 5s
