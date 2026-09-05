@@ -17,7 +17,7 @@ import { PackManagerModal } from './PackManagerModal.jsx';
 import { ExportModal } from './ExportModal.jsx';
 import { useHotkeys } from './useHotkeys.js';
 import { parseLevelGlb } from './doc/fromGlb.js';
-import { buildProjectScene, exportGlb } from './doc/toGlb.js';
+import { buildProjectScene, exportGlb, nextPaint } from './doc/toGlb.js';
 import { levelStats } from './cells.js';
 import { ownerOf, newPlacementId, newSpawnId } from './ids.js';
 import { expandIds, selectionRoots } from './groups.js';
@@ -101,9 +101,15 @@ export default function LevelEditor({ initialId }) {
     useLevel.setState({ saving: true, status: 'building scene…' });
     let scene = null;
     try {
+      // Paint "saving…" before the build starts: with every prototype cached the
+      // whole export runs without ever yielding to the renderer otherwise.
+      await nextPaint();
       scene = await buildProjectScene(st.doc, st.catalogue, st.orphans, { onProgress: (i, n) => useLevel.setState({ status: `building scene ${i}/${n}` }) });
       useLevel.setState({ status: 'exporting GLB…' });
+      await nextPaint();
       const glb = await exportGlb(st.doc.settings?.textures?.maxSize ? scene : scene, { maxTextureSize: st.doc.settings?.textures?.maxSize ?? 2048 });
+      useLevel.setState({ status: `uploading ${(glb.byteLength / 1048576).toFixed(1)} MB…` });
+      await nextPaint();
       const summary = await levelsApi.save(st.levelId, glb);
       useLevel.setState({ dirty: false, status: `saved ${(summary.bytes / 1048576).toFixed(1)} MB` });
       setTimeout(() => useLevel.setState((x) => (x.status?.startsWith('saved') ? { status: null } : {})), 3000);

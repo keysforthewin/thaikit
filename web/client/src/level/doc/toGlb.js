@@ -5,6 +5,15 @@ import { getPrototype, instantiate } from '../../three/instances.js';
 import { buildLight } from './lights.js';
 import { LEVEL_SCHEMA_VERSION } from '@thai-kit/level-schema';
 
+/**
+ * Let the browser paint. An `await` on an already-resolved promise only yields to
+ * the microtask queue, so a loop over cached prototypes never gives React's render
+ * a frame -- rAF then a macrotask is the shortest wait that guarantees one paint.
+ */
+export function nextPaint() {
+  return new Promise((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
+}
+
 /** Wait for every TextureLoader-sourced image so the exporter does not draw a 0x0 image. */
 async function settleImages(root) {
   const pending = [];
@@ -32,6 +41,7 @@ export async function buildProjectScene(doc, catalogue, orphans, { onProgress } 
   scene.name = doc.name;
   const now = new Date().toISOString();
   const packsInUse = new Map();
+  let sliceStart = performance.now();
 
   for (const [i, p] of doc.placements.entries()) {
     const item = catalogue.byRef[p.ref];
@@ -57,6 +67,9 @@ export async function buildProjectScene(doc, catalogue, orphans, { onProgress } 
     }
     scene.add(g);
     onProgress?.(i + 1, doc.placements.length);
+    // Cached prototypes make this loop pure microtasks; hand the frame back every
+    // ~40 ms so the progress status actually reaches the screen.
+    if (performance.now() - sliceStart > 40) { await nextPaint(); sliceStart = performance.now(); }
   }
 
   for (const l of doc.lights) scene.add(buildLight(l));
