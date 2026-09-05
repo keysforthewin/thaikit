@@ -13,6 +13,7 @@ import { eventsRouter } from './routes/events.js';
 import { levelsRouter } from './routes/levels.js';
 import { packsRouter } from './routes/packs.js';
 import { itemsRouter } from './routes/items.js';
+import { unrealRouter, UNREAL_EXPORT_DIR } from './routes/unreal.js';
 import { catalogue, facets } from './lib/catalogue.js';
 import { errorHandler } from './errors.js';
 import { CLIENT_DIST, IS_DEV, BASE_PATH } from './paths.js';
@@ -60,6 +61,7 @@ export async function createApp(state) {
   app.use('/api', levelsRouter(state));
   app.use('/api', packsRouter(state));
   app.use('/api', itemsRouter(state));
+  app.use('/api', unrealRouter(state));
 
   app.get('/api/meta', async (req, res, next) => {
     try {
@@ -150,7 +152,8 @@ export async function createApp(state) {
 
   // Level build products (the baked GLB, its smoke render) and downloaded pack
   // bundles. Both are overwritten in place, so no-cache like /media.
-  for (const [mount, dir] of [['/levels', LEVELS_DIR], ['/packs', PACKS_DIR]]) {
+  // exports/unreal is the Unreal-ready copy of the kit, replaced whole per export.
+  for (const [mount, dir] of [['/levels', LEVELS_DIR], ['/packs', PACKS_DIR], ['/exports/unreal', UNREAL_EXPORT_DIR]]) {
     app.use(
       mount,
       express.static(dir, {

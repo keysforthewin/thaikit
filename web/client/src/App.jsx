@@ -3,6 +3,7 @@ import { api } from './api.js';
 import { Drawer } from './Drawer.jsx';
 import { CreateDialog } from './CreateDialog.jsx';
 import { PackManagerModal } from './level/PackManagerModal.jsx';
+import { UnrealExportModal } from './unreal/UnrealExportModal.jsx';
 import { packsApi } from './api.js';
 import { FacetDialog } from './FacetDialog.jsx';
 import { budgetRows, useBudgetClasses } from './budgets.js';
@@ -123,10 +124,12 @@ export default function App() {
   // The pack manager wants every pack and item, not the filtered page.
   const [packsOpen, setPacksOpen] = useState(false);
   const [packData, setPackData] = useState(null);
+  // So does the Unreal export: it builds every supported prop, not the filtered page.
+  const [unrealOpen, setUnrealOpen] = useState(false);
   useEffect(() => {
-    if (!packsOpen) return;
+    if (!packsOpen && !unrealOpen) return;
     packsApi.items().then((r) => setPackData({ packs: r.packs, items: r.items })).catch(() => setPackData({ packs: [], items: [] }));
-  }, [packsOpen, rev]);
+  }, [packsOpen, unrealOpen, rev]);
   const [error, setError] = useState(null);
   const budgetClasses = useBudgetClasses();
 
@@ -201,6 +204,9 @@ export default function App() {
         <a href={url('/level')}><button title="build a level from these props">level editor</button></a>
         <button onClick={() => setPacksOpen(true)} title="install, refresh or remove vibe3d asset packs">
           packs{meta?.packs ? ` (${Object.keys(meta.packs).length})` : ''}
+        </button>
+        <button onClick={() => setUnrealOpen(true)} title="export every built prop as Unreal-ready GLBs with collision and a manifest">
+          export to Unreal
         </button>
         {!health?.readOnly && <button className="primary" onClick={() => setCreating(true)}>+ add asset</button>}
       </div>
@@ -375,6 +381,13 @@ export default function App() {
           items={packData?.items ?? []}
           onClose={() => setPacksOpen(false)}
           onChanged={() => { load(); setRev((n) => n + 1); }}
+        />
+      )}
+      {unrealOpen && (
+        <UnrealExportModal
+          packs={packData?.packs ?? []}
+          items={packData?.items ?? []}
+          onClose={() => setUnrealOpen(false)}
         />
       )}
       {creating && (

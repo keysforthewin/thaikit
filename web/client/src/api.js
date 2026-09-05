@@ -228,3 +228,19 @@ levelsApi.sky = {
     return res.json();
   },
 };
+
+/**
+ * The Unreal export. The zip is built in the browser; the server only unpacks
+ * it into exports/unreal/ and reports what is there.
+ */
+export const unrealApi = {
+  status: () => request('/api/exports/unreal', {}, null),
+  upload: async (zipBlob) => {
+    const res = await bytesRequest('/api/exports/unreal', {
+      method: 'PUT',
+      headers: { 'content-type': 'application/zip' },
+      body: zipBlob,
+    }, null);
+    return res.json();
+  },
+};
