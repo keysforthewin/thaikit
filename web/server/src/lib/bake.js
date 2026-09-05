@@ -51,8 +51,8 @@ export function bakeStatus(levelId) {
 
 /** The record as clients see it: no handles, no timers. */
 export function publicJob(job, { log = true } = {}) {
-  const { id, level, baker, cpu, status, startedAt, endedAt, result, cancelled, pid, adopted } = job;
-  return { id, level, baker, cpu, status, startedAt, endedAt, result, cancelled, pid, adopted, ...(log ? { log: job.log } : { logLength: job.log.length }) };
+  const { id, level, baker, cpu, cell, status, startedAt, endedAt, result, cancelled, pid, adopted } = job;
+  return { id, level, baker, cpu, cell: cell ?? null, status, startedAt, endedAt, result, cancelled, pid, adopted, ...(log ? { log: job.log } : { logLength: job.log.length }) };
 }
 
 const buildDirOf = (id) => path.join(levelDir(id), 'build');
@@ -61,9 +61,9 @@ const logFile = (id) => path.join(buildDirOf(id), 'bake.log');
 const outFile = (id) => path.join(buildDirOf(id), 'bake.out');
 
 async function saveRecord(job) {
-  const { id, level, baker, cpu, status, startedAt, endedAt, result, cancelled, pid } = job;
+  const { id, level, baker, cpu, cell, status, startedAt, endedAt, result, cancelled, pid } = job;
   try {
-    await writeFileAtomic(recordFile(level), JSON.stringify({ id, level, baker, cpu, status, startedAt, endedAt, result, cancelled, pid }, null, 2));
+    await writeFileAtomic(recordFile(level), JSON.stringify({ id, level, baker, cpu, cell: cell ?? null, status, startedAt, endedAt, result, cancelled, pid }, null, 2));
   } catch (e) {
     console.warn(`[bake] could not write ${recordFile(level)}: ${e.message}`);
   }
@@ -158,9 +158,14 @@ function watch(job) {
   job.timers.push(setInterval(() => drainLog(job), POLL_MS).unref());
 }
 
-export function runBake(state, { id, baker, cpu = false }) {
+/**
+ * `cell` (`<ix>_<iz>`) is the quick export. The record, log and out file still
+ * live in `build/` -- one bake per level at a time, quick or full -- and only
+ * the pipeline's own files move to `build/cell_<key>/`.
+ */
+export function runBake(state, { id, baker, cpu = false, cell = null }) {
   const job = makeJob(state, {
-    id: crypto.randomUUID().slice(0, 8), level: id, baker, cpu, status: 'running',
+    id: crypto.randomUUID().slice(0, 8), level: id, baker, cpu, cell, status: 'running',
     startedAt: new Date().toISOString(), endedAt: null, result: null, cancelled: false, adopted: false,
   });
   // The pipeline's stdio are FILES on the shared mount, not pipes to this
@@ -171,12 +176,13 @@ export function runBake(state, { id, baker, cpu = false }) {
   fs.mkdirSync(buildDirOf(id), { recursive: true });
   const outFd = fs.openSync(outFile(id), 'w');
   const logFd = fs.openSync(logFile(id), 'w');
-  fs.writeSync(logFd, `${JSON.stringify({ phase: 'start', message: `baking ${id} (lightmap: ${baker}${baker === 'none' ? '' : `, cpu ${cpu ? 'on' : 'off'}`})` })}\n`);
+  fs.writeSync(logFd, `${JSON.stringify({ phase: 'start', message: `baking ${id}${cell ? ` cell ${cell}` : ''} (lightmap: ${baker}${baker === 'none' ? '' : `, cpu ${cpu ? 'on' : 'off'}`})` })}\n`);
   // `detached` gives the pipeline its own process group, so a cancel can signal
   // the GROUP (-pid) and take the Blender child down with it -- there is no
   // per-stage bookkeeping to keep in step with the pipeline.
   const argv = [SCRIPT, '--level', id, '--baker', baker];
   if (cpu) argv.push('--cpu');
+  if (cell) argv.push('--cell', cell);
   const child = spawn(process.execPath, argv, { env: process.env, detached: true, stdio: ['ignore', outFd, logFd] });
   fs.closeSync(outFd);
   fs.closeSync(logFd);

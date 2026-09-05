@@ -33,7 +33,7 @@ export const useLevel = create((set, get) => ({
   // game does. That is why a sky authored here looked magnified next to the
   // same panorama in a 360 visualiser. Anchoring the horizontal instead means
   // the viewport shows the same slice of the world whatever the panels do.
-  view: { grid: true, axes: true, cells: false, bounds: false, colliders: false, helpers: true, wireframe: false, sockets: false, fov: 90 },
+  view: { grid: true, axes: true, cells: false, bounds: false, colliders: false, helpers: true, wireframe: false, sockets: false, lights: true, fov: 90 },
 
   catalogue: { packs: [], items: [], byRef: {} },
   catalogueError: null,
@@ -59,6 +59,12 @@ export const useLevel = create((set, get) => ({
   dragging: false,
   /** The open level's bake as the server last reported it: { status, jobId } or null. Drives the export button's indicator. */
   bake: null,
+  /**
+   * The cell the export dialog would quick-export, `<ix>_<iz>` or null. UI
+   * state the viewport draws so what is about to be baked is visible behind
+   * the dialog and after it closes; the dialog owns it.
+   */
+  quickCell: null,
   /** Bumps whenever a prototype resolves, so stats and cells recompute. */
   protoRev: 0,
   /**
@@ -213,6 +219,7 @@ export const useLevel = create((set, get) => ({
   toggleView: (key) => set((s) => ({ view: { ...s.view, [key]: !s.view[key] } })),
   setView: (key, value) => set((s) => ({ view: { ...s.view, [key]: value } })),
   setModal: (modal) => set({ modal }),
+  setQuickCell: (quickCell) => set((s) => (s.quickCell === quickCell ? s : { quickCell })),
   /** Entering drops the selection and any open modal; the gizmo has no place in a walkthrough. */
   setPlay: (play) => set(play ? { play: true, selection: [], modal: null, snapHint: null } : { play: false, status: null }),
   togglePlayView: () => set((s) => ({ playView: s.playView === 'first' ? 'third' : 'first' })),

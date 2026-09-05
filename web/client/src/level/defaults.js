@@ -19,7 +19,7 @@ export const DEFAULT_SETTINGS = {
   textures: { colorMode: 'etc1s', dataMode: 'uastc', maxSize: 2048 },
 };
 
-export const DEFAULT_SHADOW = { mapSize: 2048, extent: 60, bias: -0.0005, normalBias: 0.02 };
+export const DEFAULT_SHADOW = { mapSize: 2048, extent: 60, bias: -0.0005, normalBias: 0.02, softDeg: 1.5 };
 
 export function defaultMoon() {
   return {

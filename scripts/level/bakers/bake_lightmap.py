@@ -2,7 +2,7 @@
 Bake a level's lightmap in Blender, headless.
 
     blender -b --python bake_lightmap.py -- --glb in.glb --out <dir> --size 4096 --samples 128
-        --moon dx,dy,dz,r,g,b,strength --sky r,g,b,strength [--exposure 1.0]
+        --moon dx,dy,dz,r,g,b,strength[,softDeg] --sky r,g,b,strength [--exposure 1.0]
         [--lights '[...]'] [--device GPU|GPU+CPU|CPU] [--gutter 2] [--texels-per-meter 8]
 
 Reads the level's static geometry (the lod0 meshes under every cell_* node),
@@ -50,7 +50,7 @@ ap.add_argument('--glb', required=True)
 ap.add_argument('--out', required=True)
 ap.add_argument('--size', type=int, default=4096)
 ap.add_argument('--samples', type=int, default=128)
-ap.add_argument('--moon', default='-0.4,-1,-0.3,0.72,0.78,0.95,1.0')
+ap.add_argument('--moon', default='-0.4,-1,-0.3,0.72,0.78,0.95,1.0,1.5')
 ap.add_argument('--sky', default='0.53,0.59,0.76,0.35')
 ap.add_argument('--ground', default='0.05,0.04,0.03')
 ap.add_argument('--env', default=None)
@@ -386,7 +386,10 @@ md = Vector(moon[0:3]).normalized()
 sun_data = bpy.data.lights.new('thaikit_moon', 'SUN')
 sun_data.color = moon[3:6]
 sun_data.energy = moon[6]
-sun_data.angle = math.radians(1.5)
+# Angular diameter: the penumbra width on static geometry. The real moon is
+# 0.5 degrees; the level's moon setting (shadow.softDeg) decides.
+sun_data.angle = math.radians(moon[7] if len(moon) > 7 else 1.5)
+log(f'moon: strength {moon[6]:.3f}, angular diameter {math.degrees(sun_data.angle):.2f} deg (the baked penumbra)')
 sun = bpy.data.objects.new('thaikit_moon', sun_data)
 scene.collection.objects.link(sun)
 # glTF is Y-up, Blender is Z-up: (x, y, z) -> (x, -z, y).

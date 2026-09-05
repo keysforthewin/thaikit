@@ -12,7 +12,12 @@
  * result is one JSON line on stdout.
  *
  * Usage:
- *   node scripts/level/bake-level.mjs --level <id> [--baker blender|blender-host|none] [--cpu] [--resume-from 2|3|4]
+ *   node scripts/level/bake-level.mjs --level <id> [--baker blender|blender-host|none] [--cpu] [--resume-from 2|3|4] [--cell <ix>_<iz>]
+ *
+ * `--cell` is the QUICK EXPORT: the editor has already cut the raw scene down
+ * to one cell (see buildExportScene), and this run builds it under
+ * build/cell_<key>/ and delivers it as <id>_<key>.glb, so a full build is never
+ * touched. The raw carries the cell it was cut to and must agree.
  *
  * `blender` is the container's Linux Blender (CUDA); `blender-host` hands the
  * Blender step to the host agent (`npm run level:bake-agent`, Windows Blender,
@@ -31,7 +36,7 @@ import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import { dedup, flatten, join, weld, meshopt, prune } from '@gltf-transform/functions';
 import { MeshoptDecoder, MeshoptEncoder } from 'meshoptimizer';
 
-import { levelDir, toRepoRelative } from '@thaikit/registry-core';
+import { toRepoRelative } from '@thaikit/registry-core';
 
 import { ok, fail, parseArgs } from '../lib/out.mjs';
 import { readTags, stripEditorExtras, foldBaseColorIntoVertexColor, normaliseAttributes } from './pipeline/normalise.mjs';
@@ -42,6 +47,7 @@ import { writeManifest } from './pipeline/manifest.mjs';
 import { prepareSkyImages, addSkyTextures } from './pipeline/sky.mjs';
 import { bakeWithBlender } from './bakers/blender-cycles.mjs';
 import { findKtx, KTX_INSTALL_HINT } from './pipeline/ktx2.mjs';
+import { assertCellKey, buildDirOf, exportNameOf } from './pipeline/build-dir.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const VERSION = '0.1.0';
@@ -85,7 +91,8 @@ async function main() {
   const resumeFrom = Number(args['resume-from'] ?? 1);
   // Test-time overrides for the lightmap; the level's own settings otherwise.
   const lightmapOverride = { size: args['lightmap-size'] ? Number(args['lightmap-size']) : null, samples: args.samples ? Number(args.samples) : null };
-  const buildDir = path.join(levelDir(id), 'build');
+  const cell = assertCellKey(args.cell ?? null);
+  const buildDir = buildDirOf(id, cell);
   const rawFile = path.join(buildDir, 'raw.glb');
   const stage = (n) => path.join(buildDir, `stage${n}.glb`);
   const bakeFile = path.join(buildDir, 'bake.json');
@@ -108,6 +115,8 @@ async function main() {
     const scene = doc.getRoot().listScenes()[0];
     bake = scene.getExtras()?.thaikitBake;
     if (!bake) throw new Error('raw.glb carries no scene.extras.thaikitBake; export it from the level editor');
+    if ((bake.cell?.key ?? null) !== cell) throw new Error(`raw.glb was cut to ${bake.cell ? `cell ${bake.cell.key}` : 'the whole level'} but this bake is for ${cell ? `cell ${cell}` : 'the whole level'}`);
+    if (cell) progress('read', `quick export: cell ${cell}, ${bake.placements.length} placement(s) incl. ground, ${bake.lights.length} light(s), ${bake.spawns.length} spawn(s)`);
     await fs.writeFile(bakeFile, JSON.stringify(bake, null, 2));
     scene.setExtras({});
 
@@ -215,13 +224,14 @@ async function main() {
   let exported = null;
   const exportDir = process.env.THAIKIT_EXPORT_DIR;
   if (exportDir) {
-    const target = path.join(exportDir, `${id}.glb`);
+    const name = exportNameOf(id, cell);
+    const target = path.join(exportDir, name);
     try {
       await fs.access(exportDir);
       await fs.copyFile(outFile, target);
       const hostDir = process.env.THAIKIT_EXPORT_DIR_HOST || exportDir;
       // path.posix so a `${PWD}/../Operation-X/GLB` default reads as the folder it is.
-      exported = { path: path.posix.normalize(`${hostDir.replace(/[\\/]+$/, '')}/${id}.glb`), bytes };
+      exported = { path: path.posix.normalize(`${hostDir.replace(/[\\/]+$/, '')}/${name}`), bytes };
       progress('export', `copied to ${exported.path}`);
     } catch (e) {
       progress('export', `WARNING not copied to ${target}: ${e.code === 'ENOENT' ? 'folder is not mounted (THAIKIT_EXPORT_DIR)' : e.message}`);
@@ -230,7 +240,7 @@ async function main() {
 
   // ---- verify ----------------------------------------------------------------
   const verify = await new Promise((resolve) => {
-    const child = spawn(process.execPath, [path.join(here, 'verify-level.mjs'), '--level', id], { stdio: ['ignore', 'pipe', 'inherit'] });
+    const child = spawn(process.execPath, [path.join(here, 'verify-level.mjs'), '--level', id, ...(cell ? ['--cell', cell] : [])], { stdio: ['ignore', 'pipe', 'inherit'] });
     let out = '';
     child.stdout.on('data', (d) => { out += d; });
     child.on('close', () => { try { resolve(JSON.parse(out.trim().split('\n').pop())); } catch { resolve({ ok: false, failures: ['verify produced no result'] }); } });
@@ -241,7 +251,7 @@ async function main() {
   const dc = lodStats.reduce((a, s) => a.map((v, i) => v + s.drawCalls[i]), [0, 0, 0]);
   const tri = lodStats.reduce((a, s) => a.map((v, i) => v + s.triangles[i]), [0, 0, 0]);
   return ok({
-    level: id, file: toRepoRelative(outFile), exported, bytes, cells: manifest.cells.list.length, drawCalls: dc, triangles: tri,
+    level: id, cell, file: toRepoRelative(outFile), exported, bytes, cells: manifest.cells.list.length, drawCalls: dc, triangles: tri,
     textures: count, lightmap: lightmapImage != null, colliders: manifest.colliders.reduce((n, c) => n + c.shapes.length, 0), dynamic: manifest.dynamic.length,
     verify,
   });

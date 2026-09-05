@@ -274,14 +274,14 @@ export default function LevelEditor({ initialId }) {
         <span className="grow" />
         {readOnly && <span className="badge" title={readOnlyReason ?? 'this instance is read-only'}>read-only</span>}
         <button onClick={() => setModal('packs')}>packs ({catalogue.packs.length})</button>
-        {!readOnly && <button
+        <button
           disabled={!doc}
           className={bake?.status === 'running' ? 'bake-running' : bake?.status === 'failed' ? 'bake-failed' : ''}
           title={bake?.status === 'running' ? `a bake is running in the background — ${bake.message ?? ''}\nopen to see its log or cancel it` : 'bake and export a self-contained GLB (cells, LOD, KTX2, lightmap)'}
           onClick={() => setModal('export')}
         >
           {bake?.status === 'running' ? 'export… ● baking' : bake?.status === 'failed' ? 'export… ✗ failed' : 'export…'}
-        </button>}
+        </button>
       </div>
       {doc ? <Toolbar onAdd={() => setModal('picker')} onAddLight={addLight} onAddSpawn={addSpawn} onJoin={() => setModal('join')} /> : <div className="toolbar" />}
       {(error || s.catalogueError) && (
@@ -319,7 +319,7 @@ export default function LevelEditor({ initialId }) {
         />
       )}
       {modal === 'packs' && <PackManagerModal onClose={() => setModal(null)} onChanged={onPackChanged} />}
-      {modal === 'export' && !readOnly && <ExportModal onClose={() => setModal(null)} />}
+      {modal === 'export' && <ExportModal onClose={() => setModal(null)} />}
       {texturesOpen && stats && (
         <Modal title="Textures in this level" onClose={() => setTexturesOpen(false)} width="min(900px, 94vw)">
           <TexturesPanel stats={stats} />

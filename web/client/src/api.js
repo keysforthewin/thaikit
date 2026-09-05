@@ -186,8 +186,9 @@ export const packsApi = {
   job: (id) => request(`/api/packs/jobs/${id}`, {}, null),
 };
 
-levelsApi.bake = async (id, glbBytes, { baker = 'blender', cpu = false, signal } = {}) => {
-  const res = await bytesRequest(`/api/levels/${id}/bake?baker=${encodeURIComponent(baker)}&cpu=${cpu ? 1 : 0}`, {
+/** `cell` (`<ix>_<iz>`) is the quick export: one cell baked as a level of its own. */
+levelsApi.bake = async (id, glbBytes, { baker = 'blender', cpu = false, cell = null, signal } = {}) => {
+  const res = await bytesRequest(`/api/levels/${id}/bake?baker=${encodeURIComponent(baker)}&cpu=${cpu ? 1 : 0}${cell ? `&cell=${encodeURIComponent(cell)}` : ''}`, {
     method: 'POST',
     headers: { 'content-type': 'model/gltf-binary' },
     body: glbBytes,

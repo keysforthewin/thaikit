@@ -382,6 +382,13 @@ export const ShadowSettings = z.object({
   extent: num.positive().default(60),
   bias: num.default(-0.0005),
   normalBias: num.default(0.02),
+  /**
+   * The moon's angular diameter in degrees, which is the width of the
+   * penumbra the BAKE gives static geometry (Cycles' sun angle). The real moon
+   * is 0.5; a few degrees reads as soft moonlight. The live shadow map does
+   * not use it: a bigger map does not soften an edge, it sharpens it.
+   */
+  softDeg: num.min(0).max(45).default(1.5),
 });
 
 /** node.extras.tk on a light node (the node also carries KHR_lights_punctual). */

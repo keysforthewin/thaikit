@@ -132,7 +132,8 @@ that still says "mesh" means the model.
   `state.publicReadOnly`, which is what the blanket `/api` middleware in `app.js` keys on: every
   non-GET answers 403 before any router runs, and that is what disables the bake on the public
   instance. The client asks `/api/health` once (`web/client/src/readOnly.js`) and HIDES its save,
-  delete, upload, fork, rebuild and export controls rather than disabling them. Local edits in the
+  delete, upload, fork and rebuild controls rather than disabling them. The EXPORT dialog stays, as a
+  preview of the bake settings and the last result on record, with only its `bake & export` button disabled. Local edits in the
   level editor still work and the dirty flag still shows; nothing is uploaded.
 - **`THAIKIT_BASE_PATH` mounts the whole app under a prefix, and the client bundle bakes it in.**
   `app.js` hangs every route off ONE router mounted at the prefix (Express strips it, so routes still
@@ -562,6 +563,27 @@ placed geometry. Export writes a second, self-contained GLB.
   `placementPoint`'s forward ray meets the sky first and every object lands on it;
   and `smoke-level.mjs` passes `sky: false`, because `frameStats` measures the share
   of the frame that is not the backdrop and a sky makes every pixel foreground.
+- **The QUICK EXPORT bakes ONE cell as a playable level, and it is filtered in the BROWSER.**
+  The export dialog's `scope: one cell` cuts the scene down inside `buildExportScene` (the
+  `cell` option): the placements whose bbox centre falls in the cell, ONE ground tile covering
+  the whole cell (not the margin-clipped extent -- the player needs a floor everywhere they can
+  walk), the moon always, the point/spot lamps that stand in the cell or whose `distance` reaches
+  it (a `distance` of 0 is INFINITE in three, so those count only when standing inside, or every
+  lamp on the map would come along), the level's spawns inside it, and a spawn named `quick` that
+  `placeSpawn` puts on free ground nearest the lamps, facing the nearest spot. It filters there
+  and nowhere else because every downstream stage -- partition, join, LOD, the Cycles bake,
+  colliders, `dynamic`, the manifest -- keys off the placement rows in `thaikitBake`. The
+  pipeline learns only WHERE and WHAT NAME: `--cell <ix>_<iz>` builds under
+  `levels/<id>/build/cell_<key>/` and delivers `<id>_<key>.glb`, through `buildDirOf` /
+  `exportNameOf` in `scripts/level/pipeline/build-dir.mjs` (verify and smoke take `--cell` too),
+  so a full build's raw, stages and level.glb are never touched. The job record, log and out file
+  stay in `build/`: one bake per level at a time, quick or full, with `cell` on the record. The
+  raw carries `thaikitBake.cell` and the pipeline refuses a mismatch. `auto` picks the
+  selection's cell, else a spot-lit cell at random (`pickCell` in
+  `web/client/src/level/export/quickCell.js`), and the choice rides on `store.quickCell`, which
+  `QuickCellOverlay` paints in the viewport so what is about to be baked is visible behind the
+  dialog and after it closes. Measured on `lamptest`: 5 s of Cycles for the cell against 60 for
+  the level, same settings.
 - **A group is a remembered multi-select, not a transform node.** "Join" names a set of
   placements, lights, spawns and other groups so they drag, turn and scale as one unit; nothing is
   merged and nothing is reparented. Every member keeps its own WORLD transform, so the bake, the
@@ -764,6 +786,13 @@ placed geometry. Export writes a second, self-contained GLB.
   range 3, alpha 99.1% in the top bin with 0.5% penumbra, `verify-level` `bakedLights: true`,
   `smoke-level` clean. A lit level's `range` is usually above 1 now (a 12 cd lamp is 1.33 at
   3 m); that is the 8-bit atlas paying for the lamps with precision in the dark.
+- **The moon's soft shadow edge is `shadow.softDeg` on the moon light, and it is BAKED, not
+  live.** It is the sun's angular diameter in Cycles (`--moon`'s eighth number, default 1.5; the
+  real moon is 0.5, 3-6 reads as soft moonlight) and so the width of the penumbra in the
+  lightmap's alpha on static geometry. A smaller live shadow map only LOOKS soft in the editor:
+  that is PCF blurring 512 texels over 120 m, it shimmers as the box follows the player, and the
+  shipped level never uses the map for static geometry anyway. The baker logs `moon: ... angular
+  diameter N deg`; read that line to know what the bake used.
 - **A placement's `castShadow` / `receiveShadow` now reach the bake and the runtime -- for DYNAMIC
   placements only.** They used to stop at the three meshes `buildExportScene` built, which glTF
   cannot carry, so Cycles saw every billboard -- a kilometre-tall quad standing at its AUTHORED

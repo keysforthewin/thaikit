@@ -60,6 +60,7 @@ export function Toolbar({ onAdd, onAddLight, onAddSpawn, onJoin }) {
         <Btn on={view.colliders} onClick={() => toggleView('colliders')} title="physics compounds — X">colliders</Btn>
         <Btn on={view.sockets} onClick={() => toggleView('sockets')} title="named sockets">sockets</Btn>
         <Btn on={view.helpers} onClick={() => toggleView('helpers')} title="light helpers">helpers</Btn>
+        <Btn on={view.lights !== false} onClick={() => toggleView('lights')} title="the authored point, spot and moon lights, live in the viewport — off, every lamp is dark (and casts no shadow) so a level with many lights edits at full frame rate; handles and helpers stay. Play mode and the bake are unaffected">lights</Btn>
         <Btn on={view.wireframe} onClick={() => toggleView('wireframe')} title="wireframe">wire</Btn>
         <select
           value={view.fov ?? 90}

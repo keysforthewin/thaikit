@@ -51,7 +51,9 @@ export function blenderBakeSpec({ bake, cpu = false, hasEnv = false }) {
     size: lm.size ?? 4096,
     samples: lm.samples ?? 128,
     texelsPerMeter: lm.texelsPerMeter ?? 8,
-    moon: [...moonDir, ...moonRgb, moon?.intensity ?? 0.6],
+    // The eighth number is the sun's angular diameter in degrees: the width
+    // of the penumbra Cycles gives the moon's shadow on static geometry.
+    moon: [...moonDir, ...moonRgb, moon?.intensity ?? 0.6, moon?.shadow?.softDeg ?? 1.5],
     sky: [...skyRgb, hemi.intensity ?? 0.35],
     ground: hexToLinear(hemi.ground ?? '#2a2620'),
     exposure: lm.exposure ?? 1,

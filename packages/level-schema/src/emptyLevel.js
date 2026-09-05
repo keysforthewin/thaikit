@@ -68,7 +68,7 @@ export function emptyLevelGltf({ id, name, now }) {
             role: 'moon',
             enabled: true,
             castShadow: true,
-            shadow: { mapSize: 2048, extent: 60, bias: -0.0005, normalBias: 0.02 },
+            shadow: { mapSize: 2048, extent: 60, bias: -0.0005, normalBias: 0.02, softDeg: 1.5 },
           },
         },
       },

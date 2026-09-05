@@ -20,6 +20,11 @@ const SELECTED = 0x7ee787;
 export function LightNode({ light }) {
   const selected = useLevel((s) => selectedSet(s).has(light.id) || s.selection.includes(targetIdOf(light.id)));
   const showHelpers = useLevel((s) => s.view.helpers);
+  // `view.lights` off zeroes every authored lamp in the VIEWPORT only: the
+  // handles, helpers and the document are untouched, so a level with dozens of
+  // shadow-casting spots can be laid out at full frame rate and lit for a look
+  // when asked. Play mode and the bake never read this flag.
+  const liveLights = useLevel((s) => s.view.lights !== false || s.play);
   const select = useLevel((s) => s.select);
   const handleRef = useRef(null);
   const targetRef = useRef(null);
@@ -36,8 +41,9 @@ export function LightNode({ light }) {
 
   useEffect(() => {
     obj.color.set(light.color);
-    obj.intensity = light.enabled === false ? 0 : light.intensity;
-    obj.castShadow = Boolean(light.castShadow);
+    obj.intensity = light.enabled === false || !liveLights ? 0 : light.intensity;
+    // A light at intensity 0 still renders its shadow map; drop that too.
+    obj.castShadow = liveLights && Boolean(light.castShadow);
     if (light.type !== 'directional') { obj.distance = light.distance ?? 0; obj.decay = light.decay ?? 2; }
     if (light.type === 'spot') { obj.angle = light.angle ?? Math.PI / 6; obj.penumbra = light.penumbra ?? 0; }
     const sh = light.shadow ?? {};
@@ -51,7 +57,7 @@ export function LightNode({ light }) {
       c.updateProjectionMatrix();
     }
     if (obj.shadow.map) { obj.shadow.map.dispose(); obj.shadow.map = null; }
-  }, [obj, light]);
+  }, [obj, light, liveLights]);
 
   const targetDistance = light.type === 'directional' ? 20 : Math.max(2, (light.distance || 10) * 0.6);
   const targetPos = useMemo(() => {

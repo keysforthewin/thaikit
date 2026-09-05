@@ -25,6 +25,7 @@ import { parseGlb, buildGlb, rewriteGlbJson, levelExtrasOf } from '../../../../s
 import { unzipSync } from '../../../../scripts/lib/unzip.mjs';
 import { runBake, bakeStatus, cancelBake, BAKERS } from '../lib/bake.js';
 import { probeAgent } from '../../../../scripts/level/bakers/host-agent-client.mjs';
+import { buildDirOf, CELL_KEY_RE } from '../../../../scripts/level/pipeline/build-dir.mjs';
 
 const CreateInput = z.object({ name: z.string().min(1), id: z.string().optional() });
 
@@ -262,15 +263,19 @@ export function levelsRouter(state) {
         if (!(await readLevel(id))) return res.status(404).json({ error: `no level "${id}"` });
         const running = bakeStatus(id);
         if (running?.status === 'running') return res.status(409).json({ error: 'a bake is already running for this level', job: running });
-        const buildDir = path.join(levelDir(id), 'build');
+        // The quick export: one cell, built in its own directory so it never
+        // overwrites the full build's raw, stages or level.glb.
+        const cell = typeof req.query.cell === 'string' && req.query.cell ? req.query.cell : null;
+        if (cell && !CELL_KEY_RE.test(cell)) return res.status(400).json({ error: 'cell must be <ix>_<iz>' });
+        const buildDir = buildDirOf(id, cell);
         await fs.mkdir(buildDir, { recursive: true });
         await writeFileAtomic(path.join(buildDir, 'raw.glb'), req.body);
         const baker = typeof req.query.baker === 'string' ? req.query.baker : 'blender';
         // Unvalidated, a typo here used to mean "no lightmap" with no error.
         if (!BAKERS.includes(baker)) return res.status(400).json({ error: `baker must be one of ${BAKERS.join(', ')}` });
         const cpu = req.query.cpu === '1' || req.query.cpu === 'true';
-        const job = runBake(state, { id, baker, cpu });
-        res.status(202).json({ jobId: job.id, level: id, rawBytes: req.body.length });
+        const job = runBake(state, { id, baker, cpu, cell });
+        res.status(202).json({ jobId: job.id, level: id, cell, rawBytes: req.body.length });
       } catch (err) {
         next(err);
       }

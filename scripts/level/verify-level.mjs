@@ -11,17 +11,18 @@ import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import { MeshoptDecoder } from 'meshoptimizer';
 import { read as readKtx } from 'ktx-parse';
 
-import { levelDir } from '@thaikit/registry-core';
 import { ManifestExtras } from '@thai-kit/level-schema';
 
 import { ok, fail, parseArgs } from '../lib/out.mjs';
+import { assertCellKey, buildDirOf } from './pipeline/build-dir.mjs';
 
 async function main() {
   const args = parseArgs();
   const id = String(args.level ?? '');
   if (!id) return fail('need --level <id>');
   const maxDrawCalls = Number(args['max-draw-calls-per-cell'] ?? 24);
-  const file = path.join(levelDir(id), 'build', 'level.glb');
+  const cell = assertCellKey(args.cell ?? null);
+  const file = path.join(buildDirOf(id, cell), 'level.glb');
   const failures = [];
   const warnings = [];
 
@@ -60,6 +61,7 @@ async function main() {
     for (const node of scene.listChildren()) { const name = node.getName(); if (name.startsWith('cell_') && !manifest.cells.list.some((c) => `cell_${c.ix}_${c.iz}` === name)) failures.push(`node ${name} is not in the manifest`); }
     for (const d of manifest.dynamic) if (!nodes.get(d.node)) failures.push(`dynamic node ${d.node} is missing`);
     for (const l of manifest.lights) { const n = nodes.get(l.node); if (!n) failures.push(`light node ${l.node} is missing`); else if (!n.getExtension('KHR_lights_punctual')) failures.push(`light node ${l.node} has no KHR_lights_punctual`); }
+    if (!manifest.spawns.length) warnings.push('the level has no spawn point; a game has nowhere to drop the player');
     for (const s of manifest.spawns) {
       const b = manifest.bounds;
       if (s.position.some((v, i) => v < b.min[i] - 1 || v > b.max[i] + 1)) warnings.push(`spawn ${s.name} lies outside the level bounds`);

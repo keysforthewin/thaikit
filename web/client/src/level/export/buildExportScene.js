@@ -5,6 +5,7 @@ import { buildLight } from '../doc/lights.js';
 import { cellOf, cellKey, isStatic } from '../cells.js';
 import { groundOf, groundExtent, GROUND_THICKNESS } from '../ground.js';
 import { exportGlb } from '../doc/toGlb.js';
+import { cellRect, inRect, lightReachesCell, placeSpawn } from './quickCell.js';
 
 /**
  * The level as the bake wants it: every placement's factory output in world
@@ -13,13 +14,22 @@ import { exportGlb } from '../doc/toGlb.js';
  * with its placement, asset and cell, and the lights and spawns alongside.
  * Nothing here references thaikit at runtime -- that is the point of the file
  * this becomes.
+ *
+ * `cell: { ix, iz }` is the QUICK EXPORT: only the placements whose bbox
+ * centre falls in that cell, one ground tile covering the whole cell, the
+ * moon plus the lamps that reach the cell, the level's spawns inside it and one
+ * spawn of ours. Every downstream stage keys off the rows written into
+ * `thaikitBake`, so narrowing them here narrows the merge, the Cycles bake, the
+ * colliders, the dynamic list and the manifest with no change to the pipeline.
  */
-export async function buildExportScene(doc, catalogue, orphans, { onProgress, signal } = {}) {
+export async function buildExportScene(doc, catalogue, orphans, { onProgress, signal, cell = null } = {}) {
   const scene = new THREE.Scene();
   scene.name = doc.name;
   const cellSize = doc.settings?.cellSize ?? 24;
   const placements = [];
   const missing = [];
+  const rect = cell ? cellRect(cell.ix, cell.iz, cellSize) : null;
+  const dropped = [];
 
   for (const [i, p] of doc.placements.entries()) {
     if (signal?.aborted) throw new DOMException('export cancelled', 'AbortError');
@@ -47,6 +57,13 @@ export async function buildExportScene(doc, catalogue, orphans, { onProgress, si
     const bbox = new THREE.Box3().setFromObject(g, true);
     const c = bbox.getCenter(new THREE.Vector3());
     const { ix, iz } = cellOf(c.x, c.z, cellSize);
+    if (cell && (ix !== cell.ix || iz !== cell.iz)) {
+      // Not this cell. The clone shares geometry and materials with the
+      // prototype, so dropping the group is enough; an orphan's clone is its own.
+      dropped.push(p.id);
+      onProgress?.(i + 1, doc.placements.length);
+      continue;
+    }
     const staticFlag = isStatic(p, item, proto);
     const colliders = item?.colliders?.parts ?? [];
     // The geometry is exported at its AUTHORED rotation and the runtime turns
@@ -87,38 +104,52 @@ export async function buildExportScene(doc, catalogue, orphans, { onProgress, si
     onProgress?.(i + 1, doc.placements.length);
   }
 
-  addGround(doc, scene, placements, cellSize);
+  addGround(doc, scene, placements, cellSize, cell);
 
-  for (const l of doc.lights) {
-    if (l.enabled === false) continue;
-    const light = buildLight(l);
-    scene.add(light);
+  const lights = doc.lights.filter((l) => l.enabled !== false && (!rect || lightReachesCell(l, rect)));
+  for (const l of lights) scene.add(buildLight(l));
+
+  const spawns = doc.spawns
+    .filter((s) => !rect || inRect(s.position[0], s.position[2], rect))
+    .map((s) => ({ name: s.name, position: s.position, yawDeg: s.yawDeg ?? 0, team: s.team ?? null }));
+  let quickSpawn = null;
+  if (rect) {
+    // Our own, always: the author's spawns may all stand in other cells, and a
+    // level nobody can be dropped into is not a test of anything.
+    const ground = groundOf(doc);
+    quickSpawn = placeSpawn(rect, placements.filter((p) => p.ref !== '@thaikit/ground'), lights, ground.enabled ? ground.y : 0);
+    spawns.push({ name: quickSpawn.name, position: quickSpawn.position, yawDeg: quickSpawn.yawDeg, team: null });
   }
-  for (const s of doc.spawns) {
+  for (const s of spawns) {
     const o = new THREE.Object3D();
     o.name = `spawn_${s.name}`;
     o.position.fromArray(s.position);
-    o.rotation.y = THREE.MathUtils.degToRad(s.yawDeg ?? 0);
-    o.userData.tk = { kind: 'spawn', team: s.team ?? null, yawDeg: s.yawDeg ?? 0 };
+    o.rotation.y = THREE.MathUtils.degToRad(s.yawDeg);
+    o.userData.tk = { kind: 'spawn', team: s.team, yawDeg: s.yawDeg };
     scene.add(o);
   }
 
   // Everything the Node pipeline needs that the geometry cannot say.
   scene.userData.thaikitBake = {
     id: doc.id, name: doc.name, settings: doc.settings, cellSize,
+    // The pipeline refuses a raw whose cell disagrees with the --cell it was launched with.
+    cell: cell ? { key: cellKey(cell.ix, cell.iz), ix: cell.ix, iz: cell.iz } : null,
     placements,
-    lights: doc.lights.filter((l) => l.enabled !== false).map((l) => ({
+    lights: lights.map((l) => ({
       id: l.id, node: `light_${l.id}`, type: l.type, role: l.role ?? null, color: l.color, intensity: l.intensity,
       position: l.position, direction: l.direction ?? null, castShadow: Boolean(l.castShadow), shadow: l.shadow ?? null,
       distance: l.distance ?? null, angle: l.angle ?? null, penumbra: l.penumbra ?? null, decay: l.decay ?? null,
     })),
-    spawns: doc.spawns.map((s) => ({ name: s.name, position: s.position, yawDeg: s.yawDeg ?? 0, team: s.team ?? null })),
+    spawns,
     missing,
   };
 
   await settleImages(scene);
   markCanvasTextures(scene);
-  return { scene, missing };
+  return {
+    scene, missing,
+    kept: { placements: placements.filter((p) => p.ref !== '@thaikit/ground').length, dropped: dropped.length, lights: lights.length, spawns: spawns.length, spawn: quickSpawn },
+  };
 }
 
 /**
@@ -134,13 +165,17 @@ export async function buildExportScene(doc, catalogue, orphans, { onProgress, si
  * The extent is measured from the real world bounds of everything already
  * placed, so it covers the map rather than a number somebody typed.
  */
-function addGround(doc, scene, placements, cellSize) {
+function addGround(doc, scene, placements, cellSize, cell = null) {
   const ground = groundOf(doc);
   if (!ground.enabled) return;
 
   // The billboard flag rides along so backdrop imposters do not drag the floor
-  // out under the horizon -- see `groundExtent`.
-  const extent = groundExtent(placements.map((p) => ({ ...p.bounds, billboard: p.billboard })), { cellSize, margin: ground.margin });
+  // out under the horizon -- see `groundExtent`. A quick export gets ONE tile
+  // covering its whole cell: the player needs a floor everywhere they can
+  // walk, whatever the full extent's margin would have cut.
+  const extent = cell
+    ? groundExtent([{ min: [cell.ix * cellSize, 0, cell.iz * cellSize], max: [(cell.ix + 1) * cellSize, 0, (cell.iz + 1) * cellSize] }], { cellSize, margin: 0 })
+    : groundExtent(placements.map((p) => ({ ...p.bounds, billboard: p.billboard })), { cellSize, margin: ground.margin });
   if (extent.truncated) {
     console.warn(`[level] the ground wants ${extent.wanted} tiles and is capped at ${extent.tiles.length}; the floor will not cover the whole map`);
   }

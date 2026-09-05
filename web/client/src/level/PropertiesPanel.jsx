@@ -307,6 +307,7 @@ export function PropertiesPanel() {
           <div className="row">
             <div className="field"><label>shadow map</label><select value={l.shadow?.mapSize ?? 1024} onChange={(e) => edit('shadow map', (x) => { x.shadow = { ...x.shadow, mapSize: Number(e.target.value) }; })}>{[512, 1024, 2048, 4096].map((v) => <option key={v} value={v}>{v}</option>)}</select></div>
             {l.type === 'directional' && <div className="field"><label>shadow extent (m)</label><Num value={l.shadow?.extent ?? 60} step={5} min={5} onCommit={(n) => edit('shadow extent', (x) => { x.shadow = { ...x.shadow, extent: n }; })} /></div>}
+            {l.role === 'moon' && <div className="field"><label title="the moon's angular diameter, which is how wide the BAKED shadow edge is on static geometry (Cycles' sun angle). The real moon is 0.5°; 3-6° reads as soft moonlight. Not previewed live: the editor's shadow map cannot show it, and a smaller map only fakes it">soft edge (°, baked)</label><Num value={l.shadow?.softDeg ?? 1.5} step={0.5} min={0} max={45} onCommit={(n) => edit('shadow softness', (x) => { x.shadow = { ...x.shadow, softDeg: n }; })} /></div>}
           </div>
         )}
       </>

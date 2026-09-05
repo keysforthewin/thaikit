@@ -77,6 +77,11 @@ test('args: same spec, two path spellings', () => {
   assert.equal(eqFlag(container, '--env-strength'), '1.5000');
   assert.equal(eqFlag(container, '--env-rotation'), '-30.000');
   assert.match(eqFlag(container, '--moon'), /^-0\.5000,-0\.6000,0\.5000,/);
+  // Eighth number: the moon's angular diameter (shadow.softDeg), defaulting to 1.5.
+  assert.equal(eqFlag(container, '--moon').split(',').length, 8);
+  assert.equal(eqFlag(container, '--moon').split(',')[7], '1.5000');
+  const soft = buildBlenderArgs(blenderBakeSpec({ bake: { ...bake, lights: bake.lights.map((l) => (l.role === 'moon' ? { ...l, shadow: { softDeg: 4 } } : l)) } }), { script: 's', glb: 'g', out: 'o' }, (p) => p);
+  assert.equal(eqFlag(soft, '--moon').split(',')[7], '4.0000');
 });
 
 test('args: no env flags without a sky, device GPU when cpu is off', () => {
