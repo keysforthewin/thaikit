@@ -272,6 +272,7 @@ export default function LevelEditor({ initialId }) {
           </>
         )}
         <span className="grow" />
+        <a className="repo-link" href="https://github.com/keysforthewin/thaikit" target="_blank" rel="noopener noreferrer" title="thaikit on GitHub">GitHub ↗</a>
         {readOnly && <span className="badge" title={readOnlyReason ?? 'this instance is read-only'}>read-only</span>}
         <button onClick={() => setModal('packs')}>packs ({catalogue.packs.length})</button>
         <button
