@@ -1001,6 +1001,45 @@ placed geometry. Export writes a second, self-contained GLB.
 - **A 4 ms bake with `--baker none` is a 4 s one in Blender at 4096²/128 samples per minute of
   level** -- use `--lightmap-size 512 --samples 16` to test the round trip.
 
+- **Unreal gets the kit as ONE GLB PER PROP, made in the browser.** The registry page's
+  **export to Unreal** button (`web/client/src/unreal/`) builds every supported prop through the
+  level editor's prototype cache, flattens the whole factory tree -- world-space bake, InstancedMesh
+  expansion, per-instance tints into `COLOR_0`, one merged mesh with a primitive per material -- and
+  emits `SM_<Pack>_<Prop>.glb` with the compound as `UCX_<mesh>_NN` siblings (16-gon prisms for
+  cylinders), which Interchange turns into simple collision. glTF ALWAYS multiplies `COLOR_0`, so
+  the attribute is normalised (white where the material ignored it) rather than dropped. The zip is
+  built client-side (`zip.js`, STORE only) with `manifest.json` and a README, downloads always, and
+  on a writable instance is `PUT /api/exports/unreal` where the server unpacks it with the existing
+  `unzip.mjs` into `exports/unreal/` (gitignored, replaced whole; static at `/exports/unreal`).
+  154 props, 37 s, 194 MB at 2048 px. `docs/unreal-export.md` is the import guide; the
+  `thaikit-unreal-level` skill lays a Thai night street out of it over unreal-mcp. Verified by
+  loading the files back through a stock `GLTFLoader`: colours, textures and sizes round-trip.
+
+- **An Unreal level reaches Operation X by becoming a thaikit RAW scene, never by a second loader.**
+  `scripts/level/import-unreal-level.mjs` reads an Unreal glTF Exporter `.glb` (metres, Y up: uniform
+  scale 0.01) and writes `levels/<id>/build/raw.glb` with `scene.extras.thaikitBake` -- placement rows
+  from mesh nodes (`SM_TK_*` names look up ref, physics and the compound in
+  `exports/unreal/manifest.json`, which now carries `colliders`; `dyn_`/`bb_` labels mark dynamic
+  and billboard; Unreal-side meshes get a bbox box unless named cable/wire/rain/fog/decal), lights
+  from `KHR_lights_punctual` (the directional is the live moon; `--sun baked` drops it), spawns from
+  cameras named `spawn_*`. `bake-level.mjs --baker unreal` then ADOPTS Unreal 5.6+'s
+  `EPIC_lightmap_textures`: the converter bakes per-instance scale/offset into `TEXCOORD_1` (cloning a
+  shared mesh per lightmapped node -- `Mesh.clone()` shares primitives, copy them), tiles the textures
+  into one PNG atlas with alpha 1 (no moon mask, so keep the moon Movable in Unreal), and
+  `normaliseAttributes({ keep: ['TEXCOORD_1'] })` carries it to stage 4. The extension is UNDOCUMENTED
+  (removed in 5.2, back in 5.6) and read by field shape; 4-vector decode factors are recorded, not
+  applied, and the report's `epicSample` is what to read on the first real export. `--baker blender`
+  re-lights the same rows in Cycles and is the measured route. `manifest.source` (schema, nullable
+  default) is the only trace in the shipped file; `loadLevel()` is unchanged. Tested end to end on a
+  synthetic export in `import-unreal-level.test.mjs`. Skill: `thaikit-unreal-bake`.
+- **The Unreal manifest's `emitters` are where the kit's lights GO.** Per item, every emissive
+  material slot -- and for a `lighting` prop with none (the harness reads a bright enclosed face as a
+  hole, so luminaires ship as pale diffuse glazing), the head INFERRED from the factory's own slot
+  name (`lantern_shade`, `acrylic_refractor`, `led_lens`, `tube`; test the raw `material.name`, never
+  the `M_TK_<Prop>_` export name, or ...Lantern and ...Pole props match everything) -- with centre,
+  extent, colour and `panel|bulb`. 19 emitters on 17 props; `thaikit-unreal-level` spawns Unreal lights
+  from them.
+
 ## Layout
 
 - `packages/registry-core/` — schema, the per-item store under one lock, atomic

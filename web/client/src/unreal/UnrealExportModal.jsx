@@ -90,9 +90,15 @@ export function UnrealExportModal({ packs, items, onClose }) {
             physics: item.physics ?? { enabled: false, massKg: null },
             pivots: item.pivots ?? [], sockets: item.sockets ?? [],
             triangles: built.triangles, materialSlots: built.materials, collisionParts: built.collision,
+            // Emissive surfaces in root-local metres: where the Unreal lights go.
+            emitters: built.emitters,
+            // The compound as shipped, so a level exported BACK from Unreal can
+            // rebuild the same colliders from the mesh name alone.
+            colliders: (item.colliders?.parts ?? []).map((c) => ({ name: c.name, type: c.type, offset: c.offset, scale: c.scale, isTrigger: Boolean(c.isTrigger) })),
+            destructionGroups: item.destructionGroups ?? [],
             budgetClass: item.budgetClass ?? null,
           });
-          setLog((l) => [...l.slice(-400), { ok: true, text: `${built.asset}  ${built.triangles} tris · ${built.materials} slot(s) · ${built.collision} collider(s) · ${fmtMb(built.glb.byteLength)}` }]);
+          setLog((l) => [...l.slice(-400), { ok: true, text: `${built.asset}  ${built.triangles} tris · ${built.materials} slot(s) · ${built.collision} collider(s)${built.emitters.length ? ` · ${built.emitters.length} emitter(s)` : ''} · ${fmtMb(built.glb.byteLength)}` }]);
         } catch (err) {
           failures.push({ ref: item.ref, error: err.message });
           setLog((l) => [...l.slice(-400), { ok: false, text: `${item.ref}: ${err.message}` }]);
@@ -111,6 +117,7 @@ export function UnrealExportModal({ packs, items, onClose }) {
         options: { maxTextureSize, collision, imposters },
         units: { length: 'm (glTF); Unreal imports at 100 uu per metre', up: '+Y in the file, +Z after import' },
         naming: { staticMesh: 'SM_<Pack>_<Prop>', collision: 'UCX_<StaticMesh>_NN', material: 'M_<Pack>_<Prop>_<slot>' },
+        emitters: 'per item: every emissive material slot with its root-local centre (m), extent (m), colour, shape panel|bulb -- place a light there',
         packs: packIds.map((id) => { const p = packs.find((k) => k.id === id); return { id, version: p?.version ?? null, folder: packFolder(id) }; }),
         items: manifestItems,
         failures,

@@ -120,8 +120,14 @@ export function foldBaseColorIntoVertexColor() {
   };
 }
 
-/** Every prim: POSITION, NORMAL, TEXCOORD_0, COLOR_0 as float; nothing else. */
-export function normaliseAttributes() {
+/**
+ * Every prim: POSITION, NORMAL, TEXCOORD_0, COLOR_0 as float; nothing else --
+ * except what `keep` names. An imported Unreal level arrives with its lightmap
+ * already in TEXCOORD_1 (see import-unreal-level.mjs), and that must survive
+ * to stage 4 the way the Blender baker's own TEXCOORD_1 does.
+ */
+export function normaliseAttributes({ keep = [] } = {}) {
+  const kept = new Set([...KEEP, ...keep]);
   return (doc) => {
     for (const mesh of doc.getRoot().listMeshes()) {
       for (const prim of mesh.listPrimitives()) {
@@ -130,7 +136,7 @@ export function normaliseAttributes() {
         else ensureFloatAttribute(doc, prim, 'NORMAL', 3, [0, 1, 0]);
         ensureFloatAttribute(doc, prim, 'TEXCOORD_0', 2, [0, 0]);
         ensureFloatAttribute(doc, prim, 'COLOR_0', 3, [1, 1, 1]);
-        for (const semantic of prim.listSemantics()) if (!KEEP.has(semantic)) prim.setAttribute(semantic, null);
+        for (const semantic of prim.listSemantics()) if (!kept.has(semantic)) prim.setAttribute(semantic, null);
         for (const target of prim.listTargets()) prim.removeTarget(target);
       }
     }

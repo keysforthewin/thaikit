@@ -150,6 +150,8 @@ export function writeManifest({ bake, lodStats, lightmapImage, lightmapStats = n
     const manifest = ManifestExtras.parse({
       schemaVersion: MANIFEST_SCHEMA_VERSION,
       id: bake.id, name: bake.name, generatedAt: new Date().toISOString(), generator,
+      // An imported (Unreal) raw says so; the editor's raw has no `source`.
+      source: bake.source ? { ...bake.source, lightmap: lightmapImage == null ? 'none' : lightmapStats?.source === 'unreal' ? 'adopted' : 'blender' } : null,
       units: 'm',
       bounds: { min: bounds.min.map((n) => +n.toFixed(3)), max: bounds.max.map((n) => +n.toFixed(3)) },
       cells: { size: cellSize, list: cells },

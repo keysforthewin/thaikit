@@ -12,13 +12,17 @@
  * result is one JSON line on stdout.
  *
  * Usage:
- *   node scripts/level/bake-level.mjs --level <id> [--baker blender|blender-host|none] [--cpu] [--resume-from 2|3|4] [--cell <ix>_<iz>]
+ *   node scripts/level/bake-level.mjs --level <id> [--baker blender|blender-host|unreal|none] [--cpu] [--resume-from 2|3|4] [--cell <ix>_<iz>]
  *
  * `--cell` is the QUICK EXPORT: the editor has already cut the raw scene down
  * to one cell (see buildExportScene), and this run builds it under
  * build/cell_<key>/ and delivers it as <id>_<key>.glb, so a full build is never
  * touched. The raw carries the cell it was cut to and must agree.
  *
+ * `unreal` ADOPTS a lightmap instead of baking one: `import-unreal-level.mjs`
+ * has already written build/lightmap/lightmap.png from the level's
+ * EPIC_lightmap_textures and baked its UVs into every primitive's TEXCOORD_1,
+ * so stage 1 keeps that attribute and stage 2 only reads the files back.
  * `blender` is the container's Linux Blender (CUDA); `blender-host` hands the
  * Blender step to the host agent (`npm run level:bake-agent`, Windows Blender,
  * OptiX). `--cpu` adds the CPU devices to the GPU -- off by default, because
@@ -51,7 +55,7 @@ import { assertCellKey, buildDirOf, exportNameOf } from './pipeline/build-dir.mj
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const VERSION = '0.1.0';
-const BAKERS = ['blender', 'blender-host', 'none'];
+const BAKERS = ['blender', 'blender-host', 'unreal', 'none'];
 
 // One controller for the whole run: SIGTERM (the server's cancel) aborts it,
 // which kills the Blender child or drops the host agent's request.
@@ -126,7 +130,7 @@ async function main() {
     stripEditorExtras()(doc);
     await doc.transform(dedup({ propertyTypes: [PropertyType.ACCESSOR, PropertyType.TEXTURE, PropertyType.MESH] }));
     foldBaseColorIntoVertexColor()(doc);
-    normaliseAttributes()(doc);
+    normaliseAttributes({ keep: baker === 'unreal' ? ['TEXCOORD_1'] : [] })(doc);
     await doc.transform(dedup({ propertyTypes: [PropertyType.MATERIAL, PropertyType.TEXTURE] }));
     progress('normalise', `${doc.getRoot().listMaterials().length} distinct material signatures`);
     await doc.transform(flatten({ cleanup: false }));
@@ -156,7 +160,21 @@ async function main() {
     if (lightmapOverride.size || lightmapOverride.samples) {
       bake.settings = { ...bake.settings, lightmap: { ...(bake.settings?.lightmap ?? {}), ...(lightmapOverride.size ? { size: lightmapOverride.size } : {}), ...(lightmapOverride.samples ? { samples: lightmapOverride.samples } : {}) } };
     }
-    if (baker !== 'none' && bake.settings?.lightmap?.enabled !== false) {
+    if (baker === 'unreal') {
+      // Written by import-unreal-level.mjs alongside raw.glb; the UVs are
+      // already in TEXCOORD_1 and survived stage 1 through `keep`.
+      try {
+        lightmapPng = await fs.readFile(path.join(buildDir, 'lightmap', 'lightmap.png'));
+        lightmapStats = JSON.parse(await fs.readFile(path.join(buildDir, 'lightmap', 'lightmap.json'), 'utf8'));
+      } catch {
+        throw new Error('--baker unreal needs build/lightmap/lightmap.png from import-unreal-level.mjs; the Unreal export carried no EPIC_lightmap_textures, so re-run the import and bake with --baker blender instead');
+      }
+      const withUv = countPrims(doc, 'cell_');
+      let missing = 0;
+      for (const node of doc.getRoot().listNodes()) { if (!node.getName().startsWith('cell_')) continue; node.traverse((n) => { for (const p of n.getMesh()?.listPrimitives() ?? []) if (!p.getAttribute('TEXCOORD_1')) missing += 1; }); }
+      if (missing) throw new Error(`${missing} of ${withUv.prims} static primitive(s) lost TEXCOORD_1 before the lightmap could be adopted`);
+      progress('lightmap', `adopted Unreal's lightmap: ${lightmapStats.textures} texture(s) in a ${lightmapStats.atlas?.join('x')} atlas, ${lightmapStats.remappedPrimitives} primitive(s) remapped${lightmapStats.decode ? ' -- WARNING undecoded coefficient factors, check brightness' : ''}`);
+    } else if (baker !== 'none' && bake.settings?.lightmap?.enabled !== false) {
       const result = await bakeWithBlender({ io, doc, bake, skyImages, outDir: path.join(buildDir, 'lightmap'), onProgress: (m) => progress('lightmap', m), host: baker === 'blender-host', cpu, signal: cancel.signal });
       doc = result.doc;
       lightmapPng = result.lightmapPng;

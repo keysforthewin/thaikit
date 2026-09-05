@@ -153,10 +153,99 @@ function exportMaterial(mat, propName, index) {
 }
 
 /**
- * Flatten a built prototype into one Mesh with material groups.
- * Returns null when the prop has no renderable triangles.
+ * Where a prop EMITS light, read off its emissive materials.
+ *
+ * Unreal imports emissive as colour, not as a light: a lamp head glows and lights
+ * nothing. So every material whose emissive is not black is measured -- the
+ * world-space bounds of the triangles wearing it -- and recorded as an emitter
+ * the skill turns into a Point/Spot/Rect light at exactly that spot. A sign
+ * fascia is a wide flat emitter, a lamp head a small one, a lantern a small
+ * warm one. Positions are root-local metres like everything else in the file.
  */
-export function flattenPrototype(root, propName) {
+function emitterOf(mat, pieces, slotName) {
+  const e = mat.emissive;
+  const intensity = mat.emissiveIntensity ?? 1;
+  const hasMap = Boolean(mat.emissiveMap);
+  if (!e || (!hasMap && e.r + e.g + e.b < 0.05) || intensity <= 0) return null;
+  const box = new THREE.Box3();
+  let tris = 0;
+  for (const g of pieces) {
+    g.computeBoundingBox();
+    box.union(g.boundingBox);
+    tris += g.index.count / 3;
+  }
+  const size = box.getSize(new THREE.Vector3());
+  const c = box.getCenter(new THREE.Vector3());
+  const lum = 0.2126 * e.r + 0.7152 * e.g + 0.0722 * e.b;
+  const r3 = (v) => +v.toFixed(3);
+  return {
+    slot: slotName,
+    position: [r3(c.x), r3(c.y), r3(c.z)],
+    extent: [r3(size.x), r3(size.y), r3(size.z)],
+    color: hasMap && lum < 0.05 ? '#ffffff' : `#${e.getHexString()}`,
+    intensity: +intensity.toFixed(2),
+    luminance: +lum.toFixed(3),
+    textured: hasMap,
+    triangles: tris,
+    // A flat emitter (one axis under a tenth of the others) is a face -- a sign
+    // or a batten -- and wants a rect light aimed along its thin axis.
+    shape: Math.min(size.x, size.y, size.z) < 0.1 * Math.max(size.x, size.y, size.z) ? 'panel' : 'bulb',
+  };
+}
+
+/**
+ * The kit's luminaires are NOT authored emissive (the render harness reads a
+ * bright enclosed surface as a hole, so lamp heads ship as pale diffuse
+ * glazing). For a `lighting` prop with no emissive slot, the head is inferred
+ * from the slot NAME -- the factories name them for what they are
+ * (`lantern_shade`, `acrylic_refractor`, `led_lens`, `tube`, `warm_glazing`,
+ * `red_silk`) -- and failing that, the smallest material group in the top half
+ * of the prop. Marked `inferred` so the skill knows it is a guess.
+ */
+const HEAD_SLOT = /lens|refractor|tube|glazing|shade|glass|bulb|diffus|silk|cloth|flood|lantern|shell|globe|opal/i;
+const NOT_HEAD = /steel|concrete|iron|brass|alumin|enamel|rope|trim|pv_panel|bracket|crossarm|pole|base|housing$/i;
+
+function inferredEmitters(groups, propHeight) {
+  const measure = (pieces) => {
+    const box = new THREE.Box3();
+    for (const g of pieces) { g.computeBoundingBox(); box.union(g.boundingBox); }
+    return box;
+  };
+  // Test the factory's OWN slot name (`lantern_shade`), never the exported
+  // `M_TK_<Prop>_...` name: a prop called ...Lantern or ...Pole would otherwise
+  // make every slot a head, or none.
+  const rows = groups.map(({ mat, pieces, slotName }) => ({ mat, slotName, raw: mat.name || '', box: measure(pieces) }));
+  let picked = rows.filter((r) => HEAD_SLOT.test(r.raw) && !NOT_HEAD.test(r.raw.replace(HEAD_SLOT, '')));
+  if (!picked.length) {
+    const upper = rows.filter((r) => r.box.getCenter(new THREE.Vector3()).y > propHeight * 0.5);
+    picked = upper.sort((a, b) => a.box.getSize(new THREE.Vector3()).length() - b.box.getSize(new THREE.Vector3()).length()).slice(0, 1);
+  }
+  const r3 = (v) => +v.toFixed(3);
+  return picked.map(({ mat, slotName, box }) => {
+    const size = box.getSize(new THREE.Vector3());
+    const c = box.getCenter(new THREE.Vector3());
+    const col = mat.color ?? new THREE.Color(1, 1, 1);
+    return {
+      slot: slotName,
+      position: [r3(c.x), r3(c.y), r3(c.z)],
+      extent: [r3(size.x), r3(size.y), r3(size.z)],
+      color: `#${col.getHexString()}`,
+      intensity: 1,
+      luminance: +(0.2126 * col.r + 0.7152 * col.g + 0.0722 * col.b).toFixed(3),
+      textured: Boolean(mat.map),
+      inferred: true,
+      shape: Math.min(size.x, size.y, size.z) < 0.1 * Math.max(size.x, size.y, size.z) ? 'panel' : 'bulb',
+    };
+  });
+}
+
+/**
+ * Flatten a built prototype into one Mesh with material groups.
+ * Returns null when the prop has no renderable triangles. `mesh.userData.emitters`
+ * carries the emissive surfaces (see emitterOf), or for a `lighting` prop with
+ * none, the inferred lamp head (inferredEmitters).
+ */
+export function flattenPrototype(root, propName, { category = null } = {}) {
   const work = root.clone(true);
   work.updateMatrixWorld(true);
   expandInstances(work);
@@ -179,18 +268,30 @@ export function flattenPrototype(root, propName) {
 
   const perMaterial = [];
   const materials = [];
+  const emitters = [];
+  const groups = [];
   let i = 0;
   for (const [mat, pieces] of byMaterial) {
     const merged = pieces.length === 1 ? pieces[0] : mergeGeometries(pieces, false);
     if (!merged) continue;
     perMaterial.push(merged);
-    materials.push(exportMaterial(mat, propName, i));
+    const exported = exportMaterial(mat, propName, i);
+    materials.push(exported);
+    groups.push({ mat, pieces, slotName: exported.name });
+    const em = emitterOf(mat, pieces, exported.name);
+    if (em) emitters.push(em);
     i += 1;
+  }
+  if (!emitters.length && category === 'lighting') {
+    const whole = new THREE.Box3();
+    for (const g of perMaterial) { g.computeBoundingBox(); whole.union(g.boundingBox); }
+    emitters.push(...inferredEmitters(groups, whole.max.y));
   }
   const geometry = perMaterial.length === 1 ? perMaterial[0] : mergeGeometries(perMaterial, true);
   if (perMaterial.length === 1) geometry.addGroup(0, geometry.index.count, 0);
   const mesh = new THREE.Mesh(geometry, materials);
   mesh.name = propName;
+  mesh.userData.emitters = emitters;
   return mesh;
 }
 
@@ -236,7 +337,7 @@ function triangleCount(mesh) {
 export async function buildPropGlb(item, { maxTextureSize = 2048, collision = true } = {}) {
   const proto = await getPrototype(item);
   const name = assetName(item.ref);
-  const mesh = flattenPrototype(proto.root, name);
+  const mesh = flattenPrototype(proto.root, name, { category: item.category ?? null });
   if (!mesh) throw new Error('no renderable geometry');
 
   const scene = new THREE.Scene();
@@ -261,6 +362,7 @@ export async function buildPropGlb(item, { maxTextureSize = 2048, collision = tr
     triangles: Math.round(triangleCount(mesh)),
     materials: mesh.material.length,
     collision: ucx.length,
+    emitters: mesh.userData.emitters ?? [],
     bbox: [bbox.min.toArray().map((v) => +v.toFixed(3)), bbox.max.toArray().map((v) => +v.toFixed(3))],
   };
 

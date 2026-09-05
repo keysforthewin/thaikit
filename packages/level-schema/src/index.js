@@ -446,6 +446,23 @@ export const ManifestExtras = z.object({
   name: z.string(),
   generatedAt: z.string().datetime(),
   generator: z.object({ tool: z.string(), version: z.string() }),
+  /**
+   * Where the RAW scene came from, when it was not the level editor. An Unreal
+   * level exported with Unreal's glTF Exporter and converted by
+   * `scripts/level/import-unreal-level.mjs` records itself here, with whether
+   * its lightmap was adopted from Unreal or baked in Cycles. Null (the
+   * default) is an editor level, so every existing manifest parses unchanged.
+   */
+  source: z
+    .object({
+      tool: z.string(),
+      importer: z.object({ tool: z.string(), version: z.string() }).nullable().default(null),
+      lightmap: z.enum(['adopted', 'declared', 'none', 'blender']).nullable().default(null),
+      kitManifest: z.string().nullable().default(null),
+      kitGeneratedAt: z.string().nullable().default(null),
+    })
+    .nullable()
+    .default(null),
   units: z.literal('m').default('m'),
   bounds: Bounds,
   cells: z.object({ size: num.positive(), list: z.array(ManifestCell) }),

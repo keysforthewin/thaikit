@@ -66,3 +66,18 @@ This is why `three` is an optional peer dependency: the browser entries all
 require it, the `/node` entry genuinely does not.
 
 MIT.
+
+## Levels built in Unreal
+
+A level laid out in Unreal Editor loads through the same `loadLevel()` with no
+option and no second code path. The route is: export the Unreal level with
+Unreal's own glTF Exporter (metres, lights, cameras, baked materials), run
+`npm run level:import-unreal -- --level <id>` to turn that file into the bake
+pipeline's raw scene, and bake it with `npm run level:bake -- --level <id>
+--baker unreal` (adopting Unreal 5.6+'s exported lightmaps) or `--baker blender`
+(re-lighting the same geometry and lamps in Cycles). The result is an ordinary
+baked level: cells, LOD tiers, one KTX2 lightmap, colliders rebuilt from the
+thaikit compounds wherever a `SM_TK_*` Static Mesh was placed, spawns from the
+`spawn_*` cameras. `manifest.source` says it came from Unreal and which lightmap
+it carries; everything else is identical, which is the point. The whole
+procedure is `docs/unreal-level-export.md` in the thaikit repo.
