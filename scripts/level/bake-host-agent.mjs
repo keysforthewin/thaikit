@@ -43,6 +43,7 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const ALLOWED_SCRIPT = 'scripts/level/bakers/bake_lightmap.py';
 const PORT = Number(process.env.THAIKIT_BAKE_AGENT_PORT || 3734);
 const TOKEN = process.env.THAIKIT_BAKE_AGENT_TOKEN || '';
+const HEARTBEAT_MS = 20_000; // well under fetch's 300 s body timeout
 
 const stamp = () => new Date().toISOString().slice(11, 19);
 const say = (...a) => console.error(`[bake-agent ${stamp()}]`, ...a);
@@ -120,6 +121,13 @@ async function bake(req, res) {
 
   const child = spawn(exe, args, { stdio: ['ignore', 'pipe', 'pipe'] });
   current = { level: body.level, child, startedAt: Date.now() };
+  // Cycles says nothing while a batch bakes, and a 4096²/128 batch of a big
+  // level runs past five minutes -- longer than the body timeout of the
+  // container's fetch (undici's default is 300 s), which then errors with
+  // "terminated", drops the socket, and the close handler below kills Blender
+  // as though the user had cancelled. A heartbeat line keeps bytes flowing;
+  // the client ignores any object with neither `line` nor `exit`.
+  const heartbeat = setInterval(() => send({ heartbeat: Date.now() }), HEARTBEAT_MS);
   let blenderPid = null; // Blender's OWN pid (the Windows one), from its first [thaikit] line
   const sink = blenderLineSink((line) => {
     const m = /^[\d.]+s pid (\d+)$/.exec(line); // log() prefixes the elapsed seconds
@@ -153,8 +161,9 @@ async function bake(req, res) {
   res.on('close', () => { if (!res.writableEnded) cancel('client went away'); });
   current.cancel = cancel;
 
-  child.on('error', (e) => { send({ exit: -1, tail: e.message }); res.end(); current = null; });
+  child.on('error', (e) => { clearInterval(heartbeat); send({ exit: -1, tail: e.message }); res.end(); current = null; });
   child.on('close', (code, sig) => {
+    clearInterval(heartbeat);
     const exit = cancelled ? 130 : (code ?? -1);
     say(`${body.level}: blender exited ${code ?? sig} after ${((Date.now() - current.startedAt) / 1000).toFixed(0)} s`);
     send({ exit, tail: exit === 0 ? '' : sink.tail() });

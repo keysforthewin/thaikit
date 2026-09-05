@@ -877,6 +877,14 @@ placed geometry. Export writes a second, self-contained GLB.
   is in the container, so it dies, and the host agent kills blender.exe when the socket drops --
   that record settles as failed with "the bake process is gone". The host agent keeps NO state
   and needs none; what survives is the container-side record.
+  **The agent caches its modules at startup, so RESTART IT after any edit under `scripts/level`.**
+  A 14:50 agent ran a 16:11 pipeline and built its argv from the OLD `buildBlenderArgs` -- no
+  `--lights` -- while the container logged "10 authored lamp(s) go into the bake" and Blender
+  answered "built 0". The two lines come from different processes; when they disagree the agent
+  is stale. **And the agent's stream carries a 20 s heartbeat** because Node's `fetch` (undici)
+  times out a body silent for 300 s with the error `terminated`, and one 4096²/128 batch of
+  `thepurge` is silent longer than that: the fetch threw, the socket dropped, and the agent
+  killed Blender at 326 s as a "client went away" cancel with `cancelled: false` on the record.
   **The watcher does not see every edit.** In this container only a change to
   `web/server/src/index.js` reliably restarted the server; edits under `lib/` and `routes/` from
   the host, and even `touch` from inside the container, did not. `docker compose exec web touch
