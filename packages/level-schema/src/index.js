@@ -313,6 +313,11 @@ export const LevelSettings = z.object({
       size: z.number().int().positive().default(4096),
       texelsPerMeter: num.positive().default(8),
       samples: z.number().int().positive().default(128),
+      // Cycles adaptive-sampling noise threshold. null leaves Blender's default
+      // (adaptive on, 0.01), so `samples` is a CEILING most texels never reach;
+      // a lower number spends more of that ceiling everywhere. 0 turns adaptive
+      // sampling off and every texel takes every sample.
+      noiseThreshold: num.nonnegative().nullable().default(null),
       intensity: num.nonnegative().default(1),
     })
     .default({}),

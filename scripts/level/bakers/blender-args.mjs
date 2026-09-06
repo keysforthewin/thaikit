@@ -50,6 +50,7 @@ export function blenderBakeSpec({ bake, cpu = false, hasEnv = false }) {
   return {
     size: lm.size ?? 4096,
     samples: lm.samples ?? 128,
+    noiseThreshold: lm.noiseThreshold ?? null,
     texelsPerMeter: lm.texelsPerMeter ?? 8,
     // The eighth number is the sun's angular diameter in degrees: the width
     // of the penumbra Cycles gives the moon's shadow on static geometry.
@@ -94,6 +95,7 @@ export function buildBlenderArgs(spec, paths, mapPath) {
     // the identical flag, and both spawn with an argv ARRAY and no shell.
     `--lights=${JSON.stringify(spec.lights ?? [])}`,
   ];
+  if (spec.noiseThreshold != null) args.push(`--noise-threshold=${Number(spec.noiseThreshold)}`);
   if (spec.env) {
     if (!paths.env) throw new Error('spec has a sky env but no env path');
     args.push(`--env=${mapPath(paths.env)}`);

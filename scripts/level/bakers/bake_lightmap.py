@@ -87,6 +87,10 @@ ap.add_argument('--device', default='GPU', choices=['AUTO', 'GPU', 'GPU+CPU', 'C
 ap.add_argument('--batch', type=int, default=128)
 # Objects per JOINED bake target (0 = bake the objects one by one, the old way). See bake_joined().
 ap.add_argument('--join-groups', type=int, default=256)
+# Cycles adaptive sampling. Unset leaves Blender's default (on, 0.01), under which
+# `--samples` is a ceiling most texels stop well short of; a lower threshold spends
+# more of it, 0 disables adaptive sampling so every texel takes every sample.
+ap.add_argument('--noise-threshold', type=float, default=None)
 args = ap.parse_args(argv)
 
 T0 = time.time()
@@ -541,6 +545,10 @@ else:
 # --- cycles ------------------------------------------------------------------
 scene.render.engine = 'CYCLES'
 scene.cycles.samples = args.samples
+if args.noise_threshold is not None:
+    scene.cycles.use_adaptive_sampling = args.noise_threshold > 0
+    if args.noise_threshold > 0:
+        scene.cycles.adaptive_threshold = args.noise_threshold
 scene.cycles.use_denoising = True
 scene.cycles.bake_type = 'DIFFUSE'
 # The pack gutter is a FRACTION of the atlas (0.004 -> 16 px at 4096 but only
@@ -726,7 +734,8 @@ def bake_static(label, bake_type):
 scene.render.bake.use_clear = False
 
 # Pass 1: sky + bounce + emission + the authored lamps, moon off.
-log(f'bake 1/2: diffuse (sky + indirect + emission + {len(lamps)} lamp(s)) at {size}², {args.samples} samples')
+log(f'bake 1/2: diffuse (sky + indirect + emission + {len(lamps)} lamp(s)) at {size}², {args.samples} samples, '
+    + (f'adaptive to {scene.cycles.adaptive_threshold:g}' if scene.cycles.use_adaptive_sampling else 'adaptive sampling off'))
 sun.hide_render = True
 for o in lamps:
     o.hide_render = False
@@ -808,6 +817,7 @@ stats = {
     'coverage': float(covered.sum()) / float(covered.size),
     'size': size,
     'samples': args.samples,
+    'noiseThreshold': (scene.cycles.adaptive_threshold if scene.cycles.use_adaptive_sampling else 0),
     # How many authored lamps went into RGB. Its PRESENCE is what tells the
     # manifest this atlas carries the lamps, so the runtime may cut their live
     # direct term on static materials; a lightmap.json from an older bake has

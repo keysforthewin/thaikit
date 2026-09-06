@@ -962,6 +962,33 @@ placed geometry. Export writes a second, self-contained GLB.
   fails at 7805 exactly as before, because the name was never the problem. On a
   native Linux host with a real driver the probe picks OPTIX with nothing added.
   Read the `cycles device:` line the bake logs rather than assuming either way.
+- **An 8192² atlas costs Blender ~23 GB, and this WSL VM has 32 GB.** The bake operator allocates
+  its buffers for the WHOLE target image on every call, whatever the object covers: a single 10 m
+  plane baked to 8192² peaks at **14.3 GB** resident, denoiser on or off (the OIDN theory was
+  measured and is wrong). On `bangkoksoi` that is 21 GB through the diffuse pass and **22.9 GB** in
+  the shadow pass, against 30 GB usable and an 8 GB WSL swap that was already full -- SIGKILL from
+  the OOM killer, twice, in the first shadow group, with nothing else of ours running. Read
+  `dmesg | grep -i "killed process"` before theorising: a Blender that "exited SIGKILL" mid-bake
+  is memory until proven otherwise. The fix is headroom, not code: a 32 GB swap file
+  (`sudo fallocate -l 32G /swapfile && sudo chmod 600 /swapfile && sudo mkswap /swapfile &&
+  sudo swapon /swapfile`, 2026-09-06). It does NOT survive a WSL restart -- `swapon --show` should
+  list `/swapfile` before any 8192 bake, or set `swap=40GB` in `.wslconfig`. And never run a second
+  Blender (a probe, a calibration) while a big bake is in flight; the first OOM here had my
+  adaptive-sampling probes running alongside.
+- **`samples` is a CEILING under Cycles adaptive sampling, and `lightmap.noiseThreshold` is the
+  other half of it.** Blender's default is adaptive on at 0.01, and the bake operator honours it:
+  on the test plane 256 samples took 25 s with adaptive off, 5 s at 0.01 and 12 s at 0.001, so
+  raising `samples` alone past ~100 buys almost nothing. `noiseThreshold` (schema, nullable,
+  default null = Blender's default; `--noise-threshold` on `bake-level.mjs`, `--noise-threshold` in
+  `bake_lightmap.py`; 0 turns adaptive off) is what makes a long bake spend its samples; the
+  `bake 1/2` log line says `adaptive to T` or `adaptive sampling off`, and `lightmap.json`
+  records it. Measured on `bangkoksoi` at 8192² in 8 joined groups: **32 samples 6m50s-8m11s
+  diffuse; 896 adaptive-to-0.001 31 min diffuse, and its MASK pass ran 8-15 min a group, i.e. the
+  moon penumbra never converges under adaptive sampling; 1152 with adaptive off 43 min diffuse +
+  1h27m mask, 2h18m in Blender, 2h18m wall to a verified level.** Time is far from linear in the
+  ceiling -- the light groups are sync/join/denoise-bound at any sample count and only the heavy
+  groups scale -- so calibrate a long bake on the mask pass, not the diffuse one, and do not
+  promise a duration from the 32-sample run.
 - **Cycles' bake operator re-syncs the SCENE for every selected object, so bake JOINED copies.**
   `bangkoksoi` (1,879 merged static meshes, 1.1M islands, 3.5M tris) cost 11 minutes per 128-object
   batch -- ~5 hours for two passes at the cheapest settings -- and none of it was samples: each object

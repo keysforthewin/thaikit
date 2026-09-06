@@ -12,7 +12,7 @@
  * result is one JSON line on stdout.
  *
  * Usage:
- *   node scripts/level/bake-level.mjs --level <id> [--baker blender|blender-host|unreal|none] [--cpu] [--resume-from 2|3|4] [--cell <ix>_<iz>]
+ *   node scripts/level/bake-level.mjs --level <id> [--baker blender|blender-host|unreal|none] [--cpu] [--samples N] [--noise-threshold T] [--resume-from 2|3|4] [--cell <ix>_<iz>]
  *
  * `--cell` is the QUICK EXPORT: the editor has already cut the raw scene down
  * to one cell (see buildExportScene), and this run builds it under
@@ -94,7 +94,7 @@ async function main() {
   const cpu = Boolean(args.cpu);
   const resumeFrom = Number(args['resume-from'] ?? 1);
   // Test-time overrides for the lightmap; the level's own settings otherwise.
-  const lightmapOverride = { size: args['lightmap-size'] ? Number(args['lightmap-size']) : null, samples: args.samples ? Number(args.samples) : null };
+  const lightmapOverride = { size: args['lightmap-size'] ? Number(args['lightmap-size']) : null, samples: args.samples ? Number(args.samples) : null, noiseThreshold: args['noise-threshold'] != null ? Number(args['noise-threshold']) : null };
   // Live lamps shipped beside the lightmap (0 = all). See selectLiveLamps in pipeline/manifest.mjs.
   const liveLamps = Number(args['live-lamps'] ?? 0);
   const cell = assertCellKey(args.cell ?? null);
@@ -159,8 +159,8 @@ async function main() {
 
   // ---- stage 2: lightmap -----------------------------------------------------
   if (resumeFrom <= 2) {
-    if (lightmapOverride.size || lightmapOverride.samples) {
-      bake.settings = { ...bake.settings, lightmap: { ...(bake.settings?.lightmap ?? {}), ...(lightmapOverride.size ? { size: lightmapOverride.size } : {}), ...(lightmapOverride.samples ? { samples: lightmapOverride.samples } : {}) } };
+    if (lightmapOverride.size || lightmapOverride.samples || lightmapOverride.noiseThreshold != null) {
+      bake.settings = { ...bake.settings, lightmap: { ...(bake.settings?.lightmap ?? {}), ...(lightmapOverride.size ? { size: lightmapOverride.size } : {}), ...(lightmapOverride.samples ? { samples: lightmapOverride.samples } : {}), ...(lightmapOverride.noiseThreshold != null ? { noiseThreshold: lightmapOverride.noiseThreshold } : {}) } };
     }
     if (baker === 'unreal') {
       // Written by import-unreal-level.mjs alongside raw.glb; the UVs are
