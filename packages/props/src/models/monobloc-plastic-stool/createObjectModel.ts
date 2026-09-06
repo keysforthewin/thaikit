@@ -9,7 +9,7 @@ import * as THREE from 'three';
  * instancing and the lathe helpers below are hand-rolled -- anything under three/examples/jsm is
  * a second import.
  *
- * Envelope 0.335 x 0.2 x 0.335 m, origin base-center, +Y up.
+ * Envelope 0.335 x 0.38 x 0.335 m, origin base-center, +Y up.
  * Budget (small): <=800 triangles, <=1 draw call, <=1 material, <=2 unique geometries.
  *
  * This is one of thaikit's STREET AND VENDOR PROPS -- a cone, a barrier, a cart, a stool. The
@@ -40,7 +40,7 @@ const CONFIG = {
     "id": "monobloc-plastic-stool",
     "name": "Monobloc Plastic Stool",
     "exportName": "MonoblocPlasticStool",
-    "envelope": "Envelope 0.335 x 0.2 x 0.335 m, origin base-center, +Y up.\n * Budget (small): <=800 triangles, <=1 draw call, <=1 material, <=2 unique geometries.",
+    "envelope": "Envelope 0.335 x 0.38 x 0.335 m, origin base-center, +Y up.\n * Budget (small): <=800 triangles, <=1 draw call, <=1 material, <=2 unique geometries.",
     "materials": [
       {
         "id": "plastic",
@@ -88,12 +88,12 @@ const CONFIG = {
             "shape": "box",
             "localCenter": [
               0,
-              0.1,
+              0.19,
               0
             ],
             "halfExtents": [
               0.1675,
-              0.1,
+              0.19,
               0.1675
             ],
             "notes": "The stool envelope; the shipped compound is derived from the geometry."
@@ -103,39 +103,39 @@ const CONFIG = {
               "pts": [
                 [
                   0,
-                  0.142
+                  0.32199999999999995
                 ],
                 [
                   0.151,
-                  0.14
+                  0.32
                 ],
                 [
                   0.157,
-                  0.152
+                  0.33199999999999996
                 ],
                 [
                   0.157,
-                  0.168
+                  0.348
                 ],
                 [
                   0.15,
-                  0.188
+                  0.368
                 ],
                 [
                   0.137,
-                  0.199
+                  0.379
                 ],
                 [
                   0.115,
-                  0.199
+                  0.379
                 ],
                 [
                   0.113,
-                  0.1965
+                  0.3765
                 ],
                 [
                   0,
-                  0.1965
+                  0.3765
                 ]
               ],
               "seg": 18,
@@ -150,15 +150,15 @@ const CONFIG = {
               "pts": [
                 [
                   0.105,
-                  0.1972
+                  0.3772
                 ],
                 [
                   0.11,
-                  0.198
+                  0.378
                 ],
                 [
                   0,
-                  0.198
+                  0.378
                 ]
               ],
               "seg": 18,
@@ -174,7 +174,7 @@ const CONFIG = {
             {
               "rt": 0.018,
               "rb": 0.032,
-              "h": 0.1821010948871455,
+              "h": 0.3620502757993631,
               "seg": 8,
               "hex": 14437950,
               "scale": [
@@ -182,17 +182,17 @@ const CONFIG = {
                 1,
                 1
               ],
-              "rz": 0.0336951073460162,
+              "rz": 0.01675820758223742,
               "at": [
                 0.139,
-                0.087,
+                0.177,
                 0
               ]
             },
             {
               "rt": 0.018,
               "rb": 0.032,
-              "h": 0.1821010948871455,
+              "h": 0.3620502757993631,
               "seg": 8,
               "hex": 14437950,
               "scale": [
@@ -200,17 +200,17 @@ const CONFIG = {
                 1,
                 0.78
               ],
-              "rx": -0.0336951073460162,
+              "rx": -0.01675820758223742,
               "at": [
                 0,
-                0.087,
+                0.177,
                 0.139
               ]
             },
             {
               "rt": 0.018,
               "rb": 0.032,
-              "h": 0.1821010948871455,
+              "h": 0.3620502757993631,
               "seg": 8,
               "hex": 14437950,
               "scale": [
@@ -218,17 +218,17 @@ const CONFIG = {
                 1,
                 1
               ],
-              "rz": -0.0336951073460162,
+              "rz": -0.01675820758223742,
               "at": [
                 -0.139,
-                0.087,
+                0.177,
                 0
               ]
             },
             {
               "rt": 0.018,
               "rb": 0.032,
-              "h": 0.1821010948871455,
+              "h": 0.3620502757993631,
               "seg": 8,
               "hex": 14437950,
               "scale": [
@@ -236,10 +236,10 @@ const CONFIG = {
                 1,
                 0.78
               ],
-              "rx": 0.0336951073460162,
+              "rx": 0.01675820758223742,
               "at": [
                 0,
-                0.087,
+                0.177,
                 -0.139
               ]
             }
@@ -803,6 +803,20 @@ function worldUV(geo: THREE.BufferGeometry, scale: number): THREE.BufferGeometry
   return geo;
 }
 
+/** PLAN-project UVs: every vertex, whatever it faces, maps by its world (x, z) with the tile's
+ *  CENTRE at the origin -- u = x/scale + 0.5, v = z/scale + 0.5. This is for a canvas that is a
+ *  PICTURE OF THE TOP rather than a repeating grain: a round table top's radial ribbing drawn once
+ *  in plan at `scale` = the diameter, so the rim samples the tile's r = 0.5 circle, the umbrella
+ *  hole its centre, and a vertical skirt face the same ring tone as the edge above it. Nothing
+ *  repeats and no seam lands on the surface. */
+function planUV(geo: THREE.BufferGeometry, scale: number): THREE.BufferGeometry {
+  const p = geo.getAttribute('position');
+  const uv = new Float32Array(p.count * 2);
+  for (let i = 0; i < p.count; i++) { uv[i * 2] = p.getX(i) / scale + 0.5; uv[i * 2 + 1] = p.getZ(i) / scale + 0.5; }
+  geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+  return geo;
+}
+
 /**
  * SIDE-PROFILE EXTRUSION: a closed polygon of [z, y] points (the vehicle's side silhouette, wheel
  * arches included as notches) swept across the full width, then shaped per vertex:
@@ -1267,6 +1281,87 @@ function flare(zc: number, yc: number, rIn: number, rOut: number, x0: number, x1
   else { const p = l.getAttribute('position'); for (let i = 0; i < p.count; i += 3) { const x1_ = p.getX(i + 1), y1_ = p.getY(i + 1), z1_ = p.getZ(i + 1); p.setXYZ(i + 1, p.getX(i + 2), p.getY(i + 2), p.getZ(i + 2)); p.setXYZ(i + 2, x1_, y1_, z1_); } }
   l.computeVertexNormals();
   return mergeGeos([l, r]);
+}
+
+/**
+ * RIBBED ROUND TOP tile: the whole top of a moulded garden table drawn ONCE in plan, bound with
+ * `planUV` at the table's diameter, as map AND bumpMap -- so the radial ribbing is a PBR texture on
+ * a solid lathe rather than eighty boxes. Radii are fractions of the tile (of the diameter):
+ *  `ring`  inner edge of the flat outer ring   `disc` the raised centre disc   `hole` the umbrella hole
+ *  `ribs`  ridge count                          `groove` share of a rib pitch that is groove (0..1)
+ * Tones are RATIOS of the clean plastic the material carries (1 = the ridge crown): `low` is the
+ * groove floor, and every ridge has a soft shoulder into it so the bump reads as a rounded rib, not a
+ * comb. Grime settles in the grooves as brown specks (`specks`) and a faint wash; the disc carries
+ * four moulded cross-marks and the ring/field/disc steps carry a dark hairline where the moulding
+ * turns down. Everything outside r = 0.5 is the ring tone, which is what the skirt samples.
+ */
+function ribTopTile(size: number, seed: number, o: any): THREE.CanvasTexture | null {
+  return canvasTile(size, (ctx, s) => {
+    const rnd = lcg(seed);
+    const cx = s / 2, cy = s / 2;
+    const R = (f: number) => f * s;
+    const ring = o.ring ?? 0.44, disc = o.disc ?? 0.147, hole = o.hole ?? 0.0225;
+    const N = o.ribs ?? 84, groove = o.groove ?? 0.22, low = o.low ?? 0.74;
+    const tone = (r: number) => { const v = Math.round(255 * Math.min(1, Math.max(0, r))); return `rgb(${v},${v},${v})`; };
+    ctx.fillStyle = tone(o.ringTone ?? 0.985); ctx.fillRect(0, 0, s, s);
+    // the ribbed FIELD, per texel: the rib profile is a function of angle alone, so it is written
+    // as an annulus of radial wedges -- one path per rib with a gradient across its pitch is enough
+    // resolution for the crowns, and the per-texel pass below writes the shoulders.
+    const img = ctx.getImageData(0, 0, s, s), d = img.data;
+    const r0 = R(disc), r1 = R(ring);
+    const wash = o.wash ?? 0.06;
+    for (let y = 0; y < s; y++) for (let x = 0; x < s; x++) {
+      const dx = x + 0.5 - cx, dy = y + 0.5 - cy, r = Math.hypot(dx, dy);
+      if (r < r0 - 1.5 || r > r1 + 1.5) continue;
+      const a = Math.atan2(dy, dx);
+      // phase across one rib pitch, 0 at the ridge crown, 1 at the next crown
+      const ph = ((a / (Math.PI * 2)) * N + N) % 1;
+      const dist = Math.min(ph, 1 - ph) * 2;               // 0 crown .. 1 groove centre
+      const crown = 1 - groove;                            // share of the pitch that is ridge
+      let h: number;
+      if (dist < crown) { const t = dist / crown; h = 1 - 0.10 * t * t; }    // a gently domed crown
+      else { const t = (dist - crown) / groove; h = low + (1 - 0.10 - low) * (1 - Math.sin(t * Math.PI / 2)) * 0.9; }
+      // the groove floor holds a wash of dust that the crowns shed
+      const g = dist > crown ? 1 - wash : 1;
+      const edge = Math.min(1, Math.max(0, (r - (r0 - 1.5)) / 3)) * Math.min(1, Math.max(0, ((r1 + 1.5) - r) / 3));
+      const v = 255 * (h * g * edge + (o.ringTone ?? 0.985) * (1 - edge));
+      const i = (y * s + x) * 4;
+      d[i] = d[i + 1] = d[i + 2] = Math.round(v); d[i + 3] = 255;
+    }
+    ctx.putImageData(img, 0, 0);
+    // the raised centre disc: a hair brighter than the ring (it is the highest surface) with a dark
+    // step at its edge, four moulded cross-marks, and the hole as a dark well
+    ctx.fillStyle = tone(o.discTone ?? 1.0); ctx.beginPath(); ctx.arc(cx, cy, r0, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = tone(low); ctx.lineWidth = Math.max(1, s * 0.0025);
+    ctx.beginPath(); ctx.arc(cx, cy, r0, 0, Math.PI * 2); ctx.stroke();
+    ctx.beginPath(); ctx.arc(cx, cy, r1, 0, Math.PI * 2); ctx.stroke();
+    ctx.lineWidth = Math.max(1, s * 0.004);
+    for (let k = 0; k < 4; k++) {
+      const a = k * Math.PI / 2, ia = R(hole) + s * 0.012, oa = r0 - s * 0.012;
+      ctx.beginPath(); ctx.moveTo(cx + Math.cos(a) * ia, cy + Math.sin(a) * ia); ctx.lineTo(cx + Math.cos(a) * oa, cy + Math.sin(a) * oa); ctx.stroke();
+    }
+    ctx.fillStyle = tone(o.holeTone ?? 0.35); ctx.beginPath(); ctx.arc(cx, cy, R(hole), 0, Math.PI * 2); ctx.fill();
+    // grime: rust-brown specks and short streaks lying in the grooves, denser toward the rim where
+    // the rain leaves them; a few pale scuffs on the ring
+    const specks = o.specks ?? 900;
+    ctx.globalCompositeOperation = 'multiply';
+    for (let i = 0; i < specks; i++) {
+      const a = rnd() * Math.PI * 2, rr = r0 + (r1 - r0) * Math.pow(rnd(), 0.6);
+      // snap to the nearest groove centre
+      const k = Math.round((a / (Math.PI * 2)) * N - 0.5) + 0.5, ga = k / N * Math.PI * 2;
+      const x = cx + Math.cos(ga) * rr, y = cy + Math.sin(ga) * rr;
+      const len = 1 + rnd() * s * 0.012, w = 0.8 + rnd() * s * 0.0015, al = 0.25 + rnd() * 0.45;
+      ctx.save(); ctx.translate(x, y); ctx.rotate(ga);
+      ctx.fillStyle = rnd() < 0.55 ? `rgba(122,84,52,${al})` : `rgba(150,140,125,${al})`;
+      ctx.fillRect(-len / 2, -w / 2, len, w); ctx.restore();
+    }
+    for (let i = 0; i < (o.scuffs ?? 40); i++) {
+      const a = rnd() * Math.PI * 2, rr = r1 + (R(0.5) - r1) * rnd();
+      const x = cx + Math.cos(a) * rr, y = cy + Math.sin(a) * rr, r = 1 + rnd() * s * 0.004;
+      ctx.fillStyle = `rgba(130,120,105,${0.10 + rnd() * 0.25})`; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.globalCompositeOperation = 'source-over';
+  });
 }
 
 /** Bind a post-construction canvas tile to a material as map (and bump), leaving the textureless
@@ -3028,6 +3123,8 @@ export function createMonoblocPlasticStoolModel(options: ProceduralModelOptions 
     }
     if (c.uv === 'world') g = worldUV(g, c.uvScale ?? 1);
     if (c.uv === 'height') g = heightUV(g, c.uvScale ?? 1);
+    // 'plan': one picture of the top, centred, at uvScale = the diameter (a ribbed table top).
+    if (c.uv === 'plan') g = planUV(g, c.uvScale ?? 1);
     if (c.uv === 'panel') g = panelUV(g, c.uvScale ?? 1);
     if (c.uv === 'panel-rot') g = panelUV(g, c.uvScale ?? 1, true);
     // 'front': planar UVs into a baked front-elevation atlas on +Z faces, one pinned texel elsewhere.
@@ -3138,6 +3235,7 @@ export function createMonoblocPlasticStoolModel(options: ProceduralModelOptions 
     if (t.kind === 'galv') tex = galvTile(t.size ?? 512, t.seed ?? 47, t);
     if (t.kind === 'split') tex = splitTile(t.size ?? 512, t.seed ?? 53);
     if (t.kind === 'rope') tex = ropeTile(t.size ?? 512, t.seed ?? 59);
+    if (t.kind === 'ribtop') tex = ribTopTile(t.size ?? 1024, t.seed ?? 61, t);
     bindTile(mat, tex, t.bump ?? 0);
   }
 

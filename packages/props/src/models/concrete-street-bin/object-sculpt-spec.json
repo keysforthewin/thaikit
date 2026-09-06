@@ -254,7 +254,7 @@
   "qualityContract": {
     "qualityBar": "high",
     "definitionOfDone": [
-      "Rendered model matches the reference silhouette, the 0.44 x 0.85 x 0.44 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
+      "Rendered model matches the reference silhouette, the 0.78 x 1.50 x 0.78 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
       "All four scene-budget ceilings hold: <=2000 triangles, <=2 draw calls, <=2 materials, <=4 unique geometries.",
       "Zero coincident co-facing surface pairs (check-coplanar clean).",
       "Exactly one root pivot plus 0 named mechanism pivot(s); zero sockets; cylinder collider; no destruction groups.",
@@ -275,7 +275,7 @@
         "required": true,
         "threshold": 0.85,
         "qualityCriteria": [
-          "Envelope 0.44 x 0.85 m at the lid flange",
+          "Envelope 0.776 x 1.5 m at the lid flange (v8: the 0.44 x 0.85 plan scaled 1.765)",
           "Every band within 0.0125 H of the plate over 0.25-0.85 of H"
         ],
         "evidenceRefs": [
@@ -666,12 +666,12 @@
   },
   "silhouette": {
     "envelope": {
-      "w": 0.44,
-      "h": 0.85,
-      "d": 0.44
+      "w": 0.776,
+      "h": 1.5,
+      "d": 0.776
     },
     "description": "Chamfered foot r 0.165-0.205 over 0-0.040 m; straight barrel r 0.205 to 0.652 m; a 4.5 mm lid-seam undercut at 0.652-0.673; proud collar r 0.2135 to 0.698; overhanging lid flange r 0.220 over 0.700-0.717; dome cap r 0.166 closing at 0.85 m; a raised collar hole r 0.041 on the dome's front-right at 56.5 degrees off vertical; pebble sleeve r 0.2185 over 0.072-0.344 m with 20 mm splayed lead-ins; a 1.30 rad void from 0.487 to 0.625 m whose sill lip stands 3 mm proud.",
-    "envelopeDerivation": "Solved off the plate rather than assumed. The camera elevation is 7.03 degrees, read from the lid flange ellipse (semi-minor 27.5 px over semi-major 225); the horizontal scale is 962 px/m from the barrel diameter 404 px = 0.42 m and the vertical 954 px/m; on those the object stands 0.914 m, so every plate row is converted and then scaled by 0.85 / 0.914 = 0.930 into the declared envelope. What that changes: the 0.44 m envelope is filled by the LID FLANGE (r 0.220, plate 0.234), not by the barrel, which is r 0.205 -- the plate reads w/h 0.459 and the first build carried 0.518 by giving the barrel the whole envelope and the flange a 10 mm overhang. x and z therefore span -0.220..+0.220 at the flange and -0.2185..+0.2185 at the pebble sleeve. y 0 to 0.85 at the dome crown. Barrel r 0.205 from 0.040 to 0.652 over a chamfered foot r 0.165-0.205; lid-seam groove undercut to r 0.2005 over 0.652-0.673; proud collar r 0.2135 to 0.698; flange r 0.220 over 0.700-0.717; dome a spherical cap r 0.166 from 0.724 to the crown -- checked by predicting the plate widths at rows 108 and 152 (235 and 314 px) against the measured 232 and 311.",
+    "envelopeDerivation": "v8 (2026-09-06, owner review): \"make the concrete street bin 1.5 m tall\". The whole prop is scaled UNIFORMLY by K = 1.5 / 0.85 = 1.765, so it ships 0.776 x 1.5 x 0.776 with the plate proportions (w/h 0.518 at the flange) untouched; the collider, the height-UV grime tile and the moss tint carry K, the pebble cylUV is pre-divided by K (it is written before the scale) so the aggregate tile still ships at 0.12 m and the stones stay the plate 18-26 mm rather than growing into cobbles. Everything below is the PLAN in the 0.85 m build metres that K multiplies. Solved off the plate rather than assumed. The camera elevation is 7.03 degrees, read from the lid flange ellipse (semi-minor 27.5 px over semi-major 225); the horizontal scale is 962 px/m from the barrel diameter 404 px = 0.42 m and the vertical 954 px/m; on those the object stands 0.914 m, so every plate row is converted and then scaled by 0.85 / 0.914 = 0.930 into the declared envelope. What that changes: the 0.44 m envelope is filled by the LID FLANGE (r 0.220, plate 0.234), not by the barrel, which is r 0.205 -- the plate reads w/h 0.459 and the first build carried 0.518 by giving the barrel the whole envelope and the flange a 10 mm overhang. x and z therefore span -0.220..+0.220 at the flange and -0.2185..+0.2185 at the pebble sleeve. y 0 to 0.85 at the dome crown. Barrel r 0.205 from 0.040 to 0.652 over a chamfered foot r 0.165-0.205; lid-seam groove undercut to r 0.2005 over 0.652-0.673; proud collar r 0.2135 to 0.698; flange r 0.220 over 0.700-0.717; dome a spherical cap r 0.166 from 0.724 to the crown -- checked by predicting the plate widths at rows 108 and 152 (235 and 314 px) against the measured 232 and 311.",
     "meshyCrossCheck": "NO Meshy band table this round: the first build's proxy was cleaned with the scratch tree and regenerating one is a metered call, so the silhouette is measured against the PLATE instead (scratch/_prop/binbands.mjs). It reads the plate silhouette row by row as a DIAMETER -- which needs no assumption about where the axis projects -- skips rows below y 728 where the contact shadow merges with the right edge, normalises both columns by their own height and compares them in tenths of H. Mean |delta| 0.0119 of H over ten bands; bands 0-7, which cover the foot, the barrel, the pebble sleeve and the flange from 0.25 to 0.85 of H, are ALL within 0.0125 H. Bands 8 and 9 read +0.031 and +0.023 and are not a build error: a row scan of a perspective plate smears the flange over the +-27 px of its own ellipse, which is +-0.030 H, so the lid region cannot be resolved more finely than the disagreement. The first build's Meshy comparison is kept in the review history and its numbers describe that geometry, not this one."
   },
   "viewEvidence": [
@@ -822,11 +822,11 @@
           "shape": "cylinder",
           "localCenter": [
             0,
-            0.425,
+            0.75,
             0
           ],
-          "radius": 0.22,
-          "height": 0.85,
+          "radius": 0.388,
+          "height": 1.5,
           "axis": [
             0,
             1,
@@ -1130,7 +1130,7 @@
   ],
   "visualEvidence": [
     {
-      "timestamp": "2026-09-01T01:00:54.315125+00:00",
+      "timestamp": "2026-09-06T13:20:24.121562+00:00",
       "passId": "blockout",
       "estimatedFidelity": 0.92,
       "aiVisionScore": 0.92,
@@ -1149,7 +1149,7 @@
           "score": 0.94,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.44 x 0.85 x 0.44 m AT THE LID FLANGE (barrel 0.41), re-derived from a full plate solve: camera elevation 7.03 deg off the flange ellipse, 962 px/m across and 954 px/m up, object 0.914 m in plate metres scaled by 0.930 into the declared envelope, dome cap verified by predicting the plate widths at rows 108 and 152 (235/314 px against 232/311). Band table against the PLATE (scratch/_prop/binbands.mjs, diameters, shadow rows excluded): mean |delta| 0.0119 of H over ten bands, bands 0-7 (foot, barrel, sleeve, flange; 0.25-0.85 of H) ALL within 0.0125 H.",
+          "evidence": "Envelope 0.776 x 1.5 x 0.776 m (v8, 2026-09-06, owner review \"make it 1.5 m tall\": the 0.44 x 0.85 plan scaled uniformly by 1.765, proportions and band ratios unchanged). Plan: 0.44 x 0.85 x 0.44 m AT THE LID FLANGE (barrel 0.41), re-derived from a full plate solve: camera elevation 7.03 deg off the flange ellipse, 962 px/m across and 954 px/m up, object 0.914 m in plate metres scaled by 0.930 into the declared envelope, dome cap verified by predicting the plate widths at rows 108 and 152 (235/314 px against 232/311). Band table against the PLATE (scratch/_prop/binbands.mjs, diameters, shadow rows excluded): mean |delta| 0.0119 of H over ten bands, bands 0-7 (foot, barrel, sleeve, flange; 0.25-0.85 of H) ALL within 0.0125 H.",
           "notes": "Bands 8-9 read +0.031/+0.023: a row scan of a perspective plate smears the flange over the +-0.030 H of its own ellipse, so the lid cannot be resolved finer than that. No Meshy proxy this round -- the first build's was cleaned with the scratch tree."
         }
       ],
@@ -1161,7 +1161,7 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-01T01:00:54.398717+00:00",
+      "timestamp": "2026-09-06T13:20:24.210532+00:00",
       "passId": "structural-pass",
       "estimatedFidelity": 0.94,
       "aiVisionScore": null,
@@ -1176,7 +1176,7 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-01T01:00:54.482222+00:00",
+      "timestamp": "2026-09-06T13:20:24.299492+00:00",
       "passId": "structural-pass",
       "estimatedFidelity": 0.94,
       "aiVisionScore": 0.94,
@@ -1195,7 +1195,7 @@
           "score": 0.94,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.44 x 0.85 x 0.44 m AT THE LID FLANGE (barrel 0.41), re-derived from a full plate solve: camera elevation 7.03 deg off the flange ellipse, 962 px/m across and 954 px/m up, object 0.914 m in plate metres scaled by 0.930 into the declared envelope, dome cap verified by predicting the plate widths at rows 108 and 152 (235/314 px against 232/311). Band table against the PLATE (scratch/_prop/binbands.mjs, diameters, shadow rows excluded): mean |delta| 0.0119 of H over ten bands, bands 0-7 (foot, barrel, sleeve, flange; 0.25-0.85 of H) ALL within 0.0125 H.",
+          "evidence": "Envelope 0.776 x 1.5 x 0.776 m (v8, 2026-09-06, owner review \"make it 1.5 m tall\": the 0.44 x 0.85 plan scaled uniformly by 1.765, proportions and band ratios unchanged). Plan: 0.44 x 0.85 x 0.44 m AT THE LID FLANGE (barrel 0.41), re-derived from a full plate solve: camera elevation 7.03 deg off the flange ellipse, 962 px/m across and 954 px/m up, object 0.914 m in plate metres scaled by 0.930 into the declared envelope, dome cap verified by predicting the plate widths at rows 108 and 152 (235/314 px against 232/311). Band table against the PLATE (scratch/_prop/binbands.mjs, diameters, shadow rows excluded): mean |delta| 0.0119 of H over ten bands, bands 0-7 (foot, barrel, sleeve, flange; 0.25-0.85 of H) ALL within 0.0125 H.",
           "notes": "Bands 8-9 read +0.031/+0.023: a row scan of a perspective plate smears the flange over the +-0.030 H of its own ellipse, so the lid cannot be resolved finer than that. No Meshy proxy this round -- the first build's was cleaned with the scratch tree."
         }
       ],
@@ -1207,7 +1207,7 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-01T01:00:54.562328+00:00",
+      "timestamp": "2026-09-06T13:20:24.381279+00:00",
       "passId": "form-refinement",
       "estimatedFidelity": 0.93,
       "aiVisionScore": null,
@@ -1222,7 +1222,7 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-01T01:00:54.643815+00:00",
+      "timestamp": "2026-09-06T13:20:24.468044+00:00",
       "passId": "form-refinement",
       "estimatedFidelity": 0.93,
       "aiVisionScore": 0.93,
@@ -1253,7 +1253,7 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-01T01:00:54.726973+00:00",
+      "timestamp": "2026-09-06T13:20:24.550410+00:00",
       "passId": "material-pass",
       "estimatedFidelity": 0.91,
       "aiVisionScore": null,
@@ -1268,7 +1268,7 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-01T01:00:54.808496+00:00",
+      "timestamp": "2026-09-06T13:20:24.633503+00:00",
       "passId": "material-pass",
       "estimatedFidelity": 0.91,
       "aiVisionScore": 0.91,
@@ -1299,7 +1299,7 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-01T01:00:54.892506+00:00",
+      "timestamp": "2026-09-06T13:20:24.724796+00:00",
       "passId": "surface-pass",
       "estimatedFidelity": 0.91,
       "aiVisionScore": null,
@@ -1314,7 +1314,7 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-01T01:00:54.978971+00:00",
+      "timestamp": "2026-09-06T13:20:24.815858+00:00",
       "passId": "surface-pass",
       "estimatedFidelity": 0.91,
       "aiVisionScore": 0.91,
@@ -1345,7 +1345,7 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-01T01:00:55.062279+00:00",
+      "timestamp": "2026-09-06T13:20:24.906292+00:00",
       "passId": "lighting-pass",
       "estimatedFidelity": 0.86,
       "aiVisionScore": 0.86,
@@ -1366,7 +1366,7 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-01T01:00:55.150676+00:00",
+      "timestamp": "2026-09-06T13:20:24.997014+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.94,
       "aiVisionScore": 0.94,
@@ -1387,7 +1387,7 @@
       "aiVisionNotes": ""
     },
     {
-      "timestamp": "2026-09-01T01:00:55.233043+00:00",
+      "timestamp": "2026-09-06T13:20:25.082320+00:00",
       "passId": "optimization-pass",
       "estimatedFidelity": 0.92,
       "aiVisionScore": 0.92,
@@ -1406,7 +1406,7 @@
           "score": 0.94,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.44 x 0.85 x 0.44 m AT THE LID FLANGE (barrel 0.41), re-derived from a full plate solve: camera elevation 7.03 deg off the flange ellipse, 962 px/m across and 954 px/m up, object 0.914 m in plate metres scaled by 0.930 into the declared envelope, dome cap verified by predicting the plate widths at rows 108 and 152 (235/314 px against 232/311). Band table against the PLATE (scratch/_prop/binbands.mjs, diameters, shadow rows excluded): mean |delta| 0.0119 of H over ten bands, bands 0-7 (foot, barrel, sleeve, flange; 0.25-0.85 of H) ALL within 0.0125 H.",
+          "evidence": "Envelope 0.776 x 1.5 x 0.776 m (v8, 2026-09-06, owner review \"make it 1.5 m tall\": the 0.44 x 0.85 plan scaled uniformly by 1.765, proportions and band ratios unchanged). Plan: 0.44 x 0.85 x 0.44 m AT THE LID FLANGE (barrel 0.41), re-derived from a full plate solve: camera elevation 7.03 deg off the flange ellipse, 962 px/m across and 954 px/m up, object 0.914 m in plate metres scaled by 0.930 into the declared envelope, dome cap verified by predicting the plate widths at rows 108 and 152 (235/314 px against 232/311). Band table against the PLATE (scratch/_prop/binbands.mjs, diameters, shadow rows excluded): mean |delta| 0.0119 of H over ten bands, bands 0-7 (foot, barrel, sleeve, flange; 0.25-0.85 of H) ALL within 0.0125 H.",
           "notes": "Bands 8-9 read +0.031/+0.023: a row scan of a perspective plate smears the flange over the +-0.030 H of its own ellipse, so the lid cannot be resolved finer than that. No Meshy proxy this round -- the first build's was cleaned with the scratch tree."
         },
         {
@@ -1438,7 +1438,7 @@
   ],
   "reviewHistory": [
     {
-      "timestamp": "2026-09-01T01:00:54.315125+00:00",
+      "timestamp": "2026-09-06T13:20:24.121562+00:00",
       "passId": "blockout",
       "estimatedFidelity": 0.92,
       "aiVisionScore": 0.92,
@@ -1457,7 +1457,7 @@
           "score": 0.94,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.44 x 0.85 x 0.44 m AT THE LID FLANGE (barrel 0.41), re-derived from a full plate solve: camera elevation 7.03 deg off the flange ellipse, 962 px/m across and 954 px/m up, object 0.914 m in plate metres scaled by 0.930 into the declared envelope, dome cap verified by predicting the plate widths at rows 108 and 152 (235/314 px against 232/311). Band table against the PLATE (scratch/_prop/binbands.mjs, diameters, shadow rows excluded): mean |delta| 0.0119 of H over ten bands, bands 0-7 (foot, barrel, sleeve, flange; 0.25-0.85 of H) ALL within 0.0125 H.",
+          "evidence": "Envelope 0.776 x 1.5 x 0.776 m (v8, 2026-09-06, owner review \"make it 1.5 m tall\": the 0.44 x 0.85 plan scaled uniformly by 1.765, proportions and band ratios unchanged). Plan: 0.44 x 0.85 x 0.44 m AT THE LID FLANGE (barrel 0.41), re-derived from a full plate solve: camera elevation 7.03 deg off the flange ellipse, 962 px/m across and 954 px/m up, object 0.914 m in plate metres scaled by 0.930 into the declared envelope, dome cap verified by predicting the plate widths at rows 108 and 152 (235/314 px against 232/311). Band table against the PLATE (scratch/_prop/binbands.mjs, diameters, shadow rows excluded): mean |delta| 0.0119 of H over ten bands, bands 0-7 (foot, barrel, sleeve, flange; 0.25-0.85 of H) ALL within 0.0125 H.",
           "notes": "Bands 8-9 read +0.031/+0.023: a row scan of a perspective plate smears the flange over the +-0.030 H of its own ellipse, so the lid cannot be resolved finer than that. No Meshy proxy this round -- the first build's was cleaned with the scratch tree."
         }
       ],
@@ -1479,7 +1479,7 @@
       }
     },
     {
-      "timestamp": "2026-09-01T01:00:54.398717+00:00",
+      "timestamp": "2026-09-06T13:20:24.210532+00:00",
       "passId": "structural-pass",
       "estimatedFidelity": 0.94,
       "aiVisionScore": null,
@@ -1503,7 +1503,7 @@
       }
     },
     {
-      "timestamp": "2026-09-01T01:00:54.482222+00:00",
+      "timestamp": "2026-09-06T13:20:24.299492+00:00",
       "passId": "structural-pass",
       "estimatedFidelity": 0.94,
       "aiVisionScore": 0.94,
@@ -1522,7 +1522,7 @@
           "score": 0.94,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.44 x 0.85 x 0.44 m AT THE LID FLANGE (barrel 0.41), re-derived from a full plate solve: camera elevation 7.03 deg off the flange ellipse, 962 px/m across and 954 px/m up, object 0.914 m in plate metres scaled by 0.930 into the declared envelope, dome cap verified by predicting the plate widths at rows 108 and 152 (235/314 px against 232/311). Band table against the PLATE (scratch/_prop/binbands.mjs, diameters, shadow rows excluded): mean |delta| 0.0119 of H over ten bands, bands 0-7 (foot, barrel, sleeve, flange; 0.25-0.85 of H) ALL within 0.0125 H.",
+          "evidence": "Envelope 0.776 x 1.5 x 0.776 m (v8, 2026-09-06, owner review \"make it 1.5 m tall\": the 0.44 x 0.85 plan scaled uniformly by 1.765, proportions and band ratios unchanged). Plan: 0.44 x 0.85 x 0.44 m AT THE LID FLANGE (barrel 0.41), re-derived from a full plate solve: camera elevation 7.03 deg off the flange ellipse, 962 px/m across and 954 px/m up, object 0.914 m in plate metres scaled by 0.930 into the declared envelope, dome cap verified by predicting the plate widths at rows 108 and 152 (235/314 px against 232/311). Band table against the PLATE (scratch/_prop/binbands.mjs, diameters, shadow rows excluded): mean |delta| 0.0119 of H over ten bands, bands 0-7 (foot, barrel, sleeve, flange; 0.25-0.85 of H) ALL within 0.0125 H.",
           "notes": "Bands 8-9 read +0.031/+0.023: a row scan of a perspective plate smears the flange over the +-0.030 H of its own ellipse, so the lid cannot be resolved finer than that. No Meshy proxy this round -- the first build's was cleaned with the scratch tree."
         }
       ],
@@ -1543,7 +1543,7 @@
       }
     },
     {
-      "timestamp": "2026-09-01T01:00:54.562328+00:00",
+      "timestamp": "2026-09-06T13:20:24.381279+00:00",
       "passId": "form-refinement",
       "estimatedFidelity": 0.93,
       "aiVisionScore": null,
@@ -1567,7 +1567,7 @@
       }
     },
     {
-      "timestamp": "2026-09-01T01:00:54.643815+00:00",
+      "timestamp": "2026-09-06T13:20:24.468044+00:00",
       "passId": "form-refinement",
       "estimatedFidelity": 0.93,
       "aiVisionScore": 0.93,
@@ -1607,7 +1607,7 @@
       }
     },
     {
-      "timestamp": "2026-09-01T01:00:54.726973+00:00",
+      "timestamp": "2026-09-06T13:20:24.550410+00:00",
       "passId": "material-pass",
       "estimatedFidelity": 0.91,
       "aiVisionScore": null,
@@ -1631,7 +1631,7 @@
       }
     },
     {
-      "timestamp": "2026-09-01T01:00:54.808496+00:00",
+      "timestamp": "2026-09-06T13:20:24.633503+00:00",
       "passId": "material-pass",
       "estimatedFidelity": 0.91,
       "aiVisionScore": 0.91,
@@ -1671,7 +1671,7 @@
       }
     },
     {
-      "timestamp": "2026-09-01T01:00:54.892506+00:00",
+      "timestamp": "2026-09-06T13:20:24.724796+00:00",
       "passId": "surface-pass",
       "estimatedFidelity": 0.91,
       "aiVisionScore": null,
@@ -1695,7 +1695,7 @@
       }
     },
     {
-      "timestamp": "2026-09-01T01:00:54.978971+00:00",
+      "timestamp": "2026-09-06T13:20:24.815858+00:00",
       "passId": "surface-pass",
       "estimatedFidelity": 0.91,
       "aiVisionScore": 0.91,
@@ -1735,7 +1735,7 @@
       }
     },
     {
-      "timestamp": "2026-09-01T01:00:55.062279+00:00",
+      "timestamp": "2026-09-06T13:20:24.906292+00:00",
       "passId": "lighting-pass",
       "estimatedFidelity": 0.86,
       "aiVisionScore": 0.86,
@@ -1765,7 +1765,7 @@
       }
     },
     {
-      "timestamp": "2026-09-01T01:00:55.150676+00:00",
+      "timestamp": "2026-09-06T13:20:24.997014+00:00",
       "passId": "interaction-pass",
       "estimatedFidelity": 0.94,
       "aiVisionScore": 0.94,
@@ -1795,7 +1795,7 @@
       }
     },
     {
-      "timestamp": "2026-09-01T01:00:55.233043+00:00",
+      "timestamp": "2026-09-06T13:20:25.082320+00:00",
       "passId": "optimization-pass",
       "estimatedFidelity": 0.92,
       "aiVisionScore": 0.92,
@@ -1814,7 +1814,7 @@
           "score": 0.94,
           "threshold": 0.85,
           "passed": true,
-          "evidence": "Envelope 0.44 x 0.85 x 0.44 m AT THE LID FLANGE (barrel 0.41), re-derived from a full plate solve: camera elevation 7.03 deg off the flange ellipse, 962 px/m across and 954 px/m up, object 0.914 m in plate metres scaled by 0.930 into the declared envelope, dome cap verified by predicting the plate widths at rows 108 and 152 (235/314 px against 232/311). Band table against the PLATE (scratch/_prop/binbands.mjs, diameters, shadow rows excluded): mean |delta| 0.0119 of H over ten bands, bands 0-7 (foot, barrel, sleeve, flange; 0.25-0.85 of H) ALL within 0.0125 H.",
+          "evidence": "Envelope 0.776 x 1.5 x 0.776 m (v8, 2026-09-06, owner review \"make it 1.5 m tall\": the 0.44 x 0.85 plan scaled uniformly by 1.765, proportions and band ratios unchanged). Plan: 0.44 x 0.85 x 0.44 m AT THE LID FLANGE (barrel 0.41), re-derived from a full plate solve: camera elevation 7.03 deg off the flange ellipse, 962 px/m across and 954 px/m up, object 0.914 m in plate metres scaled by 0.930 into the declared envelope, dome cap verified by predicting the plate widths at rows 108 and 152 (235/314 px against 232/311). Band table against the PLATE (scratch/_prop/binbands.mjs, diameters, shadow rows excluded): mean |delta| 0.0119 of H over ten bands, bands 0-7 (foot, barrel, sleeve, flange; 0.25-0.85 of H) ALL within 0.0125 H.",
           "notes": "Bands 8-9 read +0.031/+0.023: a row scan of a perspective plate smears the flange over the +-0.030 H of its own ellipse, so the lid cannot be resolved finer than that. No Meshy proxy this round -- the first build's was cleaned with the scratch tree."
         },
         {
@@ -1976,6 +1976,12 @@
   "destructionAnchors": [],
   "risks": [
     {
+      "id": "scaled-envelope",
+      "severity": "low",
+      "description": "v8 ships 1.5 m tall against the plate solve of 0.914 m and the 0.85 declaration it was built to.",
+      "mitigation": "Owner instruction 2026-09-06; uniform K = 1.765 keeps every plate proportion and every band ratio. Recorded, not chased."
+    },
+    {
       "id": "void-luma",
       "severity": "low",
       "description": "A real void is exactly what the turntable gate is built to catch, and the surfaces inside it are dark.",
@@ -2014,15 +2020,15 @@
         "bilateralSymmetryError": 0.0091,
         "colorDelta": {
           "checked": 2,
-          "maxDeltaE": 16.56,
+          "maxDeltaE": 16.81,
           "perComponent": [
             {
               "componentId": null,
-              "deltaE": 6.62
+              "deltaE": 6.28
             },
             {
               "componentId": null,
-              "deltaE": 16.56
+              "deltaE": 16.81
             }
           ],
           "gated": false
@@ -2035,7 +2041,7 @@
         "blockout requires --map-stripped-render evidence"
       ],
       "maskWarnings": [],
-      "renderHash": "0e1e312dd0852e59",
+      "renderHash": "245858ab9fb46268",
       "passId": "blockout"
     }
   ]

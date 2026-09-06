@@ -971,8 +971,10 @@ placed geometry. Export writes a second, self-contained GLB.
   `dmesg | grep -i "killed process"` before theorising: a Blender that "exited SIGKILL" mid-bake
   is memory until proven otherwise. The fix is headroom, not code: a 32 GB swap file
   (`sudo fallocate -l 32G /swapfile && sudo chmod 600 /swapfile && sudo mkswap /swapfile &&
-  sudo swapon /swapfile`, 2026-09-06). It does NOT survive a WSL restart -- `swapon --show` should
-  list `/swapfile` before any 8192 bake, or set `swap=40GB` in `.wslconfig`. And never run a second
+  sudo swapon /swapfile`, 2026-09-06) got that night's bake through; `.wslconfig` now carries
+  `swap=40GB`, which is the persistent form (it sizes WSL's own swap disk and takes effect after
+  `wsl --shutdown`; the ad-hoc `/swapfile` can then be `swapoff`'d and deleted). Check
+  `swapon --show` before any 8192 bake. And never run a second
   Blender (a probe, a calibration) while a big bake is in flight; the first OOM here had my
   adaptive-sampling probes running alongside.
 - **`samples` is a CEILING under Cycles adaptive sampling, and `lightmap.noiseThreshold` is the

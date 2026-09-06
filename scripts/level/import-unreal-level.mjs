@@ -28,7 +28,7 @@
  * Usage:
  *   node scripts/level/import-unreal-level.mjs --level <id> [--in levels/<id>/unreal/level.glb]
  *        [--manifest exports/unreal/manifest.json] [--cell-size 24] [--sun live|baked]
- *        [--settings <json>] [--no-bbox-colliders] [--ground <y>[,<#hex>]]
+ *        [--settings <json>] [--no-bbox-colliders] [--ground <y>[,<#hex>]] [--light-scale <f>]
  * Then:
  *   node scripts/level/bake-level.mjs --level <id> --baker unreal      # adopt Unreal's lightmap
  *   node scripts/level/bake-level.mjs --level <id> --baker blender     # or re-bake in Cycles
@@ -379,7 +379,7 @@ async function adoptLightmaps(doc, json, bin, epic, outDir, notes) {
 /**
  * @returns {{ bake: object, doc: Document, report: object }}
  */
-export async function convertUnrealLevel({ id, doc, json, bin, kit, extMeshes = null, actorMap = null, cellSize = 24, sun = 'live', bboxColliders = true, settings = null, lightmapDir = null, ground = null }) {
+export async function convertUnrealLevel({ id, doc, json, bin, kit, extMeshes = null, actorMap = null, cellSize = 24, sun = 'live', bboxColliders = true, settings = null, lightmapDir = null, ground = null, lightScale = 1 }) {
   const notes = [];
   const scene = doc.getRoot().listScenes()[0];
   if (!scene) throw new Error('the glTF has no scene');
@@ -420,12 +420,12 @@ export async function convertUnrealLevel({ id, doc, json, bin, kit, extMeshes = 
       if (type === 'directional') {
         if (sun === 'baked') { notes.push(`directional light ${name} dropped: --sun baked (its light is in the Unreal lightmap)`); scene.removeChild(node); continue; }
         const isMoon = !lights.some((l) => l.role === 'moon');
-        lights.push({ id: lid, node: `light_${lid}`, type, role: isMoon ? 'moon' : null, color: rgbToHex(light.getColor()), intensity: light.getIntensity(), position: [t[0], Math.max(t[1], 20), t[2]].map((v) => +v.toFixed(4)), direction: dir, castShadow: isMoon, shadow: isMoon ? { ...DEFAULT_SHADOW } : null, distance: null, angle: null, penumbra: null, decay: null });
+        lights.push({ id: lid, node: `light_${lid}`, type, role: isMoon ? 'moon' : null, color: rgbToHex(light.getColor()), intensity: light.getIntensity() * lightScale, position: [t[0], Math.max(t[1], 20), t[2]].map((v) => +v.toFixed(4)), direction: dir, castShadow: isMoon, shadow: isMoon ? { ...DEFAULT_SHADOW } : null, distance: null, angle: null, penumbra: null, decay: null });
       } else {
         const outer = type === 'spot' ? light.getOuterConeAngle() : null;
         const inner = type === 'spot' ? light.getInnerConeAngle() : null;
         lights.push({
-          id: lid, node: `light_${lid}`, type, role: null, color: rgbToHex(light.getColor()), intensity: light.getIntensity(),
+          id: lid, node: `light_${lid}`, type, role: null, color: rgbToHex(light.getColor()), intensity: light.getIntensity() * lightScale,
           position: t.map((v) => +v.toFixed(4)), direction: type === 'spot' ? dir : null, castShadow: false, shadow: null,
           distance: light.getRange() ?? null, angle: outer, penumbra: outer ? +(1 - (inner ?? outer) / outer).toFixed(3) : null, decay: 2,
         });
@@ -557,7 +557,7 @@ export async function convertUnrealLevel({ id, doc, json, bin, kit, extMeshes = 
     placements: placements.length, static: placements.filter((p) => p.static).length, dynamic: placements.filter((p) => !p.static).length,
     kitProps: [...kitHits.entries()].sort((a, b) => b[1] - a[1]).map(([asset, n]) => ({ asset, n })), unknownMeshes, extColliders: extHits, actorMapHits: actorHits,
     lights: lights.length, spawns: spawns.length, dropped, cells: new Set(placements.filter((p) => p.static).map((p) => p.cell)).size,
-    lightmap: bake.source.lightmap, epicSample: epic?.sample ?? null, notes,
+    lightmap: bake.source.lightmap, epicSample: epic?.sample ?? null, lightScale, notes,
   };
   return { bake, doc, report, lightmapPng };
 }
@@ -585,6 +585,12 @@ async function main() {
   const manifestFile = path.resolve(REPO_ROOT, String(args.manifest ?? path.join('exports', 'unreal', 'manifest.json')));
   const cellSize = Number(args['cell-size'] ?? 24);
   const sun = String(args.sun ?? 'live');
+  // Unreal's lamps export in candela and its picture is seen through a manual
+  // exposure (EV100 ~9.9 from the default camera, +4 bias -> 1/72 of scene
+  // luminance); three renders the same candela at exposure 1. Scale them here,
+  // at the source, so the bake's atlas spends its 8 bits at the shipped level.
+  const lightScale = Number(args['light-scale'] ?? 1);
+  if (!(lightScale > 0)) return fail(`--light-scale must be a positive number, got ${args['light-scale']}`);
   if (!['live', 'baked'].includes(sun)) return fail('--sun must be live or baked');
   const settings = args.settings ? JSON.parse(await fs.readFile(path.resolve(REPO_ROOT, String(args.settings)), 'utf8')) : null;
   const bboxColliders = !args['no-bbox-colliders'];
@@ -607,13 +613,14 @@ async function main() {
   const actorMap = await readActorMap(path.resolve(REPO_ROOT, String(args['actor-map'] ?? path.join(path.dirname(toRepoRelative(inFile)), 'actors.json'))));
   if (actorMap) log(`actor sidecar: ${Object.keys(actorMap).length} label(s)`);
   const extMeshes = await readExtManifest(path.resolve(REPO_ROOT, String(args['ext-manifest'] ?? path.join('exports', 'unreal', 'ext', 'manifest.json'))));
-  const { bake, doc: out, report, lightmapPng } = await convertUnrealLevel({ id, doc, json, bin, kit, extMeshes, actorMap, cellSize, sun, bboxColliders, settings, lightmapDir: path.join(buildDir, 'lightmap'), ground });
+  const { bake, doc: out, report, lightmapPng } = await convertUnrealLevel({ id, doc, json, bin, kit, extMeshes, actorMap, cellSize, sun, bboxColliders, settings, lightmapDir: path.join(buildDir, 'lightmap'), ground, lightScale });
 
   const rawFile = path.join(buildDir, 'raw.glb');
   await io.write(rawFile, out);
   await fs.writeFile(path.join(buildDir, 'unreal-import.json'), JSON.stringify({ ...report, in: toRepoRelative(inFile), raw: toRepoRelative(rawFile), generatedAt: new Date().toISOString() }, null, 2));
   for (const n of report.notes) log(n);
   log(`${report.placements} placement(s) (${report.static} static in ${report.cells} cell(s), ${report.dynamic} dynamic), ${report.kitProps.reduce((n, k) => n + k.n, 0)} from the kit, ${report.unknownMeshes} Unreal-side mesh(es), ${report.lights} light(s), ${report.spawns} spawn(s)${report.dropped.length ? `, ${report.dropped.length} empty node(s) dropped` : ''}`);
+  if (lightScale !== 1) log(`lights scaled by ${lightScale} (--light-scale): Unreal candela -> three at exposure 1`);
   log(`lightmap: ${report.lightmap}${lightmapPng ? ' -> bake with --baker unreal' : ' -> bake with --baker blender to light it in Cycles'}`);
   return ok({ level: id, raw: toRepoRelative(rawFile), report: toRepoRelative(path.join(buildDir, 'unreal-import.json')), placements: report.placements, lights: report.lights, spawns: report.spawns, lightmap: report.lightmap, nextBaker: lightmapPng ? 'unreal' : 'blender' });
 }
