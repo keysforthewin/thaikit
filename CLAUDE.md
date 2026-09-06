@@ -962,6 +962,26 @@ placed geometry. Export writes a second, self-contained GLB.
   fails at 7805 exactly as before, because the name was never the problem. On a
   native Linux host with a real driver the probe picks OPTIX with nothing added.
   Read the `cycles device:` line the bake logs rather than assuming either way.
+- **Cycles' bake operator re-syncs the SCENE for every selected object, so bake JOINED copies.**
+  `bangkoksoi` (1,879 merged static meshes, 1.1M islands, 3.5M tris) cost 11 minutes per 128-object
+  batch -- ~5 hours for two passes at the cheapest settings -- and none of it was samples: each object
+  paid ~5 s of scene sync first. `bake_lightmap.py`'s `bake_joined()` (`--join-groups 256`, default;
+  `0` restores the per-object path) duplicates a slice of the static set, joins the copies into ONE
+  object, hides that slice's originals from render while the copy bakes, deletes the copy and moves
+  on: **19 s per 256 objects, 2m26s for the whole diffuse pass**, same islands, same materials, same
+  atlas. One slice lives at a time, so memory is a slice, not a second level. The originals keep their
+  `lightmap` UVs for the export. The batching below still exists for `--join-groups 0`.
+- **An Unreal level's browser build wants `--live-lamps`, an actor sidecar and `--ground`.** Unreal
+  5.8's glTF exporter names nodes after ACTOR LABELS and, for any component whose materials were
+  baked or overridden, names the MESH after the actor too -- `SM_TK_` was gone from 863 of 879 kit
+  meshes, so the converter reads `levels/<id>/unreal/actors.json` (label -> mesh asset; written from
+  the editor) beside the `.glb`. `bake_material_inputs = UseMeshData` bakes a material PER ACTOR
+  (2,247 materials, 1,252 meshes) and defeats the per-cell join; `Simple` bakes per material (438).
+  `--ground <y>[,<#hex>]` drops a `far_ground` plane (900 m, two thirds of the atlas area) for the
+  pipeline's own tiles, and `SkyDome`-style backdrops are dropped outright. And 183 authored lamps
+  must not ship LIVE: each is a three light on every material, over a low-end GPU's fragment-uniform
+  budget, so `bake-level --live-lamps 20` keeps the moon plus the twenty strongest lamps nearest a
+  spawn and records `lightmap.bakedOnlyLamps`; the rest live in the atlas alone.
 - **The bake reports progress because it is BATCHED, and batching is free.** Cycles'
   `bpy.ops.object.bake` is one blocking call that says nothing until it returns, so a 4142-object
   level sat silent for many minutes with no way to tell slow from hung. `bake_batched()` hands the

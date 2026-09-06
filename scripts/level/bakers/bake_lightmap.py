@@ -85,6 +85,8 @@ ap.add_argument('--device', default='GPU', choices=['AUTO', 'GPU', 'GPU+CPU', 'C
 # progress of its own, so the only way to report any is to hand it the work in
 # batches. See bake_batched() for why this does not change the result.
 ap.add_argument('--batch', type=int, default=128)
+# Objects per JOINED bake target (0 = bake the objects one by one, the old way). See bake_joined().
+ap.add_argument('--join-groups', type=int, default=256)
 args = ap.parse_args(argv)
 
 T0 = time.time()
@@ -648,6 +650,77 @@ def bake_batched(label, bake_type, targets, batch_size):
     log(f'{label}: done in {hms(time.time() - started)}')
 
 
+def bake_joined(label, bake_type, targets, group_size):
+    """
+    Bake `targets` as a few JOINED copies instead of one object at a time.
+
+    Cycles' bake operator loops over the selected objects and re-syncs the scene
+    for each one, so on a level whose static set is 1,879 merged meshes over a
+    million UV islands (bangkoksoi) every object cost ~5 s of sync before a
+    single sample was traced: 11 minutes per 128 objects, five hours for the two
+    passes at the cheapest settings there are. The pixel work is the same
+    however the faces are grouped, so: duplicate a slice of the static objects,
+    join the duplicates into ONE object (the lightmap UV layer and the material
+    slots survive a join untouched), hide the originals of that slice from
+    render while their copy bakes, delete the copy, repeat. The atlas is shared
+    (`use_clear` is off), the originals keep their UVs for the export, and the
+    result is what the per-object bake would have produced -- same islands, same
+    materials, same emission -- reached with a sync per GROUP rather than per
+    object. One group lives at a time, so the memory cost is one slice of
+    geometry, not a second copy of the level.
+    """
+    total = len(targets)
+    group_size = max(1, min(group_size, total))
+    groups = max(1, math.ceil(total / group_size))
+    log(f'{label}: {total} objects in {groups} joined group(s) of up to {group_size}')
+    started = time.time()
+    done = 0
+    for i in range(groups):
+        chunk = targets[i * group_size:(i + 1) * group_size]
+        if not chunk:
+            continue
+        dups = []
+        for k, o in enumerate(chunk):
+            d = o.copy()
+            if k == 0:
+                d.data = o.data.copy()  # the join writes into the active object's mesh; the rest only contribute
+            scene.collection.objects.link(d)
+            dups.append(d)
+        for obj in bpy.data.objects:
+            obj.select_set(obj in dups)
+        bpy.context.view_layer.objects.active = dups[0]
+        if len(dups) > 1:
+            bpy.ops.object.join()
+        joined = bpy.context.view_layer.objects.active
+        joined.name = f'thaikit_bakegroup_{i}'
+        uv = joined.data.uv_layers.get('lightmap')
+        if uv is not None:
+            uv.active = True
+        for o in chunk:
+            o.hide_render = True
+        for obj in bpy.data.objects:
+            obj.select_set(obj is joined)
+        bpy.ops.object.bake(type=bake_type)
+        for o in chunk:
+            o.hide_render = False
+        mesh = joined.data
+        bpy.data.objects.remove(joined, do_unlink=True)
+        bpy.data.meshes.remove(mesh)
+        done += len(chunk)
+        elapsed = time.time() - started
+        frac = done / total
+        eta = f', eta {hms(elapsed / frac - elapsed)}' if i else ''
+        log(f'{label}: {frac * 100:5.1f}%  {done}/{total} objects  elapsed {hms(elapsed)}{eta}')
+    log(f'{label}: done in {hms(time.time() - started)}')
+
+
+def bake_static(label, bake_type):
+    if args.join_groups > 0:
+        bake_joined(label, bake_type, static, args.join_groups)
+    else:
+        bake_batched(label, bake_type, static, args.batch)
+
+
 # The batches share one atlas, so the operator must never clear it. The images
 # are freshly allocated and therefore already zero.
 scene.render.bake.use_clear = False
@@ -663,7 +736,7 @@ set_target(img_rgb)
 scene.render.bake.use_pass_direct = True
 scene.render.bake.use_pass_indirect = True
 scene.render.bake.use_pass_color = False
-bake_batched('bake 1/2 diffuse', 'DIFFUSE', static, args.batch)
+bake_static('bake 1/2 diffuse', 'DIFFUSE')
 
 # Pass 2: moon visibility. The lamps go OFF so alpha is the moon's alone; a
 # lamp left on here reads as a smear across the middle of the probe's alpha
@@ -674,7 +747,7 @@ for o in lamps:
     o.hide_render = True
 bg.inputs['Strength'].default_value = 0.0
 set_target(img_shadow)
-bake_batched('bake 2/2 moon mask', 'SHADOW', static, args.batch)
+bake_static('bake 2/2 moon mask', 'SHADOW')
 
 # --- combine and save ----------------------------------------------------------
 log('combining')

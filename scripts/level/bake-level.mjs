@@ -95,6 +95,8 @@ async function main() {
   const resumeFrom = Number(args['resume-from'] ?? 1);
   // Test-time overrides for the lightmap; the level's own settings otherwise.
   const lightmapOverride = { size: args['lightmap-size'] ? Number(args['lightmap-size']) : null, samples: args.samples ? Number(args.samples) : null };
+  // Live lamps shipped beside the lightmap (0 = all). See selectLiveLamps in pipeline/manifest.mjs.
+  const liveLamps = Number(args['live-lamps'] ?? 0);
   const cell = assertCellKey(args.cell ?? null);
   const buildDir = buildDirOf(id, cell);
   const rawFile = path.join(buildDir, 'raw.glb');
@@ -225,7 +227,8 @@ async function main() {
   progress('compress', 'meshopt (EXT_meshopt_compression, medium)');
   await doc.transform(meshopt({ encoder: MeshoptEncoder, level: 'medium' }));
 
-  const manifest = writeManifest({ bake, lodStats, lightmapImage, lightmapStats, skyIndices, generator: { tool: 'thaikit', version: VERSION } })(doc);
+  const manifest = writeManifest({ bake, lodStats, lightmapImage, lightmapStats, skyIndices, generator: { tool: 'thaikit', version: VERSION }, liveLamps })(doc);
+  if (manifest.lightmap?.bakedOnlyLamps) progress('manifest', `${manifest.lightmap.bakedOnlyLamps} lamp(s) ship baked-only (--live-lamps ${liveLamps}); ${manifest.lights.length} light(s) stay live`);
   await doc.transform(prune({ propertyTypes: [PropertyType.NODE, PropertyType.MESH, PropertyType.ACCESSOR, PropertyType.MATERIAL], keepLeaves: true, keepAttributes: true }));
 
   const outFile = path.join(buildDir, 'level.glb');

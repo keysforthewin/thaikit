@@ -42,6 +42,10 @@ convention was not followed.
 | Thing | Convention | Why |
 | --- | --- | --- |
 | Static Mesh names | keep `SM_TK_<Prop>` as imported from the kit | the converter finds the prop's `@thai-kit` ref, physics and collider compound in `exports/unreal/manifest.json` by that name |
+| The actor sidecar | write `levels/<id>/unreal/actors.json` from the editor beside the `.glb` (`{ actors: { <label>: { mesh, folder, mobility, physics } } }`; `C:\tk\actor_map.py` in the ThePurge project is the template) | Unreal 5.8's glTF exporter names nodes after ACTOR LABELS and, once a component's materials were baked or overridden, names the MESH after the actor too -- the `SM_TK_` name is gone from the file and only 16 of 879 kit meshes on `bangkoksoi` kept it. The converter reads the sidecar automatically (`--actor-map` to point elsewhere) |
+| Meshes built outside the kit (`SM_EXT_*` trees, AC units) | `scratch/_unreal/build_ext.mjs` writes `exports/unreal/ext/manifest.json` with each mesh's compound | trunk-only colliders for a tree; without it a card tree is a wall the size of its canopy |
+| Backdrops | a sky-dome sphere may stay (`SkyDome`, anything starting `sky`): the converter drops it | the shipped level builds its own sky; a 1.4 km sphere would otherwise be a static placement |
+| The far ground | ONE big plane in Unreal is fine for the editor, but convert with `--ground <y>[,<#hex>]` | the converter drops `far_ground` and lays the pipeline's own per-cell tiles (one lightmap island each) instead of a 900 m quad that owned two thirds of the atlas area |
 | Dynamic props | actor label starts with `dyn_` | becomes a `dynamic/<id>` node with a Rapier body; anything else is merged static geometry |
 | Skyline imposters | actor label starts with `bb_` | becomes a yaw billboard (dynamic, no collider) |
 | Spawns | a **Camera actor** labelled `spawn_<name>` (or `spawn_<team>_<name>`: red/blue/green/yellow) facing the way the player starts | the exporter writes cameras; empties and PlayerStarts do not export |
@@ -107,10 +111,20 @@ Also read:
 `--sun baked` if the user insists on a Static sun in Unreal (drops the
 directional from the runtime's lights so it is not counted twice).
 `--no-bbox-colliders` if Unreal-side meshes should have no collision at all.
+`--ground <y>[,<#hex>]` lays ground tiles under everything static (and drops an
+Unreal `far_ground` plane); `bangkoksoi` uses `--ground=-0.12,#2b2b29` (the `=`
+matters: a bare `-0.12` reads as an option).
 `--settings <json>` to pass thaikit level settings (LOD distances, lightmap
 size for a Cycles bake, ambient); the defaults are the editor's.
 
 ## 3. Bake
+
+A street with 180 lamps must NOT ship them all live: every live lamp is a three
+light (uniforms on every material, a loop per dynamic fragment) and a low-end
+GPU's fragment-uniform budget overflows long before 180. Bake with
+`--live-lamps 20`: the moon plus the twenty strongest lamps nearest a spawn stay
+live for dynamic objects, the rest live in the lightmap only, and the manifest
+records `lightmap.bakedOnlyLamps`.
 
 ```
 docker compose run --rm web node scripts/level/bake-level.mjs --level <id> --baker unreal

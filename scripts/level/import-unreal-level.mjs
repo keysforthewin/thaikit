@@ -28,7 +28,7 @@
  * Usage:
  *   node scripts/level/import-unreal-level.mjs --level <id> [--in levels/<id>/unreal/level.glb]
  *        [--manifest exports/unreal/manifest.json] [--cell-size 24] [--sun live|baked]
- *        [--settings <json>] [--no-bbox-colliders]
+ *        [--settings <json>] [--no-bbox-colliders] [--ground <y>[,<#hex>]]
  * Then:
  *   node scripts/level/bake-level.mjs --level <id> --baker unreal      # adopt Unreal's lightmap
  *   node scripts/level/bake-level.mjs --level <id> --baker blender     # or re-bake in Cycles
@@ -51,10 +51,81 @@ const VERSION = '0.1.0';
 const EPIC_LIGHTMAP = 'EPIC_lightmap_textures';
 const DEFAULT_SHADOW = { mapSize: 2048, extent: 60, bias: -0.0005, normalBias: 0.02, softDeg: 1.5 };
 /** Meshes that are dressing, never something to stand on. */
+/** Editor-side backdrops that must not ship: the runtime builds its own sky dome (`buildSky`). */
+const BACKDROP = /^(sky|skydome|skysphere|hdri)/i;
+/** A single huge far-ground plane laid in Unreal; replaced by cell tiles when --ground is given. */
+const FAR_GROUND = /^far[_-]?ground/i;
 const NO_COLLIDER = /cable|wire|rain|fog|sky|decal|puddle|particle|niagara|glow|billboard|light|lamp_cone/i;
 
 const log = (msg) => process.stderr.write(`${msg}\n`);
 export const slug = (s) => String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'x';
+
+// ---- Ground tiles ------------------------------------------------------------
+
+/**
+ * One flat walkable quad per cell under everything static, the way the editor's
+ * `buildExportScene` lays `settings.ground`: extent = world bounds of every
+ * non-billboard placement plus the margin on each side, cut on cell lines, each
+ * tile an ordinary STATIC placement (`ground_<ix>_<iz>`, `@thaikit/ground`) with a
+ * quarter-metre-thick box hanging below the surface. The converter needs its own
+ * copy because the browser's version materialises three.js factories.
+ */
+function addGroundTiles({ doc, scene, placements, cellSize, y, color, margin, uniqueId }) {
+  const boxes = placements.filter((p) => p.billboard === 'none' && p.static);
+  if (!boxes.length) return 0;
+  const min = [Infinity, Infinity]; const max = [-Infinity, -Infinity];
+  for (const p of boxes) {
+    min[0] = Math.min(min[0], p.bounds.min[0]); min[1] = Math.min(min[1], p.bounds.min[2]);
+    max[0] = Math.max(max[0], p.bounds.max[0]); max[1] = Math.max(max[1], p.bounds.max[2]);
+  }
+  const x0 = min[0] - margin; const x1 = max[0] + margin; const z0 = min[1] - margin; const z1 = max[1] + margin;
+  const rgb = hexToLinear(color);
+  const buffer = doc.getRoot().listBuffers()[0] ?? doc.createBuffer();
+  const material = doc.createMaterial('thaikit_ground').setBaseColorFactor([rgb[0], rgb[1], rgb[2], 1]).setRoughnessFactor(0.92).setMetallicFactor(0);
+  let n = 0;
+  for (let ix = Math.floor(x0 / cellSize); ix * cellSize < x1; ix += 1) {
+    for (let iz = Math.floor(z0 / cellSize); iz * cellSize < z1; iz += 1) {
+      const ax = Math.max(x0, ix * cellSize); const bx = Math.min(x1, (ix + 1) * cellSize);
+      const az = Math.max(z0, iz * cellSize); const bz = Math.min(z1, (iz + 1) * cellSize);
+      const w = bx - ax; const d = bz - az;
+      if (w < 0.05 || d < 0.05) continue;
+      const cx = (ax + bx) / 2; const cz = (az + bz) / 2;
+      const hw = w / 2; const hd = d / 2;
+      const pos = new Float32Array([-hw, 0, -hd, hw, 0, -hd, hw, 0, hd, -hw, 0, hd]);
+      const nrm = new Float32Array([0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0]);
+      const uv = new Float32Array([0, 0, 1, 0, 1, 1, 0, 1]);
+      const idx = new Uint16Array([0, 2, 1, 0, 3, 2]);
+      const prim = doc.createPrimitive().setMaterial(material)
+        .setAttribute('POSITION', doc.createAccessor().setType('VEC3').setArray(pos).setBuffer(buffer))
+        .setAttribute('NORMAL', doc.createAccessor().setType('VEC3').setArray(nrm).setBuffer(buffer))
+        .setAttribute('TEXCOORD_0', doc.createAccessor().setType('VEC2').setArray(uv).setBuffer(buffer))
+        .setIndices(doc.createAccessor().setType('SCALAR').setArray(idx).setBuffer(buffer));
+      const name = `ground_${ix}_${iz}`;
+      const pid = uniqueId(name);
+      const mesh = doc.createMesh(name).addPrimitive(prim);
+      const node = doc.createNode(name).setMesh(mesh).setTranslation([cx, y, cz]);
+      scene.addChild(node);
+      const row = {
+        id: pid, ref: '@thaikit/ground', static: true, cell: `${ix}_${iz}`, ix, iz,
+        position: [+cx.toFixed(4), y, +cz.toFixed(4)], rotation: [0, 0, 0], scale: [1, 1, 1],
+        bounds: { min: [+ax.toFixed(3), y, +az.toFixed(3)], max: [+bx.toFixed(3), y, +bz.toFixed(3)] },
+        physics: { enabled: false, massKg: null }, billboard: 'none', castShadow: true, receiveShadow: true, destructionGroups: [],
+        colliders: [{ name: 'ground', type: 'box', offset: [0, -0.125, 0], scale: [+hw.toFixed(4), 0.125, +hd.toFixed(4)], isTrigger: false }], colliderYaw: 0,
+        source: { actor: name, mesh: null, kit: false },
+      };
+      placements.push(row);
+      node.setExtras({ tk: { kind: 'placement', placement: pid, asset: '@thaikit/ground', cell: row.cell, static: true, billboard: 'none' } });
+      n += 1;
+    }
+  }
+  return n;
+}
+
+function hexToLinear(hex) {
+  const h = String(hex ?? '#8b909b').replace('#', '');
+  const c = [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16) / 255);
+  return c.map((v) => (v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4));
+}
 
 // ---- GLB and JSON helpers ----------------------------------------------------
 
@@ -105,6 +176,22 @@ export function forward([x, y, z, w]) {
 }
 
 // ---- the manifest of what Unreal was given -----------------------------------
+
+/** Optional colliders for Unreal-side meshes built outside the kit (`exports/unreal/ext/manifest.json`, `{ meshes: { <mesh name>: { colliders } } }`). */
+async function readExtManifest(file) {
+  try { return JSON.parse(await fs.readFile(file, 'utf8')).meshes ?? {}; } catch (err) { if (err.code === 'ENOENT') return {}; throw err; }
+}
+
+/**
+ * Optional actor sidecar written from the Unreal editor (`levels/<id>/unreal/actors.json`,
+ * `{ actors: { <actor label>: { mesh, folder, mobility, physics } } }`). Unreal's glTF
+ * exporter names a node after its actor and, once a component carries baked or overridden
+ * materials, names the MESH after the actor too -- so the `SM_TK_*` asset name the kit
+ * lookup keys on is gone from the file. The sidecar puts it back by actor label.
+ */
+async function readActorMap(file) {
+  try { return JSON.parse(await fs.readFile(file, 'utf8')).actors ?? {}; } catch (err) { if (err.code === 'ENOENT') return null; throw err; }
+}
 
 async function readKitManifest(file) {
   try {
@@ -292,7 +379,7 @@ async function adoptLightmaps(doc, json, bin, epic, outDir, notes) {
 /**
  * @returns {{ bake: object, doc: Document, report: object }}
  */
-export async function convertUnrealLevel({ id, doc, json, bin, kit, cellSize = 24, sun = 'live', bboxColliders = true, settings = null, lightmapDir = null }) {
+export async function convertUnrealLevel({ id, doc, json, bin, kit, extMeshes = null, actorMap = null, cellSize = 24, sun = 'live', bboxColliders = true, settings = null, lightmapDir = null, ground = null }) {
   const notes = [];
   const scene = doc.getRoot().listScenes()[0];
   if (!scene) throw new Error('the glTF has no scene');
@@ -313,6 +400,8 @@ export async function convertUnrealLevel({ id, doc, json, bin, kit, cellSize = 2
   const uniqueId = (base) => { let s = slug(base); let n = 2; while (usedIds.has(s)) s = `${slug(base)}-${n++}`; usedIds.add(s); return s; };
   const kitHits = new Map();
   let unknownMeshes = 0;
+  let extHits = 0;
+  let actorHits = 0;
   let orientationWarned = false;
 
   for (const node of [...scene.listChildren()]) {
@@ -364,16 +453,27 @@ export async function convertUnrealLevel({ id, doc, json, bin, kit, cellSize = 2
       continue;
     }
 
+    if (ground && FAR_GROUND.test(name)) {
+      notes.push(`dropped "${name}": --ground lays the pipeline's own tiles instead of one ${Math.round(getBounds(node).max[0] - getBounds(node).min[0])} m plane`);
+      node.dispose(); continue;
+    }
+    if (BACKDROP.test(name)) {
+      notes.push(`dropped backdrop "${name}": the shipped level builds its own sky`);
+      node.dispose(); continue;
+    }
     // A placement. Its transform is the actor's; the mesh stays as exported.
     const t = node.getWorldTranslation();
     const q = node.getWorldRotation();
     const s = node.getWorldScale();
-    const item = kitItemFor(mesh.getName(), kit);
+    // The mesh's asset name: the sidecar by actor label first, then the exporter's own mesh name.
+    const meshName = actorMap?.[name]?.mesh ?? mesh.getName();
+    if (actorMap && actorMap[name]) actorHits += 1;
+    const item = kitItemFor(meshName, kit);
     const dynamic = /^dyn[_-]/i.test(name);
     const billboard = /^bb[_-]/i.test(name) ? 'yaw' : 'none';
     const pid = uniqueId(name);
     const b = getBounds(node);
-    const ref = item ? item.ref : `@unreal/${slug(mesh.getName() || 'mesh')}`;
+    const ref = item ? item.ref : `@unreal/${slug(meshName || 'mesh')}`;
     if (item) kitHits.set(item.asset, (kitHits.get(item.asset) ?? 0) + 1); else unknownMeshes += 1;
 
     // Orientation self-check: a thaikit prop's mesh-local height must match the
@@ -389,9 +489,14 @@ export async function convertUnrealLevel({ id, doc, json, bin, kit, cellSize = 2
     }
 
     let colliders = [];
+    const ext = !item && extMeshes ? extMeshes[meshName] : null;
     if (item?.colliders?.length) {
       colliders = item.colliders.map((c) => ({ name: c.name, type: c.type, offset: c.offset, scale: c.scale, isTrigger: Boolean(c.isTrigger) }));
-    } else if (bboxColliders && !dynamic && billboard === 'none' && !NO_COLLIDER.test(`${name} ${mesh.getName()}`)) {
+    } else if (ext?.colliders) {
+      // An Unreal-side mesh built by scratch/_unreal/build_ext.mjs: its own compound (trunk-only for a tree, so the canopy is not a wall).
+      colliders = ext.colliders.map((c) => ({ name: c.name, type: c.type, offset: c.offset, scale: c.scale, isTrigger: Boolean(c.isTrigger) }));
+      extHits += 1;
+    } else if (bboxColliders && !dynamic && billboard === 'none' && !NO_COLLIDER.test(`${name} ${meshName}`)) {
       // Mesh-local box for an Unreal-side mesh: bounds back in the node's frame.
       const lb = meshLocalBounds(mesh);
       const h = lb.max[1] - lb.min[1];
@@ -414,7 +519,7 @@ export async function convertUnrealLevel({ id, doc, json, bin, kit, cellSize = 2
       billboard, castShadow: true, receiveShadow: true,
       destructionGroups: item?.destructionGroups ?? [],
       colliders, colliderYaw: 0,
-      source: { actor: name, mesh: mesh.getName() || null, kit: Boolean(item) },
+      source: { actor: name, mesh: meshName || null, kit: Boolean(item) },
     };
     placements.push(row);
     node.setExtras({ tk: { kind: 'placement', placement: pid, asset: ref, cell: row.cell, static: isStatic, billboard } });
@@ -434,7 +539,12 @@ export async function convertUnrealLevel({ id, doc, json, bin, kit, cellSize = 2
   }
 
   const base = LevelSettings.parse(settings ?? {});
-  const merged = { ...base, ground: { ...base.ground, enabled: false }, lightmap: { ...base.lightmap, enabled: true } };
+  const groundSetting = ground ? { ...base.ground, enabled: true, y: ground.y, color: ground.color ?? base.ground.color } : { ...base.ground, enabled: false };
+  if (ground) {
+    const n = addGroundTiles({ doc, scene, placements, cellSize, y: ground.y, color: groundSetting.color, margin: groundSetting.margin, uniqueId });
+    notes.push(`ground: ${n} tile(s) at y=${ground.y} under the static placements (margin ${groundSetting.margin} m)`);
+  }
+  const merged = { ...base, ground: groundSetting, lightmap: { ...base.lightmap, enabled: true } };
 
   const bake = {
     id, name: id, settings: merged, cellSize, cell: null,
@@ -445,7 +555,7 @@ export async function convertUnrealLevel({ id, doc, json, bin, kit, cellSize = 2
 
   const report = {
     placements: placements.length, static: placements.filter((p) => p.static).length, dynamic: placements.filter((p) => !p.static).length,
-    kitProps: [...kitHits.entries()].sort((a, b) => b[1] - a[1]).map(([asset, n]) => ({ asset, n })), unknownMeshes,
+    kitProps: [...kitHits.entries()].sort((a, b) => b[1] - a[1]).map(([asset, n]) => ({ asset, n })), unknownMeshes, extColliders: extHits, actorMapHits: actorHits,
     lights: lights.length, spawns: spawns.length, dropped, cells: new Set(placements.filter((p) => p.static).map((p) => p.cell)).size,
     lightmap: bake.source.lightmap, epicSample: epic?.sample ?? null, notes,
   };
@@ -478,6 +588,12 @@ async function main() {
   if (!['live', 'baked'].includes(sun)) return fail('--sun must be live or baked');
   const settings = args.settings ? JSON.parse(await fs.readFile(path.resolve(REPO_ROOT, String(args.settings)), 'utf8')) : null;
   const bboxColliders = !args['no-bbox-colliders'];
+  let ground = null;
+  if (args.ground != null && args.ground !== false) {
+    const [gy, gc] = String(args.ground).split(',');
+    if (!Number.isFinite(Number(gy))) return fail('--ground wants <y>[,<#hex>]');
+    ground = { y: Number(gy), color: gc || null };
+  }
 
   const bytes = new Uint8Array(await fs.readFile(inFile));
   const { json, bin } = parseGlb(bytes);
@@ -488,7 +604,10 @@ async function main() {
 
   const buildDir = buildDirOf(id, null);
   await fs.mkdir(buildDir, { recursive: true });
-  const { bake, doc: out, report, lightmapPng } = await convertUnrealLevel({ id, doc, json, bin, kit, cellSize, sun, bboxColliders, settings, lightmapDir: path.join(buildDir, 'lightmap') });
+  const actorMap = await readActorMap(path.resolve(REPO_ROOT, String(args['actor-map'] ?? path.join(path.dirname(toRepoRelative(inFile)), 'actors.json'))));
+  if (actorMap) log(`actor sidecar: ${Object.keys(actorMap).length} label(s)`);
+  const extMeshes = await readExtManifest(path.resolve(REPO_ROOT, String(args['ext-manifest'] ?? path.join('exports', 'unreal', 'ext', 'manifest.json'))));
+  const { bake, doc: out, report, lightmapPng } = await convertUnrealLevel({ id, doc, json, bin, kit, extMeshes, actorMap, cellSize, sun, bboxColliders, settings, lightmapDir: path.join(buildDir, 'lightmap'), ground });
 
   const rawFile = path.join(buildDir, 'raw.glb');
   await io.write(rawFile, out);

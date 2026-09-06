@@ -486,6 +486,8 @@ export const ManifestExtras = z.object({
        * lamps went into the bake keeps its live lamps and renders unchanged.
        */
       bakedLights: z.boolean().default(false),
+      /** Lamps left out of `lights` because the atlas already carries them (`bake-level --live-lamps`). */
+      bakedOnlyLamps: z.number().int().nonnegative().default(0),
       layout: z.string().default('rgb=indirect+sky,a=moonVisibility'),
     })
     .nullable()

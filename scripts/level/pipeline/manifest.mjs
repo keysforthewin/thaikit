@@ -89,7 +89,28 @@ export function localShapes(p) {
   }));
 }
 
-export function writeManifest({ bake, lodStats, lightmapImage, lightmapStats = null, skyIndices = null, generator }) {
+/**
+ * Which authored lamps ship LIVE. Once every point and spot lamp is baked into the
+ * lightmap, a live copy only matters to dynamic objects -- and every live lamp is a
+ * three light: uniforms every material carries and a loop every dynamic fragment
+ * runs. 180 lamps overflow a low-end GPU's fragment uniform budget outright, so a
+ * baked level keeps the moon plus the `liveLamps` strongest (intensity x nearness
+ * to a spawn), and the rest live on in the lightmap alone. 0 keeps every lamp.
+ */
+export function selectLiveLamps(lights, spawns, liveLamps, bakedLights) {
+  if (!bakedLights || !liveLamps || liveLamps <= 0) return { live: lights, bakedOnly: [] };
+  const anchors = spawns.length ? spawns.map((s) => s.position) : [[0, 0, 0]];
+  const near = (p) => Math.min(...anchors.map((a) => Math.hypot(p[0] - a[0], p[1] - a[1], p[2] - a[2])));
+  const rank = (l) => (l.intensity ?? 0) / (1 + near(l.position ?? [0, 0, 0]) / 20);
+  const lamps = lights.filter((l) => l.type !== 'directional' && l.role !== 'moon').sort((a, b) => rank(b) - rank(a));
+  const keep = new Set(lamps.slice(0, liveLamps).map((l) => l.id ?? l.node));
+  return {
+    live: lights.filter((l) => l.type === 'directional' || l.role === 'moon' || keep.has(l.id ?? l.node)),
+    bakedOnly: lamps.slice(liveLamps).map((l) => l.id ?? l.node),
+  };
+}
+
+export function writeManifest({ bake, lodStats, lightmapImage, lightmapStats = null, skyIndices = null, generator, liveLamps = 0 }) {
   return (doc) => {
     const root = doc.getRoot();
     const scene = root.listScenes()[0];
@@ -102,7 +123,8 @@ export function writeManifest({ bake, lodStats, lightmapImage, lightmapStats = n
     for (const ext of root.listExtensionsUsed()) if (ext.extensionName === 'KHR_lights_punctual') ext.dispose();
     const lightsExt = doc.createExtension(KHRLightsPunctual);
     const lights = [];
-    for (const l of bake.lights) {
+    const selected = selectLiveLamps(bake.lights, bake.spawns ?? [], liveLamps, lightmapStats?.bakedLights != null);
+    for (const l of selected.live) {
       const type = l.type === 'directional' ? 'directional' : l.type === 'spot' ? 'spot' : 'point';
       const light = lightsExt.createLight(l.node).setType(type).setColor(hexToRgb(l.color)).setIntensity(l.intensity);
       if (type !== 'directional' && l.distance) light.setRange(l.distance);
@@ -170,6 +192,7 @@ export function writeManifest({ bake, lodStats, lightmapImage, lightmapStats = n
         // term on static materials without double counting.
         bakedLights: lightmapStats?.bakedLights != null,
         layout: lightmapStats?.bakedLights != null ? 'rgb=indirect+sky+lights,a=moonVisibility' : 'rgb=indirect+sky,a=moonVisibility',
+        bakedOnlyLamps: selected.bakedOnly.length,
       },
       lights,
       ambient: { sky: settings.environment?.hemisphere?.sky ?? '#8797c2', ground: settings.environment?.hemisphere?.ground ?? '#2a2620', intensity: settings.environment?.hemisphere?.intensity ?? 0.35 },
