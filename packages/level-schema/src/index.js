@@ -567,7 +567,10 @@ export const ManifestExtras = z.object({
     })
     .nullable()
     .default(null),
-  colliders: z.array(z.object({ placement: z.string(), shapes: z.array(ColliderShape) })).default([]),
+  // `tags` are the placement's own (the editor's tag field, or an Unreal label
+  // prefix): `ladder` marks a body the player can climb. Defaulted, so a level
+  // baked before tags were carried still parses -- with no ladders.
+  colliders: z.array(z.object({ placement: z.string(), shapes: z.array(ColliderShape), tags: z.array(z.string()).default([]) })).default([]),
   dynamic: z
     .array(
       z.object({
@@ -583,6 +586,7 @@ export const ManifestExtras = z.object({
         receiveShadow: z.boolean().default(true),
         destructionGroups: z.array(z.string()).default([]),
         colliders: z.array(ColliderShape).default([]),
+        tags: z.array(z.string()).default([]),
       }),
     )
     .default([]),

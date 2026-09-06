@@ -8,7 +8,7 @@
  * readiness polled. Reports draw calls and triangles per LOD tier and fails on
  * a frame that is no brighter than the backdrop.
  *
- *   node scripts/level/smoke-level.mjs --level <id> [--size 768] [--cell <ix>_<iz>]
+ *   node scripts/level/smoke-level.mjs --level <id> [--size 768] [--cell <ix>_<iz>] [--quality low|medium|high]
  */
 import fs from 'node:fs/promises';
 import http from 'node:http';
@@ -21,6 +21,7 @@ import { REPO_ROOT, toRepoRelative } from '@thaikit/registry-core';
 
 import { ok, fail, log, parseArgs } from '../lib/out.mjs';
 import { assertCellKey, buildDirOf } from './pipeline/build-dir.mjs';
+import { assertQuality, withQuality } from './pipeline/quality.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const RENDER_DIR = path.resolve(here, '../../render');
@@ -59,7 +60,8 @@ async function main() {
   if (!id) return fail('need --level <id>');
   const size = Number(args.size ?? 768);
   const cell = assertCellKey(args.cell ?? null);
-  const glb = path.join(buildDirOf(id, cell), 'level.glb');
+  const quality = assertQuality(args.quality ?? null);
+  const glb = path.join(buildDirOf(id, cell), withQuality('level.glb', quality));
   await fs.access(glb);
 
   log('bundling harness');
@@ -92,7 +94,7 @@ async function main() {
     }
     if (!result?.ready) throw new Error(`harness never became ready; console: ${errors.slice(-5).join(' | ')}`);
     if (!result.ok) throw new Error(`runtime failed: ${result.error}\n${result.stack ?? ''}`);
-    const shot = path.join(buildDirOf(id, cell), 'smoke.png');
+    const shot = path.join(buildDirOf(id, cell), withQuality('smoke.png', quality));
     await page.screenshot({ path: shot });
     // Coverage, not brightness: a night level is dark by design, but a blank
     // frame (SwiftShader silently failing) has nothing in it at all.

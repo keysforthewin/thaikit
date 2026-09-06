@@ -18,8 +18,14 @@
  *   - keep thaikit's Static Mesh names (`SM_TK_<Prop>`): they are how a placement
  *     finds its `@thai-kit/<prop>` ref, physics and collider compound in
  *     `exports/unreal/manifest.json`;
- *   - name a dynamic actor `dyn_<anything>` and a billboard `bb_<anything>`;
+ *   - name a dynamic actor `dyn_<anything>`, a billboard `bb_<anything>` and a
+ *     climbable ladder `ladder_<anything>` (static, its compound tagged `ladder`);
  *   - put a Camera actor named `spawn_<name>` where a player starts;
+ *   - place ONE `BP_TK_Sky` actor (label `tk_sky`) and run
+ *     `scripts/level/unreal/tk_sky_dump.py`: it writes `levels/<id>/unreal/sky.json`
+ *     (the sky settings, the moon's source angle and browser intensity) and exports
+ *     the sky textures to `levels/<id>/sky/`. The glTF itself carries no sky -- the
+ *     exporter is told not to, and the runtime builds its own dome from these;
  *   - if Unreal 5.6+ exported lightmaps (`EPIC_lightmap_textures`), they are
  *     adopted: baked into TEXCOORD_1 and one PNG atlas for `--baker unreal`.
  *     Otherwise `bake-level.mjs --baker blender` re-bakes the same geometry and
@@ -29,6 +35,7 @@
  *   node scripts/level/import-unreal-level.mjs --level <id> [--in levels/<id>/unreal/level.glb]
  *        [--manifest exports/unreal/manifest.json] [--cell-size 24] [--sun live|baked]
  *        [--settings <json>] [--no-bbox-colliders] [--ground <y>[,<#hex>]] [--light-scale <f>]
+ *        [--sky-map levels/<id>/unreal/sky.json | --no-sky-map]
  * Then:
  *   node scripts/level/bake-level.mjs --level <id> --baker unreal      # adopt Unreal's lightmap
  *   node scripts/level/bake-level.mjs --level <id> --baker blender     # or re-bake in Cycles
@@ -41,8 +48,8 @@ import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import { flatten, getBounds } from '@gltf-transform/functions';
 import sharp from 'sharp';
 
-import { REPO_ROOT, toRepoRelative } from '@thaikit/registry-core';
-import { LevelSettings } from '@thai-kit/level-schema';
+import { REPO_ROOT, levelDir, toRepoRelative } from '@thaikit/registry-core';
+import { CUBE_FACES, LevelSettings, SkySettings } from '@thai-kit/level-schema';
 
 import { ok, fail, parseArgs } from '../lib/out.mjs';
 import { buildDirOf } from './pipeline/build-dir.mjs';
@@ -50,12 +57,22 @@ import { buildDirOf } from './pipeline/build-dir.mjs';
 const VERSION = '0.1.0';
 const EPIC_LIGHTMAP = 'EPIC_lightmap_textures';
 const DEFAULT_SHADOW = { mapSize: 2048, extent: 60, bias: -0.0005, normalBias: 0.02, softDeg: 1.5 };
-/** Meshes that are dressing, never something to stand on. */
-/** Editor-side backdrops that must not ship: the runtime builds its own sky dome (`buildSky`). */
-const BACKDROP = /^(sky|skydome|skysphere|hdri)/i;
+/**
+ * Editor-side backdrops that must not ship: the runtime builds its own sky dome
+ * (`buildSky`). `tk_sky` is thaikit's own `BP_TK_Sky` actor -- its preview
+ * sphere is a picture of the settings the sidecar carries, not geometry.
+ */
+const BACKDROP = /^(sky|skydome|skysphere|hdri|tk[_-]?sky|bp[_-]?tk[_-]?sky)/i;
 /** A single huge far-ground plane laid in Unreal; replaced by cell tiles when --ground is given. */
 const FAR_GROUND = /^far[_-]?ground/i;
-const NO_COLLIDER = /cable|wire|rain|fog|sky|decal|puddle|particle|niagara|glow|billboard|light|lamp_cone/i;
+/**
+ * Unreal-side meshes that are dressing, never something to stand on. Matched as
+ * whole words between separators: a bare `rain` used to catch SM_EXT_RainTree
+ * and every drain, `sky` a skylight, `light` anything lit.
+ */
+const NO_COLLIDER = /(?:^|[_\s-])(?:cable|wire|rain|fog|sky|skydome|decal|puddle|particle|niagara|glow|billboard|light|lamp_cone)(?=$|[_\s-]|\d)/i;
+/** The tracked half of the ext collider table -- see readExtManifest. */
+const EXT_COLLIDERS_TRACKED = path.join(REPO_ROOT, 'scripts', 'level', 'unreal', 'ext-colliders.json');
 
 const log = (msg) => process.stderr.write(`${msg}\n`);
 export const slug = (s) => String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'x';
@@ -177,9 +194,19 @@ export function forward([x, y, z, w]) {
 
 // ---- the manifest of what Unreal was given -----------------------------------
 
-/** Optional colliders for Unreal-side meshes built outside the kit (`exports/unreal/ext/manifest.json`, `{ meshes: { <mesh name>: { colliders } } }`). */
-async function readExtManifest(file) {
-  try { return JSON.parse(await fs.readFile(file, 'utf8')).meshes ?? {}; } catch (err) { if (err.code === 'ENOENT') return {}; throw err; }
+/**
+ * Colliders for Unreal-side meshes built outside the kit, `{ meshes: { <mesh
+ * name>: { colliders } } }`. Two sources, the exports one winning per mesh:
+ * `exports/unreal/ext/manifest.json` (what the ext builders write beside their
+ * GLBs) over `scripts/level/unreal/ext-colliders.json` (TRACKED). The exports
+ * tree is a build product -- a full "export to Unreal" replaced it whole and took
+ * `ext/` with it, after which every tree in bangkoksoi imported as a bounding
+ * box the size of its canopy -- so the table the level actually depends on lives
+ * in git and the build product is only ever an override.
+ */
+async function readExtManifest(file, tracked = EXT_COLLIDERS_TRACKED) {
+  const read = async (f) => { try { return JSON.parse(await fs.readFile(f, 'utf8')).meshes ?? {}; } catch (err) { if (err.code === 'ENOENT') return {}; throw err; } };
+  return { ...(await read(tracked)), ...(await read(file)) };
 }
 
 /**
@@ -191,6 +218,44 @@ async function readExtManifest(file) {
  */
 async function readActorMap(file) {
   try { return JSON.parse(await fs.readFile(file, 'utf8')).actors ?? {}; } catch (err) { if (err.code === 'ENOENT') return null; throw err; }
+}
+
+/**
+ * Optional sky sidecar written from the Unreal editor by
+ * `scripts/level/unreal/tk_sky_dump.py` (`levels/<id>/unreal/sky.json`):
+ * `{ sky: <SkySettings with slot filenames>, moon: { sourceAngleDeg, intensityOverride, ... } }`.
+ * The glTF carries no sky at all -- Unreal's exporter is told to skip sky spheres
+ * and HDRI backdrops -- so this is the ONLY way the panorama, the cloud map and the
+ * star settings authored on `BP_TK_Sky` reach the bake. The images it names live in
+ * `levels/<id>/sky/`, where the editor route keeps its own sidecars, so
+ * `prepareSkyImages` reads both routes the same way.
+ */
+export async function readSkySidecar(file) {
+  try { return JSON.parse(await fs.readFile(file, 'utf8')); } catch (err) { if (err.code === 'ENOENT') return null; throw err; }
+}
+
+/**
+ * The sidecar's `sky` block through the schema, with every referenced image
+ * checked on disk. A missing image is NOT fatal -- `prepareSkyImages` degrades a
+ * layer whose file is absent -- but it is the fault that ships a level with no
+ * sky and a log line nobody reads, so it is a WARNING by name, and the report
+ * carries what was found.
+ */
+export async function skySettingsFromSidecar(sidecar, id, notes, { fileExists = null } = {}) {
+  const sky = SkySettings.parse(sidecar?.sky ?? {});
+  const exists = fileExists ?? (async (name) => {
+    try { await fs.access(path.join(levelDir(id), 'sky', path.basename(name))); return true; } catch { return false; }
+  });
+  const wanted = [];
+  if (sky.base.mode === 'panoramic' && sky.base.panorama) wanted.push(['base.panorama', sky.base.panorama]);
+  if (sky.base.mode === 'cube') for (const f of CUBE_FACES) { if (sky.base.faces?.[f]) wanted.push([`base.faces.${f}`, sky.base.faces[f]]); else notes.push(`WARNING sky.json names cube mode but no ${f} face: the base layer will not ship`); }
+  if (sky.clouds.file) wanted.push(['clouds.file', sky.clouds.file]);
+  const found = {};
+  for (const [slot, name] of wanted) {
+    found[slot] = await exists(name);
+    if (!found[slot]) notes.push(`WARNING sky.json names ${slot} = ${name} but levels/${id}/sky/${path.basename(name)} is not on disk: that layer will NOT ship. Re-run tk_sky_dump.py in the editor.`);
+  }
+  return { sky, found };
 }
 
 async function readKitManifest(file) {
@@ -379,7 +444,7 @@ async function adoptLightmaps(doc, json, bin, epic, outDir, notes) {
 /**
  * @returns {{ bake: object, doc: Document, report: object }}
  */
-export async function convertUnrealLevel({ id, doc, json, bin, kit, extMeshes = null, actorMap = null, cellSize = 24, sun = 'live', bboxColliders = true, settings = null, lightmapDir = null, ground = null, lightScale = 1 }) {
+export async function convertUnrealLevel({ id, doc, json, bin, kit, extMeshes = null, actorMap = null, skyMap = null, cellSize = 24, sun = 'live', bboxColliders = true, settings = null, lightmapDir = null, ground = null, lightScale = 1, skyFileExists = null }) {
   const notes = [];
   const scene = doc.getRoot().listScenes()[0];
   if (!scene) throw new Error('the glTF has no scene');
@@ -400,9 +465,11 @@ export async function convertUnrealLevel({ id, doc, json, bin, kit, extMeshes = 
   const uniqueId = (base) => { let s = slug(base); let n = 2; while (usedIds.has(s)) s = `${slug(base)}-${n++}`; usedIds.add(s); return s; };
   const kitHits = new Map();
   let unknownMeshes = 0;
+  let ladders = 0;
   let extHits = 0;
   let actorHits = 0;
-  let orientationWarned = false;
+  const orientationWarned = new Set();
+  const bboxFallback = new Map();
 
   for (const node of [...scene.listChildren()]) {
     const name = node.getName() || 'node';
@@ -420,7 +487,17 @@ export async function convertUnrealLevel({ id, doc, json, bin, kit, extMeshes = 
       if (type === 'directional') {
         if (sun === 'baked') { notes.push(`directional light ${name} dropped: --sun baked (its light is in the Unreal lightmap)`); scene.removeChild(node); continue; }
         const isMoon = !lights.some((l) => l.role === 'moon');
-        lights.push({ id: lid, node: `light_${lid}`, type, role: isMoon ? 'moon' : null, color: rgbToHex(light.getColor()), intensity: light.getIntensity() * lightScale, position: [t[0], Math.max(t[1], 20), t[2]].map((v) => +v.toFixed(4)), direction: dir, castShadow: isMoon, shadow: isMoon ? { ...DEFAULT_SHADOW } : null, distance: null, angle: null, penumbra: null, decay: null });
+        // The moon's brightness in three's units is authored on BP_TK_Sky
+        // (`MoonIntensity`), because `--light-scale` is tuned for the candela
+        // lamps and applied to a lux-valued directional it left bangkoksoi's moon
+        // at 0.125 against thepurge's 0.6. 0 (or no sidecar) keeps lux * scale.
+        // Its soft-shadow width is the light's own `light_source_angle`, which
+        // is the Cycles sun angle by another name -- glTF has no field for it.
+        const override = isMoon ? Number(skyMap?.moon?.intensityOverride ?? 0) : 0;
+        const intensity = override > 0 ? override : light.getIntensity() * lightScale;
+        const softDeg = isMoon && Number.isFinite(Number(skyMap?.moon?.sourceAngleDeg)) ? Math.min(45, Math.max(0, Number(skyMap.moon.sourceAngleDeg))) : DEFAULT_SHADOW.softDeg;
+        if (isMoon) notes.push(`moon ${name}: intensity ${+intensity.toFixed(4)} (${override > 0 ? 'BP_TK_Sky MoonIntensity override' : `${light.getIntensity()} lux x light-scale ${lightScale}`}), softDeg ${softDeg}${skyMap?.moon?.sourceAngleDeg != null ? ' (light_source_angle)' : ' (default)'}`);
+        lights.push({ id: lid, node: `light_${lid}`, type, role: isMoon ? 'moon' : null, color: rgbToHex(light.getColor()), intensity: +intensity.toFixed(6), position: [t[0], Math.max(t[1], 20), t[2]].map((v) => +v.toFixed(4)), direction: dir, castShadow: isMoon, shadow: isMoon ? { ...DEFAULT_SHADOW, softDeg } : null, distance: null, angle: null, penumbra: null, decay: null });
       } else {
         const outer = type === 'spot' ? light.getOuterConeAngle() : null;
         const inner = type === 'spot' ? light.getInnerConeAngle() : null;
@@ -471,26 +548,39 @@ export async function convertUnrealLevel({ id, doc, json, bin, kit, extMeshes = 
     const item = kitItemFor(meshName, kit);
     const dynamic = /^dyn[_-]/i.test(name);
     const billboard = /^bb[_-]/i.test(name) ? 'yaw' : 'none';
+    // A ladder is an ordinary static body whose compound carries the tag; the
+    // runtime lists it and the game's controller does the climbing.
+    const tags = /^ladder[_-]/i.test(name) ? ['ladder'] : [];
+    if (tags.length) ladders += 1;
     const pid = uniqueId(name);
     const b = getBounds(node);
     const ref = item ? item.ref : `@unreal/${slug(meshName || 'mesh')}`;
     if (item) kitHits.set(item.asset, (kitHits.get(item.asset) ?? 0) + 1); else unknownMeshes += 1;
 
-    // Orientation self-check: a thaikit prop's mesh-local height must match the
+    // Orientation self-check: a thaikit prop's MESH-LOCAL height must match the
     // kit's `size.h`. If Interchange or the exporter swapped axes on the round
-    // trip, every compound would stand sideways -- say so once, loudly.
-    if (item && item.size?.h && !orientationWarned) {
-      const localH = (b.max[1] - b.min[1]) / (Math.abs(s[1]) || 1);
+    // trip, every compound would stand sideways -- say so once per asset. It is
+    // measured on the mesh, not the placed bounds: a wall-mounted light lying
+    // on its back used to trip it, and the one warning it fired masked any
+    // real one.
+    if (item && item.size?.h && !orientationWarned.has(item.asset)) {
+      const lb = meshLocalBounds(mesh);
+      const localH = lb.max[1] - lb.min[1];
       const ratio = localH / item.size.h;
       if (ratio < 0.6 || ratio > 1.6) {
-        notes.push(`WARNING ${mesh.getName()} is ${localH.toFixed(2)} m tall in the export but ${item.size.h} m in the kit (ratio ${ratio.toFixed(2)}): the Unreal round trip changed the axes or scale, and every compound placed from the manifest will be wrong. Check the exporter's uniform scale (0.01) and the import's axis settings.`);
-        orientationWarned = true;
+        notes.push(`WARNING ${item.asset} is ${localH.toFixed(2)} m tall in the export but ${item.size.h} m in the kit (ratio ${ratio.toFixed(2)}): the Unreal round trip changed the axes or scale, or the level places an older import of the mesh, and its compound will be wrong. Check the exporter's uniform scale (0.01), the import's axis settings, and re-import the kit GLB.`);
+        orientationWarned.add(item.asset);
       }
     }
 
     let colliders = [];
     const ext = !item && extMeshes ? extMeshes[meshName] : null;
-    if (item?.colliders?.length) {
+    if (billboard !== 'none') {
+      // A billboard turns every frame and its compound cannot follow: the kit's
+      // thin box for a skyline card would ship as a fixed 37 x 83 m wall at
+      // the authored yaw. The skill's contract is "dynamic, no collider".
+      colliders = [];
+    } else if (item?.colliders?.length) {
       colliders = item.colliders.map((c) => ({ name: c.name, type: c.type, offset: c.offset, scale: c.scale, isTrigger: Boolean(c.isTrigger) }));
     } else if (ext?.colliders) {
       // An Unreal-side mesh built by scratch/_unreal/build_ext.mjs: its own compound (trunk-only for a tree, so the canopy is not a wall).
@@ -498,10 +588,14 @@ export async function convertUnrealLevel({ id, doc, json, bin, kit, extMeshes = 
       extHits += 1;
     } else if (bboxColliders && !dynamic && billboard === 'none' && !NO_COLLIDER.test(`${name} ${meshName}`)) {
       // Mesh-local box for an Unreal-side mesh: bounds back in the node's frame.
+      // A mesh NAMED as a cylinder (Unreal's basic shape, a column) ships as
+      // one: boxed, a 4.8 m round column collided as a 4.8 m square.
       const lb = meshLocalBounds(mesh);
       const h = lb.max[1] - lb.min[1];
       if (h > 0.05 && lb.max[0] - lb.min[0] > 0.05 && lb.max[2] - lb.min[2] > 0.05) {
-        colliders = [{ name: 'bbox', type: 'box', offset: [0, 1, 2].map((i) => +((lb.min[i] + lb.max[i]) / 2).toFixed(4)), scale: [0, 1, 2].map((i) => +Math.max(0.01, (lb.max[i] - lb.min[i]) / 2).toFixed(4)), isTrigger: false }];
+        const round = /cylinder/i.test(`${name} ${meshName}`);
+        colliders = [{ name: 'bbox', type: round ? 'cylinder' : 'box', offset: [0, 1, 2].map((i) => +((lb.min[i] + lb.max[i]) / 2).toFixed(4)), scale: [0, 1, 2].map((i) => +Math.max(0.01, (lb.max[i] - lb.min[i]) / 2).toFixed(4)), isTrigger: false }];
+        bboxFallback.set(meshName || name, (bboxFallback.get(meshName || name) ?? 0) + 1);
       }
     }
 
@@ -518,7 +612,7 @@ export async function convertUnrealLevel({ id, doc, json, bin, kit, extMeshes = 
       physics: { enabled: dynamic && Boolean(item?.physics?.enabled ?? true), massKg: item?.physics?.massKg ?? null },
       billboard, castShadow: true, receiveShadow: true,
       destructionGroups: item?.destructionGroups ?? [],
-      colliders, colliderYaw: 0,
+      colliders, colliderYaw: 0, tags,
       source: { actor: name, mesh: meshName || null, kit: Boolean(item) },
     };
     placements.push(row);
@@ -526,6 +620,12 @@ export async function convertUnrealLevel({ id, doc, json, bin, kit, extMeshes = 
     // The pipeline wants COLOR_0 always applied; Unreal's exporter writes it only
     // when asked, and normaliseAttributes fills white where it is missing.
   }
+
+  // An ext mesh (built by scratch/_unreal) that fell back to its bounding box
+  // has no entry in either collider table. For a tree that is a canopy-sized
+  // wall, and it is exactly what a wiped exports/unreal/ext/ looks like.
+  const extFallback = [...bboxFallback.entries()].filter(([m]) => /^SM_EXT_/i.test(m));
+  if (extFallback.length) notes.push(`WARNING ${extFallback.reduce((n, [, c]) => n + c, 0)} placement(s) of ${extFallback.length} SM_EXT_ mesh(es) have no ext collider entry and took a BOUNDING-BOX collider: ${extFallback.map(([m, c]) => `${m} x${c}`).join(', ')}. Add them to scripts/level/unreal/ext-colliders.json (a plant gets its trunk or pot only: its canopy is otherwise a wall).`);
 
   if (!lights.some((l) => l.role === 'moon') && sun !== 'baked') {
     notes.push('no directional light in the export; adding a dim default moon so static geometry is not black without a lightmap');
@@ -544,7 +644,20 @@ export async function convertUnrealLevel({ id, doc, json, bin, kit, extMeshes = 
     const n = addGroundTiles({ doc, scene, placements, cellSize, y: ground.y, color: groundSetting.color, margin: groundSetting.margin, uniqueId });
     notes.push(`ground: ${n} tile(s) at y=${ground.y} under the static placements (margin ${groundSetting.margin} m)`);
   }
-  const merged = { ...base, ground: groundSetting, lightmap: { ...base.lightmap, enabled: true } };
+  let skyReport = { source: settings?.sky ? 'settings' : 'none', base: null, clouds: null, stars: null, found: {} };
+  let skySetting = base.sky;
+  if (skyMap) {
+    // The sidecar is what the level artist edited in Unreal, so it wins over a
+    // `--settings` file that may be stale.
+    const { sky, found } = await skySettingsFromSidecar(skyMap, id, notes, { fileExists: skyFileExists });
+    skySetting = sky;
+    if (settings?.sky) notes.push('settings.sky from --settings is overridden by the sky sidecar (sky.json)');
+    skyReport = { source: 'sidecar', found, base: sky.enabled ? sky.base.mode : 'none', clouds: sky.enabled && sky.clouds.file ? sky.clouds.file : null, stars: sky.enabled && sky.stars.enabled };
+    notes.push(sky.enabled ? `sky from sidecar: base ${sky.base.mode}${sky.base.panorama ? ` (${sky.base.panorama})` : ''}, clouds ${sky.clouds.file ?? 'none'}, stars ${sky.stars.enabled ? 'on' : 'off'}` : 'sky sidecar present but sky.enabled is false: the level ships with no sky');
+  } else {
+    notes.push('no sky sidecar (levels/<id>/unreal/sky.json): the level ships with no sky unless --settings carries one. Place BP_TK_Sky in Unreal and run tk_sky_dump.py.');
+  }
+  const merged = { ...base, sky: skySetting, ground: groundSetting, lightmap: { ...base.lightmap, enabled: true } };
 
   const bake = {
     id, name: id, settings: merged, cellSize, cell: null,
@@ -555,9 +668,10 @@ export async function convertUnrealLevel({ id, doc, json, bin, kit, extMeshes = 
 
   const report = {
     placements: placements.length, static: placements.filter((p) => p.static).length, dynamic: placements.filter((p) => !p.static).length,
-    kitProps: [...kitHits.entries()].sort((a, b) => b[1] - a[1]).map(([asset, n]) => ({ asset, n })), unknownMeshes, extColliders: extHits, actorMapHits: actorHits,
+    kitProps: [...kitHits.entries()].sort((a, b) => b[1] - a[1]).map(([asset, n]) => ({ asset, n })), unknownMeshes, ladders, extColliders: extHits, actorMapHits: actorHits,
+    bboxFallback: Object.fromEntries(bboxFallback),
     lights: lights.length, spawns: spawns.length, dropped, cells: new Set(placements.filter((p) => p.static).map((p) => p.cell)).size,
-    lightmap: bake.source.lightmap, epicSample: epic?.sample ?? null, lightScale, notes,
+    lightmap: bake.source.lightmap, epicSample: epic?.sample ?? null, lightScale, sky: skyReport, notes,
   };
   return { bake, doc, report, lightmapPng };
 }
@@ -612,17 +726,20 @@ async function main() {
   await fs.mkdir(buildDir, { recursive: true });
   const actorMap = await readActorMap(path.resolve(REPO_ROOT, String(args['actor-map'] ?? path.join(path.dirname(toRepoRelative(inFile)), 'actors.json'))));
   if (actorMap) log(`actor sidecar: ${Object.keys(actorMap).length} label(s)`);
+  const skyMapFile = path.resolve(REPO_ROOT, String(args['sky-map'] ?? path.join(path.dirname(toRepoRelative(inFile)), 'sky.json')));
+  const skyMap = args['no-sky-map'] ? null : await readSkySidecar(skyMapFile);
+  if (skyMap) log(`sky sidecar: ${toRepoRelative(skyMapFile)} (${skyMap.generatedAt ?? 'undated'})`);
   const extMeshes = await readExtManifest(path.resolve(REPO_ROOT, String(args['ext-manifest'] ?? path.join('exports', 'unreal', 'ext', 'manifest.json'))));
-  const { bake, doc: out, report, lightmapPng } = await convertUnrealLevel({ id, doc, json, bin, kit, extMeshes, actorMap, cellSize, sun, bboxColliders, settings, lightmapDir: path.join(buildDir, 'lightmap'), ground, lightScale });
+  const { bake, doc: out, report, lightmapPng } = await convertUnrealLevel({ id, doc, json, bin, kit, extMeshes, actorMap, skyMap, cellSize, sun, bboxColliders, settings, lightmapDir: path.join(buildDir, 'lightmap'), ground, lightScale });
 
   const rawFile = path.join(buildDir, 'raw.glb');
   await io.write(rawFile, out);
   await fs.writeFile(path.join(buildDir, 'unreal-import.json'), JSON.stringify({ ...report, in: toRepoRelative(inFile), raw: toRepoRelative(rawFile), generatedAt: new Date().toISOString() }, null, 2));
   for (const n of report.notes) log(n);
-  log(`${report.placements} placement(s) (${report.static} static in ${report.cells} cell(s), ${report.dynamic} dynamic), ${report.kitProps.reduce((n, k) => n + k.n, 0)} from the kit, ${report.unknownMeshes} Unreal-side mesh(es), ${report.lights} light(s), ${report.spawns} spawn(s)${report.dropped.length ? `, ${report.dropped.length} empty node(s) dropped` : ''}`);
+  log(`${report.placements} placement(s) (${report.static} static in ${report.cells} cell(s), ${report.dynamic} dynamic), ${report.kitProps.reduce((n, k) => n + k.n, 0)} from the kit, ${report.unknownMeshes} Unreal-side mesh(es), ${report.ladders ? `${report.ladders} ladder(s), ` : ''}${report.lights} light(s), ${report.spawns} spawn(s)${report.dropped.length ? `, ${report.dropped.length} empty node(s) dropped` : ''}`);
   if (lightScale !== 1) log(`lights scaled by ${lightScale} (--light-scale): Unreal candela -> three at exposure 1`);
   log(`lightmap: ${report.lightmap}${lightmapPng ? ' -> bake with --baker unreal' : ' -> bake with --baker blender to light it in Cycles'}`);
-  return ok({ level: id, raw: toRepoRelative(rawFile), report: toRepoRelative(path.join(buildDir, 'unreal-import.json')), placements: report.placements, lights: report.lights, spawns: report.spawns, lightmap: report.lightmap, nextBaker: lightmapPng ? 'unreal' : 'blender' });
+  return ok({ level: id, raw: toRepoRelative(rawFile), report: toRepoRelative(path.join(buildDir, 'unreal-import.json')), placements: report.placements, lights: report.lights, spawns: report.spawns, lightmap: report.lightmap, sky: report.sky, nextBaker: lightmapPng ? 'unreal' : 'blender' });
 }
 
 if (process.argv[1] && import.meta.url === new URL(`file://${path.resolve(process.argv[1])}`).href) {

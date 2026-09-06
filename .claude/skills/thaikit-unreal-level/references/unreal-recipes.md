@@ -180,7 +180,10 @@ Shop interior: `RectLight`, source 200 x 60 cm, 1000 cd, 6000 K, just inside the
 glazing pointing OUT and down 20 deg, `attenuation_radius` 1200, shadows off.
 Batten: `RectLight` 120 x 8, 250 cd, 6500 K, under the canopy. Bulb: `PointLight`
 120 cd, 2700 K, `source_radius` 3, `attenuation_radius` 600. Moon:
-`DirectionalLight` 1 lux, 8000 K, pitch -55, shadows on, `light_shaft_bloom` off.
+`DirectionalLight`, 8000 K, shadows on, `light_shaft_bloom` off, `light_source_angle` 6 (= thaikit `softDeg`);
+the rotator for a thaikit direction `[x,y,z]` is `pitch = asin(y)`, `yaw = atan2(z, x)` --
+thepurge's moon is pitch -39.85, yaw 134.6. Its lux is Unreal's own calibration; the browser
+brightness is `BP_TK_Sky`'s Moon Intensity.
 `SkyLight` real-time capture off, `intensity` 0.1, colour (0.35, 0.4, 0.7).
 
 Emissive boost on a sign: on the imported material instance
@@ -247,9 +250,15 @@ s.override_motion_blur_amount = True;    s.motion_blur_amount = 0.2
 pp.settings = s
 ```
 
-Sky: no `SkyAtmosphere` daylight. A dark `SM_SkySphere` with an emissive gradient
-(horizon `#3A2410`, zenith `#05060F`), or a night HDRI on a sky dome, plus the
-imposters. Keep the `SkyLight` weak; the street is lit by its lamps.
+Sky: no `SkyAtmosphere` daylight. Place ONE `BP_TK_Sky` (`/Game/ThaiKit/Sky/BP_TK_Sky`,
+label `tk_sky`, folder `Sky`, at (0, 0, -20000) scale 1400): it previews a night panorama
+picked in its Details panel (`Panorama`, or six `Cube*` faces) and holds thaikit's
+cloud/star/nadir settings and the Moon Intensity that `scripts/level/unreal/tk_sky_dump.py`
+exports for the bake. thepurge's plate is `T_ThePurge_Panorama` with `T_ThePurge_Clouds`,
+nadir cut `#75724b` 0..3, stars density 2 / brightness 0.5. `M_TK_SkyPanorama`'s
+`PreviewBoost` (128 = 1/`--light-scale`) is what makes an emissive of 0..1 visible under
+the level's exposure; it is preview only. Keep the `SkyLight` weak; the street is lit by
+its lamps.
 
 ## Billboard Blueprint for imposters
 

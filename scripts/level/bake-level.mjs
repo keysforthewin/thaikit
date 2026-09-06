@@ -12,7 +12,14 @@
  * result is one JSON line on stdout.
  *
  * Usage:
- *   node scripts/level/bake-level.mjs --level <id> [--baker blender|blender-host|unreal|none] [--cpu] [--samples N] [--noise-threshold T] [--resume-from 2|3|4] [--cell <ix>_<iz>]
+ *   node scripts/level/bake-level.mjs --level <id> [--quality low|medium|high] [--baker blender|blender-host|unreal|none] [--cpu] [--samples N] [--noise-threshold T] [--resume-from 2|3|4] [--cell <ix>_<iz>]
+ *
+ * `--quality` is a preset AND a name: `low` is `--baker none` (geometry only,
+ * ~2 min), `medium` is Cycles at 2048²/16 (~10 min), `high` is Cycles at the
+ * level's own lightmap settings (hours); each delivers `<id>_<quality>.glb`,
+ * builds `build/level_<quality>.glb` and bakes into `build/lightmap_<quality>/`
+ * so the three coexist (see pipeline/quality.mjs). Explicit flags win over the
+ * preset. Without it every name is as before.
  *
  * `--cell` is the QUICK EXPORT: the editor has already cut the raw scene down
  * to one cell (see buildExportScene), and this run builds it under
@@ -52,6 +59,7 @@ import { prepareSkyImages, addSkyTextures } from './pipeline/sky.mjs';
 import { bakeWithBlender } from './bakers/blender-cycles.mjs';
 import { findKtx, KTX_INSTALL_HINT } from './pipeline/ktx2.mjs';
 import { assertCellKey, buildDirOf, exportNameOf } from './pipeline/build-dir.mjs';
+import { QUALITY_PRESETS, assertQuality, textureBudgetFor, withQuality } from './pipeline/quality.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const VERSION = '0.1.0';
@@ -89,19 +97,34 @@ async function main() {
   const args = parseArgs();
   const id = String(args.level ?? '');
   if (!id) return fail('need --level <id>');
-  const baker = String(args.baker ?? 'blender');
+  const quality = assertQuality(args.quality ?? null);
+  const preset = quality ? QUALITY_PRESETS[quality] : { baker: 'blender', lightmap: {} };
+  const baker = String(args.baker ?? preset.baker);
   if (!BAKERS.includes(baker)) return fail(`--baker must be one of ${BAKERS.join('|')}, got ${baker}`);
   const cpu = Boolean(args.cpu);
   const resumeFrom = Number(args['resume-from'] ?? 1);
-  // Test-time overrides for the lightmap; the level's own settings otherwise.
-  const lightmapOverride = { size: args['lightmap-size'] ? Number(args['lightmap-size']) : null, samples: args.samples ? Number(args.samples) : null, noiseThreshold: args['noise-threshold'] != null ? Number(args['noise-threshold']) : null };
+  // Overrides for the lightmap -- explicit flags first, then the quality
+  // preset; the level's own settings otherwise.
+  const lightmapOverride = {
+    size: args['lightmap-size'] ? Number(args['lightmap-size']) : preset.lightmap.size ?? null,
+    samples: args.samples ? Number(args.samples) : preset.lightmap.samples ?? null,
+    noiseThreshold: args['noise-threshold'] != null ? Number(args['noise-threshold']) : preset.lightmap.noiseThreshold ?? null,
+  };
+  if (quality) progress('quality', `${quality}: baker ${baker}${lightmapOverride.size ? `, lightmap up to ${lightmapOverride.size}²` : ''}${lightmapOverride.samples ? ` / ${lightmapOverride.samples} samples` : ''}${baker === 'none' ? ' (no lightmap)' : ''}; delivers ${exportNameOf(id, assertCellKey(args.cell ?? null), quality)}`);
   // Live lamps shipped beside the lightmap (0 = all). See selectLiveLamps in pipeline/manifest.mjs.
   const liveLamps = Number(args['live-lamps'] ?? 0);
   const cell = assertCellKey(args.cell ?? null);
   const buildDir = buildDirOf(id, cell);
   const rawFile = path.join(buildDir, 'raw.glb');
-  const stage = (n) => path.join(buildDir, `stage${n}.glb`);
+  // Stage 1 does not depend on the tier; stages 2 and 3 carry the tier's
+  // lightmap (or its absence), so their checkpoints are stamped -- a
+  // `--resume-from 3` for `high` must never pick up `low`'s unlit stage 2.
+  const stage = (n) => path.join(buildDir, n === 1 ? 'stage1.glb' : withQuality(`stage${n}.glb`, quality));
+  const lodFile = path.join(buildDir, withQuality('lod.json', quality));
   const bakeFile = path.join(buildDir, 'bake.json');
+  // Where a Cycles bake writes its atlas; the unreal ADOPT path reads the
+  // importer's own build/lightmap/ regardless of tier.
+  const lightmapDir = path.join(buildDir, withQuality('lightmap', quality));
 
   const ktx = await findKtx();
   if (!ktx) throw new Error(KTX_INSTALL_HINT);
@@ -154,7 +177,8 @@ async function main() {
   // folds them into the GLB. Resampling a panorama into six faces costs 10-30 s,
   // so it happens once, here, before the bake that now depends on it.
   const skySettings = bake.settings?.sky ?? null;
-  const skyImages = await prepareSkyImages(id, skySettings, { onProgress: (m) => progress('sky', m) });
+  const budget = textureBudgetFor(bake.settings?.textures ?? {}, preset);
+  const skyImages = await prepareSkyImages(id, skySettings, { onProgress: (m) => progress('sky', m), ...(budget.maxFace ? { maxFace: budget.maxFace } : {}) });
   for (const note of skyImages.notes) progress('sky', note);
 
   // ---- stage 2: lightmap -----------------------------------------------------
@@ -177,19 +201,20 @@ async function main() {
       if (missing) throw new Error(`${missing} of ${withUv.prims} static primitive(s) lost TEXCOORD_1 before the lightmap could be adopted`);
       progress('lightmap', `adopted Unreal's lightmap: ${lightmapStats.textures} texture(s) in a ${lightmapStats.atlas?.join('x')} atlas, ${lightmapStats.remappedPrimitives} primitive(s) remapped${lightmapStats.decode ? ' -- WARNING undecoded coefficient factors, check brightness' : ''}`);
     } else if (baker !== 'none' && bake.settings?.lightmap?.enabled !== false) {
-      const result = await bakeWithBlender({ io, doc, bake, skyImages, outDir: path.join(buildDir, 'lightmap'), onProgress: (m) => progress('lightmap', m), host: baker === 'blender-host', cpu, signal: cancel.signal });
+      const result = await bakeWithBlender({ io, doc, bake, skyImages, outDir: lightmapDir, onProgress: (m) => progress('lightmap', m), host: baker === 'blender-host', cpu, signal: cancel.signal });
       doc = result.doc;
       lightmapPng = result.lightmapPng;
       lightmapStats = result.lightmapStats;
-      if (lightmapStats) await fs.writeFile(path.join(buildDir, 'lightmap', 'lightmap.json'), JSON.stringify(lightmapStats));
-      await fs.writeFile(path.join(buildDir, 'lightmap', 'lightmap.png'), lightmapPng);
+      if (lightmapStats) await fs.writeFile(path.join(lightmapDir, 'lightmap.json'), JSON.stringify(lightmapStats));
+      await fs.writeFile(path.join(lightmapDir, 'lightmap.png'), lightmapPng);
     } else {
       progress('lightmap', `skipped (${baker === 'none' ? 'baker: none' : 'lightmap disabled in the level settings'}); static geometry will be lit by the real-time moon`);
     }
     await io.write(stage(2), doc);
   } else {
-    try { lightmapPng = await fs.readFile(path.join(buildDir, 'lightmap', 'lightmap.png')); } catch { lightmapPng = null; }
-    try { lightmapStats = JSON.parse(await fs.readFile(path.join(buildDir, 'lightmap', 'lightmap.json'), 'utf8')); } catch { lightmapStats = null; }
+    const dir = baker === 'unreal' ? path.join(buildDir, 'lightmap') : lightmapDir;
+    try { lightmapPng = await fs.readFile(path.join(dir, 'lightmap.png')); } catch { lightmapPng = null; }
+    try { lightmapStats = JSON.parse(await fs.readFile(path.join(dir, 'lightmap.json'), 'utf8')); } catch { lightmapStats = null; }
   }
 
   // ---- stage 3: LOD ----------------------------------------------------------
@@ -198,16 +223,17 @@ async function main() {
     lodStats = await buildLodTiers({ lod1Ratio: bake.settings?.lod?.lod1Ratio ?? 0.4, lod2Ratio: bake.settings?.lod?.lod2Ratio ?? 0.15 })(doc);
     const t = lodStats.reduce((acc, s) => acc.map((v, i) => v + s.triangles[i]), [0, 0, 0]);
     progress('lod', `triangles per tier: ${t.map((n) => n.toLocaleString()).join(' / ')}`);
-    await fs.writeFile(path.join(buildDir, 'lod.json'), JSON.stringify(lodStats));
+    await fs.writeFile(lodFile, JSON.stringify(lodStats));
     await io.write(stage(3), doc);
   } else {
-    lodStats = JSON.parse(await fs.readFile(path.join(buildDir, 'lod.json'), 'utf8'));
+    lodStats = JSON.parse(await fs.readFile(lodFile, 'utf8'));
   }
 
   // ---- stage 4: textures, compression, manifest ----------------------------
   const tex = bake.settings?.textures ?? {};
+  if (budget.maxSize < (tex.maxSize ?? 2048)) progress('textures', `${quality}: textures capped at ${budget.maxSize}² (the level asks ${tex.maxSize ?? 2048}²) -- this tier is for the geometry, and the KTX2 encode is where a no-lightmap bake spends its time`);
   const { count } = await compressTextures({
-    colorMode: tex.colorMode ?? 'etc1s', dataMode: tex.dataMode ?? 'uastc', maxSize: tex.maxSize ?? 2048,
+    colorMode: tex.colorMode ?? 'etc1s', dataMode: tex.dataMode ?? 'uastc', maxSize: budget.maxSize,
     onProgress: (m, i, n) => progress('textures', `${m} (${i}/${n})`),
   })(doc);
   let lightmapImage = null;
@@ -217,7 +243,7 @@ async function main() {
   // file, so they are folded in here as unreferenced KTX2, the lightmap's
   // arrangement. Both picture modes ship as one KTX2 with faceCount 6.
   const skyIndices = await addSkyTextures(doc, skyImages, {
-    colorMode: tex.colorMode ?? 'etc1s', maxSize: tex.maxSize ?? 2048,
+    colorMode: tex.colorMode ?? 'etc1s', maxSize: budget.maxSize,
     onProgress: (m) => progress('textures', m),
   });
 
@@ -227,11 +253,11 @@ async function main() {
   progress('compress', 'meshopt (EXT_meshopt_compression, medium)');
   await doc.transform(meshopt({ encoder: MeshoptEncoder, level: 'medium' }));
 
-  const manifest = writeManifest({ bake, lodStats, lightmapImage, lightmapStats, skyIndices, generator: { tool: 'thaikit', version: VERSION }, liveLamps })(doc);
+  const manifest = writeManifest({ bake, lodStats, lightmapImage, lightmapStats, skyIndices, generator: { tool: 'thaikit', version: VERSION }, liveLamps, onNote: (m) => progress('manifest', m) })(doc);
   if (manifest.lightmap?.bakedOnlyLamps) progress('manifest', `${manifest.lightmap.bakedOnlyLamps} lamp(s) ship baked-only (--live-lamps ${liveLamps}); ${manifest.lights.length} light(s) stay live`);
   await doc.transform(prune({ propertyTypes: [PropertyType.NODE, PropertyType.MESH, PropertyType.ACCESSOR, PropertyType.MATERIAL], keepLeaves: true, keepAttributes: true }));
 
-  const outFile = path.join(buildDir, 'level.glb');
+  const outFile = path.join(buildDir, withQuality('level.glb', quality));
   await io.write(outFile, doc);
   const bytes = (await fs.stat(outFile)).size;
   progress('write', `${toRepoRelative(outFile)} (${(bytes / 1048576).toFixed(1)} MB)`);
@@ -245,7 +271,7 @@ async function main() {
   let exported = null;
   const exportDir = process.env.THAIKIT_EXPORT_DIR;
   if (exportDir) {
-    const name = exportNameOf(id, cell);
+    const name = exportNameOf(id, cell, quality);
     const target = path.join(exportDir, name);
     try {
       await fs.access(exportDir);
@@ -261,18 +287,18 @@ async function main() {
 
   // ---- verify ----------------------------------------------------------------
   const verify = await new Promise((resolve) => {
-    const child = spawn(process.execPath, [path.join(here, 'verify-level.mjs'), '--level', id, ...(cell ? ['--cell', cell] : [])], { stdio: ['ignore', 'pipe', 'inherit'] });
+    const child = spawn(process.execPath, [path.join(here, 'verify-level.mjs'), '--level', id, ...(cell ? ['--cell', cell] : []), ...(quality ? ['--quality', quality] : [])], { stdio: ['ignore', 'pipe', 'inherit'] });
     let out = '';
     child.stdout.on('data', (d) => { out += d; });
     child.on('close', () => { try { resolve(JSON.parse(out.trim().split('\n').pop())); } catch { resolve({ ok: false, failures: ['verify produced no result'] }); } });
   });
-  await fs.writeFile(path.join(buildDir, 'verify.json'), JSON.stringify(verify, null, 2));
+  await fs.writeFile(path.join(buildDir, withQuality('verify.json', quality)), JSON.stringify(verify, null, 2));
   progress('verify', verify.ok ? 'passed' : `${verify.failures?.length ?? '?'} failure(s)`);
 
   const dc = lodStats.reduce((a, s) => a.map((v, i) => v + s.drawCalls[i]), [0, 0, 0]);
   const tri = lodStats.reduce((a, s) => a.map((v, i) => v + s.triangles[i]), [0, 0, 0]);
   return ok({
-    level: id, cell, file: toRepoRelative(outFile), exported, bytes, cells: manifest.cells.list.length, drawCalls: dc, triangles: tri,
+    level: id, cell, quality, file: toRepoRelative(outFile), exported, bytes, cells: manifest.cells.list.length, drawCalls: dc, triangles: tri,
     textures: count, lightmap: lightmapImage != null, colliders: manifest.colliders.reduce((n, c) => n + c.shapes.length, 0), dynamic: manifest.dynamic.length,
     verify,
   });

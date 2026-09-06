@@ -44,12 +44,13 @@ convention was not followed.
 | Static Mesh names | keep `SM_TK_<Prop>` as imported from the kit | the converter finds the prop's `@thai-kit` ref, physics and collider compound in `exports/unreal/manifest.json` by that name |
 | The actor sidecar | write `levels/<id>/unreal/actors.json` from the editor beside the `.glb` (`{ actors: { <label>: { mesh, folder, mobility, physics } } }`; `C:\tk\actor_map.py` in the ThePurge project is the template) | Unreal 5.8's glTF exporter names nodes after ACTOR LABELS and, once a component's materials were baked or overridden, names the MESH after the actor too -- the `SM_TK_` name is gone from the file and only 16 of 879 kit meshes on `bangkoksoi` kept it. The converter reads the sidecar automatically (`--actor-map` to point elsewhere) |
 | Meshes built outside the kit (`SM_EXT_*` trees, AC units) | `scratch/_unreal/build_ext.mjs` writes `exports/unreal/ext/manifest.json` with each mesh's compound | trunk-only colliders for a tree; without it a card tree is a wall the size of its canopy |
-| Backdrops | a sky-dome sphere may stay (`SkyDome`, anything starting `sky`): the converter drops it | the shipped level builds its own sky; a 1.4 km sphere would otherwise be a static placement |
+| The sky | ONE `BP_TK_Sky` actor (`/Game/ThaiKit/Sky/BP_TK_Sky`, label `tk_sky`, folder `Sky`) with its panorama/cube faces, cloud texture, star settings and Moon Intensity set in Details; then run `scripts/level/unreal/tk_sky_dump.py` in the editor (copy to `C:\tk\`, edit `LEVEL_ID`, `py C:/tk/tk_sky_dump.py`) | the glTF carries no sky. The dump writes `levels/<id>/unreal/sky.json` and exports the textures to `levels/<id>/sky/`; the converter reads it automatically (`--sky-map`). Without it the level ships with NO sky and the report says so. The BP's sphere is the Unreal preview and is dropped by label; the old gradient `SkyDome` (anything starting `sky`) is dropped too |
 | The far ground | ONE big plane in Unreal is fine for the editor, but convert with `--ground <y>[,<#hex>]` | the converter drops `far_ground` and lays the pipeline's own per-cell tiles (one lightmap island each) instead of a 900 m quad that owned two thirds of the atlas area |
 | Dynamic props | actor label starts with `dyn_` | becomes a `dynamic/<id>` node with a Rapier body; anything else is merged static geometry |
 | Skyline imposters | actor label starts with `bb_` | becomes a yaw billboard (dynamic, no collider) |
+| Ladders | actor label starts with `ladder_` (the kit's `SM_TK_FireEscapeLadderSegment`, or any mesh) | static, keeps its compound, and the manifest collider entry is tagged `ladder`; `level.colliders.ladders` lists the volumes and Operation X's controller climbs them (needs `@thai-kit/level-schema` >= 0.2.0) |
 | Spawns | a **Camera actor** labelled `spawn_<name>` (or `spawn_<team>_<name>`: red/blue/green/yellow) facing the way the player starts | the exporter writes cameras; empties and PlayerStarts do not export |
-| The moon | ONE Directional Light, **Movable** | it stays a live light in the runtime; a Static/Stationary sun would also be in the lightmap and count twice (`--sun baked` drops it instead) |
+| The moon | ONE Directional Light, **Movable**; its `light_source_angle` is the shadow softness (6 = thaikit's `softDeg` 6) and `BP_TK_Sky`'s Moon Intensity is its brightness in three's units (0 = `lux x --light-scale`) | it stays a live light in the runtime; a Static/Stationary sun would also be in the lightmap and count twice (`--sun baked` drops it instead). Rotator from a thaikit direction `[x,y,z]`: `pitch = asin(y)`, `yaw = atan2(z, x)` -- thepurge's moon is pitch −39.85, yaw 134.6 (measured swizzle, docs/unreal-level-export.md) |
 | Lamps | Point/Spot lights **Static** if you want them in the lightmap; their intensity in candela | the converter carries them as `bake.lights`; with `--baker blender` Cycles bakes them, with `--baker unreal` they are already in Unreal's atlas |
 | Materials | anything; `bake_material_inputs` bakes them to textures | the runtime wants glTF PBR, not Unreal material graphs |
 | Cables, rain, fog, decals, post-process | fine to leave; cables export as meshes (no collider), the rest does not export | the runtime has its own fog and sky settings, none of Unreal's |
@@ -72,6 +73,11 @@ usual route). Then run `references/export.md`'s script, which:
    5.6+; it was absent 5.2–5.5);
 2. calls `GLTFExporter.export_to_gltf(world, "<repo>/levels/<id>/unreal/level.glb", options, [])`;
 3. prints the option set it actually used and the file size.
+
+Then, in the same session, `actor_map.py` (the label → mesh sidecar) and
+`tk_sky_dump.py` (the sky sidecar + textures). All three write straight into
+the repo over the UNC path; check `levels/<id>/unreal/{level.glb,actors.json,sky.json}`
+and `levels/<id>/sky/` exist before converting.
 
 The path must be the REPO as the Unreal host sees it (on WSL that is the
 `\\wsl.localhost\<distro>\home\...` spelling; ask if you cannot derive it from
@@ -126,22 +132,31 @@ GPU's fragment-uniform budget overflows long before 180. Bake with
 live for dynamic objects, the rest live in the lightmap only, and the manifest
 records `lightmap.bakedOnlyLamps`.
 
-```
-docker compose run --rm web node scripts/level/bake-level.mjs --level <id> --baker unreal
-docker compose run --rm web node scripts/level/bake-level.mjs --level <id> --baker blender     # or blender-host
-```
-
-Same pipeline as an editor level: normalise, partition into 24 m cells, join,
-LOD tiers, KTX2 textures, meshopt, manifest, verify. The result is copied to
-`$THAIKIT_EXPORT_DIR/<id>.glb` when that folder is mounted (the game's GLB
-folder); the result line says where. Cycles on a real block takes minutes; use
-`--lightmap-size 512 --samples 16` for a first look, never for the shipped file.
-
-Then, always:
+Bake in TIERS, low first. Each tier delivers its own file (`<id>_low.glb`,
+`<id>_medium.glb`, `<id>_high.glb`) and builds beside the others
+(`build/level_<q>.glb`, `build/lightmap_<q>/`), so a test bake never
+overwrites the build the game is playing and nothing has to be restored:
 
 ```
-docker compose run --rm web node scripts/level/verify-level.mjs --level <id>
-docker compose run --rm web node scripts/level/smoke-level.mjs --level <id>
+docker compose run --rm web node scripts/level/bake-level.mjs --level <id> --quality low    --live-lamps 20   # no lightmap, ~1 min: geometry, colliders, LOD, sky
+docker compose run --rm web node scripts/level/bake-level.mjs --level <id> --quality medium --live-lamps 20   # Cycles 2048²/16, ~10 min: approximate lighting
+docker compose run --rm web node scripts/level/bake-level.mjs --level <id> --quality high   --live-lamps 20   # Cycles at the level's settings, hours: the shipping bake
+```
+
+(`--baker unreal|blender|blender-host` without a tier is the old form and
+delivers the plain `<id>.glb`; `--lightmap-size`/`--samples` override a
+preset.) Same pipeline as an editor level: normalise, partition into 24 m
+cells, join, LOD tiers, KTX2 textures, meshopt, manifest, verify. The result is
+copied to `$THAIKIT_EXPORT_DIR/` when that folder is mounted (the game's GLB
+folder); the result line says where. One tier at a time -- the raw and the stage
+checkpoints are shared, and a second Blender does not fit in memory beside an
+8192² bake. Check `swapon --show` before `high`.
+
+Then, always, with the same `--quality`:
+
+```
+docker compose run --rm web node scripts/level/verify-level.mjs --level <id> --quality <q>
+docker compose run --rm web node scripts/level/smoke-level.mjs --level <id> --quality <q>
 ```
 
 `verify` must pass; `smoke` renders the level through the real runtime and
@@ -149,7 +164,8 @@ fails on any `[level-runtime]` warning. Report both results verbatim.
 
 ## 4. Report
 
-Say what shipped: the GLB path in the game's folder, cells / draw calls /
+Say what shipped: the GLB path in the game's folder (which TIER, and that the
+game must load that name), cells / draw calls /
 triangles per tier from the bake's result line, how many placements came from
 the kit versus Unreal-side meshes, the lightmap route (`adopted` or Cycles) and
 the spawns. Say what the level LOST on the way, because some of it always does:

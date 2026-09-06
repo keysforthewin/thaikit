@@ -107,3 +107,22 @@ test('a baked sky carries image indices, not filenames', () => {
   assert.equal(m.sky.stars.brightness, 2);
   assert.equal(m.sky.stars.color, '#dfe6ff');
 });
+
+test('collider entries carry tags, defaulted empty so an older bake still parses', () => {
+  const base = {
+    schemaVersion: 1, id: 'soi-1', name: 'Soi 1', generatedAt: new Date().toISOString(),
+    generator: { tool: 'thaikit', version: '0' },
+    bounds: { min: [0, 0, 0], max: [1, 1, 1] },
+    cells: { size: 24, list: [] }, lod: { distances: [60, 140], hysteresis: 8 },
+    ambient: { sky: '#8797c2', ground: '#2a2620', intensity: 0.35 },
+  };
+  const shape = { type: 'box', position: [0, 1.5, 0], quaternion: [0, 0, 0, 1], halfExtents: [0.25, 1.5, 0.1], isTrigger: false };
+  const m = ManifestExtras.parse({
+    ...base,
+    colliders: [{ placement: 'ladder-1', shapes: [shape], tags: ['ladder'] }, { placement: 'wall-1', shapes: [shape] }],
+    dynamic: [{ node: 'dynamic/d', placement: 'd', physics: { enabled: true, massKg: 18 } }],
+  });
+  assert.deepEqual(m.colliders[0].tags, ['ladder']);
+  assert.deepEqual(m.colliders[1].tags, []);
+  assert.deepEqual(m.dynamic[0].tags, []);
+});

@@ -52,6 +52,19 @@ so no engine is baked in. A [Rapier](https://rapier.rs) adapter is included
 `PhysicsAdapter`, or use none: `level.raycast(ray)` is a `three-mesh-bvh` query
 against real lod0 triangles and works regardless.
 
+Ladders are data too. A placement tagged `ladder` in the editor (or labelled
+`ladder_*` in Unreal) ships its collider entry with `tags: ['ladder']`, and
+`level.colliders.ladders` lists them as `{ placement, shapes, tags, bounds }`:
+the shapes are still part of the static solid (a ladder is stood on as well as
+climbed) and `bounds` is a world AABB around them grown by 0.35 m of reach, so
+"the player is at a ladder" is a box test. Test the box against the CAPSULE, not
+its axis alone: a player pressed against the rungs has their axis one player
+radius plus the controller's skin off the face, which is just outside a box
+padded by reach only -- grow it by the radius in XZ as well, or pass a larger
+`reach` to `ladderVolumes(manifest, { reach })`. The runtime does not move the
+player; your controller decides what a grab, a climb and a boost are. A level
+baked before tags were carried lists none.
+
 ## Headless
 
 `@thai-kit/level-runtime/node` never imports three. A game server reads the same

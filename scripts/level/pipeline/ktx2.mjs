@@ -56,7 +56,7 @@ export const KTX_INSTALL_HINT =
  * @param {boolean} opts.mipmaps
  * @param {number}  opts.maxSize
  */
-export async function encodeKtx2(bytes, { mode = 'etc1s', srgb = true, mipmaps = true, maxSize = 2048, quality = 160, uastcLevel = 2, zstd = 18 } = {}) {
+export async function encodeKtx2(bytes, { mode = 'etc1s', srgb = true, mipmaps = true, maxSize = 2048, quality = 160, uastcLevel = 2, zstd = 18, threads = null } = {}) {
   const ktx = await findKtx();
   if (!ktx) throw new Error(KTX_INSTALL_HINT);
   const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'thaikit-ktx-'));
@@ -76,6 +76,9 @@ export async function encodeKtx2(bytes, { mode = 'etc1s', srgb = true, mipmaps =
 
     const args = ['create', '--format', srgb ? 'R8G8B8A8_SRGB' : 'R8G8B8A8_UNORM', '--assign-tf', srgb ? 'srgb' : 'linear'];
     if (mipmaps) args.push('--generate-mipmap');
+    // `ktx` defaults to every hardware thread; when several encodes run side
+    // by side (compressTextures' pool) each gets a share instead.
+    if (threads) args.push('--threads', String(Math.max(1, Math.round(threads))));
     if (mode === 'etc1s') args.push('--encode', 'basis-lz', '--qlevel', String(Math.max(1, Math.min(255, Math.round(quality)))));
     else args.push('--encode', 'uastc', '--uastc-quality', String(uastcLevel), '--zstd', String(zstd));
     args.push(src, out);

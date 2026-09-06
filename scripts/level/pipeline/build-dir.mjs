@@ -8,6 +8,11 @@
  * overwrite the full build's (and `--resume-from` on either resumes the right
  * one). The job record, log and out file stay in `build/` regardless: one bake
  * per level at a time, quick or full.
+ *
+ * A `--quality` tier (pipeline/quality.mjs) stamps the DELIVERED name instead
+ * of moving the build: `<id>_low.glb`, `<id>_medium.glb`, `<id>_high.glb`
+ * (`<id>_<ix>_<iz>_low.glb` for a cell), so three tiers of one level coexist
+ * in the game's folder and nothing has to be restored after a test bake.
  */
 import path from 'node:path';
 
@@ -26,6 +31,6 @@ export function buildDirOf(id, cell = null) {
   return cell ? path.join(base, `cell_${cell}`) : base;
 }
 
-export function exportNameOf(id, cell = null) {
-  return cell ? `${id}_${cell}.glb` : `${id}.glb`;
+export function exportNameOf(id, cell = null, quality = null) {
+  return `${id}${cell ? `_${cell}` : ''}${quality ? `_${quality}` : ''}.glb`;
 }

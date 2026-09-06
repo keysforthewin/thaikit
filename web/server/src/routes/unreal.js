@@ -131,6 +131,13 @@ export function unrealRouter(state) {
           await fs.rename(tmp, path.join(target, 'manifest.json'));
           written += 1;
         } else {
+          // `ext/` is not the kit's: the scratch/_unreal builders write their
+          // meshes and collider manifest there, and a full export used to take
+          // it with the old tree -- after which every tree in the next level
+          // import was a bounding box. Carry it across unless the zip brought one.
+          const ext = path.join(UNREAL_EXPORT_DIR, 'ext');
+          const hasExt = await fs.stat(ext).then((s) => s.isDirectory()).catch(() => false);
+          if (hasExt && !entries.some((e) => safeEntryName(e.name)?.startsWith('ext/'))) await fs.cp(ext, path.join(target, 'ext'), { recursive: true });
           await fs.mkdir(path.dirname(UNREAL_EXPORT_DIR), { recursive: true });
           await fs.rm(UNREAL_EXPORT_DIR, { recursive: true, force: true });
           await fs.rename(target, UNREAL_EXPORT_DIR);

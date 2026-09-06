@@ -93,6 +93,9 @@ export async function buildExportScene(doc, catalogue, orphans, { onProgress, si
       bounds: { min: bbox.min.toArray(), max: bbox.max.toArray() },
       physics: { enabled: p.physics ?? Boolean(item?.physics?.enabled), massKg: item?.physics?.massKg ?? null },
       billboard,
+      // The placement's tags ride to the manifest's collider entries; `ladder`
+      // is the one the runtime and the game act on.
+      tags: p.tags ?? [],
       // Read by the bake (a dynamic caster can be hidden from Cycles' shadow
       // rays) and carried to the runtime on the manifest's dynamic entries.
       // Static placements are merged per cell and always bake as casters.

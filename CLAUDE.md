@@ -1047,8 +1047,39 @@ placed geometry. Export writes a second, self-contained GLB.
   before `.raw({ depth: 'ushort' })` -- Blender's 40000 comes back as 156 -- and it IGNORES
   `depth: 'ushort'` on raw INPUT, so a fixture round-tripped through sharp cannot prove the 16-bit
   path works. `probe-lightmap.test.mjs` hand-builds its PNGs over `node:zlib` for that reason.
-- **A 4 ms bake with `--baker none` is a 4 s one in Blender at 4096²/128 samples per minute of
-  level** -- use `--lightmap-size 512 --samples 16` to test the round trip.
+- **A bake has three QUALITY tiers, and each ships under its own name.** `bake-level.mjs
+  --quality low|medium|high` (`scripts/level/pipeline/quality.mjs`) is a preset AND a suffix:
+  `low` is `--baker none` with textures and sky faces capped at 1024 (the level's shape, colliders,
+  LOD and sky, lit by the live moon), `medium` is Cycles at 2048²/16 adaptive (the lighting,
+  roughly), `high` is Cycles at the level's own `settings.json`; they deliver `<id>_low.glb`,
+  `<id>_medium.glb`, `<id>_high.glb` and build `build/level_<q>.glb` + `build/lightmap_<q>/`, so
+  a test bake never overwrites the build the game is playing -- which a `--baker none` smoke test
+  did once, and cost a restore from `build/keep-*/`. `verify-level`, `smoke-level` and
+  `probe-lightmap` take the same `--quality`. Measured on `bangkoksoi`: **low 52 s, medium ~9 min,
+  high ~2 h 20 min**. Low is quick only because the KTX2 encodes run in a POOL now
+  (`compressTextures`, 8 at a time with `--threads` shared; `THAIKIT_KTX_CONCURRENCY=1` restores
+  serial): 286 mostly-1024² textures one `ktx create` at a time were **100 s of a 122 s** bake, and
+  the texture cap alone bought 23 s -- Unreal had already baked them at 1024, so the cost was the
+  per-process overhead, not the pixels. One tier at a time: raw and the stage checkpoints are shared.
+  **`--live-lamps` caps a no-lightmap build too, by DROPPING the rest** (`selectLiveLamps`): the cap
+  used to fire only beside a bake, so `low` shipped all 191 of bangkoksoi's lamps live -- brighter
+  than any lit tier and over a low-end GPU's uniform budget. And a `build/keep-*/` is only as good
+  as the import it came from: the 04:24 keep predates `--light-scale` (moon 16, lamps to 7000 cd,
+  atlas range 16, smoke luma 54 with 8% of pixels blown) and was restored into the game folder as
+  "known good" once. Read the punctual light intensities before calling a build good.
+  Stage 2 and 3 checkpoints are stamped per tier too (`stage2_high.glb`, `lod_high.json`); only
+  `stage1.glb` and `bake.json` are shared, because a `--resume-from 3` for `high` must never pick
+  up `low`'s unlit stage 2 -- which it did before the stamp.
+- **A placement's TAGS reach the manifest, and `ladder` is the one that means something.** The
+  editor's ladder checkbox and the Unreal `ladder_` label both put `ladder` in `placement.tags`;
+  `manifest.colliders[].tags` / `manifest.dynamic[].tags` carry it (`@thai-kit/level-schema`
+  0.2.0, defaulted `[]` so older bakes parse), and `buildColliders` lists the tagged static bodies
+  as `colliders.ladders` (`{placement, shapes, tags, bounds}`, bounds grown by 0.35 m reach,
+  `@thai-kit/level-runtime` 0.2.0). Before this, a ladder worked ONLY in the editor's play mode:
+  the bake wrote `{placement, shapes}` and both consumers saw a wall. The shapes stay in the static
+  solid -- a ladder is stood on as well as climbed -- and the runtime never moves the player; the
+  game's controller (Operation X ports `web/client/src/level/play/controller.js`'s ladder step)
+  owns grab, climb and boost.
 
 - **Unreal gets the kit as ONE GLB PER PROP, made in the browser.** The registry page's
   **export to Unreal** button (`web/client/src/unreal/`) builds every supported prop through the
@@ -1106,6 +1137,30 @@ placed geometry. Export writes a second, self-contained GLB.
   the `M_TK_<Prop>_` export name, or ...Lantern and ...Pole props match everything) -- with centre,
   extent, colour and `panel|bulb`. 19 emitters on 17 props; `thaikit-unreal-level` spawns Unreal lights
   from them.
+- **An Unreal level's SKY travels as a sidecar from `BP_TK_Sky`, never in the glTF.** The exporter
+  is told to skip sky spheres and HDRI backdrops, so `import-unreal-level.mjs` used to write
+  `settings.sky` at its `enabled: false` default and `bangkoksoi` shipped with no sky and a moon at
+  0.125. Now ONE `BP_TK_Sky` actor per level (`/Game/ThaiKit/Sky/BP_TK_Sky`, label `tk_sky`; a
+  StaticMeshActor Blueprint built over unreal-mcp's `BlueprintTools`) holds every `SkySettings`
+  field as instance-editable variables plus `MoonIntensity`, and previews the panorama on its
+  sphere through `M_TK_SkyPanorama` (`scripts/level/unreal/tk_sky_setup.py`; its `PreviewBoost`
+  128 = 1/`--light-scale` is what makes an emissive of 0..1 visible under the level's exposure;
+  and it looks up the panorama by direction from the CAMERA, not the sphere's centre -- the dome
+  sits 200 m under the street, and centre-relative the plate's horizon hung 16-18 degrees low).
+  `scripts/level/unreal/tk_sky_dump.py`, run in the editor, writes `levels/<id>/unreal/sky.json`
+  and exports the textures' SOURCE pixels to `levels/<id>/sky/` (measured lossless: mean |diff| 0
+  against thepurge's panorama), and the importer's `--sky-map` (default beside the .glb) parses it
+  through `SkySettings`, WARNS by name for every image not on disk, takes `shadow.softDeg` from the
+  light's `light_source_angle` and the moon's intensity from `MoonIntensity` (0 = lux x
+  light-scale). The preview sphere is dropped by the `BACKDROP` regex (`tk_sky`). **Unreal's
+  exporter maps a UE vector (X, Y, Z) to glTF (X, Z, Y)**, measured on bangkoksoi's Moon
+  (pitch -48 / yaw -145 -> `[-0.548, -0.743, -0.384]`), so a thaikit direction `[x,y,z]` is the
+  rotator `pitch = asin(y)`, `yaw = atan2(z, x)`; the preview material's `u = atan2(Y, X)` is
+  three's `atan2(z, x)` under the same swizzle. **A billboard never ships a collider**
+  (`manifest.mjs` and the importer): the imposters' thin kit boxes were fixed walls at the authored
+  yaw. Operation X already turns billboards (`tickBakedLevel`), so a `bb_` label is all an imposter
+  needs. And every bake is COPIED to the game folder, so bake tests as `--quality low`, which
+  lands beside the shipping file instead of over it.
 
 ## Layout
 

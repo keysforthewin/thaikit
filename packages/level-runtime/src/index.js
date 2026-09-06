@@ -3,7 +3,7 @@ export { CellSet, CASTER_LAYER } from './cells.js';
 export { attachLightmap } from './materials.js';
 export { applyLights } from './lights.js';
 export { buildEnvironment, applyEnvironment, environmentBytes } from './environment.js';
-export { buildColliders } from './colliders.js';
+export { buildColliders, ladderVolumes, shapesBounds } from './colliders.js';
 export { LevelRaycaster } from './bvh.js';
 export { PhysicsAdapter } from './physics/adapter.js';
 export { NullPhysics } from './physics/null.js';

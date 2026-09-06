@@ -53,7 +53,9 @@ means the level.
 | --- | --- |
 | a node with a mesh | a placement row; `SM_TK_*` meshes get the kit's ref, physics and compound from `exports/unreal/manifest.json` |
 | actor label `dyn_*` | a dynamic placement with a Rapier body |
-| actor label `bb_*` | a yaw billboard |
+| actor label `bb_*` | a yaw billboard (dynamic, no collider) |
+| actor label `ladder_*` | a static body whose manifest collider entry is tagged `ladder` (climbable) |
+| `levels/<id>/unreal/sky.json` (from `tk_sky_dump.py`) | `settings.sky` + the moon's `softDeg` and intensity; the sphere of `BP_TK_Sky` (label `tk_sky`) is dropped |
 | `KHR_lights_punctual` directional | the moon (live, shadowed) unless `--sun baked` |
 | `KHR_lights_punctual` point / spot | `bake.lights`: baked by Cycles, or already in Unreal's atlas |
 | a camera named `spawn_<team>_<name>` | a spawn with yaw from the camera's facing |

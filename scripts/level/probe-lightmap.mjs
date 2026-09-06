@@ -22,7 +22,7 @@
  *              light contaminating the SHADOW pass.
  *
  * Usage:
- *   node scripts/level/probe-lightmap.mjs --level <id> [--compare <png>]
+ *   node scripts/level/probe-lightmap.mjs --level <id> [--quality low|medium|high] [--compare <png>]
  *   node scripts/level/probe-lightmap.mjs --file <png> [--compare <png>]
  */
 import path from 'node:path';
@@ -31,6 +31,8 @@ import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 
 import { levelDir } from '@thaikit/registry-core';
+
+import { assertQuality, withQuality } from './pipeline/quality.mjs';
 
 import { ok, fail, log, parseArgs } from '../lib/out.mjs';
 
@@ -149,7 +151,7 @@ async function main() {
   const file = args.file
     ? String(args.file)
     : args.level
-      ? path.join(levelDir(String(args.level)), 'build', 'lightmap', 'lightmap.png')
+      ? path.join(levelDir(String(args.level)), 'build', withQuality('lightmap', assertQuality(args.quality ?? null)), 'lightmap.png')
       : null;
   if (!file) return fail('need --level <id> or --file <png>');
 

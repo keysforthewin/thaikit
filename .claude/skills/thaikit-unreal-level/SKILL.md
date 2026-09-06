@@ -130,7 +130,8 @@ order, saving after each numbered step:
 **Build it so it can leave again.** A level this skill lays out is meant to come
 back as a baked thaikit level for Operation X (`thaikit-unreal-bake`), and that
 converter reads NAMES: keep every kit Static Mesh named `SM_TK_*` as imported;
-label a physics prop `dyn_<thing>` and a skyline imposter `bb_<thing>`; put ONE
+label a physics prop `dyn_<thing>`, a skyline imposter `bb_<thing>` and a
+climbable ladder `ladder_<thing>`; put ONE
 Camera actor labelled `spawn_<team>_<name>` where the player starts, facing down
 the street; make the moon the only Directional Light and keep it **Movable**;
 make the lamps Static so a 5.6+ lightmap holds them. Cables export as static
@@ -175,7 +176,7 @@ The palette is the whole mood:
 | Red Chinese lantern / Lanna lantern | Point inside | red-orange / warm | 30-80 | shrines, restaurant fronts |
 | Shrine fairy lights | 4-6 tiny Points, or emissive only | mixed | 5-15 | spirit house, shrine roof |
 | Sign faces | emissive on the material instance, x3-x8 | as authored | -- | fascias |
-| Moon | Directional, one | 8000 K cold blue | 0.5-1.5 lux | high, opposite the main view |
+| Moon | Directional, one; `light_source_angle` 6 | 8000 K cold blue | 0.5-1.5 lux (browser brightness is `BP_TK_Sky`'s Moon Intensity) | pitch -39.85 / yaw 134.6 = thepurge's moon |
 | Sky | SkyLight | dark blue-violet, low | 0.05-0.15 | captured from the scene |
 
 Rules: **warm sodium against cool fluorescent** is the Thai night contrast; never

@@ -39,16 +39,12 @@ function mulQuat(a, b) {
   ];
 }
 
-function rotateByEuler(v, [ex, ey, ez]) {
-  // Apply X, then Y, then Z rotations (THREE.Euler 'XYZ' intrinsic == matrix Rz*Ry*Rx applied to v).
-  let [x, y, z] = v;
-  let c = Math.cos(ex), s = Math.sin(ex);
-  [y, z] = [y * c - z * s, y * s + z * c];
-  c = Math.cos(ey); s = Math.sin(ey);
-  [x, z] = [x * c + z * s, -x * s + z * c];
-  c = Math.cos(ez); s = Math.sin(ez);
-  [x, y] = [x * c - y * s, x * s + y * c];
-  return [x, y, z];
+/** v through a unit quaternion, as THREE.Vector3.applyQuaternion does it. */
+export function rotateByQuaternion([x, y, z], [qx, qy, qz, qw]) {
+  const tx = 2 * (qy * z - qz * y);
+  const ty = 2 * (qz * x - qx * z);
+  const tz = 2 * (qx * y - qy * x);
+  return [x + qw * tx + (qy * tz - qz * ty), y + qw * ty + (qz * tx - qx * tz), z + qw * tz + (qx * ty - qy * tx)];
 }
 
 function quatFromEulerXYZ([x, y, z]) {
@@ -57,12 +53,19 @@ function quatFromEulerXYZ([x, y, z]) {
   return [s1 * c2 * c3 + c1 * s2 * s3, c1 * s2 * c3 - s1 * c2 * s3, c1 * c2 * s3 + s1 * s2 * c3, c1 * c2 * c3 - s1 * s2 * s3];
 }
 
-/** A placement's compound in world space: each part's centre through the TRS, half-extents scaled. */
+/**
+ * A placement's compound in world space: each part's centre through the TRS,
+ * half-extents scaled. The centre is rotated by the SAME quaternion the part
+ * ships with. It used to go through a hand-rolled euler that applied X, then Y,
+ * then Z -- the reverse of three's 'XYZ' (Rx * Ry * Rz, so Z first) -- which
+ * agrees for a yaw or a single tilt and puts a part metres off on a prop tilted
+ * on two axes, while the part's own orientation was right.
+ */
 export function worldShapes(p) {
   const q = quatFromEulerXYZ(p.rotation);
   return p.colliders.map((c) => {
     const scaled = [c.offset[0] * p.scale[0], c.offset[1] * p.scale[1], c.offset[2] * p.scale[2]];
-    const rotated = rotateByEuler(scaled, p.rotation);
+    const rotated = rotateByQuaternion(scaled, q);
     const halfExtents = [c.scale[0] * p.scale[0], c.scale[1] * p.scale[1], c.scale[2] * p.scale[2]];
     if (c.type === 'cylinder' || c.type === 'capsule' || c.type === 'sphere') {
       const r = Math.max(halfExtents[0], halfExtents[2]);
@@ -78,15 +81,27 @@ export function worldShapes(p) {
   });
 }
 
-/** Local shapes for a dynamic body, in the placement's own frame. */
+/**
+ * Local shapes for a dynamic body, in the placement's own frame. The runtime
+ * creates the body at the holder node's position and rotation only, so the
+ * placement's SCALE has to be folded into the shapes here.
+ */
 export function localShapes(p) {
-  return p.colliders.map((c) => ({
-    type: c.type,
-    position: c.offset.map((n) => +n.toFixed(4)),
-    quaternion: [0, 0, 0, 1],
-    halfExtents: c.scale.map((n) => +Math.max(0.005, n).toFixed(4)),
-    isTrigger: Boolean(c.isTrigger),
-  }));
+  const s = p.scale ?? [1, 1, 1];
+  return p.colliders.map((c) => {
+    const halfExtents = [c.scale[0] * s[0], c.scale[1] * s[1], c.scale[2] * s[2]];
+    if (c.type === 'cylinder' || c.type === 'capsule' || c.type === 'sphere') {
+      const r = Math.max(halfExtents[0], halfExtents[2]);
+      halfExtents[0] = r; halfExtents[2] = r;
+    }
+    return {
+      type: c.type,
+      position: c.offset.map((n, i) => +(n * s[i]).toFixed(4)),
+      quaternion: [0, 0, 0, 1],
+      halfExtents: halfExtents.map((n) => +Math.max(0.005, n).toFixed(4)),
+      isTrigger: Boolean(c.isTrigger),
+    };
+  });
 }
 
 /**
@@ -96,21 +111,29 @@ export function localShapes(p) {
  * runs. 180 lamps overflow a low-end GPU's fragment uniform budget outright, so a
  * baked level keeps the moon plus the `liveLamps` strongest (intensity x nearness
  * to a spawn), and the rest live on in the lightmap alone. 0 keeps every lamp.
+ *
+ * With NO lightmap (`--quality low`, `--baker none`) the cap still holds and the
+ * rest are DROPPED, not kept: the ceiling is the GPU's, not the atlas's, and
+ * bangkoksoi's geometry check used to ship all 191 lamps live because the cap
+ * only fired beside a bake. A no-lightmap build is a look at the shape; the
+ * lamps it loses are named in the log.
  */
 export function selectLiveLamps(lights, spawns, liveLamps, bakedLights) {
-  if (!bakedLights || !liveLamps || liveLamps <= 0) return { live: lights, bakedOnly: [] };
+  if (!liveLamps || liveLamps <= 0) return { live: lights, bakedOnly: [], dropped: [] };
   const anchors = spawns.length ? spawns.map((s) => s.position) : [[0, 0, 0]];
   const near = (p) => Math.min(...anchors.map((a) => Math.hypot(p[0] - a[0], p[1] - a[1], p[2] - a[2])));
   const rank = (l) => (l.intensity ?? 0) / (1 + near(l.position ?? [0, 0, 0]) / 20);
   const lamps = lights.filter((l) => l.type !== 'directional' && l.role !== 'moon').sort((a, b) => rank(b) - rank(a));
   const keep = new Set(lamps.slice(0, liveLamps).map((l) => l.id ?? l.node));
+  const rest = lamps.slice(liveLamps).map((l) => l.id ?? l.node);
   return {
     live: lights.filter((l) => l.type === 'directional' || l.role === 'moon' || keep.has(l.id ?? l.node)),
-    bakedOnly: lamps.slice(liveLamps).map((l) => l.id ?? l.node),
+    bakedOnly: bakedLights ? rest : [],
+    dropped: bakedLights ? [] : rest,
   };
 }
 
-export function writeManifest({ bake, lodStats, lightmapImage, lightmapStats = null, skyIndices = null, generator, liveLamps = 0 }) {
+export function writeManifest({ bake, lodStats, lightmapImage, lightmapStats = null, skyIndices = null, generator, liveLamps = 0, onNote = null }) {
   return (doc) => {
     const root = doc.getRoot();
     const scene = root.listScenes()[0];
@@ -124,6 +147,7 @@ export function writeManifest({ bake, lodStats, lightmapImage, lightmapStats = n
     const lightsExt = doc.createExtension(KHRLightsPunctual);
     const lights = [];
     const selected = selectLiveLamps(bake.lights, bake.spawns ?? [], liveLamps, lightmapStats?.bakedLights != null);
+    if (selected.dropped.length) onNote?.(`${selected.dropped.length} lamp(s) DROPPED: no lightmap to carry them and --live-lamps ${liveLamps} caps what ships live; ${selected.live.length} light(s) stay`);
     for (const l of selected.live) {
       const type = l.type === 'directional' ? 'directional' : l.type === 'spot' ? 'spot' : 'point';
       const light = lightsExt.createLight(l.node).setType(type).setColor(hexToRgb(l.color)).setIntensity(l.intensity);
@@ -206,11 +230,18 @@ export function writeManifest({ bake, lodStats, lightmapImage, lightmapStats = n
             size: settings.environment?.ibl?.size ?? 256,
           },
       sky: skyBlock(settings.sky, skyIndices),
-      colliders: bake.placements.filter((p) => p.static && p.colliders.length).map((p) => ({ placement: p.id, shapes: worldShapes(p) })),
+      // `tags` ride with the shapes: `ladder` is a body the player climbs, and
+      // the runtime's `colliders.ladders` and the game's controller key on it.
+      colliders: bake.placements.filter((p) => p.static && p.colliders.length).map((p) => ({ placement: p.id, shapes: worldShapes(p), tags: p.tags ?? [] })),
       dynamic: bake.placements.filter((p) => !p.static).map((p) => ({
         node: `dynamic/${p.id}`, placement: p.id, physics: p.physics, billboard: p.billboard ?? 'none',
         castShadow: p.castShadow !== false, receiveShadow: p.receiveShadow !== false,
-        destructionGroups: p.destructionGroups ?? [], colliders: localShapes(p),
+        // A billboard's node is re-faced every frame and a collider cannot
+        // follow it; the skyline cards' thin kit boxes shipped as fixed
+        // 37 x 83 m walls at their authored yaw until this. Both routes
+        // (editor export and the Unreal importer) pass through here.
+        destructionGroups: p.destructionGroups ?? [], colliders: p.billboard && p.billboard !== 'none' ? [] : localShapes(p),
+        tags: p.tags ?? [],
       })),
       spawns: bake.spawns,
     });

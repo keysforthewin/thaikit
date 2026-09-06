@@ -15,6 +15,7 @@ import { ManifestExtras } from '@thai-kit/level-schema';
 
 import { ok, fail, parseArgs } from '../lib/out.mjs';
 import { assertCellKey, buildDirOf } from './pipeline/build-dir.mjs';
+import { assertQuality, withQuality } from './pipeline/quality.mjs';
 
 async function main() {
   const args = parseArgs();
@@ -22,7 +23,8 @@ async function main() {
   if (!id) return fail('need --level <id>');
   const maxDrawCalls = Number(args['max-draw-calls-per-cell'] ?? 24);
   const cell = assertCellKey(args.cell ?? null);
-  const file = path.join(buildDirOf(id, cell), 'level.glb');
+  const quality = assertQuality(args.quality ?? null);
+  const file = path.join(buildDirOf(id, cell), withQuality('level.glb', quality));
   const failures = [];
   const warnings = [];
 
