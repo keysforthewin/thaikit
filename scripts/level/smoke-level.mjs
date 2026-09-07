@@ -9,6 +9,7 @@
  * a frame that is no brighter than the backdrop.
  *
  *   node scripts/level/smoke-level.mjs --level <id> [--size 768] [--cell <ix>_<iz>] [--quality low|medium|high]
+ *       [--cam x,y,z [--look x,y,z] --out <png>]   frame a spot in metres instead of the first spawn
  */
 import fs from 'node:fs/promises';
 import http from 'node:http';
@@ -84,7 +85,8 @@ async function main() {
     page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') errors.push(m.text()); });
     page.on('pageerror', (e) => errors.push(e.message));
     const levelUrl = `/${toRepoRelative(glb)}`;
-    page.goto(`http://127.0.0.1:${port}/render/level-harness.html?level=${encodeURIComponent(levelUrl)}&size=${size}${args['ibl-size'] ? `&iblSize=${Number(args['ibl-size'])}` : ''}`).catch(() => {});
+    const view = args.cam ? `&cam=${encodeURIComponent(String(args.cam))}${args.look ? `&look=${encodeURIComponent(String(args.look))}` : ''}` : '';
+    page.goto(`http://127.0.0.1:${port}/render/level-harness.html?level=${encodeURIComponent(levelUrl)}&size=${size}${args['ibl-size'] ? `&iblSize=${Number(args['ibl-size'])}` : ''}${view}`).catch(() => {});
     const deadline = Date.now() + 120_000;
     let result = null;
     while (Date.now() < deadline) {
@@ -94,7 +96,9 @@ async function main() {
     }
     if (!result?.ready) throw new Error(`harness never became ready; console: ${errors.slice(-5).join(' | ')}`);
     if (!result.ok) throw new Error(`runtime failed: ${result.error}\n${result.stack ?? ''}`);
-    const shot = path.join(buildDirOf(id, cell), withQuality('smoke.png', quality));
+    // --cam x,y,z [--look x,y,z] frames a spot in metres; --out <png> keeps such a view from
+    // overwriting the spawn-view smoke image the gates read.
+    const shot = args.out ? path.resolve(String(args.out)) : path.join(buildDirOf(id, cell), withQuality('smoke.png', quality));
     await page.screenshot({ path: shot });
     // Coverage, not brightness: a night level is dark by design, but a blank
     // frame (SwiftShader silently failing) has nothing in it at all.

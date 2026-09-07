@@ -1127,7 +1127,20 @@ placed geometry. Export writes a second, self-contained GLB.
   `normaliseAttributes({ keep: ['TEXCOORD_1'] })` carries it to stage 4. The extension is UNDOCUMENTED
   (removed in 5.2, back in 5.6) and read by field shape; 4-vector decode factors are recorded, not
   applied, and the report's `epicSample` is what to read on the first real export. `--baker blender`
-  re-lights the same rows in Cycles and is the measured route. `manifest.source` (schema, nullable
+  re-lights the same rows in Cycles and is the measured route. **Two things the Unreal side hides (2026-09-06):** the glTF exporter reads an
+  Interchange material through its `MF_*_Body` function INPUTS (`EmissiveTexture` /
+  `EmissiveFactor` / `EmissiveStrength`) and ignores extra nodes wired to the emissive pin,
+  and it drops RectLights outright (KHR_lights_punctual has no rect) -- every shopfront was a
+  RectLight, so Flash Express reached the game as an unlit yellow box while the editor looked
+  fine. Signs are wired through the function inputs now, shopfronts are lit by spots, and
+  `--emissive-scale` (1/8 on bangkoksoi, beside `--light-scale` 1/128) brings the exported
+  strengths down to three's exposure. `smoke-level.mjs --cam x,y,z --look x,y,z --out <png>`
+  renders a chosen spot instead of the first spawn, which is how that was seen. The exporter also
+  writes CableActors, DecalActors, Niagara systems and ExponentialHeightFog as EMPTY nodes (a name,
+  no mesh): bangkoksoi carried 117 overhead wires, 122 puddle/poster decals, rain, four smoke
+  emitters and a fog volume that only ever existed in the editor, and the owner removed them
+  (2026-09-06) so the editor shows what the browser shows. A wire that must ship is a static mesh,
+  not a cable. `manifest.source` (schema, nullable
   default) is the only trace in the shipped file; `loadLevel()` is unchanged. Tested end to end on a
   synthetic export in `import-unreal-level.test.mjs`. Skill: `thaikit-unreal-bake`.
 - **The Unreal manifest's `emitters` are where the kit's lights GO.** Per item, every emissive

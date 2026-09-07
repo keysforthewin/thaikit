@@ -34,7 +34,7 @@
  * Usage:
  *   node scripts/level/import-unreal-level.mjs --level <id> [--in levels/<id>/unreal/level.glb]
  *        [--manifest exports/unreal/manifest.json] [--cell-size 24] [--sun live|baked]
- *        [--settings <json>] [--no-bbox-colliders] [--ground <y>[,<#hex>]] [--light-scale <f>]
+ *        [--settings <json>] [--no-bbox-colliders] [--ground <y>[,<#hex>]] [--light-scale <f>] [--emissive-scale <f>]
  *        [--sky-map levels/<id>/unreal/sky.json | --no-sky-map]
  * Then:
  *   node scripts/level/bake-level.mjs --level <id> --baker unreal      # adopt Unreal's lightmap
@@ -444,8 +444,26 @@ async function adoptLightmaps(doc, json, bin, epic, outDir, notes) {
 /**
  * @returns {{ bake: object, doc: Document, report: object }}
  */
-export async function convertUnrealLevel({ id, doc, json, bin, kit, extMeshes = null, actorMap = null, skyMap = null, cellSize = 24, sun = 'live', bboxColliders = true, settings = null, lightmapDir = null, ground = null, lightScale = 1, skyFileExists = null }) {
+export async function convertUnrealLevel({ id, doc, json, bin, kit, extMeshes = null, actorMap = null, skyMap = null, cellSize = 24, sun = 'live', bboxColliders = true, settings = null, lightmapDir = null, ground = null, lightScale = 1, emissiveScale = 1, skyFileExists = null }) {
   const notes = [];
+  // Emissive is scene luminance in the same sense a lamp is: a sign fascia at
+  // KHR_materials_emissive_strength 4 reads as a lightbox under Unreal's EV100
+  // exposure and as a blown-out white sheet at three's exposure 1. Scale it
+  // here beside the lamps (`--emissive-scale`, typically 1/8 against the lamps'
+  // 1/128 -- measured on bangkoksoi's brand fascias, not derived) so the
+  // runtime and the Cycles bake both see the sign the editor showed.
+  if (emissiveScale !== 1) {
+    let n = 0;
+    for (const mat of doc.getRoot().listMaterials()) {
+      const ext = mat.getExtension('KHR_materials_emissive_strength');
+      const factor = mat.getEmissiveFactor();
+      if (ext) ext.setEmissiveStrength(ext.getEmissiveStrength() * emissiveScale);
+      else if (factor.some((v) => v > 0)) mat.setEmissiveFactor(factor.map((v) => v * emissiveScale));
+      else continue;
+      n++;
+    }
+    notes.push(`${n} emissive material(s) scaled by ${emissiveScale} (--emissive-scale)`);
+  }
   const scene = doc.getRoot().listScenes()[0];
   if (!scene) throw new Error('the glTF has no scene');
   doc.setLogger(new Logger(Logger.Verbosity.SILENT));
@@ -705,6 +723,8 @@ async function main() {
   // at the source, so the bake's atlas spends its 8 bits at the shipped level.
   const lightScale = Number(args['light-scale'] ?? 1);
   if (!(lightScale > 0)) return fail(`--light-scale must be a positive number, got ${args['light-scale']}`);
+  const emissiveScale = Number(args['emissive-scale'] ?? 1);
+  if (!(emissiveScale > 0)) return fail(`--emissive-scale must be a positive number, got ${args['emissive-scale']}`);
   if (!['live', 'baked'].includes(sun)) return fail('--sun must be live or baked');
   const settings = args.settings ? JSON.parse(await fs.readFile(path.resolve(REPO_ROOT, String(args.settings)), 'utf8')) : null;
   const bboxColliders = !args['no-bbox-colliders'];
@@ -730,7 +750,7 @@ async function main() {
   const skyMap = args['no-sky-map'] ? null : await readSkySidecar(skyMapFile);
   if (skyMap) log(`sky sidecar: ${toRepoRelative(skyMapFile)} (${skyMap.generatedAt ?? 'undated'})`);
   const extMeshes = await readExtManifest(path.resolve(REPO_ROOT, String(args['ext-manifest'] ?? path.join('exports', 'unreal', 'ext', 'manifest.json'))));
-  const { bake, doc: out, report, lightmapPng } = await convertUnrealLevel({ id, doc, json, bin, kit, extMeshes, actorMap, skyMap, cellSize, sun, bboxColliders, settings, lightmapDir: path.join(buildDir, 'lightmap'), ground, lightScale });
+  const { bake, doc: out, report, lightmapPng } = await convertUnrealLevel({ id, doc, json, bin, kit, extMeshes, actorMap, skyMap, cellSize, sun, bboxColliders, settings, lightmapDir: path.join(buildDir, 'lightmap'), ground, lightScale, emissiveScale });
 
   const rawFile = path.join(buildDir, 'raw.glb');
   await io.write(rawFile, out);
@@ -738,6 +758,7 @@ async function main() {
   for (const n of report.notes) log(n);
   log(`${report.placements} placement(s) (${report.static} static in ${report.cells} cell(s), ${report.dynamic} dynamic), ${report.kitProps.reduce((n, k) => n + k.n, 0)} from the kit, ${report.unknownMeshes} Unreal-side mesh(es), ${report.ladders ? `${report.ladders} ladder(s), ` : ''}${report.lights} light(s), ${report.spawns} spawn(s)${report.dropped.length ? `, ${report.dropped.length} empty node(s) dropped` : ''}`);
   if (lightScale !== 1) log(`lights scaled by ${lightScale} (--light-scale): Unreal candela -> three at exposure 1`);
+  if (emissiveScale !== 1) log(`emissive scaled by ${emissiveScale} (--emissive-scale)`);
   log(`lightmap: ${report.lightmap}${lightmapPng ? ' -> bake with --baker unreal' : ' -> bake with --baker blender to light it in Cycles'}`);
   return ok({ level: id, raw: toRepoRelative(rawFile), report: toRepoRelative(path.join(buildDir, 'unreal-import.json')), placements: report.placements, lights: report.lights, spawns: report.spawns, lightmap: report.lightmap, sky: report.sky, nextBaker: lightmapPng ? 'unreal' : 'blender' });
 }

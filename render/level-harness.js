@@ -60,8 +60,13 @@ window.__smoke = { ready: false };
     const spawn = level.spawns.list[0] ?? { position: [0, 0, 0], yawDeg: 0 };
     const b = level.manifest.bounds;
     const center = new THREE.Vector3((b.min[0] + b.max[0]) / 2, 0, (b.min[2] + b.max[2]) / 2);
-    camera.position.set(spawn.position[0], spawn.position[1] + 1.7, spawn.position[2]).add(new THREE.Vector3(0, 6, 14));
-    camera.lookAt(center);
+    // `cam=x,y,z&look=x,y,z` (metres) frames a chosen spot instead -- a shopfront, say --
+    // so a bake can be judged from the street and not only from the first spawn.
+    const vec = (key) => { const v = (params.get(key) ?? '').split(',').map(Number); return v.length === 3 && v.every(Number.isFinite) ? new THREE.Vector3(...v) : null; };
+    const camAt = vec('cam'); const lookAt = vec('look');
+    if (camAt) camera.position.copy(camAt);
+    else camera.position.set(spawn.position[0], spawn.position[1] + 1.7, spawn.position[2]).add(new THREE.Vector3(0, 6, 14));
+    camera.lookAt(lookAt ?? center);
     const frames = {};
     for (const tier of [0, 1, 2]) {
       level.cells.forceTier(tier);
