@@ -57,6 +57,12 @@ const CLOUD_HORIZON_FADE = 0.06;
  * magnitude, and the twinkle is a per-star phase and rate so the field
  * glimmers unevenly instead of pulsing as one.
  *
+ * Three things it learned (2026-09-07), each of which had made the field read
+ * as a pattern rather than a sky: the hash must not be the fract(sin) one,
+ * which strings the hits along the lattice axes; a star's size is in PIXELS
+ * (off `fwidth` of the direction), not in cell units, or every star is one
+ * texel; and magnitude is a LOG scale, or every star is the same grey.
+ *
  * `uDensity` scales the cell grid, so more density means smaller cells and more
  * stars rather than bigger ones.
  */
@@ -77,58 +83,128 @@ uniform vec3  uColor;
 uniform float uHorizonFade;
 varying vec3 vDir;
 
-// A cheap 3-in / 3-out hash. Deterministic, so the field is the same every
-// frame and the same in the editor as in the game.
-vec3 hash33(vec3 p) {
-  p = vec3(dot(p, vec3(127.1, 311.7, 74.7)),
-           dot(p, vec3(269.5, 183.3, 246.1)),
-           dot(p, vec3(113.5, 271.9, 124.6)));
-  return fract(sin(p) * 43758.5453123);
+// Sine-free hashes (Dave Hoskins). The old fract(sin(dot(p, k)) * 43758.5)
+// hash correlates along the lattice axes -- sin of a large argument loses its
+// low bits in float, and the dot with fixed vectors makes neighbouring cells'
+// arguments differ by a constant -- so the cells that passed the hit test sat
+// in ROWS and the field read as stars strung on lines. These do not.
+vec3 hash33(vec3 p3) {
+  p3 = fract(p3 * vec3(0.1031, 0.1030, 0.0973));
+  p3 += dot(p3, p3.yxz + 33.33);
+  return fract((p3.xxy + p3.yxx) * p3.zyx);
+}
+float hash13(vec3 p3) {
+  p3 = fract(p3 * 0.1031);
+  p3 += dot(p3, p3.zyx + 31.32);
+  return fract((p3.x + p3.y) * p3.z);
+}
+
+// Smooth value noise on a coarse grid: the large-scale unevenness of a real
+// sky, where stars gather in some patches and thin out in others.
+float vnoise(vec3 p) {
+  vec3 i = floor(p);
+  vec3 f = fract(p);
+  f = f * f * (3.0 - 2.0 * f);
+  float n000 = hash13(i);
+  float n100 = hash13(i + vec3(1.0, 0.0, 0.0));
+  float n010 = hash13(i + vec3(0.0, 1.0, 0.0));
+  float n110 = hash13(i + vec3(1.0, 1.0, 0.0));
+  float n001 = hash13(i + vec3(0.0, 0.0, 1.0));
+  float n101 = hash13(i + vec3(1.0, 0.0, 1.0));
+  float n011 = hash13(i + vec3(0.0, 1.0, 1.0));
+  float n111 = hash13(i + vec3(1.0, 1.0, 1.0));
+  return mix(mix(mix(n000, n100, f.x), mix(n010, n110, f.x), f.y),
+             mix(mix(n001, n101, f.x), mix(n011, n111, f.x), f.y), f.z);
 }
 
 void main() {
   vec3 dir = normalize(vDir);
 
-  // Dice the sphere of directions into cells and look at the 27 around this
-  // one, so a star near a cell boundary is not clipped in half.
-  //
-  // A star's angular size is radius/cells, so the cell count is what sets how
-  // BIG a star is and the hit rate below is what sets how MANY there are. At 90
-  // cells the brightest star spans half a degree -- ten pixels of soft disc,
-  // which reads as bokeh or falling snow rather than a sky. 320 puts the
-  // brightest at about three pixels and the rest under two, and the hit rate
-  // drops with the square of the cell count to keep the count the same.
-  float cells = 320.0 * clamp(uDensity, 0.05, 8.0);
+  // How much of the sky one screen pixel covers, in direction units (radians,
+  // near enough). Everything below is sized in PIXELS off this, so a star is
+  // the same object at 720p and 4K and at any field of view -- the old shader
+  // sized stars in cell units, and at the editor's 15 px/deg nearly every star
+  // was under one pixel: one texel of the same grey, whatever its magnitude.
+  float pix = max(length(fwidth(dir)), 1e-5);
+
+  // Dice the sphere of directions into cells; each cell holds at most one
+  // star, and the 27 cells around this one are searched so a star near a cell
+  // boundary is not clipped in half. The cell count sets the MAXIMUM density
+  // (one star per cell) and how far a bright star's glow may reach before it
+  // crosses out of the neighbourhood -- about a cell. 160 makes a cell 0.36
+  // degrees, so the largest glow still fits at the editor's 90-degree fov.
+  float cells = 160.0 * clamp(uDensity, 0.05, 8.0);
   vec3 gp = dir * cells;
   vec3 base = floor(gp);
 
-  float acc = 0.0;
+  // Clumping: the hit rate below is scaled by a two-octave noise over the
+  // dome, so the field has rich patches and sparse ones instead of the even
+  // Poisson sprinkle one hash threshold gives. Evaluated at the pixel rather
+  // than per star -- it is smooth over ten degrees, so every star in the
+  // neighbourhood sees the same value.
+  float n = 0.6 * vnoise(dir * 5.0 + 11.3) + 0.4 * vnoise(dir * 13.0 + 3.7);
+  float clump = 0.25 + 1.6 * pow(n, 1.6);
+
+  vec3 acc = vec3(0.0);
   for (int x = -1; x <= 1; x++) {
     for (int y = -1; y <= 1; y++) {
       for (int z = -1; z <= 1; z++) {
         vec3 cell = base + vec3(float(x), float(y), float(z));
         vec3 h = hash33(cell);
-        // Only some cells hold a star, or the sky is a uniform sheet of dots.
-        if (h.z > 0.011) continue;
+        if (h.z > 0.022 * clump) continue;
 
-        // The star's own direction, jittered inside its cell.
+        // Independent draws for the star's own properties, so magnitude never
+        // correlates with position.
+        vec3 g = hash33(cell + 17.31);
+        vec3 k = hash33(cell + 41.7);
+
+        // Position: jittered inside its cell.
         vec3 starDir = normalize((cell + 0.5 + (h - 0.5) * 0.8) / cells);
-        float d = distance(dir, starDir) * cells;
+        float d = distance(dir, starDir);
 
-        // Magnitude: mostly faint, a few bright. The fourth power is what
-        // gives a field a handful of anchors instead of even confetti.
-        float mag = h.x * h.x * h.x * h.x;
-        float radius = 0.30 + mag * 0.55;
-        // Squared falloff on top of the smoothstep: a linear disc at this size
-        // is a smudge, and a point needs a hard centre and a fast edge.
-        float core = 1.0 - smoothstep(0.0, radius, d);
+        // Magnitude with the real sky's distribution: the count of stars
+        // brighter than L goes as L^-1.25 (about three times as many per
+        // magnitude step), spanning a 90:1 range. Inverting that CDF puts 6%
+        // of stars above a tenth of full brightness and 1% above a third --
+        // a handful of anchors over a field of faint specks. A plain
+        // exponential had a quarter of them bright, and read as snow.
+        float lum = pow(1.0 + 276.0 * g.x, -0.8);
 
-        // Per-star phase and rate, so the field glimmers rather than pulses.
-        float phase = h.y * 6.2831853;
-        float rate = 0.6 + h.x * 2.4;
-        float twinkle = 0.55 + 0.45 * sin(uTime * uTwinkleSpeed * rate + phase);
+        // Size in pixels. Faint stars are points; bright ones bloom, which is
+        // the glare a camera or an eye puts around anything bright, and it is
+        // what makes a bright star read as BRIGHT rather than merely white.
+        float radPx = 0.55 + 1.9 * sqrt(lum);
+        float rad = radPx * pix;
+        // A sub-pixel star cannot draw smaller than a pixel, so keep its
+        // ENERGY instead: widen it to the pixel and dim it by the area ratio.
+        // Without this a faint star was on or off by where it fell in a pixel.
+        float drawn = max(rad, 0.7 * pix);
+        float energy = (rad * rad) / (drawn * drawn);
+        // Never let a glow reach out of the 27-cell neighbourhood.
+        drawn = min(drawn, 0.9 / cells);
 
-        acc += core * core * core * (0.35 + mag * 1.6) * twinkle;
+        float q = d / drawn;
+        // A Gaussian core, and a wider, fainter halo on the bright ones.
+        float core = exp(-4.0 * q * q);
+        float halo = exp(-0.7 * q * q) * 0.10 * lum;
+
+        // Twinkle: two incommensurate rates per star so it flickers rather
+        // than pulses; a small amplitude, smaller still on bright stars, and
+        // stronger toward the horizon where there is more air in the way. A
+        // star is never switched off by it -- it wavers, it does not blink.
+        float t = uTime * uTwinkleSpeed * (0.7 + 2.0 * g.z);
+        float ph = g.y * 6.2831853;
+        float wave = 0.6 * sin(t + ph) + 0.4 * sin(1.73 * t + 2.1 * ph);
+        float amp = 0.30 * (1.0 - 0.6 * lum) * (1.0 + 1.2 * (1.0 - clamp(dir.y, 0.0, 1.0)));
+        float twinkle = 1.0 + amp * wave;
+
+        // Colour temperature: most stars white, a tail to orange and to
+        // blue-white. Normalised around 1 so uColor stays the level's tint.
+        vec3 warm = vec3(1.00, 0.78, 0.58);
+        vec3 cool = vec3(0.72, 0.82, 1.00);
+        vec3 tint = mix(mix(warm, cool, smoothstep(0.15, 0.85, k.x)), vec3(1.0), 0.45);
+
+        acc += tint * (lum * energy * (core + halo) * twinkle);
       }
     }
   }
@@ -136,8 +212,8 @@ void main() {
   // Fade out toward and below the horizon -- a star field that runs into the
   // ground plane reads as a hole in the world.
   float fade = smoothstep(uHorizonFade - 0.05, uHorizonFade + 0.35, dir.y);
-  float v = acc * uBrightness * fade;
-  if (v <= 0.001) discard;
+  vec3 v = acc * (2.2 * uBrightness * fade);
+  if (max(v.r, max(v.g, v.b)) <= 0.001) discard;
   gl_FragColor = vec4(uColor * v, 1.0);
   #include <tonemapping_fragment>
   #include <colorspace_fragment>

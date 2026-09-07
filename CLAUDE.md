@@ -534,6 +534,23 @@ placed geometry. Export writes a second, self-contained GLB.
     row until about 12. A side face also spans only +-45 degrees, so its BOTTOM
     row looks 45 degrees down and the horizon is its MIDDLE row; both mistakes
     cost a test rewrite each.
+  - **The star field is keyed off DIRECTION, hashed without `sin`, sized in PIXELS and
+    graded on a LOG scale.** The first version put the stars in rows and made every one the
+    same one-pixel grey, and three separate things did it (2026-09-07): `fract(sin(dot(p,k))
+    * 43758.5)` on an integer lattice correlates along the lattice axes (sin of a large
+    argument has no low bits left in float, and adjacent cells differ by a constant), so the
+    cells that passed the hit test lined up; the star radius was in CELL units, and at the
+    editor's 15 px/deg every star was under a pixel; and a fourth-power magnitude left the
+    field at one intensity. `STAR_FRAG` now uses Dave Hoskins' sine-free `hash33`/`hash13`,
+    sizes each star in pixels off `fwidth(dir)` (a sub-pixel star is widened to a pixel and
+    dimmed by the area ratio, so it is a dim point rather than on-or-off by where it falls),
+    draws magnitude from the real sky's CDF (`pow(1 + 276 g, -0.8)`: 6% above a tenth, 1%
+    above a third, 90:1 range), clumps the hit rate with two octaves of value noise, and
+    twinkles with two incommensurate sines at an amplitude that never switches a star off
+    and shrinks on the bright ones. `fwidth` in an ESSL1 shader is fine: three is WebGL2-only
+    and derivatives are core there. `levels/thepurge` has `stars.density` 2 and
+    `brightness` 0.5, tuned against the old shader; the defaults (1, 1) are the calibrated
+    look now.
   - **Cube faces are NOT flipped; equirects are.** `CubeTexture.flipY` is false
     in three, for the editor's `CubeTextureLoader` preview and the runtime's
     `CompressedCubeTexture` alike, so both read row 0 as the top and there is
