@@ -121,7 +121,26 @@ directional from the runtime's lights so it is not counted twice).
 Unreal `far_ground` plane); `bangkoksoi` uses `--ground=-0.12,#2b2b29` (the `=`
 matters: a bare `-0.12` reads as an option).
 `--settings <json>` to pass thaikit level settings (LOD distances, lightmap
-size for a Cycles bake, ambient); the defaults are the editor's.
+size for a Cycles bake, ambient); the defaults are the editor's. **`--quality
+high` bakes at whatever the RAW carries**, so an import without
+`--settings levels/<id>/settings.json` ships a "high" build at the importer's
+defaults (4096², 128 samples, adaptive) -- bangkoksoi's shipping recipe is
+`--settings levels/bangkoksoi/settings.json` (8192², 1152 samples, adaptive
+off) on every re-import; read the bake's `running blender` line to confirm.
+`--emissive-scale <f>` scales every material's emissive (strength extension or
+factor) the way `--light-scale` scales the lamps: a sign fascia at emissive
+strength 4 is a lightbox under Unreal's exposure and a blown-out white sheet at
+three's exposure 1. `bangkoksoi` uses `--light-scale 0.0078125 --emissive-scale
+0.125` (measured on its brand fascias: signs 2-5 -> 0.25-0.6, glass 1 -> 0.125).
+Note the Unreal side: the exporter reads Interchange's `MF_*_Body` function
+INPUTS (`EmissiveTexture`, `EmissiveFactor`, `EmissiveStrength`), so emissive
+added as extra material nodes never exports, and RectLights never export at all
+(KHR_lights_punctual has no rect) -- light shopfronts with SpotLights.
+CableActors, DecalActors, Niagara emitters and ExponentialHeightFog export as
+EMPTY nodes (name only, dropped by the importer), so anything that must reach
+the game is a StaticMeshActor or a punctual light; bangkoksoi has none of the
+others left. Count emissive materials, light types and mesh-less nodes in the
+exported GLB before baking.
 
 ## 3. Bake
 
