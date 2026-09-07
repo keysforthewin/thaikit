@@ -753,6 +753,20 @@ placed geometry. Export writes a second, self-contained GLB.
   which is why `packages/level-runtime/test/materials.test.mjs` asserts all three anchor strings
   exist verbatim AND that the patch lands in the shader a real compile would see, and why
   `smoke-level.mjs` now FAILS on any `[level-runtime]` console warning.
+- **The moon's follow-the-player shadow box must never touch its DIRECTION -- and it did.**
+  GLTFLoader parents a directional light's `target` to the LIGHT ITSELF at local (0, 0, -1); that
+  child is how the node's rotation becomes the light's direction. `makeFollow` in
+  `packages/level-runtime/src/lights.js` wrote the player's ROOT-space position into that child's
+  `position`, so the shipped moon pointed along `R_moon * playerPosition`: a zero vector at the
+  origin, UPWARD over most of bangkoksoi (measured live `[0.42, 0.71, -0.57]` against the authored
+  `[-0.54, -0.64, 0.55]`), and swinging with every step -- which is "walk three steps right and a
+  whole facade lights up", and specular highlights that fly across the road, while the lightmap's
+  alpha kept masking against the authored direction. It never showed because nothing but a real game
+  calls `follow`: Cycles bakes the authored direction, the editor's play mode keeps its own target
+  in the scene, and `smoke-level.mjs` never moves. The target lives under the root now
+  (`lights.test.mjs` builds the light the way GLTFLoader does and asserts the direction survives
+  four follows, nested-parent case included). When a live moon "looks wrong", read the direction
+  off `moon.target.matrixWorld - moon.matrixWorld` in the running game before anything else.
 - **Every authored point and spot lamp is BAKED -- direct, shadows and bounce -- and the runtime
   cuts their live direct term on static materials.** That is what a lightmap is for, and for a
   while it was the opposite: `bake_lightmap.py` hid every lamp for both passes and RGB held sky +
