@@ -8,6 +8,21 @@ a GLB: it is a **procedural Three.js factory**, a small JavaScript module that
 builds a `THREE.Group` in code. That makes every part named, every moving part
 pivoted, and every prop editable as source rather than as opaque geometry.
 
+![A Bangkok soi at night, built from thaikit props and baked to one GLB](docs/images/bangkoksoi-street.jpg)
+
+**[Browse the 154 props](https://outdoordevs.com/thaikit/)** ·
+**[Play a baked level](https://xplorerhq.live/purge)** ·
+**[Use a level in your game](docs/using-a-baked-level.md)**
+
+```bash
+npx vibe3d add @thai-kit/props     # the whole kit
+npx vibe3d add @thai-kit/tuk-tuk   # one prop
+```
+
+The props are a [vibe3d](https://github.com/vibe-stack/vibe3d) pack, which is the
+only way they ship. Each one arrives as four files — the factory, its vibe3d
+entry, the asset record and a ray-checked collider compound.
+
 ```js
 import * as THREE from 'three';
 // From the installed pack (thaikit's own props are a vibe3d pack; the bundle is a build product)

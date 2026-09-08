@@ -183,3 +183,149 @@ The smoke harness reports a generic HTTP 404 but no runtime validation failure.
 This is a Cycles bake; Unreal fog, Lumen, post-process and Niagara do not carry over.
 Reload the selected high or medium GLB through the game Levels control to discard
 the previously loaded asset.
+
+## Coverage pass — 2026-09-08
+
+The 09-07/09-08 work fixed sampling and atlas padding; it never audited **where the
+light lands**. The light-coverage viewmode showed large voids. This pass measures
+coverage in world space, retunes the existing rig for softness, and fills the voids
+with real fixtures.
+
+### The instrument
+
+`scripts/level/light-coverage.mjs` (new, 12 tests in `light-coverage.test.mjs`) is the
+only thing in the repo that answers "where is it dark" in **world space** —
+`probe-lightmap.mjs` is atlas-statistical and `scratch/_qa/sample_lm.py` samples six
+hard-coded AABBs. Two modes, one output format (ASCII map + percentiles to stderr, one
+JSON line to stdout):
+
+- `--mode rig` integrates `I·f·cosθ/d²` from the punctual rig onto an XZ grid at ankle
+  height, with the spot cone smoothstepped between inner and outer, and occlusion
+  against a span-based occluder lattice. Reads `bake.json`, or a compact CSV
+  (`kind,x,y,z,dx,dy,dz,intensity,angle,penumbra,distance`) so the **live editor** can
+  be measured without an export.
+- `--mode atlas --quality high` samples the shipped lightmap through every primitive's
+  `TEXCOORD_1`, keeping up-facing triangles in the walkable band.
+
+Three things it had to learn, each of which produced a wrong map first:
+
+- **Occluders are SPANS, not a heightfield**, foliage is skipped by name, and they
+  rasterise on their own 1 m lattice. Rasterising every static AABB at report
+  resolution blacked the map out — 176 `border_trees` and 51 `border_block` boxes are
+  mostly air. A thin volume above 2.5 m is a deck or canopy and still occludes; the
+  same volume on the ground is a kerb and does not.
+- **A cell inside a building footprint is EMPTY, not dark** (290 of 992 here).
+  Otherwise the rig and atlas modes are not comparable and every interior reads as a
+  coverage failure.
+- **The atlas is sampled with NO v flip.** `bake_lightmap.py` writes `u16[::-1]` so the
+  exporter's `v' = 1 − v` already agrees. Settled by correlation against the
+  independent rig map: **r = 0.7272 unflipped, −0.0374 flipped** (the zero-sample rate
+  argues the other way and is misleading — it counts out-of-grid samples on the 900 m
+  `far_ground`).
+
+`--mode rig` honours `distance`, which Cycles ignores, so it is deliberately the
+conservative of the two: a lamp reaches further in the bake than the map says.
+
+### What changed in `/Game/Maps/BangkokSoi`
+
+**Retune (167 spotlights across 22 families).** `innerConeAngle` driven down so
+penumbra lands at **0.83–0.89** (was 0.44–0.61), outer angle untouched so the lit
+footprint does not shrink. `innerConeAngle` is the *only* softness knob that survives
+the bake — `bake_lightmap.py` hands Blender `spot_blend = 1 − inner/outer`, and
+`sourceRadius` never reaches it (`LAMP_RADIUS` is hard-coded at 0.1 m). Examples:
+`L_soi_pole_soilamp` 38/72 → 8/72; `border_lamp` 35/70 → 10/70; `L_front0/1_*` 25/62 →
+10/62; `relight_entry_*` 28/70 → 12/70. Uplights and the archived vehicle lights were
+deliberately skipped.
+
+Peaks trimmed now that the cones are feathered: `L_soi_pole_soilamp*` 2100 → 1700 cd,
+`L_cobra_pole_cobra` 3200 → 2600 cd. `border_lamp_04` was authored in **Nits**
+(45,445) while all 21 siblings are Candelas; normalised to 1500 cd / atten 3000.
+**It was not the source of the shipped bake's maximum** — the glTF exporter normalises
+Nits to candela by source area, so `bake.json` exports it at 375, identical to its
+siblings. The editor viewmode was the only place it read hot.
+
+**Fill: 74 new lights, each with its own placed thaikit fixture mesh** (folders
+`Lights/Added2609` and `Lights/Added2609/Fixtures`) — `SoiLampOnUtilityPole` ×50,
+`OrnamentalLampPost` ×9, `BulkheadWallPackLight` ×6, `EnamelShadeMarketBulb` ×3,
+`FluorescentBattenLight` ×2, `SteelCobraHeadStreetLamp` ×2, `LedFloodPanelWallLight`
+×2. All Static, Candelas, inverse-square, explicit RGB (`bUseTemperature` false),
+shadows on, inner ≈ 0.12 × outer.
+
+Positions for the last 34 came from **greedy set cover**
+(`scratch/lighting-20260908/propose.mjs`) over the rig grid, not from an outliner
+survey. That matters: hand placement from the actor list moved the dark-cell count by
+**10**; set cover moved it by **89**. The void was never "the temple compound" — it is
+a band across the whole northern half.
+
+`snap_to_ground` perched three fixtures on obstacles (posts at 1.50 m and 1.87 m, a
+pole at 5.04 m); they were reset to z = 0 and snapping was disabled for the remaining
+batches, since the play block's ground tiles are all at z = 0.
+
+**Ambient:** `sky.base.intensity` 0.16 → **0.22** in `unreal/sky.json` (this is also
+`--env-strength`, so the Cycles world and the runtime probe move together).
+**Signage:** import with `--emissive-scale 0.18` (was 0.125).
+
+### Measured result
+
+Live editor rig, 307 enabled point/spot lights (242 spot, 65 point, 28 correctly
+archived), standable ground only, bake units, threshold 0.4, alleys excluded:
+
+| metric | before | after |
+|---|---|---|
+| p10 | 0.000 | **0.676** |
+| p25 | 0.591 | **1.621** |
+| p50 | 1.087 | **3.071** |
+| max | 30.759 | **23.332** |
+| uniformity p10/p50 | 0.000 | **0.220** |
+| peak max/p50 | 15.06 | **7.598** |
+| cells under 0.4 | 361 / 702 (51%) | **50 / 702 (7.1%)** |
+
+Peak target (≤ 8) met. Uniformity is 0.220 against a 0.30 target — but the rig map
+carries **only** the punctual lights: no sky, no bounce, no emissive. Those are exactly
+what the ambient and emissive lift above raise, so the atlas is expected to read higher.
+Judge it on `--mode atlas`, not here.
+
+Baselines for the comparison are `scratch/lighting-20260908/baseline-rig.json` and
+`baseline-atlas-high.json`; the live rig dump is `rig-live-after.csv`.
+
+### Deliberately dark
+
+Two service gaps behind the shophouse row, recorded by name so a later coverage run
+does not read them as a regression:
+
+- `alley_north` = x −46…32, y 8…11
+- `alley_south` = x −42…−9, y −11…−8
+
+Pass them as
+`--exclude "alley_north=-46,8,32,11;alley_south=-42,-11,-9,-8"`.
+
+### Drift found
+
+Three `soi_wall` lights present in the delivered `bake.json` (16) no longer exist in
+the map (13) — deleted since the 09-07 export. The measurement above is therefore
+taken from a **live rig dump**, not from `bake.json` plus an edit list, which removes
+that whole class of error.
+
+### Remaining chain (not yet run)
+
+```sh
+# in the Unreal editor
+scratch/lighting-20260907/export-colours.py
+scratch/lighting-20260907/export.py
+
+# in the container
+docker compose run --rm --no-deps -e HOME=/tmp web node scripts/level/import-unreal-level.mjs \
+  --level bangkoksoi --settings levels/bangkoksoi/settings.json \
+  --ground=-0.12,#2b2b29 --light-scale 0.25 --emissive-scale 0.18
+docker compose run --rm --no-deps -e HOME=/tmp web node scripts/level/bake-level.mjs \
+  --level bangkoksoi --quality low --live-lamps 20
+# then medium, then: --quality high --lightmap-size 8192 --samples 4096 \
+#   --noise-threshold 0 --live-lamps 20   (~2h20m; check `swapon --show` first)
+```
+
+Verification: `light-coverage.mjs --mode atlas --quality high` against
+`baseline-atlas-high.json`; `probe-lightmap.mjs --compare` (coverage ~0.49,
+clipRate ≤ 0.30%, alpha histogram bimodal — `range` will move, 74 new lamps shift the
+p99.9 channel peak); `verify-level.mjs`; `smoke-level.mjs` with `--cam/--look` at the
+temple courtyard (≈ −28, 2, 52), dorm backstreet (≈ −32, 2, 58), south verge
+(≈ −2, 2, −42) and the west road curve.

@@ -1,6 +1,6 @@
 # @thai-kit/props
 
-A [vibe3d](https://github.com/vibe-stack/vibe3d) pack of **134 game-ready Thai street props**,
+A [vibe3d](https://github.com/vibe-stack/vibe3d) pack of **154 game-ready Thai street props**,
 shipped as procedural Three.js **source** rather than as GLB files.
 
 Every prop is a factory that builds a `THREE.Group` in code. `vibe3d add` installs the
