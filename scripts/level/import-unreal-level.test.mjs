@@ -53,7 +53,7 @@ const quatY = (deg) => { const r = (deg * Math.PI) / 180; return [0, Math.sin(r 
  * plus EPIC_lightmap_textures on the nodes, spliced into the JSON by hand
  * because gltf-transform drops extensions it does not know.
  */
-async function unrealLikeGlb({ withLightmaps = true, withSky = false } = {}) {
+async function unrealLikeGlb({ withLightmaps = true, withSky = false, lightNodePrefix = '' } = {}) {
   const doc = new Document();
   doc.setLogger(new Logger(Logger.Verbosity.SILENT));
   const buffer = doc.createBuffer();
@@ -78,7 +78,7 @@ async function unrealLikeGlb({ withLightmaps = true, withSky = false } = {}) {
 
   const lights = doc.createExtension(KHRLightsPunctual);
   const spot = lights.createLight('Lamp').setType('spot').setColor([1, 0.6, 0.2]).setIntensity(1600).setOuterConeAngle(0.6).setInnerConeAngle(0.3).setRange(18);
-  scene.addChild(doc.createNode('Lamp').setTranslation([2, 7.5, 3]).setRotation([-Math.SQRT1_2, 0, 0, Math.SQRT1_2]).setExtension('KHR_lights_punctual', spot));
+  scene.addChild(doc.createNode(`${lightNodePrefix}Lamp`).setTranslation([2, 7.5, 3]).setRotation([-Math.SQRT1_2, 0, 0, Math.SQRT1_2]).setExtension('KHR_lights_punctual', spot));
   const moon = lights.createLight('Moon').setType('directional').setColor([0.7, 0.8, 1]).setIntensity(1);
   scene.addChild(doc.createNode('Moon').setTranslation([0, 40, 0]).setRotation([-0.5, 0, 0, Math.SQRT1_2]).setExtension('KHR_lights_punctual', moon));
   const cam = doc.createCamera('spawncam').setType('perspective').setYFov(1).setZNear(0.1);
@@ -153,6 +153,18 @@ test('euler and forward helpers agree with three', () => {
   assert.ok(Math.abs(x) < 1e-6 && Math.abs(y - Math.PI / 2) < 1e-6 && Math.abs(z) < 1e-6);
   const f = forward([-Math.SQRT1_2, 0, 0, Math.SQRT1_2]); // -90 about X: -Z becomes -Y
   assert.ok(Math.abs(f[1] + 1) < 1e-6, `points down, got ${f}`);
+});
+
+test('only explicitly nominated punctual spotlights retain runtime shadows', async () => {
+  const bytes = await unrealLikeGlb({ withLightmaps: false });
+  const plain = await convert(bytes);
+  assert.equal(plain.bake.lights.find((l) => l.type === 'spot').castShadow, false);
+  const nominated = await convert(bytes, { actorMap: { Lamp: { runtimeShadow: true } } });
+  const lamp = nominated.bake.lights.find((l) => l.type === 'spot');
+  assert.equal(lamp.castShadow, true);
+  assert.equal(lamp.shadow.mapSize, 1024);
+  const prefixed = await convert(await unrealLikeGlb({ withLightmaps: false, lightNodePrefix: 'LightNode_' }), { actorMap: { Lamp: { runtimeShadow: true } } });
+  assert.equal(prefixed.bake.lights.find((l) => l.type === 'spot').castShadow, true);
 });
 
 test('an Unreal export becomes placement rows, lights, spawns and colliders the pipeline understands', async () => {

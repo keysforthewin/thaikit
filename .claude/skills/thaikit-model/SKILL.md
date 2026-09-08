@@ -156,8 +156,12 @@ never invent it.
 > - **Working directory:** `<ABSOLUTE repo path>/scratch/<id>/`. Write the spec,
 >   assessment, renders and factory there. Run every `forge/` script from the
 >   img2threejs skill root with absolute `--state` / `--out` paths.
-> - **Iteration budget — strict quality, up to 10 corrections:**
->   `state.py init --profile <generic|character> --max-per-pass 3 --max-total 10`.
+> - **Iteration budget — strict quality, up to 6 corrections per pass and 10 total:**
+>   `state.py init --profile <generic|character> --max-per-pass 6 --max-total 10`.
+>   These ceilings apply to every pass, including blockout and form refinement;
+>   they do not lower visual acceptance scores or change the asset's scene budget.
+>   Existing runs retain their saved limits unless the user approves an extension.
+>   When extending a run, preserve its correction counts and review history.
 >   Run `validate_sculpt_spec.py --strict-quality` and do not generate a factory
 >   until it passes. Do not stop at "improved" — stop at the gate or the ceiling.
 > - **Work every pass:** `blockout → structural-pass → form-refinement →

@@ -519,9 +519,13 @@ export async function convertUnrealLevel({ id, doc, json, bin, kit, extMeshes = 
       } else {
         const outer = type === 'spot' ? light.getOuterConeAngle() : null;
         const inner = type === 'spot' ? light.getInnerConeAngle() : null;
+        // Only explicitly nominated spotlights get live shadows. Unreal's
+        // castShadows is also needed for the bake preview and is not a live budget.
+        const lightActor = actorMap?.[name] ?? actorMap?.[name.replace(/^LightNode_/, '')];
+        const runtimeShadow = type === 'spot' && lightActor?.runtimeShadow === true;
         lights.push({
           id: lid, node: `light_${lid}`, type, role: null, color: rgbToHex(light.getColor()), intensity: light.getIntensity() * lightScale,
-          position: t.map((v) => +v.toFixed(4)), direction: type === 'spot' ? dir : null, castShadow: false, shadow: null,
+          position: t.map((v) => +v.toFixed(4)), direction: type === 'spot' ? dir : null, castShadow: runtimeShadow, shadow: runtimeShadow ? { ...DEFAULT_SHADOW, mapSize: 1024 } : null,
           distance: light.getRange() ?? null, angle: outer, penumbra: outer ? +(1 - (inner ?? outer) / outer).toFixed(3) : null, decay: 2,
         });
       }

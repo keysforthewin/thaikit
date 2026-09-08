@@ -19,12 +19,13 @@ export function applyLights(manifest, root, { hemisphere = true } = {}) {
       light.shadow.mapSize.set(entry.shadow.mapSize, entry.shadow.mapSize);
       light.shadow.bias = entry.shadow.bias;
       light.shadow.normalBias = entry.shadow.normalBias;
+      // Static cells also occlude local lamps on moving characters.
+      light.shadow.camera.layers.enable(CASTER_LAYER);
       if (light.isDirectionalLight) {
         const ext = entry.shadow.extent;
         const cam = light.shadow.camera;
         cam.left = -ext; cam.right = ext; cam.top = ext; cam.bottom = -ext; cam.near = 0.5; cam.far = ext * 4;
         cam.updateProjectionMatrix();
-        light.shadow.camera.layers.enable(CASTER_LAYER);
       }
     }
     if (entry.role === 'moon') moon = light;

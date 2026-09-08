@@ -123,7 +123,7 @@ export function selectLiveLamps(lights, spawns, liveLamps, bakedLights) {
   const anchors = spawns.length ? spawns.map((s) => s.position) : [[0, 0, 0]];
   const near = (p) => Math.min(...anchors.map((a) => Math.hypot(p[0] - a[0], p[1] - a[1], p[2] - a[2])));
   const rank = (l) => (l.intensity ?? 0) / (1 + near(l.position ?? [0, 0, 0]) / 20);
-  const lamps = lights.filter((l) => l.type !== 'directional' && l.role !== 'moon').sort((a, b) => rank(b) - rank(a));
+  const lamps = lights.filter((l) => l.type !== 'directional' && l.role !== 'moon').sort((a, b) => Number(Boolean(b.castShadow)) - Number(Boolean(a.castShadow)) || rank(b) - rank(a));
   const keep = new Set(lamps.slice(0, liveLamps).map((l) => l.id ?? l.node));
   const rest = lamps.slice(liveLamps).map((l) => l.id ?? l.node);
   return {

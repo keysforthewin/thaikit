@@ -39,6 +39,9 @@ import zlib
 import sys
 import time
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from lightmap_padding import prepare_bake_images, dilate_lightmap
+
 import bpy
 import bmesh
 import numpy as np
@@ -50,6 +53,7 @@ ap.add_argument('--glb', required=True)
 ap.add_argument('--out', required=True)
 ap.add_argument('--size', type=int, default=4096)
 ap.add_argument('--samples', type=int, default=128)
+ap.add_argument('--shadow-samples', type=int, default=None)
 ap.add_argument('--moon', default='-0.4,-1,-0.3,0.72,0.78,0.95,1.0,1.5')
 ap.add_argument('--sky', default='0.53,0.59,0.76,0.35')
 ap.add_argument('--ground', default='0.05,0.04,0.03')
@@ -65,7 +69,8 @@ ap.add_argument('--exposure', type=float, default=1.0)
 # Built here rather than read from the glTF so the units are ours; see the
 # lamp block below. Callers pass it as `--lights=[...]`.
 ap.add_argument('--lights', default='[]')
-ap.add_argument('--margin', type=float, default=0.004)
+ap.add_argument('--margin', type=float, default=0.004,
+                help='Deprecated compatibility argument; padding is derived from --gutter.')
 # Gap between packed islands, in TEXELS of the final atlas. The old pack used
 # `--margin` as a FRACTION of the atlas around every island, which is 16 px at
 # 4096 -- fine for 18 islands, impossible for the 107,740 that smart-project
@@ -356,8 +361,10 @@ else:
     size = args.size
     log(f'WARNING atlas {size}² (no measurable UV area after packing; the lightmap will be EMPTY)')
 
-img_rgb = bpy.data.images.new('lm_rgb', size, size, alpha=False, float_buffer=True)
-img_shadow = bpy.data.images.new('lm_shadow', size, size, alpha=False, float_buffer=True)
+img_rgb = bpy.data.images.new('lm_rgb', size, size, alpha=True, float_buffer=True)
+img_shadow = bpy.data.images.new('lm_shadow', size, size, alpha=True, float_buffer=True)
+# Cycles writes alpha=1 on covered texels, including fully black surfaces.
+prepare_bake_images(scene, (img_rgb, img_shadow))
 
 
 def set_target(image):
@@ -551,10 +558,11 @@ if args.noise_threshold is not None:
         scene.cycles.adaptive_threshold = args.noise_threshold
 scene.cycles.use_denoising = True
 scene.cycles.bake_type = 'DIFFUSE'
-# The pack gutter is a FRACTION of the atlas (0.004 -> 16 px at 4096 but only
-# 2 px at 512), so a constant 6 px dilation bleeds across islands at the small
-# sizes the cheap round-trip test uses -- which made that test lie about seams.
-scene.render.bake.margin = max(2, int(size * args.margin / 2))
+# Do not pad each batch. Cycles only knows the CURRENT batch's coverage and
+# can overwrite another batch's islands, erasing their lighting and shadows.
+# The old fractional margin grew to 16px on an 8192 atlas whose packed gutter
+# was only 2px. Pad once, against the union coverage, after both complete bakes.
+assert scene.render.bake.margin == 0
 try:
     scene.render.bake.margin_type = 'ADJACENT_FACES'
 except (AttributeError, TypeError):
@@ -751,6 +759,8 @@ bake_static('bake 1/2 diffuse', 'DIFFUSE')
 # lamp left on here reads as a smear across the middle of the probe's alpha
 # histogram.
 log('bake 2/2: moon shadow mask')
+scene.cycles.samples = args.shadow_samples or args.samples
+log(f'moon mask samples: {scene.cycles.samples}')
 sun.hide_render = False
 for o in lamps:
     o.hide_render = True
@@ -793,7 +803,7 @@ lin = rgb[:, 0:3] * args.exposure
 # the bottom of the 8-bit range. The baked lamps raise p99.9 (a 12 cd lamp is
 # 1.33 at 3 m), so `range` is usually above 1 on a lit level now; that is the
 # 8-bit atlas paying for the lamps with precision in the dark, and expected.
-covered = np.any(rgb[:, 0:3] > 0.0, axis=1)
+covered = rgb[:, 3] > 0.5
 # The PER-CHANNEL peak, not the luminance. Clipping happens channel by channel,
 # and luminance weights blue at 0.0722 -- so on a blue night sky a texel can peg
 # its B channel at full scale while its luminance is 0.07, nowhere near a
@@ -817,6 +827,7 @@ stats = {
     'coverage': float(covered.sum()) / float(covered.size),
     'size': size,
     'samples': args.samples,
+    'shadowSamples': args.shadow_samples or args.samples,
     'noiseThreshold': (scene.cycles.adaptive_threshold if scene.cycles.use_adaptive_sampling else 0),
     # How many authored lamps went into RGB. Its PRESENCE is what tells the
     # manifest this atlas carries the lamps, so the runtime may cut their live
@@ -878,6 +889,11 @@ srgb = np.empty_like(out)
 c = out[:, 0:3]
 srgb[:, 0:3] = np.where(c <= 0.0031308, c * 12.92, 1.055 * np.power(np.maximum(c, 1e-8), 1.0 / 2.4) - 0.055)
 srgb[:, 3] = out[:, 3]
+padding = max(0, int(args.gutter / 2))
+dilate_lightmap(srgb.reshape(size, size, 4), covered.reshape(size, size), padding)
+stats['paddingPixels'] = padding
+stats['paddingMode'] = 'global-coverage'
+log(f'padded {padding}px once using union surface coverage; baked texels preserved')
 write_png16(f'{args.out}/lightmap.png', srgb)
 with open(f'{args.out}/lightmap.json', 'w') as fh:
     json.dump(stats, fh)

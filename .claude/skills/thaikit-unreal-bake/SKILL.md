@@ -125,12 +125,23 @@ size for a Cycles bake, ambient); the defaults are the editor's. **`--quality
 high` bakes at whatever the RAW carries**, so an import without
 `--settings levels/<id>/settings.json` ships a "high" build at the importer's
 defaults (4096², 128 samples, adaptive) -- bangkoksoi's shipping recipe is
-`--settings levels/bangkoksoi/settings.json` (8192², 1152 samples, adaptive
+`--settings levels/bangkoksoi/settings.json` (8192², 4096 samples, adaptive
 off) on every re-import; read the bake's `running blender` line to confirm.
+Do not reduce the level's shipping sample count just because the atlas is
+8192 pixels. A 128-sample BangkokSoi bake produced large black blotches in
+lamp illumination. Compare a representative patch against a converged
+reference and inspect player-height renders, including self-shadows, before
+accepting a changed sample count. File validation does not measure noise.
+Keep Cycles' per-batch bake margin at zero. The baker pads the completed atlas
+once using geometric coverage, so neighboring islands and fully black shadow
+texels survive. The old 16-pixel per-batch margin overwrote islands separated
+by a 2-pixel gutter. Run `lightmap_padding_test.py` and
+`lightmap_padding_blender_test.py` under Blender when changing atlas padding;
+both RGB lighting and moon-mask alpha must be rebuilt after this fix.
 `--emissive-scale <f>` scales every material's emissive (strength extension or
 factor) the way `--light-scale` scales the lamps: a sign fascia at emissive
 strength 4 is a lightbox under Unreal's exposure and a blown-out white sheet at
-three's exposure 1. `bangkoksoi` uses `--light-scale 0.0078125 --emissive-scale
+three's exposure 1. `bangkoksoi` uses `--light-scale 0.25 --emissive-scale
 0.125` (measured on its brand fascias: signs 2-5 -> 0.25-0.6, glass 1 -> 0.125).
 Note the Unreal side: the exporter reads Interchange's `MF_*_Body` function
 INPUTS (`EmissiveTexture`, `EmissiveFactor`, `EmissiveStrength`), so emissive

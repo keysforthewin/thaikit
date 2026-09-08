@@ -37,6 +37,12 @@ The converter keys on names, because glTF carries nothing else:
   counted twice; if you must have one, pass `--sun baked` to the converter.
 - **Point and spot lamps** export in candela and become `bake.lights`. With a
   Cycles bake they are baked; with an adopted Unreal lightmap they already are.
+- **Selected live spotlight shadows:** add `{ "runtimeShadow": true }` to the
+  light's entry in `actors.json`'s `actors` map. Use unique actor labels. This
+  explicitly nominates a spotlight for a 1024px runtime shadow map; ordinary
+  Unreal `Cast Shadows` remains a bake/preview setting. Nominated lights take
+  priority inside `--live-lamps`, which still caps the total. The game may
+  further limit them by graphics quality. Point lights remain unshadowed live.
 - **The sky is `BP_TK_Sky`** (`/Game/ThaiKit/Sky/BP_TK_Sky`, one per level,
   label `tk_sky`, folder `Sky`). Its Details panel holds every field of thaikit's
   sky settings -- the panorama or six cube-face textures, the elevation span and
@@ -102,7 +108,7 @@ lightmap size for Cycles, ambient; its `sky` block loses to the sidecar),
 `--manifest <path>` (a kit manifest other than `exports/unreal/manifest.json`),
 `--ground <y>[,<#hex>]` (drop the `far_ground` plane and lay per-cell tiles at
 that height; write it `--ground=-0.12,#2b2b29`, a leading `-` reads as a flag),
-`--light-scale <f>` (Unreal candela → three at exposure 1; 1/128 on
+`--light-scale <f>` (Unreal candela → three at exposure 1; 0.25 on
 `bangkoksoi`), `--sky-map <path>` / `--no-sky-map`.
 
 The report's `sky` block says where the sky came from (`sidecar`, `settings`
@@ -130,7 +136,7 @@ the game's folder and nothing has to be restored after a test bake:
 | --- | --- | --- | --- |
 | `low` | `--baker none`: no lightmap, textures and sky faces capped at 1024, lit by the live moon. Tests the geometry, colliders, LOD, spawns and sky. | `<id>_low.glb` | 52 s |
 | `medium` | Cycles at 2048² / 16 samples (adaptive). The lamps, the sky light and the moon's shadows land roughly where they will. | `<id>_medium.glb` | ~9 min |
-| `high` | Cycles at the level's own lightmap settings (`settings.json`: 8192² / 1152 / adaptive off). The shipping bake. | `<id>_high.glb` | ~2 h 20 min |
+| `high` | Cycles at the level's own lightmap settings (`settings.json`: 8192² / 4096 / adaptive off). The shipping bake. | `<id>_high.glb` | hours; depends on scene and hardware |
 
 ```
 docker compose run --rm web node scripts/level/bake-level.mjs --level <id> --quality low --live-lamps 20

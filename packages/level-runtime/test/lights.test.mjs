@@ -13,6 +13,18 @@ import assert from 'node:assert/strict';
 import * as THREE from 'three';
 
 import { applyLights, moonDirection } from '../src/lights.js';
+import { CASTER_LAYER } from '../src/cells.js';
+
+test('local shadow lights include static cell occluders', () => {
+  const root = new THREE.Group();
+  const spot = new THREE.SpotLight();
+  spot.name = 'street';
+  root.add(spot);
+  applyLights({ lights: [{ node: 'street', castShadow: true, shadow: { mapSize: 1024, bias: -0.0005, normalBias: 0.02 } }] }, root, { hemisphere: false });
+  assert.equal(spot.castShadow, true);
+  assert.equal(spot.shadow.camera.layers.isEnabled(CASTER_LAYER), true);
+  assert.equal(spot.shadow.camera.layers.isEnabled(0), true);
+});
 
 const AUTHORED = new THREE.Vector3(-0.53906, -0.64078, 0.54664).normalize();
 

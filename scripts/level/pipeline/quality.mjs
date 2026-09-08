@@ -12,7 +12,7 @@
  *   medium  Cycles at 2048² / 16 samples, adaptive: the lamps, the sky and the
  *           moon's shadows land roughly where they will. About ten minutes.
  *   high    Cycles at the level's OWN lightmap settings (bangkoksoi: 8192² /
- *           1152 samples / adaptive off) -- the shipping bake, hours.
+ *           4096 samples / adaptive off) -- the shipping bake, hours.
  *
  * `--quality medium` delivers `<id>_medium.glb`, builds `build/level_medium.glb`
  * and bakes into `build/lightmap_medium/`, so a low, a medium and a high build
