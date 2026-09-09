@@ -520,9 +520,21 @@ async function atlasMode(dir, grid, opts) {
       }
     }
   }
+  // A cell inside a building footprint is EMPTY, not dark. `rigMode` has always
+  // done this; atlas mode did not, so its 992 cells included ~290 interiors that
+  // are legitimately unlit and swamped the street signal -- which made the two
+  // modes silently incomparable and made "cells under threshold" move for
+  // reasons that had nothing to do with the street lighting. Marked AFTER
+  // sampling here, because the samples are what tell us a surface exists at all.
+  const indoor = opts.indoor === false ? 0 : markIndoor(opts.placements ?? [], grid);
+  for (let k = 0; k < grid.weight.length; k++) {
+    if (grid.weight[k] === -1) { grid.weight[k] = 0; grid.sum[k] = 0; }
+  }
+
   return {
     triangles,
     walkableTriangles: kept,
+    indoorCells: indoor,
     samples,
     zeroSampleRate: r3(samples ? zeroSamples / samples : 0),
     meanMoonVisibility: r3(areaSum ? alphaSum / areaSum : 0),
@@ -638,6 +650,8 @@ async function main() {
       // The atlas is LDR with the bake's peak divided out; without `range` the
       // numbers are a fraction of full scale rather than relative irradiance.
       range: Number(args.range ?? meta.range ?? 1),
+      placements: bake.placements,
+      indoor: args.indoor !== 'false',
     });
     detail.lightmap = lmDir;
   }

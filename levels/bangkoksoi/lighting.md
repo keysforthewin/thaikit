@@ -280,10 +280,53 @@ archived), standable ground only, bake units, threshold 0.4, alleys excluded:
 | peak max/p50 | 15.06 | **7.598** |
 | cells under 0.4 | 361 / 702 (51%) | **50 / 702 (7.1%)** |
 
-Peak target (≤ 8) met. Uniformity is 0.220 against a 0.30 target — but the rig map
-carries **only** the punctual lights: no sky, no bounce, no emissive. Those are exactly
-what the ambient and emissive lift above raise, so the atlas is expected to read higher.
-Judge it on `--mode atlas`, not here.
+Peak target (≤ 8) met.
+
+### The atlas — the actual judge (2026-09-09)
+
+Bake: 8192², 4096 samples, adaptive off, 307 baked lamps, 3h17m diffuse + 4h53m mask.
+`range` 15, coverage 0.456, clipRate 0.17%, alpha bimodal (90.5% top bin, 2.1% bottom).
+Standable ground, 702 cells, interiors and the two alleys excluded, same tool both sides:
+
+| metric | previous delivery | this bake |
+|---|---|---|
+| p10 | 0.097 | **0.236** |
+| p25 | 0.312 | **0.502** |
+| p50 | 1.151 | 1.128 |
+| p90 | 4.858 | **3.963** |
+| max | 11.118 | **7.828** |
+| uniformity p10/p50 | 0.085 | **0.210** |
+| peak max/p50 | 9.656 | **6.939** |
+| cells under 0.4 | 206 (29.3%) | **132 (18.8%)** |
+
+**But the median did not move (−2%).** Read with the renders, that is the finding:
+the pass REDISTRIBUTED light rather than adding it. Feathering to penumbra 0.86–0.89
+spreads a cone's flux across a wide gradient so its peak collapses, and the intensity
+trims (soi pole 2100→1700, cobra 3200→2600) were applied ON TOP of that. Those trims
+were justified against the UNFEATHERED cones; after feathering they double-counted, and
+together they gave back roughly what 74 new fixtures, the sky lift and the emissive lift
+had added. In `views/` the lamp heads glow while the open ground under them shows no
+pool — smooth, and under-lit.
+
+The correction is NOT to undo the feathering, which is what makes the light soft and
+what took peak/median from 9.66 to 6.94. It is to put the flux back: restore the soi
+pole and cobra intensities and raise the ground-facing families roughly 40–60%, keeping
+every inner-cone angle exactly as it is. Watch the atlas MEDIAN, not the dark-cell
+count — the count improves under redistribution alone and hid this.
+
+### An instrument defect found while judging this bake
+
+`markIndoor` ran only in `rigMode`. Atlas mode therefore scored all 992 cells including
+~290 building interiors, which are legitimately unlit, and the street signal drowned in
+them: measured that way this bake read as 246 → 337 cells under threshold, i.e. a
+REGRESSION, when on standable ground it is 206 → 132. Atlas mode marks interiors now
+(`atlasMode` takes `placements`, marks after sampling because the samples are what prove
+a surface exists). The earlier note in this file claiming indoor marking "made rig and
+atlas modes comparable" was wrong — it only ever applied to rig mode.
+
+Two lessons worth keeping: a coverage number that counts interiors measures the
+buildings, not the lighting; and when the fast proxy and the real judge disagree, suspect
+the instrument before believing either.
 
 Baselines for the comparison are `scratch/lighting-20260908/baseline-rig.json` and
 `baseline-atlas-high.json`; the live rig dump is `rig-live-after.csv`.
@@ -318,10 +361,24 @@ docker compose run --rm --no-deps -e HOME=/tmp web node scripts/level/import-unr
   --level bangkoksoi --settings levels/bangkoksoi/settings.json \
   --ground=-0.12,#2b2b29 --light-scale 0.25 --emissive-scale 0.18
 docker compose run --rm --no-deps -e HOME=/tmp web node scripts/level/bake-level.mjs \
-  --level bangkoksoi --quality low --live-lamps 20
-# then medium, then: --quality high --lightmap-size 8192 --samples 4096 \
-#   --noise-threshold 0 --live-lamps 20   (~2h20m; check `swapon --show` first)
+  --level bangkoksoi --quality low --live-lamps 20      # ~52 s, no Cycles
+docker compose run --rm --no-deps -e HOME=/tmp web node scripts/level/bake-level.mjs \
+  --level bangkoksoi --quality medium --live-lamps 20   # ~9 min, 2048²/16
+docker compose run --rm --no-deps -e HOME=/tmp web node scripts/level/bake-level.mjs \
+  --level bangkoksoi --quality high --live-lamps 20     # ~2h20m
 ```
+
+**Do not pass `--lightmap-size 8192 --samples 4096 --noise-threshold 0` to the
+MEDIUM tier.** Those flags override medium's own 2048²/16 preset and make it cost
+the same as a high bake, which is the whole reason medium exists as a cheap check.
+The command recorded in the 09-07 section above does exactly that. `high` needs no
+size or sample flags at all — `settings.json` already carries 8192 / 4096 /
+noiseThreshold 0, and `--quality high` reads them.
+
+Medium is a **pipeline** check, not a coverage preview: at 2048² this level gets
+1.8 texels/m against high's 7.1, so its atlas coverage (~0.21) and dark percentiles
+are atlas starvation and say nothing about the lighting. What medium does settle is
+that the lamps baked, verify passes, and the moon-visibility alpha is bimodal.
 
 Verification: `light-coverage.mjs --mode atlas --quality high` against
 `baseline-atlas-high.json`; `probe-lightmap.mjs --compare` (coverage ~0.49,
