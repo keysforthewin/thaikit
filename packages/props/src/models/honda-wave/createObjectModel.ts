@@ -21,14 +21,6 @@ import * as THREE from 'three';
  */
 
 export type ProceduralModelOptions = {
-  /**
-   * Where this prop's shipped files live, with a trailing slash.
-   *
-   * The maps are recorded as bare filenames because the bundle is EVALUATED
-   * rather than imported: it has no import.meta and no currentScript, so it
-   * cannot see its own URL. Every host derives this from the module URL.
-   */
-  baseUrl?: string;
   wireframe?: boolean;
   castShadow?: boolean;
   receiveShadow?: boolean;
@@ -54,7 +46,7 @@ const CONFIG = {
       {
         "id": "paint",
         "color": 16777215,
-        "roughness": 0.4,
+        "roughness": 0.34,
         "metalness": 0,
         "vertexColors": true
       },
@@ -168,7 +160,7 @@ const CONFIG = {
         "zF": 0.64,
         "zR": -0.58,
         "seg": 16,
-        "spokes": 18,
+        "spokes": 26,
         "tyreHex": 7235421,
         "rimHex": 11118498,
         "spokeHex": 11579049,
@@ -177,12 +169,12 @@ const CONFIG = {
           "hubR": 0.082,
           "hubW": 0.1,
           "hubHex": 9077624,
-          "capHex": 12172479,
+          "capHex": 10527396,
           "spokeT": 0.006
         },
         "wheelMaterial": "rubber",
-        "paintHex": 3424088,
-        "chromeHex": 12172479,
+        "paintHex": 2240602,
+        "chromeHex": 10527396,
         "darkHex": 4867906,
         "bodyName": "Bodywork: leg shield, covers, fenders, cowl and seat",
         "positions": [
@@ -256,7 +248,213 @@ const CONFIG = {
                 "roof": 0.87,
                 "k": 0.28
               },
-              "curveSegments": 8,
+              "steps": 4,
+              "edgeBias": 0.55,
+              "nose": {
+                "r": 0.085
+              },
+              "topOf": [
+                [
+                  0.56,
+                  0.3
+                ],
+                [
+                  0.575,
+                  0.4
+                ],
+                [
+                  0.555,
+                  0.54
+                ],
+                [
+                  0.505,
+                  0.68
+                ],
+                [
+                  0.44,
+                  0.8
+                ],
+                [
+                  0.4,
+                  0.87
+                ],
+                [
+                  0.3,
+                  0.87
+                ],
+                [
+                  0.33,
+                  0.79
+                ],
+                [
+                  0.38,
+                  0.68
+                ],
+                [
+                  0.43,
+                  0.54
+                ],
+                [
+                  0.455,
+                  0.4
+                ],
+                [
+                  0.45,
+                  0.3
+                ]
+              ],
+              "smooth": 34
+            }
+          },
+          {
+            "poly": [
+              [
+                0.53,
+                0.6
+              ],
+              [
+                0.545,
+                0.64
+              ],
+              [
+                0.415,
+                0.845
+              ],
+              [
+                0.29,
+                0.845
+              ],
+              [
+                0.405,
+                0.64
+              ],
+              [
+                0.42,
+                0.6
+              ]
+            ],
+            "width": 0.19,
+            "shape": {
+              "tumble": {
+                "belt": 0.6,
+                "roof": 0.85,
+                "k": 0.22
+              },
+              "steps": 3,
+              "edgeBias": 0.6,
+              "nose": {
+                "r": 0.05
+              },
+              "topOf": [
+                [
+                  0.53,
+                  0.6
+                ],
+                [
+                  0.545,
+                  0.64
+                ],
+                [
+                  0.415,
+                  0.845
+                ],
+                [
+                  0.29,
+                  0.845
+                ],
+                [
+                  0.405,
+                  0.64
+                ],
+                [
+                  0.42,
+                  0.6
+                ]
+              ],
+              "smooth": 34
+            }
+          },
+          {
+            "poly": [
+              [
+                0.46,
+                0.31
+              ],
+              [
+                0.46,
+                0.45
+              ],
+              [
+                0.29,
+                0.56
+              ],
+              [
+                0.14,
+                0.69
+              ],
+              [
+                0.02,
+                0.7
+              ],
+              [
+                0.02,
+                0.48
+              ],
+              [
+                0.18,
+                0.36
+              ],
+              [
+                0.3,
+                0.31
+              ]
+            ],
+            "width": 0.15,
+            "shape": {
+              "tumble": {
+                "belt": 0.4,
+                "roof": 0.72,
+                "k": 0.3
+              },
+              "steps": 3,
+              "edgeBias": 0.6,
+              "shoulder": {
+                "r": 0.04
+              },
+              "topOf": [
+                [
+                  0.46,
+                  0.31
+                ],
+                [
+                  0.46,
+                  0.45
+                ],
+                [
+                  0.29,
+                  0.56
+                ],
+                [
+                  0.14,
+                  0.69
+                ],
+                [
+                  0.02,
+                  0.7
+                ],
+                [
+                  0.02,
+                  0.48
+                ],
+                [
+                  0.18,
+                  0.36
+                ],
+                [
+                  0.3,
+                  0.31
+                ]
+              ],
               "smooth": 34
             }
           },
@@ -306,6 +504,52 @@ const CONFIG = {
                 "roof": 0.672,
                 "k": 0.24
               },
+              "steps": 3,
+              "edgeBias": 0.6,
+              "shoulder": {
+                "r": 0.03
+              },
+              "tail": {
+                "r": 0.06
+              },
+              "topOf": [
+                [
+                  0.055,
+                  0.47
+                ],
+                [
+                  0.08,
+                  0.56
+                ],
+                [
+                  0.015,
+                  0.66
+                ],
+                [
+                  -0.21,
+                  0.672
+                ],
+                [
+                  -0.38,
+                  0.646
+                ],
+                [
+                  -0.47,
+                  0.596
+                ],
+                [
+                  -0.455,
+                  0.53
+                ],
+                [
+                  -0.29,
+                  0.498
+                ],
+                [
+                  -0.02,
+                  0.482
+                ]
+              ],
               "smooth": 34
             }
           },
@@ -316,24 +560,32 @@ const CONFIG = {
                 0.688
               ],
               [
-                0.092,
-                0.742
+                0.1,
+                0.728
               ],
               [
-                -0.02,
-                0.755
-              ],
-              [
-                -0.34,
+                0.07,
                 0.752
               ],
               [
-                -0.45,
-                0.732
+                -0.02,
+                0.76
+              ],
+              [
+                -0.34,
+                0.756
+              ],
+              [
+                -0.43,
+                0.742
               ],
               [
                 -0.458,
-                0.696
+                0.716
+              ],
+              [
+                -0.452,
+                0.69
               ],
               [
                 -0.3,
@@ -345,69 +597,122 @@ const CONFIG = {
               ]
             ],
             "width": 0.285,
-            "hex": 5000270,
+            "hex": 5921372,
             "shape": {
               "tumble": {
-                "belt": 0.688,
-                "roof": 0.755,
-                "k": 0.3
+                "belt": 0.68,
+                "roof": 0.76,
+                "k": 0.26
               },
+              "steps": 3,
+              "edgeBias": 0.6,
+              "shoulder": {
+                "r": 0.045
+              },
+              "nose": {
+                "r": 0.06
+              },
+              "tail": {
+                "r": 0.06
+              },
+              "topOf": [
+                [
+                  0.11,
+                  0.688
+                ],
+                [
+                  0.1,
+                  0.728
+                ],
+                [
+                  0.07,
+                  0.752
+                ],
+                [
+                  -0.02,
+                  0.76
+                ],
+                [
+                  -0.34,
+                  0.756
+                ],
+                [
+                  -0.43,
+                  0.742
+                ],
+                [
+                  -0.458,
+                  0.716
+                ],
+                [
+                  -0.452,
+                  0.69
+                ],
+                [
+                  -0.3,
+                  0.676
+                ],
+                [
+                  -0.05,
+                  0.674
+                ]
+              ],
               "smooth": 34
             }
           },
           {
             "poly": [
               [
-                0.9529,
-                0.234
+                0.9552,
+                0.3
               ],
               [
-                0.9556,
-                0.2941
+                0.9466,
+                0.3544
               ],
               [
-                0.9468,
-                0.3536
+                0.9287,
+                0.4065
               ],
               [
-                0.9269,
-                0.4104
+                0.902,
+                0.4547
               ],
               [
-                0.8966,
-                0.4624
+                0.8673,
+                0.4975
               ],
               [
-                0.8571,
-                0.5077
+                0.8257,
+                0.5336
               ],
               [
-                0.8096,
-                0.5446
+                0.7785,
+                0.562
               ],
               [
-                0.756,
-                0.5719
+                0.7271,
+                0.5818
               ],
               [
-                0.6982,
-                0.5886
+                0.673,
+                0.5923
               ],
               [
-                0.6383,
-                0.594
+                0.618,
+                0.5932
               ],
               [
-                0.5785,
-                0.5879
+                0.5636,
+                0.5846
               ],
               [
-                0.5208,
-                0.5707
+                0.5115,
+                0.5667
               ],
               [
-                0.4675,
-                0.5428
+                0.4633,
+                0.54
               ],
               [
                 0.4205,
@@ -418,56 +723,56 @@ const CONFIG = {
                 0.4909
               ],
               [
-                0.4785,
-                0.526
+                0.4745,
+                0.5234
               ],
               [
-                0.5284,
-                0.5521
+                0.5196,
+                0.5484
               ],
               [
-                0.5824,
-                0.5683
+                0.5684,
+                0.5652
               ],
               [
-                0.6384,
-                0.574
+                0.6194,
+                0.5733
               ],
               [
-                0.6945,
-                0.5689
+                0.6709,
+                0.5724
               ],
               [
-                0.7487,
-                0.5533
+                0.7216,
+                0.5625
               ],
               [
-                0.7989,
-                0.5278
+                0.7698,
+                0.544
               ],
               [
-                0.8433,
-                0.4931
+                0.814,
+                0.5175
               ],
               [
-                0.8804,
-                0.4507
+                0.8529,
+                0.4836
               ],
               [
-                0.9088,
-                0.402
+                0.8854,
+                0.4435
               ],
               [
-                0.9274,
-                0.3488
+                0.9104,
+                0.3984
               ],
               [
-                0.9356,
-                0.2931
+                0.9272,
+                0.3496
               ],
               [
-                0.9331,
-                0.2368
+                0.9353,
+                0.2986
               ]
             ],
             "width": 0.13,
@@ -613,13 +918,47 @@ const CONFIG = {
                 "roof": 1.015,
                 "k": 0.25
               },
+              "steps": 3,
+              "edgeBias": 0.6,
+              "shoulder": {
+                "r": 0.045
+              },
+              "nose": {
+                "r": 0.05
+              },
+              "topOf": [
+                [
+                  0.46,
+                  0.87
+                ],
+                [
+                  0.47,
+                  0.95
+                ],
+                [
+                  0.43,
+                  1.005
+                ],
+                [
+                  0.3,
+                  1.015
+                ],
+                [
+                  0.24,
+                  0.96
+                ],
+                [
+                  0.26,
+                  0.87
+                ]
+              ],
               "smooth": 34
             }
           }
         ],
         "paintBoxes": [
           [
-            3424088,
+            2240602,
             0,
             0.3,
             0.175,
@@ -628,7 +967,7 @@ const CONFIG = {
             0.31
           ],
           [
-            3424088,
+            2240602,
             0,
             0.315,
             -0.03,
@@ -738,38 +1077,6 @@ const CONFIG = {
               ]
             ],
             "r": 0.018,
-            "open": true
-          },
-          {
-            "pts": [
-              [
-                0.07,
-                0.6,
-                0.469
-              ],
-              [
-                0.07,
-                0.81,
-                0.362
-              ]
-            ],
-            "r": 0.026,
-            "open": true
-          },
-          {
-            "pts": [
-              [
-                -0.07,
-                0.6,
-                0.469
-              ],
-              [
-                -0.07,
-                0.81,
-                0.362
-              ]
-            ],
-            "r": 0.026,
             "open": true
           },
           {
@@ -925,15 +1232,15 @@ const CONFIG = {
                 0
               ],
               [
-                0.07,
+                0.082,
                 0
               ],
               [
-                0.082,
+                0.096,
                 0.012
               ],
               [
-                0.082,
+                0.096,
                 0.03
               ],
               [
@@ -941,12 +1248,12 @@ const CONFIG = {
                 0.03
               ]
             ],
-            "seg": 12,
+            "seg": 14,
             "rz": 1.5707963267948966,
             "at": [
               0.093,
-              0.266,
-              -0.09
+              0.262,
+              -0.08
             ],
             "hex": 10198166
           },
@@ -1054,7 +1361,7 @@ const CONFIG = {
               ]
             ],
             "r": 0.017,
-            "hex": 12172479,
+            "hex": 10527396,
             "open": true
           },
           {
@@ -1071,7 +1378,7 @@ const CONFIG = {
               ]
             ],
             "r": 0.017,
-            "hex": 12172479,
+            "hex": 10527396,
             "open": true
           },
           {
@@ -1088,8 +1395,9 @@ const CONFIG = {
               ]
             ],
             "r": 0.005,
-            "hex": 12172479,
-            "open": true
+            "hex": 10527396,
+            "open": true,
+            "seg": 6
           },
           {
             "pts": [
@@ -1105,8 +1413,9 @@ const CONFIG = {
               ]
             ],
             "r": 0.005,
-            "hex": 12172479,
-            "open": true
+            "hex": 10527396,
+            "open": true,
+            "seg": 6
           },
           {
             "pts": [
@@ -1149,7 +1458,7 @@ const CONFIG = {
               ]
             ],
             "r": 0.013,
-            "hex": 12172479
+            "hex": 10527396
           },
           {
             "pts": [
@@ -1170,8 +1479,9 @@ const CONFIG = {
               ]
             ],
             "r": 0.007,
-            "hex": 12172479,
-            "open": true
+            "hex": 10527396,
+            "open": true,
+            "seg": 6
           },
           {
             "pts": [
@@ -1192,8 +1502,9 @@ const CONFIG = {
               ]
             ],
             "r": 0.007,
-            "hex": 12172479,
-            "open": true
+            "hex": 10527396,
+            "open": true,
+            "seg": 6
           },
           {
             "pts": [
@@ -1275,7 +1586,7 @@ const CONFIG = {
               ]
             ],
             "r": 0.013,
-            "hex": 12172479,
+            "hex": 10527396,
             "open": true
           },
           {
@@ -1292,7 +1603,7 @@ const CONFIG = {
               ]
             ],
             "r": 0.013,
-            "hex": 12172479,
+            "hex": 10527396,
             "open": true
           },
           {
@@ -1310,7 +1621,8 @@ const CONFIG = {
             ],
             "r": 0.007,
             "hex": 6973283,
-            "open": true
+            "open": true,
+            "seg": 6
           },
           {
             "pts": [
@@ -1327,19 +1639,20 @@ const CONFIG = {
             ],
             "r": 0.007,
             "hex": 6973283,
-            "open": true
+            "open": true,
+            "seg": 6
           },
           {
             "pts": [
               [
                 0.045,
-                0.42,
-                0.215
+                0.335,
+                0.3
               ],
               [
-                0.085,
-                0.262,
-                0.095
+                0.095,
+                0.25,
+                0.18
               ],
               [
                 0.112,
@@ -1387,7 +1700,8 @@ const CONFIG = {
             ],
             "r": 0.01,
             "hex": 4867906,
-            "open": true
+            "open": true,
+            "seg": 6
           },
           {
             "pts": [
@@ -1404,7 +1718,8 @@ const CONFIG = {
             ],
             "r": 0.009,
             "hex": 4867906,
-            "open": true
+            "open": true,
+            "seg": 6
           },
           {
             "pts": [
@@ -1421,7 +1736,8 @@ const CONFIG = {
             ],
             "r": 0.01,
             "hex": 4867906,
-            "open": true
+            "open": true,
+            "seg": 6
           },
           {
             "pts": [
@@ -1438,137 +1754,144 @@ const CONFIG = {
             ],
             "r": 0.01,
             "hex": 4867906,
-            "open": true
+            "open": true,
+            "seg": 6
           },
           {
             "pts": [
               [
                 0.17,
-                0.75,
+                0.7,
                 -0.46
               ],
               [
                 0.17,
-                0.75,
+                0.7,
                 -0.88
               ],
               [
                 0.15,
-                0.762,
+                0.712,
                 -0.93
               ],
               [
                 -0.15,
-                0.762,
+                0.712,
                 -0.93
               ],
               [
                 -0.17,
-                0.75,
+                0.7,
                 -0.88
               ],
               [
                 -0.17,
-                0.75,
+                0.7,
                 -0.46
               ]
             ],
             "r": 0.009,
-            "hex": 12172479
+            "hex": 10527396,
+            "seg": 6
           },
           {
             "pts": [
               [
                 0.17,
-                0.75,
+                0.7,
                 -0.8
               ],
               [
                 0.165,
-                0.8,
+                0.75,
                 -0.86
               ],
               [
                 -0.165,
-                0.8,
+                0.75,
                 -0.86
               ],
               [
                 -0.17,
-                0.75,
+                0.7,
                 -0.8
               ]
             ],
             "r": 0.008,
-            "hex": 12172479
+            "hex": 10527396,
+            "seg": 6
           },
           {
             "pts": [
               [
                 0.15,
-                0.75,
+                0.7,
                 -0.47
               ],
               [
                 0.13,
-                0.64,
+                0.62,
                 -0.43
               ]
             ],
             "r": 0.008,
-            "hex": 12172479,
-            "open": true
+            "hex": 10527396,
+            "open": true,
+            "seg": 6
           },
           {
             "pts": [
               [
                 -0.15,
-                0.75,
+                0.7,
                 -0.47
               ],
               [
                 -0.13,
-                0.64,
+                0.62,
                 -0.43
               ]
             ],
             "r": 0.008,
-            "hex": 12172479,
-            "open": true
+            "hex": 10527396,
+            "open": true,
+            "seg": 6
           },
           {
             "pts": [
               [
                 0.155,
-                0.75,
+                0.7,
                 -0.87
               ],
               [
                 0.13,
-                0.64,
+                0.62,
                 -0.82
               ]
             ],
             "r": 0.008,
-            "hex": 12172479,
-            "open": true
+            "hex": 10527396,
+            "open": true,
+            "seg": 6
           },
           {
             "pts": [
               [
                 -0.155,
-                0.75,
+                0.7,
                 -0.87
               ],
               [
                 -0.13,
-                0.64,
+                0.62,
                 -0.82
               ]
             ],
             "r": 0.008,
-            "hex": 12172479,
-            "open": true
+            "hex": 10527396,
+            "open": true,
+            "seg": 6
           },
           {
             "pts": [
@@ -1584,8 +1907,9 @@ const CONFIG = {
               ]
             ],
             "r": 0.006,
-            "hex": 12172479,
-            "open": true
+            "hex": 10527396,
+            "open": true,
+            "seg": 6
           },
           {
             "pts": [
@@ -1601,8 +1925,9 @@ const CONFIG = {
               ]
             ],
             "r": 0.006,
-            "hex": 12172479,
-            "open": true
+            "hex": 10527396,
+            "open": true,
+            "seg": 6
           }
         ],
         "trim": [
@@ -1618,42 +1943,52 @@ const CONFIG = {
           [
             10198166,
             0,
-            0.34,
-            0.068,
-            0.126,
+            0.321,
+            0.117,
+            0.116,
+            0.16,
             0.112,
-            0.158,
-            0.35
+            1.3
           ],
           [
             10198166,
             0,
-            0.386,
-            0.164,
-            0.146,
-            0.122,
-            0.072,
-            0.35
+            0.353,
+            0.233,
+            0.14,
+            0.08,
+            0.13,
+            1.3
           ],
           [
             10198166,
             0,
-            0.352,
-            0.098,
-            0.152,
-            0.013,
-            0.024,
-            0.35
+            0.313,
+            0.088,
+            0.15,
+            0.012,
+            0.14,
+            1.3
           ],
           [
             10198166,
             0,
-            0.372,
-            0.134,
-            0.152,
-            0.013,
-            0.024,
-            0.35
+            0.324,
+            0.127,
+            0.15,
+            0.012,
+            0.14,
+            1.3
+          ],
+          [
+            10198166,
+            0,
+            0.335,
+            0.166,
+            0.15,
+            0.012,
+            0.14,
+            1.3
           ],
           [
             4867906,
@@ -1674,7 +2009,7 @@ const CONFIG = {
             0.06
           ],
           [
-            12172479,
+            10527396,
             0,
             1.01,
             0.298,
@@ -1683,7 +2018,7 @@ const CONFIG = {
             0.052
           ],
           [
-            12172479,
+            10527396,
             0,
             0.916,
             0.478,
@@ -1719,7 +2054,7 @@ const CONFIG = {
             0.072
           ],
           [
-            12172479,
+            10527396,
             0.176,
             0.62,
             0.47,
@@ -1728,7 +2063,7 @@ const CONFIG = {
             0.048
           ],
           [
-            12172479,
+            10527396,
             -0.176,
             0.62,
             0.47,
@@ -1737,27 +2072,27 @@ const CONFIG = {
             0.048
           ],
           [
-            12172479,
+            10527396,
             0,
-            0.752,
+            0.702,
             -0.5325,
             0.3,
             0.008,
             0.155
           ],
           [
-            12172479,
+            10527396,
             0,
-            0.752,
+            0.702,
             -0.68,
             0.3,
             0.008,
             0.16
           ],
           [
-            12172479,
+            10527396,
             0,
-            0.752,
+            0.702,
             -0.84,
             0.3,
             0.008,
@@ -1773,7 +2108,7 @@ const CONFIG = {
             0.03
           ],
           [
-            12172479,
+            10527396,
             0,
             0.59,
             -0.858,
@@ -1802,10 +2137,10 @@ const CONFIG = {
           [
             5131337,
             0,
-            0.235,
+            0.3,
             -0.918,
             0.13,
-            0.2,
+            0.13,
             0.012
           ],
           [
@@ -1830,7 +2165,7 @@ const CONFIG = {
             "h": 0.008,
             "rx": 1.5707963267948966,
             "seg": 14,
-            "hex": 12172479
+            "hex": 10527396
           },
           {
             "at": [
@@ -1843,7 +2178,7 @@ const CONFIG = {
             "h": 0.008,
             "rx": 1.5707963267948966,
             "seg": 14,
-            "hex": 12172479
+            "hex": 10527396
           },
           {
             "at": [
@@ -2449,9 +2784,11 @@ function sideExtrude(profile: number[][], width: number, opts: ShapeOpts = {}): 
  *  roof line every shoulder hangs off is read. All optional: unset, the sweep is the old slab. */
 type ShapeOpts = { tumble?: { belt: number, roof: number, k: number }, plan?: number[][],
                    curveSegments?: number, steps?: number,
-                   shoulder?: { r: number, zMin?: number, zMax?: number, fade?: number },
+                   shoulder?: { r: number, zMin?: number, zMax?: number, fade?: number, fadeIn?: number },
+                   shoulders?: { r: number, zMin?: number, zMax?: number, fade?: number, fadeIn?: number }[],
                    nose?: { r: number }, tail?: { r: number },
-                   smooth?: number, edgeBias?: number, baseWidth?: number, topOf?: number[][] };
+                   smooth?: number, edgeBias?: number, baseWidth?: number, topOf?: number[][],
+                   crown?: { yMin: number, dy: number, fade?: number } };
 
 /** Highest y of a closed [z, y] profile on the vertical line at z -- the roof line at that
  *  station. Vertical edges count by their own top; a z outside the profile returns -Infinity. */
@@ -2509,13 +2846,16 @@ function shapeWidth(g: THREE.BufferGeometry, opts: ShapeOpts, width = 0): void {
     let x = p.getX(i), y = p.getY(i), z = p.getZ(i);
     const tf = tumbleAt(y), pf = planAt(z);
     x *= tf * pf;
-    if (opts.shoulder && top) {
-      const sh = opts.shoulder;
+    // `shoulders` adds further fillets on their own z-ranges (a bonnet edge behind the nose, say,
+    // with the cab's fillet stopping at the rake); `fadeIn` ramps one in over its first metres the
+    // way `fade` ramps it out. Default-off: a cfg with only `shoulder` is unchanged.
+    for (const sh of (top ? [opts.shoulder, ...(opts.shoulders ?? [])] : []) as any[]) {
+      if (!sh) continue;
       // The fillet lives on a z-range: hard at zMin (the cab back), faded over `fade` metres at
       // zMax (the top of the windscreen rake -- a rake is a plane, its edge a crease, and a fade
       // keyed on the roof line's SLOPE varied inside the rear corner and folded it).
-      const zLo = sh.zMin ?? -Infinity, zHi = sh.zMax ?? Infinity, fd = sh.fade ?? 0;
-      const w = z < zLo || z > zHi ? 0 : fd > 0 ? Math.min(1, (zHi - z) / fd) : 1;
+      const zLo = sh.zMin ?? -Infinity, zHi = sh.zMax ?? Infinity, fd = sh.fade ?? 0, fi = sh.fadeIn ?? 0;
+      const w = z < zLo || z > zHi ? 0 : Math.min(1, fd > 0 ? (zHi - z) / fd : 1, fi > 0 ? (z - zLo) / fi : 1);
       const yt = profileTop(top, z, 0.03);
       if (w > 0 && isFinite(yt)) {
         const r = sh.r + extra, cy = yt - sh.r;
@@ -2552,6 +2892,15 @@ function shapeWidth(g: THREE.BufferGeometry, opts: ShapeOpts, width = 0): void {
         // which z-fights -- the Commuter van's wrapped A-pillars crumpled from exactly that.
         if (d >= r - 1e-4) { x = Math.sign(x || 1) * (cx + dx / d * r); z = end.zc + end.s * (dz / d * r); }
       }
+    }
+    if (opts.crown && y > opts.crown.yMin) {
+      // CROWN across the width: a roof is a shallow dome in BOTH axes, and a side extrusion is flat
+      // across x. Vertices above `yMin` (the roof band, never a rear wall below it) rise by
+      // dy * (1 - (x/hw)^2), faded in over `fade` metres above yMin so the band's underside and top
+      // crown together and the edge stays where the shoulder put it. Default-off.
+      const hwc = Math.max(1e-3, baseHalf * tf * pf) + extra;
+      const t = Math.min(1, Math.abs(x) / hwc), f = opts.crown.fade ? Math.min(1, (y - opts.crown.yMin) / opts.crown.fade) : 1;
+      y += opts.crown.dy * (1 - t * t) * f;
     }
     p.setXYZ(i, x, y, z);
   }
@@ -2644,14 +2993,20 @@ function archNotch(zc: number, ySill: number, r: number, n = 7): number[][] {
  * per-profile-point colour be written without a second geometry.
  */
 function wheelGeo(rTyre: number, rRim: number, halfW: number, seg: number,
-                  tyreHex: number, rimHex: number, dish = 0.55): THREE.BufferGeometry {
+                  tyreHex: number, rimHex: number, dish = 0.55, rimBand = 4): THREE.BufferGeometry {
   const hw = halfW;
   const pts: number[][] = [
     [0, -hw * dish], [rRim * 0.30, -hw * dish], [rRim * 0.62, -hw * 0.80], [rRim, -hw * 0.86], [rRim, -hw * 0.98],
     [rTyre * 0.93, -hw], [rTyre, -hw * 0.72], [rTyre, hw * 0.72], [rTyre * 0.93, hw],
     [rRim, hw * 0.98], [rRim, hw * 0.86], [rRim * 0.62, hw * 0.80], [rRim * 0.30, hw * dish], [0, hw * dish],
   ];
-  const rimPoint = (j: number) => j <= 4 || j >= 9;
+  // `rimBand` is the LAST profile point that carries the rim colour. Vertex colours interpolate,
+  // so with the default 4 the whole sidewall from rRim out to rTyre * 0.93 is a gradient from the
+  // rim tone to the tyre tone -- on a wheel whose rim is a small hub that paints most of the visible
+  // disc pale, and the tuk-tuk's wheels read as grey plates rather than black tyres. Passing 2
+  // stops the chrome at the hub cap and makes the sidewall tyre all the way in. The default is
+  // unchanged, so every existing prop is byte-identical.
+  const rimPoint = (j: number) => j <= rimBand || j >= pts.length - 1 - rimBand;
   const g = new THREE.LatheGeometry(pts.map((p) => new THREE.Vector2(p[0], p[1])), seg);
   const n = g.getAttribute('position').count;
   const col = new Float32Array(n * 3);
@@ -2704,6 +3059,55 @@ function steelWheelGeo(rTyre: number, rRim: number, halfW: number, seg: number,
   g.rotateZ(Math.PI / 2);
   g.computeVertexNormals();
   return g;
+}
+
+/**
+ * An ALLOY WHEEL: the steel lathe's tyre with a shallow open dish -- a dark WINDOW floor between a
+ * small centre cap and a bright rim lip -- and `spokeN` flat spoke bars laid across the dish in the
+ * lathe's own axial frame, merged BEFORE the axle rotation so they ride the same instanced geometry.
+ * The bars stand 12 mm off the floor (opposed faces, no z-fight) and read as a multi-spoke alloy at
+ * prop distance where a per-segment vertex-colour star would blur across every face. Default-off:
+ * only `wheels.style: 'alloy'` gets it. Colour classes: 0 rim, 1 window floor, 2 tyre, 3 tread.
+ */
+function alloyWheelGeo(rTyre: number, rRim: number, halfW: number, seg: number,
+                       tyreHex: number, rimHex: number, windowHex: number, lugHex: number, dish = 0.35,
+                       spokeN = 10, spokeW = 0.16): THREE.BufferGeometry {
+  const hw = halfW, d = hw * dish;
+  const pts: number[][] = [
+    [0, -d + 0.015], [rRim * 0.16, -d + 0.015], [rRim * 0.18, -d],                       // centre cap
+    [rRim * 0.20, -d], [rRim * 0.86, -d],                                                // window floor (dark)
+    [rRim * 0.88, -hw * 0.88], [rRim, -hw * 0.92], [rRim, -hw * 0.98],                   // rim lip
+    [rTyre * 0.88, -hw], [rTyre * 0.97, -hw * 0.86], [rTyre, -hw * 0.70],                // sidewall
+    [rTyre, hw * 0.70],                                                                  // tread
+    [rTyre * 0.97, hw * 0.86], [rTyre * 0.88, hw], [rRim, hw * 0.98],                    // far sidewall
+    [rRim, hw * 0.88], [rRim * 0.30, hw * 0.80], [0, hw * 0.80],                          // back of the rim
+  ];
+  const cls = [0, 0, 0, 1, 1, 0, 0, 0, 2, 2, 3, 3, 2, 2, 0, 0, 0, 0];
+  const g = new THREE.LatheGeometry(pts.map((p) => new THREE.Vector2(p[0], p[1])), seg);
+  const n = g.getAttribute('position').count;
+  const col = new Float32Array(n * 3);
+  const C = [new THREE.Color(rimHex), new THREE.Color(windowHex), new THREE.Color(tyreHex), new THREE.Color(lugHex)];
+  const ct = new THREE.Color(tyreHex);
+  for (let i = 0; i < n; i++) {
+    const j = i % pts.length, s = Math.floor(i / pts.length);
+    let c = C[cls[j]];
+    if (cls[j] === 3) c = (s % 2 === 0) ? ct : C[3];
+    col[i * 3] = c.r; col[i * 3 + 1] = c.g; col[i * 3 + 2] = c.b;
+  }
+  g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+  // spokes: flat bars from the cap to the lip, in the lathe frame (axial = y), then rotated with it
+  const bars: THREE.BufferGeometry[] = [];
+  const r0 = rRim * 0.17, r1 = rRim * 0.89, len = r1 - r0, t = 0.024;
+  for (let i = 0; i < spokeN; i++) {
+    const b = new THREE.BoxGeometry(rRim * spokeW, t, len);
+    b.translate(0, -d - 0.0115, r0 + len / 2);
+    b.rotateY((i / spokeN) * Math.PI * 2);
+    bars.push(tintGeo(b, rimHex));
+  }
+  const all = mergeGeos([g, ...bars]);
+  all.rotateZ(Math.PI / 2);
+  all.computeVertexNormals();
+  return all;
 }
 
 /** Wire-spoked wheel dressing: `n` thin boxes radiating from the hub, laced alternately to each
@@ -3213,6 +3617,23 @@ function sheet(s: any): THREE.BufferGeometry {
 /** Bind a post-construction canvas tile to a material as map (and bump), leaving the textureless
  *  declaration intact: no procedural texture set is synthesised, the measured colour stays the
  *  multiplicand, and the whole thing costs one canvas. */
+/** Tractor-tyre LUGS: `n` bars laid across the tread, each yawed alternately +-`skew` rad about
+ *  its own radial so consecutive bars read as the chevron of an agricultural tyre, standing `h`
+ *  proud of the tread ring. Built about the X axle like wheelGeo and merged INTO the wheel
+ *  geometry, so the wheel stays ONE instanced geometry and the lugs cost nothing per instance.
+ *  Default-off: only a cfg that sets `bike.lugs` gets them. */
+function lugs(rTyre: number, halfW: number, o: any): THREE.BufferGeometry {
+  const n = o.n ?? 16, h = o.h ?? 0.04, parts: THREE.BufferGeometry[] = [];
+  for (let i = 0; i < n; i++) {
+    const g = new THREE.BoxGeometry(halfW * 2 * (o.w ?? 0.85), h, o.d ?? 0.06);
+    g.rotateY((i % 2 === 0 ? 1 : -1) * (o.skew ?? 0.4));
+    g.translate(0, rTyre - h * 0.35, 0);
+    g.rotateX((i / n) * Math.PI * 2 + (o.phase ?? 0));
+    parts.push(g);
+  }
+  return tintGeo(mergeGeos(parts), o.hex ?? 0x555555);
+}
+
 function bindTile(mat: THREE.MeshStandardMaterial, tex: THREE.CanvasTexture | null, bump = 0): void {
   if (!tex) return;
   mat.map = tex;
@@ -3337,9 +3758,19 @@ export function createHondaWaveModel(options: ProceduralModelOptions = {}): THRE
   // PAINTED BODYWORK: leg shield, front fender, rear body, tank/step-through cover -- one merge.
   const paintGeos: THREE.BufferGeometry[] = [];
   for (const ex of (B.paintExtrudes ?? []) as any[]) {
-    const g = sideExtrude(ex.poly, ex.width, ex.shape ?? {}); if (ex.x) g.translate(ex.x, 0, 0);
+    // `strip`: sweep only that deep at each outer edge (a quarter panel, a belt stripe that must
+    // follow the tail rounding) instead of the full width -- default-off, the plain sweep otherwise
+    const g = ex.strip ? sideStrip(ex.poly, ex.width, ex.strip, ex.shape ?? {}) : sideExtrude(ex.poly, ex.width, ex.shape ?? {});
+    if (ex.x) g.translate(ex.x, 0, 0);
     g.translate(ox, 0, oz); paintGeos.push(tintGeo(g, ex.hex ?? P));
   }
+  // painted lathes (a headstock nacelle) and wheel-arch flares fold into the same paint merge
+  for (const l of (B.paintLathes ?? []) as any[]) {
+    const g = lathe(l.pts, l.seg ?? 12);
+    if (l.rx) g.rotateX(l.rx); if (l.ry) g.rotateY(l.ry); if (l.rz) g.rotateZ(l.rz);
+    g.translate(l.at[0] + ox, l.at[1], l.at[2] + oz); paintGeos.push(tintGeo(g, l.hex ?? P));
+  }
+  for (const f of (B.paintFlares ?? []) as any[]) paintGeos.push(flare(f.zc + oz, f.yc, f.rIn, f.rOut, f.x0 + ox, f.x1 + ox, f.hex ?? P, f.n ?? 9));
   for (const b of (B.paintBoxes ?? []) as number[][]) { const g = rbox(b.slice(1)); g.translate(ox, 0, oz); paintGeos.push(tintGeo(g, b[0])); }
   for (const t of (B.paintTubes ?? []) as any[]) { const g = tube(t.pts.map((p: number[]) => [p[0] + ox, p[1], p[2] + oz]), t.r, t.seg ?? 8, undefined, t.open ?? false); paintGeos.push(tintGeo(g, t.hex ?? P)); }
   const bodyGeo = heightUV(mergeGeos(paintGeos), G.mudScale ?? 1.2);
@@ -3362,7 +3793,7 @@ export function createHondaWaveModel(options: ProceduralModelOptions = {}): THRE
   }
   // extra loose lathes (a sidecar's third wheel, a trailer's small wheels) merged into the trim
   for (const w of (G.looseWheels ?? []) as any[]) {
-    const g = mergeGeos([wheelGeo(w.r, w.rim, w.halfW, w.seg ?? 18, w.tyreHex, w.rimHex, w.dish ?? 0.5),
+    const g = mergeGeos([wheelGeo(w.r, w.rim, w.halfW, w.seg ?? 18, w.tyreHex, w.rimHex, w.dish ?? 0.5, w.rimBand ?? 4),
                          ...(w.spokes ? [spokes(w.rim * 0.28, w.rim * 0.98, w.halfW, w.spokes, w.spokeHex ?? CH)] : [])]);
     g.translate(w.at[0], w.at[1], w.at[2]); trimGeos.push(g);
   }
@@ -3385,14 +3816,17 @@ export function createHondaWaveModel(options: ProceduralModelOptions = {}): THRE
   // tread UVs for a tyre tile on `B.wheelMaterial`; otherwise the closed dished lathe.
   const wheelG = B.open
     ? openWheelGeo(rW, rimR, hw, B.seg ?? 20, { ...B.open, tyreHex: B.tyreHex, rimHex: B.rimHex, spokes: B.spokes, spokeHex: B.spokeHex ?? CH })
-    : mergeGeos([wheelGeo(rW, rimR, hw, B.seg ?? 20, B.tyreHex, B.rimHex, B.dish ?? 0.5),
+    : B.style === 'steel'
+    ? steelWheelGeo(rW, rimR, hw, B.seg ?? 20, B.tyreHex, B.rimHex, B.ventHex ?? 0x241f1a, B.lugHex ?? B.tyreHex, B.dish ?? 0.5)   // pressed-steel disc wheel, default-off
+    : mergeGeos([wheelGeo(rW, rimR, hw, B.seg ?? 20, B.tyreHex, B.rimHex, B.dish ?? 0.5, B.rimBand ?? 4),
                  ...(B.spokes ? [spokes(rimR * 0.28, rimR * 0.98, hw, B.spokes, B.spokeHex ?? CH)] : [])]);
+  const wheelGL = B.lugs ? mergeGeos([wheelG, lugs(rW, hw, B.lugs)]) : wheelG;   // agricultural tread bars, default-off
   const wheelMats: THREE.Matrix4[] = [];
   for (const p of B.positions as number[][]) {
     wheelMats.push(new THREE.Matrix4().compose(new THREE.Vector3(p[0], p[1], p[2]),
       new THREE.Quaternion(), new THREE.Vector3(p[3] ?? 1, p[3] ?? 1, p[3] ?? 1)));
   }
-  addInst('wheels', 'Wheels', wheelG, B.wheelMaterial ?? 'trim', wheelMats);
+  addInst('wheels', 'Wheels', wheelGL, B.wheelMaterial ?? 'trim', wheelMats);
 
   // EXTRA components (a sidecar box, a canvas canopy, a tuk-tuk cabin) -- own material each.
   for (const ex of (G.extras ?? []) as any[]) {

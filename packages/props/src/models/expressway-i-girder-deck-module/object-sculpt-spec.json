@@ -1,0 +1,1939 @@
+{
+  "targetName": "Expressway I-Girder Deck Module",
+  "targetId": "expressway-i-girder-deck-module",
+  "schemaVersion": "2.1",
+  "terminologyProfile": {
+    "domain": "real-time procedural Three.js asset",
+    "geometryTerms": [
+      "silhouette",
+      "topology",
+      "primitive",
+      "bevel",
+      "chamfer",
+      "taper",
+      "bend",
+      "boolean cut",
+      "edge loop",
+      "surface normal",
+      "displacement"
+    ],
+    "materialTerms": [
+      "albedo",
+      "baseColor",
+      "roughness",
+      "metalness",
+      "normal map",
+      "bump map",
+      "ambient occlusion",
+      "cavity dirt",
+      "edge wear",
+      "clearcoat"
+    ],
+    "lightingTerms": [
+      "key light",
+      "fill light",
+      "rim light",
+      "HDRI/environment reflection",
+      "contact shadow"
+    ],
+    "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
+  },
+  "sourceImage": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/reference.png",
+  "referenceCamera": {
+    "solved": false,
+    "fovDegrees": 40.0,
+    "aspect": 1.0,
+    "orientation": {
+      "yaw": 0.0,
+      "pitch": 0.0,
+      "roll": 0.0
+    },
+    "positionHint": [
+      0.0,
+      0.0,
+      3.0
+    ],
+    "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
+  },
+  "suitability": "pass",
+  "scores": {
+    "object_isolation": 3,
+    "silhouette_readability": 3,
+    "depth_inference": 2,
+    "primitive_decomposition": 3,
+    "material_procedurality": 3,
+    "occlusion_risk": 2,
+    "interaction_fit": 3
+  },
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "bridge-deck-i-girder",
+      "primaryDomain": "object",
+      "formLanguage": [
+        "precast-i-girders",
+        "slab-on-girders",
+        "plain-parapets",
+        "mid-span-diaphragm",
+        "asphalt-with-lane-lines"
+      ],
+      "structureKind": [
+        "extruded-profile",
+        "assembled-solid"
+      ],
+      "motionPotential": [
+        "static-prop"
+      ],
+      "materialFamilies": [
+        "cast-concrete",
+        "asphalt"
+      ],
+      "notes": "One piece of the ELEVATED EXPRESSWAY set, built to the modular contract in the registry notes: every pier carries its bearing seat at y = 12.00, every deck module is 12.5 m wide along X and 16 m long along Z with its pivot at the SOFFIT centre, so a deck placed at y = 12 sits on any pier and two modules meeting over one butt at z = +-8 clear of its cap. Nothing opens, turns or swings; nothing attaches. One root pivot and zero sockets is the whole contract, and the end faces are flat and square so chained pieces never z-fight. The older Bangkok elevated deck (Din Daeng, the first-stage system): precast I-girders with wide bottom flanges, rust weeps down the webs, a plain upstand parapet with a chamfered top, weathered pale asphalt with white dashed lines only."
+    },
+    "complexity": {
+      "tier": "moderate",
+      "scores": {
+        "silhouetteComplexity": 2,
+        "componentCount": 2,
+        "hierarchyDepth": 1,
+        "repetitionDensity": 1,
+        "materialLayerCount": 2,
+        "localDetailDensity": 2,
+        "occlusionRisk": 1,
+        "actionReadinessNeed": 1
+      },
+      "estimatedCounts": {
+        "macroComponents": 3,
+        "mesoComponents": 5,
+        "microFeatureGroups": 3,
+        "materialLayers": 3,
+        "repetitionSystems": 1
+      },
+      "reasoning": [
+        "Two components plus one repetition system on three materials, 3 draw calls of 24: the slab-and-parapets sweep with the diaphragm box, the asphalt sweep, and five instanced girders.",
+        "A separate girder material so the girder tile wraps its profile once (rust weeps down the webs) while the slab tile keys its joints along the road.",
+        "One InstancedMesh of five girders: the one part repeated at a fixed pitch.",
+        "Action readiness: one root pivot, zero sockets, a derived compound, not breakable."
+      ]
+    },
+    "specDepthDecision": {
+      "requiredDepth": "moderate",
+      "minimumComponentLevels": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "needsRepetitionSystems": true,
+      "needsMaterialLocalOverrides": true,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": true,
+      "rationale": "The identity is five I-girders under a plain slab -- read from below, where a player walks. The girder is one 14-point profile swept and instanced five times; the slab, parapets and asphalt are closed sweeps; the diaphragm a box."
+    },
+    "unknownsToResolveBeforeImplementation": [],
+    "detailInventory": {
+      "scanMethod": "component-zones",
+      "targetMinDetails": 6,
+      "note": "Enumerate every identity-defining small detail before authoring the spec. Each detail must map to a component.localFeatures entry or material.localOverrides entry, never prose only. Use forge/stage1_intake/build_detail_inventory.py to scan zones.",
+      "details": [
+        {
+          "id": "d1-section",
+          "zone": "deck",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "the deck section: slab, cantilevers and parapets on the contract lines",
+          "mapsTo": {
+            "ref": "deck"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d2-lanes",
+          "zone": "road",
+          "kind": "decal",
+          "identityDefining": true,
+          "description": "lane lines on the asphalt",
+          "mapsTo": {
+            "ref": "road"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d3-joints",
+          "zone": "parapet",
+          "kind": "seam",
+          "identityDefining": false,
+          "description": "precast segment joints every 2.67 m",
+          "mapsTo": {
+            "ref": "deck"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d4-rust",
+          "zone": "girders",
+          "kind": "stain",
+          "identityDefining": true,
+          "description": "rust weeps down the girder webs",
+          "mapsTo": {
+            "ref": "d4-rust"
+          },
+          "onMaterial": "concreteGirder",
+          "realization": "unreported"
+        },
+        {
+          "id": "d5-girders",
+          "zone": "girders",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "five precast I-girders with wide bottom flanges",
+          "mapsTo": {
+            "ref": "deck"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d6-diaphragm",
+          "zone": "girders",
+          "kind": "contour",
+          "identityDefining": false,
+          "description": "mid-span diaphragm between the girders",
+          "mapsTo": {
+            "ref": "deck"
+          },
+          "realization": "unreported"
+        }
+      ]
+    },
+    "anatomy": {
+      "applies": false,
+      "styleHeads": 0.0,
+      "proportions": {
+        "headUnit": 0.0,
+        "torso": 0.0,
+        "legs": 0.0,
+        "shoulderWidth": 0.0,
+        "hipWidth": 0.0
+      },
+      "pose": {
+        "type": "unassessed",
+        "jointAngles": {}
+      },
+      "faceLandmarks": {
+        "eyeLine": 0.0,
+        "eyeSpacing": 0.0,
+        "noseBase": 0.0,
+        "mouthLine": 0.0,
+        "hairline": 0.0
+      },
+      "features": [],
+      "confidence": 0.0,
+      "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
+    },
+    "sourceImage": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/reference.png",
+    "resolvedUnknowns": [
+      "Section on the contract (road +2.20, parapet +3.30); five girders on 2.4 m centres and a mid-span diaphragm from the notes.",
+      "The plate's girders end flush with the slab; the module ends are vertical planes.",
+      "No drain pipe on this deck (the plate has none)."
+    ],
+    "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
+  },
+  "qualityContract": {
+    "qualityBar": "high",
+    "definitionOfDone": [
+      "Rendered model matches the reference silhouette, the 12.50 x 3.30 x 16.00 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
+      "All four scene-budget ceilings hold: <=32000 triangles, <=24 draw calls, <=16 materials, <=32 unique geometries.",
+      "Zero coincident co-facing surface pairs (check-coplanar clean).",
+      "Exactly one root pivot plus 0 named mechanism pivot(s); zero sockets; none collider; no destruction groups.",
+      "Every material declares textureless with named evidence."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 1,
+      "mesoComponents": 1,
+      "microFeatureGroups": 3,
+      "materialLayers": 3,
+      "repetitionSystems": 1,
+      "reviewViewpoints": 4
+    },
+    "featureGroups": [
+      {
+        "id": "overall-silhouette",
+        "name": "I-girder deck silhouette and contract",
+        "required": true,
+        "threshold": 0.85,
+        "qualityCriteria": [
+          "Section on the contract lines (road +2.20, parapet +3.30)",
+          "Five I-girders at 2.4 m centres",
+          "Vertical ends"
+        ],
+        "evidenceRefs": [
+          "view-full"
+        ],
+        "failureModes": [
+          "a box girder",
+          "girders at the wrong pitch"
+        ]
+      },
+      {
+        "id": "road-and-parapets",
+        "name": "Road, lane lines and parapets",
+        "required": true,
+        "threshold": 0.8,
+        "qualityCriteria": [
+          "Two dashed white lane lines, no edge line",
+          "Plain parapet with chamfered top",
+          "Joints every 2.67 m"
+        ],
+        "evidenceRefs": [
+          "region-road",
+          "region-parapet"
+        ],
+        "failureModes": [
+          "yellow edge line",
+          "no joints"
+        ]
+      },
+      {
+        "id": "girders",
+        "name": "Girder section, rust and diaphragm",
+        "required": true,
+        "threshold": 0.75,
+        "qualityCriteria": [
+          "I-section with flanges",
+          "Rust weeps down the webs",
+          "A diaphragm at mid-span"
+        ],
+        "evidenceRefs": [
+          "region-girder",
+          "region-flange"
+        ],
+        "failureModes": [
+          "rectangular beams",
+          "clean webs"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "silhouette and negative-space delta",
+      "component hierarchy depth delta",
+      "repetition density and distribution delta",
+      "material albedo/roughness/normal response delta",
+      "local feature placement and scale delta"
+    ],
+    "antiShallowSpecRules": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ],
+    "minimumSpecDepthRevision": "Set to what the finished design actually is. The starter contract's defaults are arithmetically impossible against a ceiling of 24 draw calls, and the depth they reach for is delivered instead by MERGING: parts that share a material ride one component and one submission.",
+    "mustNotDo": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ]
+  },
+  "qualityTargets": {
+    "targetFidelity": 0.7,
+    "mustMatch": [
+      "macro silhouette and proportions",
+      "primary material albedo/roughness response",
+      "reference-derived PBR material response at or above 0.7 confidence when source pixels are usable",
+      "most recognizable local features"
+    ],
+    "niceToHave": [
+      "micro scratches, stains, chips, and dirt masks",
+      "secondary lighting match"
+    ],
+    "fpsTarget": 60,
+    "reviewViewpoints": [
+      "front",
+      "three-quarter",
+      "side",
+      "thickness-axis",
+      "long-axis"
+    ]
+  },
+  "selfCorrectLoop": {
+    "enabled": true,
+    "visualAcceptance": {
+      "reviewer": "ai-vision",
+      "threshold": 0.7,
+      "comparisonArtifactRequired": true,
+      "layerScoresRequired": true,
+      "codePixelDiffIsAcceptanceAuthority": false,
+      "scoringRule": "AI vision must inspect a side-by-side reference/render sheet and score the current pass from 0 to 1. Pixel-diff code may assist diagnostics but cannot approve a pass.",
+      "requiredLayerScores": [
+        "silhouetteProportion",
+        "componentStructure",
+        "formDetail",
+        "materialSurface",
+        "lightingCamera"
+      ],
+      "featureReviewPolicy": {
+        "enabled": true,
+        "reviewUnit": "semantic-subsystem",
+        "maxCriticalFeaturesPerPass": 5,
+        "maxImportantFeaturesPerPass": 3,
+        "criticalDefaultThreshold": 0.8,
+        "importantAverageThreshold": 0.65,
+        "adaptiveEscalation": true,
+        "singleImagePairOnly": true,
+        "selectionRule": "Choose only the most visually salient, identity-defining, user-prioritized, or high-risk semantic systems. Group repeated parts instead of reviewing every mesh. AI vision scores every selected feature from the same full reference/render pair."
+      }
+    },
+    "reviewAfterPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "allowedActions": [
+      "continue",
+      "refine-spec",
+      "refine-code",
+      "request-input",
+      "stop"
+    ],
+    "specRefineTriggers": [
+      "missing component",
+      "wrong primitive family",
+      "wrong proportions",
+      "material layer under-specified",
+      "local feature not traceable to viewEvidence",
+      "reference ambiguity discovered during implementation"
+    ],
+    "codeRefineTriggers": [
+      "spec is adequate but generated geometry/material does not match",
+      "browser render differs from reference",
+      "performance budget exceeded",
+      "lighting hides geometry or material response"
+    ],
+    "stopCriteria": [
+      "target fidelity reached or user accepts current approximation",
+      "remaining gaps require new reference images or manual art"
+    ],
+    "screenshotPolicy": {
+      "requiredForPasses": [
+        "blockout",
+        "structural-pass",
+        "form-refinement",
+        "material-pass",
+        "surface-pass",
+        "lighting-pass",
+        "interaction-pass"
+      ],
+      "preferredCapture": "in-app-browser-screenshot",
+      "fallbackCapture": "user-supplied-screenshot-path",
+      "minimumEvidence": "Each visual pass needs a reference image, rendered screenshot, side-by-side comparison sheet, AI vision score, layer scores, and critique before choosing continue.",
+      "reviewPairRule": "Compare the same camera/viewpoint whenever possible; do not judge a front reference against a random render angle.",
+      "acceptanceAuthority": "AI vision review of the comparison sheet. Code-generated pixel similarity is not sufficient evidence."
+    }
+  },
+  "featureReviewTargets": [
+    {
+      "id": "overall-silhouette",
+      "name": "I-girder deck silhouette and contract",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "deck"
+      ],
+      "evidenceRefs": [
+        "view-full"
+      ]
+    },
+    {
+      "id": "road-and-parapets",
+      "name": "Road, lane lines and parapets",
+      "tier": "critical",
+      "passIds": [
+        "form-refinement",
+        "surface-pass"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "road",
+        "deck"
+      ],
+      "evidenceRefs": [
+        "region-road",
+        "region-parapet"
+      ]
+    },
+    {
+      "id": "girders",
+      "name": "Girder section, rust and diaphragm",
+      "tier": "critical",
+      "passIds": [
+        "material-pass",
+        "surface-pass"
+      ],
+      "minimumScore": 0.75,
+      "mustPass": true,
+      "componentRefs": [
+        "deck"
+      ],
+      "evidenceRefs": [
+        "region-girder",
+        "region-flange"
+      ]
+    }
+  ],
+  "sculptPipeline": {
+    "passGateMode": "locked-sequential",
+    "passOrder": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "currentPass": "complete",
+    "completedPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "lastCompletedPass": "optimization-pass",
+    "blockedReason": "all build passes completed",
+    "nextRequiredEvidence": []
+  },
+  "lookDevTargets": {
+    "qualityPriority": "reference-fidelity",
+    "materialPass": {
+      "albedoPaletteRequired": true,
+      "roughnessVariationRequired": true,
+      "normalOrBumpRequired": true,
+      "localOverridesRequired": true,
+      "minimumTextureResolution": 1024,
+      "preferredTextureResolution": 2048,
+      "independentMapChannels": [
+        "albedo",
+        "roughness",
+        "height",
+        "normal",
+        "ambient-occlusion"
+      ],
+      "requiredSurfaceFrequencyBands": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "geometryReliefRequiredWhenSilhouetteAffected": true,
+      "referencePbrExtraction": {
+        "requiredWhenSourceImagePresent": true,
+        "targetThreshold": 0.7,
+        "stopOnLowConfidence": true,
+        "script": "forge/stage1_intake/extract_pbr_evidence.py",
+        "acceptedLimitation": "single-image extraction is reference-derived inference, not exact photogrammetry"
+      },
+      "mustAvoid": [
+        "single flat albedo per material",
+        "uniform roughness",
+        "albedo texture reused as roughness/height/normal/AO",
+        "single-frequency random noise",
+        "plastic-looking smooth bark, stone, cloth, foliage, or aged material",
+        "local color/detail described only in prose without material masks",
+        "claiming exact PBR recovery when confidence is below the target threshold"
+      ]
+    },
+    "lightingPass": {
+      "requiredTerms": [
+        "key light",
+        "fill light",
+        "rim or environment light",
+        "exposure",
+        "tone mapping",
+        "background",
+        "contact shadow"
+      ],
+      "mustAvoid": [
+        "ambient-only lighting",
+        "flat value range",
+        "missing contact shadow",
+        "reference lighting copied without separating material readability"
+      ]
+    },
+    "screenshotReview": [
+      "Compare albedo palette and local color zones.",
+      "Compare roughness/normal/bump response under light.",
+      "Compare cavity dirt, edge wear, stains, moss, scratches, or other local masks.",
+      "Compare key/fill/rim structure, exposure, tone mapping, background, and contact shadows.",
+      "Capture a neutral-light render to verify material readability without reference lighting.",
+      "Capture a grazing-light close-up to expose flat normals, uniform roughness, tiling, and plastic highlights.",
+      "Capture a reference-matched render from the same camera framing as the source."
+    ]
+  },
+  "actionReadiness": {
+    "explodable": true,
+    "clickable": true,
+    "partCount": 3,
+    "pivotInventory": [
+      {
+        "name": "root",
+        "component": "deck",
+        "type": "rigid-body",
+        "localPosition": [
+          0,
+          0,
+          0
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "justification": "The rigid body of the prop at its declared origin. A named pivot is a promise that a part turns on it, and only real mechanisms get one."
+      }
+    ],
+    "socketInventory": [],
+    "socketJustification": "ZERO sockets, deliberately. Nothing attaches to this prop and nothing is emitted from it. A marker named for a place on the surface is a location, not a mechanism.",
+    "colliderInventory": [],
+    "destructionGroups": [],
+    "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
+  },
+  "assumptions": [
+    "Section on the contract (road +2.20, parapet +3.30); five girders on 2.4 m centres and a mid-span diaphragm from the notes.",
+    "The plate's girders end flush with the slab; the module ends are vertical planes.",
+    "No drain pipe on this deck (the plate has none)."
+  ],
+  "coordinateFrame": {
+    "up": "+Y",
+    "forward": "+Z",
+    "handedness": "right",
+    "origin": "base-center",
+    "unitScale": "meters",
+    "notes": "Origin base-center per the registry pivot, +Y up, +Z along the deck / span axis; "
+  },
+  "silhouette": {
+    "envelope": {
+      "w": 12.5,
+      "h": 3.3,
+      "d": 16.0
+    },
+    "description": "A 12.5 x 3.3 section: five 1.8 m I-girders (0.70 bottom flange, 0.20 web, 0.90 top flange) under a 0.35 slab, 0.40 parapets to 3.30, asphalt at 2.20; 16 m long, vertical ends; a diaphragm at mid-span.",
+    "envelopeDerivation": "x +-6.25: the parapets' outer faces. y 0..3.30: the girder UNDERSIDE (the pivot, on a pier seat) to the parapet top; girders 1.80, slab 1.80..2.15, road 2.20. z +-8: the 16 m module with vertical ends. Five girders at x -4.8..4.8 on 2.4 m centres; one 0.30 diaphragm at z = 0.",
+    "meshyCrossCheck": "Meshy v7 proxy (scratch/expressway-i-girder-deck-module/reference.glb) is read for the section only: five girders of 0.5 H depth with wide bottom flanges under a thin slab and low parapets. The plan is the contract."
+  },
+  "viewEvidence": [
+    {
+      "id": "view-full",
+      "viewpoint": "front-three-quarter-high",
+      "path": "reference.png",
+      "confidence": 0.95
+    },
+    {
+      "id": "region-road",
+      "viewpoint": "top",
+      "path": "crops/road.png",
+      "confidence": 0.88
+    },
+    {
+      "id": "region-parapet",
+      "viewpoint": "front",
+      "path": "crops/parapet.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-girder",
+      "viewpoint": "front",
+      "path": "crops/girder.png",
+      "confidence": 0.88
+    },
+    {
+      "id": "region-flange",
+      "viewpoint": "front",
+      "path": "crops/flange.png",
+      "confidence": 0.84
+    },
+    {
+      "id": "region-slabunder",
+      "viewpoint": "front",
+      "path": "crops/slabunder.png",
+      "confidence": 0.8
+    },
+    {
+      "id": "region-end",
+      "viewpoint": "front",
+      "path": "crops/end.png",
+      "confidence": 0.8
+    },
+    {
+      "id": "region-far",
+      "viewpoint": "rear",
+      "path": null,
+      "confidence": 0.9,
+      "note": "NOT DIRECTLY OBSERVED. The far parapet and web repeat the near ones by the section's symmetry; the drain pipe is on one side only, as the plate shows."
+    }
+  ],
+  "componentTree": [
+    {
+      "id": "deck",
+      "name": "Slab, cantilevers and parapets",
+      "level": "macro",
+      "role": "identity",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "extrude",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "One closed profile swept the module length: slab, cantilevers, kerb kicks and both parapets in one geometry with its own metre UVs.",
+      "materialId": "concrete",
+      "material": "concrete",
+      "parent": null,
+      "geometryDescriptor": {
+        "topologyIntent": "Profile: x +-6.25 from 1.80 (the girder tops) up the parapet outer faces to 3.27, 30 mm chamfers to 3.30, inner faces down to 2.70, a 0.15 kick to 2.35, slab top 2.15; swept straight z -8..8. Diaphragm box 9.4 x 1.55 x 0.30 at z 0 between the outer girders.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "The box (or the girders) enter the slab underside by 0.05; the asphalt solid runs 10 mm into each parapet foot and 10 mm into the slab: interpenetrations, no shared co-facing plane. check-coplanar clean.",
+        "mergeNote": "One sweep, u along the road / 2.67, v round the profile / 2.67."
+      },
+      "localFeatures": [
+        {
+          "id": "d1-section",
+          "description": "section",
+          "delivery": "profile sweep"
+        },
+        {
+          "id": "d3-joints",
+          "description": "joints",
+          "delivery": "canvas seam"
+        },
+        {
+          "id": "d4-rust",
+          "description": "rust",
+          "delivery": "canvas"
+        },
+        {
+          "id": "d6-diaphragm",
+          "description": "diaphragm",
+          "delivery": "box"
+        },
+        {
+          "id": "d5-girders",
+          "description": "five I-girders",
+          "delivery": "instanced profile sweep under the slab"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "concrete",
+        "baseColor": "#a9a8a4",
+        "recipe": "White vertex colour on the concrete envelope, undersides 1.5; the segment tile carries the clean tone, joints and rust.",
+        "evidenceRef": "region-parapet",
+        "confidence": 0.9,
+        "dominantAlbedo": "rgba(169, 168, 164, 1.0)",
+        "secondaryAlbedo": "rgba(154, 90, 42, 1.0)",
+        "materialClass": "stone",
+        "materialClassConfidence": 0.9
+      },
+      "actionProfile": {
+        "animationRole": "root",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95,
+          "name": "root",
+          "notes": "At the origin the asset declares. A STATIC prop: nothing opens, turns or swings, so one root pivot is the whole mechanism inventory and that is the correct answer, not a gap."
+        },
+        "transformChannels": {
+          "translate": true,
+          "rotate": true,
+          "scale": true,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": []
+      }
+    },
+    {
+      "id": "road",
+      "name": "Asphalt wearing course",
+      "level": "meso",
+      "role": "identity",
+      "importance": 0.9,
+      "confidence": 0.88,
+      "primitive": "extrude",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "A thin closed profile swept the module length with u along the road and v ACROSS it (top-left corner first) so the lane lines are fixed v bands.",
+      "materialId": "asphalt",
+      "material": "asphalt",
+      "parent": "deck",
+      "geometryDescriptor": {
+        "topologyIntent": "Profile x +-5.71, y 2.34..2.40 (10 mm into the slab, 10 mm into each parapet foot); swept straight z -8..8, x +-5.71 (this deck's parapet foot), y 2.14..2.20.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Interpenetrates slab and parapet feet; its top is the only up-facing plane at 2.40.",
+        "mergeNote": "One sweep, uvScale 11.40 so v spans exactly the carriageway."
+      },
+      "localFeatures": [
+        {
+          "id": "d2-lanes",
+          "description": "lane lines",
+          "delivery": "road canvas"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "asphalt",
+        "baseColor": "#807f7a",
+        "recipe": "White vertex colour on the asphalt envelope; the road canvas carries the tone and the lines.",
+        "evidenceRef": "region-road",
+        "confidence": 0.88,
+        "dominantAlbedo": "rgba(128, 127, 122, 1.0)",
+        "secondaryAlbedo": "rgba(244, 244, 240, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.88
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    }
+  ],
+  "materials": [
+    {
+      "id": "concrete",
+      "name": "Precast concrete, slab and parapets",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#a9a8a4",
+      "color": "#a9a8a4",
+      "roughness": {
+        "base": 0.94,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/concrete_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#a9a8a4",
+        "secondary": [
+          "#a9a8a4",
+          "#9a5a2a"
+        ],
+        "samplingNotes": "Measured as the mean of crops/parapet.png. extract_pbr_evidence confidence 0.860. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on region-parapet; probed plate parapet face 124. Authored #a9a8a4 over a #d8d7d2 envelope; renders 157 on the parapet face.",
+          "Textureless as DECLARED: a 2.67 m segment-length concrete canvas, one joint seam per tile, rust weeps hanging down the parapet faces (v runs up the profile there), 2 x 2 ties, clouds, pinholes."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/parapet.png",
+        "pbrReport": "material-evidence/concrete.pbr.json",
+        "confidence": 0.86,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "concreteGirder",
+      "name": "Precast concrete, I-girders",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#8a8986",
+      "color": "#8a8986",
+      "roughness": {
+        "base": 0.94,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/concreteGirder_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#8a8986",
+        "secondary": [
+          "#8a8986",
+          "#9a5a2a"
+        ],
+        "samplingNotes": "Measured as the mean of crops/girder.png. extract_pbr_evidence confidence 0.860. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d4-rust",
+          "region": "girder webs under the top flange",
+          "roughness": 0.94,
+          "palette": [
+            "#9a5a2a"
+          ],
+          "evidence": "crops/girder.png: six 0x9a5a2a-ratio weeps per tile at alpha 0.45 from v 0.62 (the top flange line)."
+        }
+      ],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured #484844 sd 54 on region-girder (a web in the slab's shadow) and #858584 on region-flange; probed plate webs 91-124. Authored 0x8a8986 after 0xa19f9b rendered 167; renders 151-157 on the lit flanges.",
+          "Textureless as DECLARED: a 4 m girder canvas wrapping the profile once (uvScaleV), rust weeps hanging from the top flange down both web faces, clouds, pinholes."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/girder.png",
+        "pbrReport": "material-evidence/concreteGirder.pbr.json",
+        "confidence": 0.86,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "asphalt",
+      "name": "Asphalt wearing course with lane lines",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#807f7a",
+      "color": "#807f7a",
+      "roughness": {
+        "base": 0.96,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/asphalt_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#807f7a",
+        "secondary": [
+          "#807f7a",
+          "#f0c838",
+          "#f4f4f0"
+        ],
+        "samplingNotes": "Measured as the mean of crops/road.png. extract_pbr_evidence confidence 0.840. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on region-road; probed plate asphalt 147. Up-facing surfaces render ~1.05 A + 60 under the harness, so the base is authored at #807f7a and renders 158.",
+          "Textureless as DECLARED: an 11.4 m road canvas -- speckle, patches, six tyre tracks, 40 smears and two dashed white lane lines at thirds (this deck has no yellow edge line)."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/road.png",
+        "pbrReport": "material-evidence/asphalt.pbr.json",
+        "confidence": 0.84,
+        "verdict": "pass"
+      }
+    }
+  ],
+  "repetitionSystems": [
+    {
+      "id": "girders",
+      "name": "Precast I-girders",
+      "componentRef": "deck",
+      "count": 5,
+      "primitive": "extrude",
+      "materialId": "concreteGirder",
+      "placement": "five instances at x -4.8, -2.4, 0, 2.4, 4.8, y 0, spanning z -8..8; one 14-point I profile (0.70 bottom flange 0.22 thick, 0.20 web, 0.90 top flange 0.14 thick, 1.80 tall) swept the module length with its own UVs (u along / 4, v round the profile once)",
+      "instanced": true,
+      "pivotPerInstance": false,
+      "notes": "One InstancedMesh: the girder is the one part repeated at a fixed pitch; its tops enter the slab underside by 0.05."
+    }
+  ],
+  "buildPasses": [
+    {
+      "id": "blockout",
+      "goal": "Match macro silhouette and proportions.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Silhouette reads correctly without materials.",
+        "Quality contract has named all required macro feature groups before code generation.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "structural-pass",
+      "goal": "Build the component hierarchy implied by the pre-spec complexity assessment.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro, meso, and repeated structures meet qualityContract.minimumSpecDepth.",
+        "Parent-child relations, joints, seams, sockets, and contact points are explicit.",
+        "Every attached child appendage/connector has parentSocket, localStart/localEnd, contactType, embedDepth or overlap, and gapTolerance.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "form-refinement",
+      "goal": "Refine shape, deformation, bevels, tapers, curves, asymmetry, and visible local geometry.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Important visible forms are represented in component geometryDescriptor, deformations, localFeatures, or repetitionSystems.",
+        "Endpoint-based child parts are rooted at their attachment sockets and do not visibly float away from parents.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "material-pass",
+      "goal": "Match material color, roughness, bump, and local variation.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Reference-derived albedo palette records dominant, secondary, and accent colors per visible material.",
+        "Each important material defines roughness variation and at least one normal/bump/displacement response.",
+        "Local material overrides, dirt/wear/stains/moss/chips/scratches or equivalent masks are tied to evidenceRefs.",
+        "Thin, transparent, reflective, wet, or fibrous materials document alpha/transmission/clearcoat/metalness/fiber response when relevant.",
+        "Generated preview uses procedural albedo/roughness/bump texture or vertex color variation instead of one flat color.",
+        "Generated preview uses independent PBR maps at 1024px or higher for the quality-first tier.",
+        "If source pixels are available, referencePbr extraction passed at confidence >= 0.7 or the pass is stopped/requesting better references.",
+        "Macro, meso, and micro surface frequency bands are visible at the intended review distance without obvious tiling.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "surface-pass",
+      "goal": "Add procedural surface locality such as normal/bump/displacement, AO, dirt, stains, chips, grain, moss, scratches, and wear.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Every required material feature group has local overrides or surfaceDetail tied to evidenceRefs.",
+        "A grazing-angle close-up proves that normal/height detail breaks highlights naturally and does not read as smooth plastic.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "lighting-pass",
+      "goal": "Make material and form readable under neutral turntable lighting plus optional reference lighting.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
+        "Exposure, tone mapping, background color/gradient, shadow softness, and contact shadow behavior are specified.",
+        "Lighting does not hide geometry/material gaps and screenshots can be compared fairly to the reference.",
+        "Neutral, grazing, and reference-matched lighting checks distinguish material errors from lighting errors.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "interaction-pass",
+      "goal": "Make the model ready for future animation, transformation, physics, or destruction.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro and movable meso components have stable pivot nodes.",
+        "Sockets, collider proxies, and destruction metadata are present for future runtime actions.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "optimization-pass",
+      "goal": "Protect runtime performance after visual fidelity is accepted.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
+        "Repeated detail is instanced or simplified where possible without breaking silhouette/material believability."
+      ]
+    }
+  ],
+  "visualEvidence": [
+    {
+      "timestamp": "2026-09-10T01:39:08.970859+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.9,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Bounds +-6.25, 0..3.3, +-8: the contract. Five girders 1.80 tall at 2.4 m centres read at az 000/180 with their flanges; parapets to 3.30, road at 2.20.",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-10T01:39:09.097833+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.9,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Bounds +-6.25, 0..3.3, +-8: the contract. Five girders 1.80 tall at 2.4 m centres read at az 000/180 with their flanges; parapets to 3.30, road at 2.20.",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-10T01:39:09.207380+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.9,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "road-and-parapets",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two dashed white lane lines at thirds, no edge line, on a weathered 158 asphalt (plate 147); plain chamfered parapets with joints every 2.67 m.",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-10T01:39:09.312045+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-10T01:39:09.411877+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.9,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "girders",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Probed on beauty-hero: road 158 (plate 147), girder flange 157 (plate 91-124 in shadow, 151 on a lit flange). I-section with 0.70 bottom and 0.90 top flanges; rust weeps from the top flange line; the diaphragm at z 0.",
+          "notes": "The diaphragm is hidden from the hero angle; it reads at az 090/270."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-10T01:39:09.511214+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.9,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "road-and-parapets",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two dashed white lane lines at thirds, no edge line, on a weathered 158 asphalt (plate 147); plain chamfered parapets with joints every 2.67 m.",
+          "notes": ""
+        },
+        {
+          "id": "girders",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Probed on beauty-hero: road 158 (plate 147), girder flange 157 (plate 91-124 in shadow, 151 on a lit flange). I-section with 0.70 bottom and 0.90 top flanges; rust weeps from the top flange line; the diaphragm at z 0.",
+          "notes": "The diaphragm is hidden from the hero angle; it reads at az 090/270."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-10T01:39:09.628992+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.9,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-10T01:39:09.755760+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.9,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-10T01:39:09.865542+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.9,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Bounds +-6.25, 0..3.3, +-8: the contract. Five girders 1.80 tall at 2.4 m centres read at az 000/180 with their flanges; parapets to 3.30, road at 2.20.",
+          "notes": ""
+        },
+        {
+          "id": "road-and-parapets",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two dashed white lane lines at thirds, no edge line, on a weathered 158 asphalt (plate 147); plain chamfered parapets with joints every 2.67 m.",
+          "notes": ""
+        },
+        {
+          "id": "girders",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Probed on beauty-hero: road 158 (plate 147), girder flange 157 (plate 91-124 in shadow, 151 on a lit flange). I-section with 0.70 bottom and 0.90 top flanges; rust weeps from the top flange line; the diaphragm at z 0.",
+          "notes": "The diaphragm is hidden from the hero angle; it reads at az 090/270."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    }
+  ],
+  "reviewHistory": [
+    {
+      "timestamp": "2026-09-10T01:39:08.970859+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.9,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Bounds +-6.25, 0..3.3, +-8: the contract. Five girders 1.80 tall at 2.4 m centres read at az 000/180 with their flanges; parapets to 3.30, road at 2.20.",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "Blockout: two components and one instanced set on three materials, 3 draw calls of 24.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/review/clay/clay-315.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-10T01:39:09.097833+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.9,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Bounds +-6.25, 0..3.3, +-8: the contract. Five girders 1.80 tall at 2.4 m centres read at az 000/180 with their flanges; parapets to 3.30, road at 2.20.",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "Structural pass: girders 1.80 at 2.4 m centres, slab 1.80..2.15, road 2.20, parapet 3.30, diaphragm at mid-span.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-10T01:39:09.207380+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.9,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "road-and-parapets",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two dashed white lane lines at thirds, no edge line, on a weathered 158 asphalt (plate 147); plain chamfered parapets with joints every 2.67 m.",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "Form refinement: the I profile with tapered flange roots; parapet chamfer and kick.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-10T01:39:09.312045+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "First render: road 71 against the plate's weathered 147 and girders 167 against 91-124: asphalt base lifted 0x3c3b37 -> 0x4e4d49 -> 0x807f7a (renders 158), girder clean 0xa19f9b -> 0x8a8986.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-10T01:39:09.411877+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.9,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "girders",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Probed on beauty-hero: road 158 (plate 147), girder flange 157 (plate 91-124 in shadow, 151 on a lit flange). I-section with 0.70 bottom and 0.90 top flanges; rust weeps from the top flange line; the diaphragm at z 0.",
+          "notes": "The diaphragm is hidden from the hero angle; it reads at az 090/270."
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: slab, girder and asphalt tones probed (road 158/147, girder 157/151).",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-10T01:39:09.511214+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.9,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "road-and-parapets",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two dashed white lane lines at thirds, no edge line, on a weathered 158 asphalt (plate 147); plain chamfered parapets with joints every 2.67 m.",
+          "notes": ""
+        },
+        {
+          "id": "girders",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Probed on beauty-hero: road 158 (plate 147), girder flange 157 (plate 91-124 in shadow, 151 on a lit flange). I-section with 0.70 bottom and 0.90 top flanges; rust weeps from the top flange line; the diaphragm at z 0.",
+          "notes": "The diaphragm is hidden from the hero angle; it reads at az 090/270."
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface pass: once-round girder canvas with rust weeps; segment joints on the slab; the road canvas with dashed lines only.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-10T01:39:09.628992+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.9,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Lighting pass: undersides lifted 1.5x; no rim in the plate.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-10T01:39:09.755760+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.9,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Interaction pass: ONE root pivot, ZERO sockets, a derived compound, no destruction groups.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-10T01:39:09.865542+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.9,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Bounds +-6.25, 0..3.3, +-8: the contract. Five girders 1.80 tall at 2.4 m centres read at az 000/180 with their flanges; parapets to 3.30, road at 2.20.",
+          "notes": ""
+        },
+        {
+          "id": "road-and-parapets",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two dashed white lane lines at thirds, no edge line, on a weathered 158 asphalt (plate 147); plain chamfered parapets with joints every 2.67 m.",
+          "notes": ""
+        },
+        {
+          "id": "girders",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Probed on beauty-hero: road 158 (plate 147), girder flange 157 (plate 91-124 in shadow, 151 on a lit flange). I-section with 0.70 bottom and 0.90 top flanges; rust weeps from the top flange line; the diaphragm at z 0.",
+          "notes": "The diaphragm is hidden from the hero angle; it reads at az 090/270."
+        }
+      ],
+      "action": "continue",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.91. 346/32,000 triangles, 3/24 draw calls, 3/16 materials, 3/32 unique geometries, three canvases.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/expressway-i-girder-deck-module/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    }
+  ],
+  "lodPlan": [
+    {
+      "tier": "near",
+      "distance": 0,
+      "strategy": "full component tree and material layers"
+    },
+    {
+      "tier": "far",
+      "distance": 30,
+      "strategy": "merge static components and reduce local feature geometry"
+    }
+  ],
+  "performanceBudget": {
+    "qualityPriority": "real-time",
+    "targetTriangles": 32000,
+    "maxDrawCalls": 24,
+    "maxMaterials": 16,
+    "maxUniqueGeometries": 32,
+    "textureSize": 1024,
+    "fpsTarget": 60,
+    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the hero4x class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
+    "accounting": {
+      "drawCalls": {
+        "components": 2,
+        "repetitionSystems": 1,
+        "projectedTotal": 3,
+        "budget": 24,
+        "headroom": 21,
+        "note": "2 component(s) + 1 repetition system(s) = 3 of 24. Parts that share a material ride one merged geometry and one submission."
+      },
+      "materials": {
+        "projectedTotal": 3,
+        "budget": 16,
+        "headroom": 13,
+        "note": "3 of 16: every tone inside a material is a vertex colour or a canvas ratio over its envelope, never a second material."
+      },
+      "uniqueGeometries": {
+        "projectedTotal": 3,
+        "budget": 32,
+        "headroom": 29,
+        "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
+      },
+      "triangles": {
+        "measured": 346,
+        "budget": 32000,
+        "headroom": 31654,
+        "note": "346 of 32000, measured off the built module by render-model."
+      }
+    }
+  },
+  "lightingFromPhoto": [
+    {
+      "id": "key",
+      "role": "key",
+      "direction": "front-upper-left",
+      "elevationDegrees": 38,
+      "azimuthDegrees": -35,
+      "intensity": 0.85,
+      "colorTemperature": "neutral 5600K",
+      "shadowSoftness": "very soft, near shadowless",
+      "notes": "The plate is a flat studio lightbox: surfaces at 90 degrees to each other measure within a few levels, which is only possible under near-shadowless illumination. That is WHY the measured crop means are usable as albedo with little correction."
+    },
+    {
+      "id": "fill",
+      "role": "fill",
+      "direction": "front-lower-right",
+      "intensity": 0.64,
+      "fillRatio": 0.75,
+      "colorTemperature": "neutral 5600K",
+      "notes": "High fill ratio inferred from the shadow-side wall retaining full value."
+    },
+    {
+      "id": "ambient",
+      "role": "environment",
+      "intensity": 0.45,
+      "source": "uniform grey studio surround",
+      "notes": "The seamless backdrop acts as a large uniform environment. The thaikit harness supplies NO environment map, which is why every metal on this prop carries a metalness well below its physical value -- a metal with nothing to reflect renders black."
+    },
+    {
+      "id": "rim",
+      "role": "rim",
+      "intensity": 0.0,
+      "present": false,
+      "notes": "NO rim light in the plate. Recorded so a missing rim in the render is not read as a defect."
+    },
+    {
+      "id": "exposure-and-tonemapping",
+      "role": "grade",
+      "exposure": 1.0,
+      "toneMapping": "ACESFilmic",
+      "notes": "Exposure 1.0 with ACES filmic tone mapping; no exposure compensation is applied to the measured albedos and none is warranted."
+    },
+    {
+      "id": "contact-shadow",
+      "role": "contact-shadow",
+      "present": false,
+      "groundShadow": "none",
+      "shadowCatcher": false,
+      "notes": "NO contact or ground shadow in the plate -- it is a cut-out against a seamless backdrop. Recorded so the absence is not read as a missing feature. IN USE this is a floor-placed building and the HOST scene owns its contact shadow: castShadow ships enabled on every mesh and the factory defines no ground plane of its own."
+    }
+  ],
+  "proceduralStrategy": [
+    {
+      "id": "primitives",
+      "strategy": "Tinted boxes, extruded (x, y) profiles and profile SWEEPS along a straight, sheared or arced path merged per material; cylinders where the plate shows a round section."
+    },
+    {
+      "id": "instancing",
+      "strategy": "Repeated parts ride one InstancedMesh each; in a level the HOST instances the whole module along the road or the walkway."
+    },
+    {
+      "id": "determinism",
+      "strategy": "All procedural variation is assigned by instance INDEX, never from a random source, so the model is byte-identical on every build."
+    },
+    {
+      "id": "textures",
+      "strategy": "Every material is declared textureless. Surface identity is one post-construction canvas tile per material -- cast concrete with a form-tie grid, lift lines and pinholes; asphalt with its lane marks; painted steel with rust -- bound as map and bump after construction, so createObjectModel does no per-pixel work but the tiles."
+    }
+  ],
+  "animationAnchors": [],
+  "destructionAnchors": [],
+  "risks": [
+    {
+      "id": "between-girders",
+      "severity": "low",
+      "description": "At az 90/270 the backdrop shows between the girders under the slab.",
+      "mitigation": "Open below, so not enclosed: the gate does not count it."
+    }
+  ],
+  "localSpecSearch": {
+    "collection": "core_3d",
+    "query": "Expressway I-Girder Deck Module",
+    "index": {
+      "status": "hit",
+      "reason": "current",
+      "fingerprint": "6857e5ab528b42ac12f4f411f862610a0bffce8e47aee3610a7603c318072fe8"
+    },
+    "matches": [
+      {
+        "record_id": "core.pbr-emission",
+        "file_path": "docs/raw/img2threejs-skill-dataset.json",
+        "heading": null,
+        "key_path": "categories.material_pbr[7]",
+        "score": 4.900504821176,
+        "snippets": [
+          "... cues: A region stays bright/colored regardless of light direction or shadow (e.g. StatTrak orange LED counter module); Often masked to a small, specific submesh rather than the whole surface Dấu hiệu nhận diện: Một vùng luôn ..."
+        ],
+        "source_refs": [
+          {
+            "path": "docs/raw/img2threejs-skill-dataset.json",
+            "heading": null,
+            "key_path": "categories.material_pbr[7]"
+          }
+        ],
+        "evidence_refs": [
+          {
+            "kind": "source",
+            "ref": "docs/raw/img2threejs-skill-dataset.json",
+            "note": "img2threejs NotebookLM research distillation"
+          }
+        ]
+      }
+    ]
+  },
+  "tier1Results": [
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.3843,
+        "aspectRatioDelta": 0.0769,
+        "scaleDelta": 0.0723,
+        "bilateralSymmetryError": 0.0816,
+        "colorDelta": {
+          "checked": 2,
+          "maxDeltaE": 3.03,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 3.03
+            },
+            {
+              "componentId": null,
+              "deltaE": 1.35
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.384 is below threshold 0.85",
+        "aspect-ratio delta 0.077 exceeds threshold 0.05",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "maskWarnings": [
+        "reference: 12.8% of foreground cells lie outside the largest connected blob and were excluded from the bounding box; if the subject really has separated parts in this projection, they are not being measured"
+      ],
+      "renderHash": "1aef0dd5e7a4f510",
+      "passId": "blockout"
+    }
+  ]
+}

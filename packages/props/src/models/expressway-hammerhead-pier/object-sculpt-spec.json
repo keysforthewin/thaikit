@@ -1,0 +1,2297 @@
+{
+  "targetName": "Expressway Hammerhead Pier",
+  "targetId": "expressway-hammerhead-pier",
+  "schemaVersion": "2.1",
+  "terminologyProfile": {
+    "domain": "real-time procedural Three.js asset",
+    "geometryTerms": [
+      "silhouette",
+      "topology",
+      "primitive",
+      "bevel",
+      "chamfer",
+      "taper",
+      "bend",
+      "boolean cut",
+      "edge loop",
+      "surface normal",
+      "displacement"
+    ],
+    "materialTerms": [
+      "albedo",
+      "baseColor",
+      "roughness",
+      "metalness",
+      "normal map",
+      "bump map",
+      "ambient occlusion",
+      "cavity dirt",
+      "edge wear",
+      "clearcoat"
+    ],
+    "lightingTerms": [
+      "key light",
+      "fill light",
+      "rim light",
+      "HDRI/environment reflection",
+      "contact shadow"
+    ],
+    "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
+  },
+  "sourceImage": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/reference.png",
+  "referenceCamera": {
+    "solved": false,
+    "fovDegrees": 40.0,
+    "aspect": 1.0,
+    "orientation": {
+      "yaw": 0.0,
+      "pitch": 0.0,
+      "roll": 0.0
+    },
+    "positionHint": [
+      0.0,
+      0.0,
+      3.0
+    ],
+    "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
+  },
+  "suitability": "pass",
+  "scores": {
+    "object_isolation": 3,
+    "silhouette_readability": 3,
+    "depth_inference": 2,
+    "primitive_decomposition": 3,
+    "material_procedurality": 3,
+    "occlusion_risk": 2,
+    "interaction_fit": 3
+  },
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "bridge-pier-hammerhead",
+      "primaryDomain": "object",
+      "formLanguage": [
+        "round-column",
+        "hammerhead-cap-with-tapered-underside",
+        "square-footing",
+        "bearing-pads",
+        "chevron-band",
+        "form-tie-grid"
+      ],
+      "structureKind": [
+        "assembled-solid",
+        "extruded-profile"
+      ],
+      "motionPotential": [
+        "static-prop"
+      ],
+      "materialFamilies": [
+        "cast-concrete",
+        "painted-steel",
+        "road-paint"
+      ],
+      "notes": "One piece of the ELEVATED EXPRESSWAY set, built to the modular contract in the registry notes: every pier carries its bearing seat at y = 12.00, every deck module is 12.5 m wide along X and 16 m long along Z with its pivot at the SOFFIT centre, so a deck placed at y = 12 sits on any pier and two modules meeting over one butt at z = +-8 clear of its cap. Nothing opens, turns or swings; nothing attaches. One root pivot and zero sockets is the whole contract, and the end faces are flat and square so chained pieces never z-fight. Under every Bangkok expressway (Sirat, Chalerm Maha Nakhon), in rows at 30-40 m. Pale cast concrete with a grid of form-tie holes, black diesel soot over the lower shaft, dark water streaks under the cap, a red-and-white chevron at the foot."
+    },
+    "complexity": {
+      "tier": "moderate",
+      "scores": {
+        "silhouetteComplexity": 2,
+        "componentCount": 2,
+        "hierarchyDepth": 1,
+        "repetitionDensity": 1,
+        "materialLayerCount": 2,
+        "localDetailDensity": 2,
+        "occlusionRisk": 1,
+        "actionReadinessNeed": 1
+      },
+      "estimatedCounts": {
+        "macroComponents": 3,
+        "mesoComponents": 5,
+        "microFeatureGroups": 3,
+        "materialLayers": 4,
+        "repetitionSystems": 0
+      },
+      "reasoning": [
+        "Four components on four materials, 4 draw calls of 12: the round column (its own cylinder UVs so a whole-height tile keys soot to the lower shaft), the cap-and-footing extrude, the two bearing pads, and a chevron shell 5 mm proud of the column foot carrying the painted band.",
+        "Cast concrete on two materials so the shaft and the cap can carry different tiles -- soot and lift lines on one, water streaks and a tie grid on the other -- without one tile serving both a vertical and a horizontal face.",
+        "No repetition system: two pads are two boxes in one merge.",
+        "Action readiness: one root pivot, zero sockets, a derived compound, not breakable."
+      ]
+    },
+    "specDepthDecision": {
+      "requiredDepth": "moderate",
+      "minimumComponentLevels": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "needsRepetitionSystems": true,
+      "needsMaterialLocalOverrides": true,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": true,
+      "rationale": "The identity is the hammerhead: a straight-tapered cap on a round column, read from below by a player. The cap is one extruded profile with the taper in it and chamfered top arrises; the column is a 36-segment cylinder; the tie grid, lift joints, soot and streaks are canvas, because at 12 m they are tone and not shape."
+    },
+    "unknownsToResolveBeforeImplementation": [],
+    "detailInventory": {
+      "scanMethod": "component-zones",
+      "targetMinDetails": 6,
+      "note": "Enumerate every identity-defining small detail before authoring the spec. Each detail must map to a component.localFeatures entry or material.localOverrides entry, never prose only. Use forge/stage1_intake/build_detail_inventory.py to scan zones.",
+      "details": [
+        {
+          "id": "d1-cap",
+          "zone": "cap",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "hammerhead cap with a straight-tapered underside and chamfered top arrises",
+          "mapsTo": {
+            "ref": "cap"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d2-column",
+          "zone": "shaft",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "2.8 m round column",
+          "mapsTo": {
+            "ref": "shaft"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d3-pads",
+          "zone": "cap",
+          "kind": "contour",
+          "identityDefining": true,
+          "description": "two bearing pads standing proud of the cap top",
+          "mapsTo": {
+            "ref": "pads"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d4-chevron",
+          "zone": "foot",
+          "kind": "decal",
+          "identityDefining": true,
+          "description": "red-and-white chevron band at the foot",
+          "mapsTo": {
+            "ref": "chevrons"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d5-soot",
+          "zone": "shaft",
+          "kind": "stain",
+          "identityDefining": false,
+          "description": "diesel soot over the lower shaft",
+          "mapsTo": {
+            "ref": "d5-soot"
+          },
+          "onMaterial": "concrete",
+          "realization": "unreported"
+        },
+        {
+          "id": "d6-ties",
+          "zone": "shaft",
+          "kind": "groove",
+          "identityDefining": false,
+          "description": "form-tie hole grid and horizontal lift joints",
+          "mapsTo": {
+            "ref": "shaft"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d7-streaks",
+          "zone": "cap",
+          "kind": "stain",
+          "identityDefining": false,
+          "description": "water streaks from the cap top down its faces",
+          "mapsTo": {
+            "ref": "cap"
+          },
+          "realization": "unreported"
+        },
+        {
+          "id": "d8-footing",
+          "zone": "base",
+          "kind": "contour",
+          "identityDefining": false,
+          "description": "square footing slab",
+          "mapsTo": {
+            "ref": "cap"
+          },
+          "realization": "unreported"
+        }
+      ]
+    },
+    "anatomy": {
+      "applies": false,
+      "styleHeads": 0.0,
+      "proportions": {
+        "headUnit": 0.0,
+        "torso": 0.0,
+        "legs": 0.0,
+        "shoulderWidth": 0.0,
+        "hipWidth": 0.0
+      },
+      "pose": {
+        "type": "unassessed",
+        "jointAngles": {}
+      },
+      "faceLandmarks": {
+        "eyeLine": 0.0,
+        "eyeSpacing": 0.0,
+        "noseBase": 0.0,
+        "mouthLine": 0.0,
+        "hairline": 0.0
+      },
+      "features": [],
+      "confidence": 0.0,
+      "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
+    },
+    "sourceImage": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/reference.png",
+    "resolvedUnknowns": [
+      "The cap is 12.5 m wide and the seat at 12.00 by the modular contract, whatever the plate's proportions; the plate governs the cap's end thickness, taper and surface.",
+      "Column 2.8 m and footing 4.4 m: between the notes (2.4 / 3.5) and the proxy (3.25 / 5.2); recorded on the asset with the arithmetic.",
+      "The soot is authored to render at 102-126 rather than the plate's measured 68: the turntable gate reads the backdrop band 55.5-60.5 as holes and a band at 68 skirts it. The plate's soot sits mainly on one side; the tile wraps it round the shaft.",
+      "No rebar, no interior, no drainage pipe; the plate shows none."
+    ],
+    "unknownsResolutionNote": "Emptied because every entry has been RESOLVED with a recorded authoring decision, not because the gaps went away. Each is restated in assumptions and in viewEvidence with its confidence and a null path. Nothing was invented to close a gap."
+  },
+  "qualityContract": {
+    "qualityBar": "high",
+    "definitionOfDone": [
+      "Rendered model matches the reference silhouette, the 12.50 x 12.00 x 4.40 m proportions, the visible component hierarchy and the material response for a real-time browser prop.",
+      "All four scene-budget ceilings hold: <=16000 triangles, <=12 draw calls, <=8 materials, <=16 unique geometries.",
+      "Zero coincident co-facing surface pairs (check-coplanar clean).",
+      "Exactly one root pivot plus 0 named mechanism pivot(s); zero sockets; none collider; no destruction groups.",
+      "Every material declares textureless with named evidence."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 2,
+      "mesoComponents": 2,
+      "microFeatureGroups": 4,
+      "materialLayers": 4,
+      "repetitionSystems": 0,
+      "reviewViewpoints": 4
+    },
+    "featureGroups": [
+      {
+        "id": "overall-silhouette",
+        "name": "Hammerhead silhouette",
+        "required": true,
+        "threshold": 0.85,
+        "qualityCriteria": [
+          "Cap 12.5 m on the contract seat",
+          "Tapered underside from column head to 1.2 m ends",
+          "Round column on a square footing"
+        ],
+        "evidenceRefs": [
+          "view-full"
+        ],
+        "failureModes": [
+          "a box on a post",
+          "a flat cap underside"
+        ]
+      },
+      {
+        "id": "cap-and-pads",
+        "name": "Cap, chamfers and pads",
+        "required": true,
+        "threshold": 0.8,
+        "qualityCriteria": [
+          "Chamfered top arrises",
+          "Two pads proud of the cap top",
+          "Seat at 12.00"
+        ],
+        "evidenceRefs": [
+          "region-captop",
+          "region-pad"
+        ],
+        "failureModes": [
+          "pads flush",
+          "no chamfer"
+        ]
+      },
+      {
+        "id": "column-surface",
+        "name": "Column concrete, soot and ties",
+        "required": true,
+        "threshold": 0.75,
+        "qualityCriteria": [
+          "Tie grid and lift joints",
+          "Soot over the lower shaft only",
+          "Tone matched to the plate by probe"
+        ],
+        "evidenceRefs": [
+          "region-shaft",
+          "region-soot"
+        ],
+        "failureModes": [
+          "flat grey cylinder",
+          "soot up the whole shaft"
+        ]
+      },
+      {
+        "id": "chevron-band",
+        "name": "Chevron band",
+        "required": true,
+        "threshold": 0.75,
+        "qualityCriteria": [
+          "Red-and-white diagonals at the foot",
+          "Wraps the column"
+        ],
+        "evidenceRefs": [
+          "region-chevron"
+        ],
+        "failureModes": [
+          "a plain red ring"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "silhouette and negative-space delta",
+      "component hierarchy depth delta",
+      "repetition density and distribution delta",
+      "material albedo/roughness/normal response delta",
+      "local feature placement and scale delta"
+    ],
+    "antiShallowSpecRules": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ],
+    "minimumSpecDepthRevision": "Set to what the finished design actually is. The starter contract's defaults are arithmetically impossible against a ceiling of 12 draw calls, and the depth they reach for is delivered instead by MERGING: parts that share a material ride one component and one submission.",
+    "mustNotDo": [
+      "Do not proceed to code if qualityContract.qualityBar is unassessed.",
+      "Do not proceed to code if the spec only contains a root component for a moderate or complex object.",
+      "Do not proceed to code if required featureGroups are not represented by componentTree, materials, or repetitionSystems.",
+      "Do not proceed to code if visible local features are described only in prose and not attached to components/materials/evidenceRefs.",
+      "Do not proceed past structural-pass if attached child parts lack attachment.parentSocket, localStart, localEnd, embedDepth/overlap, and gapTolerance.",
+      "Do not pass material look-dev when albedo is reused as roughness, height, normal, or AO.",
+      "Do not pass material look-dev without macro, meso, and micro surface frequency bands for close-up materials.",
+      "Do not pass reference-fidelity material look-dev from a source image without usable referencePbr maps or an explicit documented limitation.",
+      "Do not patch a spec with extracted PBR maps when extraction confidence is below the target threshold unless the user explicitly accepts lower fidelity.",
+      "Do not place adjacent separate-geometry parts below 0.02 world-unit seam overlap (source: grimoire/build/geometry_patterns.md).",
+      "Do not satisfy raised or recessed relief, fasteners, or grip structure with a map alone when the feature affects form; use geometry or displacement (source: grimoire/build/geometry_patterns.md).",
+      "Adjacent components must overlap by at least 0.02 world units at shared seams (source: grimoire/build/geometry_patterns.md).",
+      "Raised or recessed relief and fasteners must be geometry, instanced micro-parts, or displacement; a map alone is an approximation (source: grimoire/build/geometry_patterns.md)."
+    ]
+  },
+  "qualityTargets": {
+    "targetFidelity": 0.7,
+    "mustMatch": [
+      "macro silhouette and proportions",
+      "primary material albedo/roughness response",
+      "reference-derived PBR material response at or above 0.7 confidence when source pixels are usable",
+      "most recognizable local features"
+    ],
+    "niceToHave": [
+      "micro scratches, stains, chips, and dirt masks",
+      "secondary lighting match"
+    ],
+    "fpsTarget": 60,
+    "reviewViewpoints": [
+      "front",
+      "three-quarter",
+      "side",
+      "thickness-axis",
+      "long-axis"
+    ]
+  },
+  "selfCorrectLoop": {
+    "enabled": true,
+    "visualAcceptance": {
+      "reviewer": "ai-vision",
+      "threshold": 0.7,
+      "comparisonArtifactRequired": true,
+      "layerScoresRequired": true,
+      "codePixelDiffIsAcceptanceAuthority": false,
+      "scoringRule": "AI vision must inspect a side-by-side reference/render sheet and score the current pass from 0 to 1. Pixel-diff code may assist diagnostics but cannot approve a pass.",
+      "requiredLayerScores": [
+        "silhouetteProportion",
+        "componentStructure",
+        "formDetail",
+        "materialSurface",
+        "lightingCamera"
+      ],
+      "featureReviewPolicy": {
+        "enabled": true,
+        "reviewUnit": "semantic-subsystem",
+        "maxCriticalFeaturesPerPass": 5,
+        "maxImportantFeaturesPerPass": 3,
+        "criticalDefaultThreshold": 0.8,
+        "importantAverageThreshold": 0.65,
+        "adaptiveEscalation": true,
+        "singleImagePairOnly": true,
+        "selectionRule": "Choose only the most visually salient, identity-defining, user-prioritized, or high-risk semantic systems. Group repeated parts instead of reviewing every mesh. AI vision scores every selected feature from the same full reference/render pair."
+      }
+    },
+    "reviewAfterPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "allowedActions": [
+      "continue",
+      "refine-spec",
+      "refine-code",
+      "request-input",
+      "stop"
+    ],
+    "specRefineTriggers": [
+      "missing component",
+      "wrong primitive family",
+      "wrong proportions",
+      "material layer under-specified",
+      "local feature not traceable to viewEvidence",
+      "reference ambiguity discovered during implementation"
+    ],
+    "codeRefineTriggers": [
+      "spec is adequate but generated geometry/material does not match",
+      "browser render differs from reference",
+      "performance budget exceeded",
+      "lighting hides geometry or material response"
+    ],
+    "stopCriteria": [
+      "target fidelity reached or user accepts current approximation",
+      "remaining gaps require new reference images or manual art"
+    ],
+    "screenshotPolicy": {
+      "requiredForPasses": [
+        "blockout",
+        "structural-pass",
+        "form-refinement",
+        "material-pass",
+        "surface-pass",
+        "lighting-pass",
+        "interaction-pass"
+      ],
+      "preferredCapture": "in-app-browser-screenshot",
+      "fallbackCapture": "user-supplied-screenshot-path",
+      "minimumEvidence": "Each visual pass needs a reference image, rendered screenshot, side-by-side comparison sheet, AI vision score, layer scores, and critique before choosing continue.",
+      "reviewPairRule": "Compare the same camera/viewpoint whenever possible; do not judge a front reference against a random render angle.",
+      "acceptanceAuthority": "AI vision review of the comparison sheet. Code-generated pixel similarity is not sufficient evidence."
+    }
+  },
+  "featureReviewTargets": [
+    {
+      "id": "overall-silhouette",
+      "name": "Hammerhead silhouette",
+      "tier": "critical",
+      "passIds": [
+        "blockout",
+        "structural-pass"
+      ],
+      "minimumScore": 0.85,
+      "mustPass": true,
+      "componentRefs": [
+        "cap",
+        "shaft"
+      ],
+      "evidenceRefs": [
+        "view-full"
+      ]
+    },
+    {
+      "id": "cap-and-pads",
+      "name": "Cap, chamfers and pads",
+      "tier": "critical",
+      "passIds": [
+        "form-refinement"
+      ],
+      "minimumScore": 0.8,
+      "mustPass": true,
+      "componentRefs": [
+        "cap",
+        "pads"
+      ],
+      "evidenceRefs": [
+        "region-captop",
+        "region-pad"
+      ]
+    },
+    {
+      "id": "column-surface",
+      "name": "Column concrete, soot and ties",
+      "tier": "critical",
+      "passIds": [
+        "material-pass",
+        "surface-pass"
+      ],
+      "minimumScore": 0.75,
+      "mustPass": true,
+      "componentRefs": [
+        "shaft"
+      ],
+      "evidenceRefs": [
+        "region-shaft",
+        "region-soot"
+      ]
+    },
+    {
+      "id": "chevron-band",
+      "name": "Chevron band",
+      "tier": "critical",
+      "passIds": [
+        "surface-pass"
+      ],
+      "minimumScore": 0.75,
+      "mustPass": true,
+      "componentRefs": [
+        "chevrons"
+      ],
+      "evidenceRefs": [
+        "region-chevron"
+      ]
+    }
+  ],
+  "sculptPipeline": {
+    "passGateMode": "locked-sequential",
+    "passOrder": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "currentPass": "complete",
+    "completedPasses": [
+      "blockout",
+      "structural-pass",
+      "form-refinement",
+      "material-pass",
+      "surface-pass",
+      "lighting-pass",
+      "interaction-pass",
+      "optimization-pass"
+    ],
+    "lastCompletedPass": "optimization-pass",
+    "blockedReason": "all build passes completed",
+    "nextRequiredEvidence": []
+  },
+  "lookDevTargets": {
+    "qualityPriority": "reference-fidelity",
+    "materialPass": {
+      "albedoPaletteRequired": true,
+      "roughnessVariationRequired": true,
+      "normalOrBumpRequired": true,
+      "localOverridesRequired": true,
+      "minimumTextureResolution": 1024,
+      "preferredTextureResolution": 2048,
+      "independentMapChannels": [
+        "albedo",
+        "roughness",
+        "height",
+        "normal",
+        "ambient-occlusion"
+      ],
+      "requiredSurfaceFrequencyBands": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "geometryReliefRequiredWhenSilhouetteAffected": true,
+      "referencePbrExtraction": {
+        "requiredWhenSourceImagePresent": true,
+        "targetThreshold": 0.7,
+        "stopOnLowConfidence": true,
+        "script": "forge/stage1_intake/extract_pbr_evidence.py",
+        "acceptedLimitation": "single-image extraction is reference-derived inference, not exact photogrammetry"
+      },
+      "mustAvoid": [
+        "single flat albedo per material",
+        "uniform roughness",
+        "albedo texture reused as roughness/height/normal/AO",
+        "single-frequency random noise",
+        "plastic-looking smooth bark, stone, cloth, foliage, or aged material",
+        "local color/detail described only in prose without material masks",
+        "claiming exact PBR recovery when confidence is below the target threshold"
+      ]
+    },
+    "lightingPass": {
+      "requiredTerms": [
+        "key light",
+        "fill light",
+        "rim or environment light",
+        "exposure",
+        "tone mapping",
+        "background",
+        "contact shadow"
+      ],
+      "mustAvoid": [
+        "ambient-only lighting",
+        "flat value range",
+        "missing contact shadow",
+        "reference lighting copied without separating material readability"
+      ]
+    },
+    "screenshotReview": [
+      "Compare albedo palette and local color zones.",
+      "Compare roughness/normal/bump response under light.",
+      "Compare cavity dirt, edge wear, stains, moss, scratches, or other local masks.",
+      "Compare key/fill/rim structure, exposure, tone mapping, background, and contact shadows.",
+      "Capture a neutral-light render to verify material readability without reference lighting.",
+      "Capture a grazing-light close-up to expose flat normals, uniform roughness, tiling, and plastic highlights.",
+      "Capture a reference-matched render from the same camera framing as the source."
+    ]
+  },
+  "actionReadiness": {
+    "explodable": true,
+    "clickable": true,
+    "partCount": 4,
+    "pivotInventory": [
+      {
+        "name": "root",
+        "component": "cap",
+        "type": "rigid-body",
+        "localPosition": [
+          0,
+          0,
+          0
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "justification": "The rigid body of the prop at its declared origin. A named pivot is a promise that a part turns on it, and only real mechanisms get one."
+      }
+    ],
+    "socketInventory": [],
+    "socketJustification": "ZERO sockets, deliberately. Nothing attaches to this prop and nothing is emitted from it. A marker named for a place on the surface is a location, not a mechanism.",
+    "colliderInventory": [],
+    "destructionGroups": [],
+    "destructionJustification": "The asset declares destructionGroups as an empty list -- this prop is NOT breakable. No component carries actionProfile.destruction.fractureGroup. promote-model checks built against declared as an equality in BOTH directions, so an invented group fails the gate just as a missing one would."
+  },
+  "assumptions": [
+    "The cap is 12.5 m wide and the seat at 12.00 by the modular contract, whatever the plate's proportions; the plate governs the cap's end thickness, taper and surface.",
+    "Column 2.8 m and footing 4.4 m: between the notes (2.4 / 3.5) and the proxy (3.25 / 5.2); recorded on the asset with the arithmetic.",
+    "The soot is authored to render at 102-126 rather than the plate's measured 68: the turntable gate reads the backdrop band 55.5-60.5 as holes and a band at 68 skirts it. The plate's soot sits mainly on one side; the tile wraps it round the shaft.",
+    "No rebar, no interior, no drainage pipe; the plate shows none."
+  ],
+  "coordinateFrame": {
+    "up": "+Y",
+    "forward": "+Z",
+    "handedness": "right",
+    "origin": "base-center",
+    "unitScale": "meters",
+    "notes": "Origin base-center per the registry pivot, +Y up, +Z along the deck / span axis; "
+  },
+  "silhouette": {
+    "envelope": {
+      "w": 12.5,
+      "h": 12.0,
+      "d": 4.4
+    },
+    "description": "A 12.5 m hammerhead cap 1.2 m deep at its ends, its underside rising straight from the column head at 9.15 m to the ends at 10.65, top at 11.85 with two 0.7 x 0.5 pads to 12.00; a 2.8 m round column on a 4.4 m square footing 0.6 m thick; a 0.7 m chevron band at the foot.",
+    "envelopeDerivation": "x +-6.25: the 12.5 m cap, the deck width the contract fixes. y 0..12.00: ground to the bearing seat, which is the top of the two pads standing 0.15 m proud of the cap top at 11.85. z +-2.2: the 4.4 m footing; the cap itself is 2.6 m deep so two 16 m deck modules meeting over it butt at z = +-8 clear of its faces. Column 2.8 m diameter from the 0.6 m footing to the cap head at 9.15, the cap underside tapering straight from a 3.5 m flat under the column to 1.2 m deep ends. The declared depth was 2.6 (the cap) and is corrected to 4.4 (the footing), which is what the bounding box is.",
+    "meshyCrossCheck": "Meshy v7 proxy (scratch/expressway-hammerhead-pier/reference.glb) normalises to cap width 0.728 H and 0.29 H deep, column 0.27 H, footing 0.43 H. The contract fixes the cap at 12.5 m on a 12 m pier (1.04 H) and its depth under 2.6, so the proxy cap is read for its END thickness and taper only; the column is built at 2.8 m (0.233 H) between the notes' 2.4 and the proxy's 3.25, and the footing at 4.4 m (0.37 H) against the proxy's 5.2. Band table mean |delta width| 0.122, |delta depth| 0.078 of height, the width residual being the contract's cap."
+  },
+  "viewEvidence": [
+    {
+      "id": "view-full",
+      "viewpoint": "front-three-quarter-high",
+      "path": "reference.png",
+      "confidence": 0.95
+    },
+    {
+      "id": "region-captop",
+      "viewpoint": "top",
+      "path": "crops/captop.png",
+      "confidence": 0.88
+    },
+    {
+      "id": "region-capside",
+      "viewpoint": "front",
+      "path": "crops/capside.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-shaft",
+      "viewpoint": "front",
+      "path": "crops/shaft.png",
+      "confidence": 0.86
+    },
+    {
+      "id": "region-soot",
+      "viewpoint": "front",
+      "path": "crops/soot.png",
+      "confidence": 0.82
+    },
+    {
+      "id": "region-chevron",
+      "viewpoint": "front",
+      "path": "crops/chevron.png",
+      "confidence": 0.8
+    },
+    {
+      "id": "region-pad",
+      "viewpoint": "top",
+      "path": "crops/pad.png",
+      "confidence": 0.78
+    },
+    {
+      "id": "region-back",
+      "viewpoint": "rear",
+      "path": null,
+      "confidence": 0.92,
+      "note": "NOT DIRECTLY OBSERVED. A hammerhead pier is symmetric about both vertical planes by construction; the back is the front."
+    }
+  ],
+  "componentTree": [
+    {
+      "id": "cap",
+      "name": "Hammerhead cap and footing",
+      "level": "macro",
+      "role": "identity",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "extrude",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "The cap profile (taper and chamfers) is one extrude along Z; the footing box merges with it on the same material: one draw call.",
+      "materialId": "concreteCap",
+      "material": "concreteCap",
+      "parent": null,
+      "geometryDescriptor": {
+        "topologyIntent": "Profile in (x, y): a 3.5 m flat at 9.15 under the column, straight tapers to the ends at 10.65, vertical ends to 11.77, 80 mm chamfers to the top at 11.85; extruded z -1.3..1.3. Footing 4.4 x 0.6 x 4.4 at ground.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "The column overlaps 0.12 m up into the cap head and 0.10 m down into the footing (interpenetration, no shared plane); the pads sit ON the cap top as an opposed butt joint; the chevron shell is 5 mm off the column. check-coplanar clean.",
+        "mergeNote": "One merged geometry with world UVs at 3 m."
+      },
+      "localFeatures": [
+        {
+          "id": "d1-cap",
+          "description": "tapered cap",
+          "delivery": "extruded profile"
+        },
+        {
+          "id": "d7-streaks",
+          "description": "streaks",
+          "delivery": "concrete canvas"
+        },
+        {
+          "id": "d8-footing",
+          "description": "footing",
+          "delivery": "box"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "concreteCap",
+        "baseColor": "#a4a49e",
+        "recipe": "White vertex colour on the cap concrete envelope; the tile carries the clean tone, ties, streaks.",
+        "evidenceRef": "region-capside",
+        "confidence": 0.9,
+        "dominantAlbedo": "rgba(164, 164, 158, 1.0)",
+        "secondaryAlbedo": "rgba(193, 193, 187, 1.0)",
+        "materialClass": "stone",
+        "materialClassConfidence": 0.9
+      },
+      "actionProfile": {
+        "animationRole": "root",
+        "pivot": {
+          "mode": "custom",
+          "localPosition": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ],
+          "confidence": 0.95,
+          "name": "root",
+          "notes": "At the origin the asset declares. A STATIC prop: nothing opens, turns or swings, so one root pivot is the whole mechanism inventory and that is the correct answer, not a gap."
+        },
+        "transformChannels": {
+          "translate": true,
+          "rotate": true,
+          "scale": true,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": []
+      }
+    },
+    {
+      "id": "shaft",
+      "name": "Round column",
+      "level": "macro",
+      "role": "structure",
+      "importance": 0.95,
+      "confidence": 0.9,
+      "primitive": "cylinder",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "One 36-segment cylinder with its own UVs so a single whole-height canvas keys its soot to the lower shaft.",
+      "materialId": "concrete",
+      "material": "concrete",
+      "parent": "cap",
+      "geometryDescriptor": {
+        "topologyIntent": "Cylinder r 1.40 from y 0.50 to 9.27, seg 36; UVs u round 0.73 times (circumference / 12 m tile), v up.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Overlaps the footing and the cap head; nothing coplanar.",
+        "mergeNote": "One cylinder."
+      },
+      "localFeatures": [
+        {
+          "id": "d2-column",
+          "description": "column",
+          "delivery": "cylinder"
+        },
+        {
+          "id": "d6-ties",
+          "description": "tie grid and lift lines",
+          "delivery": "concrete canvas"
+        },
+        {
+          "id": "d5-soot",
+          "description": "soot",
+          "delivery": "concrete canvas soot band"
+        }
+      ],
+      "attachment": {
+        "parentSocket": "cap",
+        "localStart": [
+          0,
+          0.5,
+          0
+        ],
+        "localEnd": [
+          0,
+          9.27,
+          0
+        ],
+        "contactType": "embedded",
+        "embedDepth": 0.12,
+        "gapTolerance": 0.0
+      },
+      "colorMaterialRecipe": {
+        "materialId": "concrete",
+        "baseColor": "#999994",
+        "recipe": "White vertex colour on the shaft concrete envelope; the tile carries the clean tone, the tie grid, lift lines and soot.",
+        "evidenceRef": "region-shaft",
+        "confidence": 0.9,
+        "dominantAlbedo": "rgba(153, 153, 148, 1.0)",
+        "secondaryAlbedo": "rgba(68, 69, 66, 1.0)",
+        "materialClass": "stone",
+        "materialClassConfidence": 0.9
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "pads",
+      "name": "Bearing pads",
+      "level": "meso",
+      "role": "detail",
+      "importance": 0.7,
+      "confidence": 0.85,
+      "primitive": "box",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Two boxes in one merge on the steel material.",
+      "materialId": "steel",
+      "material": "steel",
+      "parent": "cap",
+      "geometryDescriptor": {
+        "topologyIntent": "0.70 x 0.15 x 0.50 at x +-3.0, y 11.85..12.00 -- the SEAT.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "Stand on the cap top: an opposed butt joint.",
+        "mergeNote": "Two boxes."
+      },
+      "localFeatures": [
+        {
+          "id": "d3-pads",
+          "description": "pads",
+          "delivery": "boxes"
+        }
+      ],
+      "colorMaterialRecipe": {
+        "materialId": "steel",
+        "baseColor": "#767772",
+        "recipe": "A 0x76787c ratio over the steel envelope.",
+        "evidenceRef": "region-pad",
+        "confidence": 0.85,
+        "dominantAlbedo": "rgba(118, 119, 114, 1.0)",
+        "secondaryAlbedo": "rgba(118, 119, 114, 1.0)",
+        "materialClass": "rubber",
+        "materialClassConfidence": 0.85
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    },
+    {
+      "id": "chevrons",
+      "name": "Painted chevron band",
+      "level": "meso",
+      "role": "detail",
+      "importance": 0.7,
+      "confidence": 0.85,
+      "primitive": "cylinder",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "An open cylinder shell 5 mm proud of the column with its UVs repeated 8 times round, so 16 stripe pairs wrap the foot.",
+      "materialId": "paint",
+      "material": "paint",
+      "parent": "shaft",
+      "geometryDescriptor": {
+        "topologyIntent": "Open cylinder r 1.405, y 0.75..1.45, seg 36, uvRep [8, 1].",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "5 mm off the column: a different radius, not a shared plane.",
+        "mergeNote": "One open cylinder."
+      },
+      "localFeatures": [
+        {
+          "id": "d4-chevron",
+          "description": "chevrons",
+          "delivery": "hazard canvas"
+        }
+      ],
+      "attachment": {
+        "parentSocket": "shaft",
+        "localStart": [
+          0,
+          0.75,
+          0
+        ],
+        "localEnd": [
+          0,
+          1.45,
+          0
+        ],
+        "contactType": "surface",
+        "embedDepth": 0.002,
+        "gapTolerance": 0.005
+      },
+      "colorMaterialRecipe": {
+        "materialId": "paint",
+        "baseColor": "#827571",
+        "recipe": "White vertex colour on the paint envelope; the hazard canvas carries red and white.",
+        "evidenceRef": "region-chevron",
+        "confidence": 0.85,
+        "dominantAlbedo": "rgba(130, 117, 113, 1.0)",
+        "secondaryAlbedo": "rgba(130, 117, 113, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.85
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
+    }
+  ],
+  "materials": [
+    {
+      "id": "concrete",
+      "name": "Cast concrete, column",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#999994",
+      "color": "#999994",
+      "roughness": {
+        "base": 0.94,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/concrete_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#999994",
+        "secondary": [
+          "#999994",
+          "#c1c1bb",
+          "#444542"
+        ],
+        "samplingNotes": "Measured as the mean of crops/shaft.png. extract_pbr_evidence confidence 0.860. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d5-soot",
+          "region": "lower shaft 1.4-4.5 m",
+          "roughness": 0.94,
+          "palette": [
+            "#555451"
+          ],
+          "evidence": "crops/soot.png -- #444542 sd 25; the tile multiplies a 0x403f3c ratio at alpha 0.5 with 40 blots over the bottom 40% of the shaft, rendering 102-126 (probes 510,690 / 510,650)."
+        }
+      ],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured #999994 sd 25 on region-shaft (plate luma 153). PROBED on this prop: authored #c9c8c3 rendered 184, #a6a5a1 rendered 166, #8d8c88 rendered 141 -- the harness transfer on these faces is near identity below ~170 and compresses above, so the shaft is authored at the plate's own 153 (#999894) over a #d8d7d2 envelope and renders 154.",
+          "Textureless as DECLARED: one 1024 px concrete canvas up the whole 12 m -- a 14 x 18 form-tie grid, 8 lift lines, 26 streaks, 90 clouds, 5 spalls, a soot band over the lower 40% of the tile, 2.5k pinholes."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/shaft.png",
+        "pbrReport": "material-evidence/concrete.pbr.json",
+        "confidence": 0.86,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "concreteCap",
+      "name": "Cast concrete, cap and footing",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#a4a49e",
+      "color": "#a4a49e",
+      "roughness": {
+        "base": 0.94,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/concreteCap_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#a4a49e",
+        "secondary": [
+          "#a4a49e",
+          "#c1c1bb",
+          "#acaca7"
+        ],
+        "samplingNotes": "Measured as the mean of crops/capside.png. extract_pbr_evidence confidence 0.860. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured #a4a49e sd 18 on region-capside (164) and #c1c1bb sd 26 on region-captop (193). Authored #a3a29e over the same envelope: the side renders 164 (probe 500,300) and the top 197 (probe 500,215).",
+          "Textureless as DECLARED: a 3 m concrete canvas, 4 x 4 tie grid, 22 water streaks from the cap top, clouds and pinholes."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/capside.png",
+        "pbrReport": "material-evidence/concreteCap.pbr.json",
+        "confidence": 0.86,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "steel",
+      "name": "Bearing pad, rubber and plate",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#767772",
+      "color": "#767772",
+      "roughness": {
+        "base": 0.55,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/steel_roughness.png"
+      },
+      "metalness": 0.3,
+      "albedo": {
+        "dominant": "#767772",
+        "secondary": [],
+        "samplingNotes": "Measured as the mean of crops/pad.png. extract_pbr_evidence confidence 0.780. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "metal",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured #767772 sd 55 on region-pad (the crop straddles the dark pad and the pale cap). Authored as a 0x76787c vertex ratio over a #c0c3c6 steel envelope; a lifted tone because the pad sits inside the cap's silhouette from every azimuth.",
+          "Textureless as DECLARED: no tile on the pads."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/pad.png",
+        "pbrReport": "material-evidence/steel.pbr.json",
+        "confidence": 0.78,
+        "verdict": "pass"
+      }
+    },
+    {
+      "id": "paint",
+      "name": "Chevron band paint",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#827571",
+      "color": "#827571",
+      "roughness": {
+        "base": 0.85,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/paint_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#827571",
+        "secondary": [],
+        "samplingNotes": "Measured as the mean of crops/chevron.png. extract_pbr_evidence confidence 0.800. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured #827571 sd 59 on region-chevron (the red and white averaged). The band is a hazard canvas: red #a63a33 as a ratio over a #e4e0da envelope and white at 1, 16 diagonal stripe pairs round the 8.8 m circumference.",
+          "Textureless as DECLARED: the chevrons ARE the canvas."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/chevron.png",
+        "pbrReport": "material-evidence/paint.pbr.json",
+        "confidence": 0.8,
+        "verdict": "pass"
+      }
+    }
+  ],
+  "repetitionSystems": [],
+  "buildPasses": [
+    {
+      "id": "blockout",
+      "goal": "Match macro silhouette and proportions.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Silhouette reads correctly without materials.",
+        "Quality contract has named all required macro feature groups before code generation.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "structural-pass",
+      "goal": "Build the component hierarchy implied by the pre-spec complexity assessment.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro, meso, and repeated structures meet qualityContract.minimumSpecDepth.",
+        "Parent-child relations, joints, seams, sockets, and contact points are explicit.",
+        "Every attached child appendage/connector has parentSocket, localStart/localEnd, contactType, embedDepth or overlap, and gapTolerance.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "form-refinement",
+      "goal": "Refine shape, deformation, bevels, tapers, curves, asymmetry, and visible local geometry.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Important visible forms are represented in component geometryDescriptor, deformations, localFeatures, or repetitionSystems.",
+        "Endpoint-based child parts are rooted at their attachment sockets and do not visibly float away from parents.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "material-pass",
+      "goal": "Match material color, roughness, bump, and local variation.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Reference-derived albedo palette records dominant, secondary, and accent colors per visible material.",
+        "Each important material defines roughness variation and at least one normal/bump/displacement response.",
+        "Local material overrides, dirt/wear/stains/moss/chips/scratches or equivalent masks are tied to evidenceRefs.",
+        "Thin, transparent, reflective, wet, or fibrous materials document alpha/transmission/clearcoat/metalness/fiber response when relevant.",
+        "Generated preview uses procedural albedo/roughness/bump texture or vertex color variation instead of one flat color.",
+        "Generated preview uses independent PBR maps at 1024px or higher for the quality-first tier.",
+        "If source pixels are available, referencePbr extraction passed at confidence >= 0.7 or the pass is stopped/requesting better references.",
+        "Macro, meso, and micro surface frequency bands are visible at the intended review distance without obvious tiling.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "surface-pass",
+      "goal": "Add procedural surface locality such as normal/bump/displacement, AO, dirt, stains, chips, grain, moss, scratches, and wear.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Every required material feature group has local overrides or surfaceDetail tied to evidenceRefs.",
+        "A grazing-angle close-up proves that normal/height detail breaks highlights naturally and does not read as smooth plastic.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "lighting-pass",
+      "goal": "Make material and form readable under neutral turntable lighting plus optional reference lighting.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
+        "Exposure, tone mapping, background color/gradient, shadow softness, and contact shadow behavior are specified.",
+        "Lighting does not hide geometry/material gaps and screenshots can be compared fairly to the reference.",
+        "Neutral, grazing, and reference-matched lighting checks distinguish material errors from lighting errors.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "interaction-pass",
+      "goal": "Make the model ready for future animation, transformation, physics, or destruction.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Macro and movable meso components have stable pivot nodes.",
+        "Sockets, collider proxies, and destruction metadata are present for future runtime actions.",
+        "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold."
+      ]
+    },
+    {
+      "id": "optimization-pass",
+      "goal": "Protect runtime performance after visual fidelity is accepted.",
+      "componentRefs": [
+        "root"
+      ],
+      "acceptance": [
+        "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
+        "Repeated detail is instanced or simplified where possible without breaking silhouette/material believability."
+      ]
+    }
+  ],
+  "visualEvidence": [
+    {
+      "timestamp": "2026-09-10T00:03:36.264367+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.93,
+        "formDetail": 0.9,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 12.5 x 12.0 x 4.4 off the built module (bounds +-6.25, 0..12, +-2.2). Cap taper from the column head at 9.15 to 1.2 m ends, chamfered top arrises, 2.8 m column, 4.4 m footing; proxy band table mean |delta w| 0.122 with the residual entirely in the contract's wider cap (bands 8-9: 1.02 vs 0.73 H) and the column bands 0.23 vs 0.27 H.",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-10T00:03:36.361549+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-10T00:03:36.450472+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.93,
+        "formDetail": 0.9,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 12.5 x 12.0 x 4.4 off the built module (bounds +-6.25, 0..12, +-2.2). Cap taper from the column head at 9.15 to 1.2 m ends, chamfered top arrises, 2.8 m column, 4.4 m footing; proxy band table mean |delta w| 0.122 with the residual entirely in the contract's wider cap (bands 8-9: 1.02 vs 0.73 H) and the column bands 0.23 vs 0.27 H.",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-10T00:03:36.542928+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.93,
+        "formDetail": 0.9,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "cap-and-pads",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two 0.70 x 0.50 pads proud of the cap top by 0.15 m with their tops at exactly 12.00; 80 mm chamfers on both top arrises read as a highlight line at az 000 and the hero; the cap's tie grid and water streaks show at every azimuth.",
+          "notes": "The plate's cap has a lightly chamfered long underside edge that is not built."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-10T00:03:36.636974+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-10T00:03:36.728658+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.93,
+        "formDetail": 0.9,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "column-surface",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Probed on beauty-000: shaft 154 (plate 153), cap side 164 (164), cap top 197 (193), soot 102-126 (plate 68, held up for the gate). Tie grid at 0.67 m, lift joints at 1.5 m and 90 cloud patches give the shaft a rendered spread the first flat build lacked; soot occupies the lower 40% of the shaft with 70 blots.",
+          "notes": "The plate's soot sits mainly on one flank; the canvas wraps it."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-10T00:03:36.821220+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-10T00:03:36.917377+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-10T00:03:37.014131+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.93,
+        "formDetail": 0.9,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "column-surface",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Probed on beauty-000: shaft 154 (plate 153), cap side 164 (164), cap top 197 (193), soot 102-126 (plate 68, held up for the gate). Tie grid at 0.67 m, lift joints at 1.5 m and 90 cloud patches give the shaft a rendered spread the first flat build lacked; soot occupies the lower 40% of the shaft with 70 blots.",
+          "notes": "The plate's soot sits mainly on one flank; the canvas wraps it."
+        },
+        {
+          "id": "chevron-band",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "16 red-and-white diagonal stripe pairs round the foot, 0.7 m tall from 0.75 to 1.45, on a shell 5 mm proud of the column; visible at all four azimuths.",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-10T00:03:37.108373+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.93,
+        "formDetail": 0.9,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-10T00:03:37.201721+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.93,
+        "formDetail": 0.9,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-10T00:03:37.294915+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.93,
+        "formDetail": 0.9,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 12.5 x 12.0 x 4.4 off the built module (bounds +-6.25, 0..12, +-2.2). Cap taper from the column head at 9.15 to 1.2 m ends, chamfered top arrises, 2.8 m column, 4.4 m footing; proxy band table mean |delta w| 0.122 with the residual entirely in the contract's wider cap (bands 8-9: 1.02 vs 0.73 H) and the column bands 0.23 vs 0.27 H.",
+          "notes": ""
+        },
+        {
+          "id": "cap-and-pads",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two 0.70 x 0.50 pads proud of the cap top by 0.15 m with their tops at exactly 12.00; 80 mm chamfers on both top arrises read as a highlight line at az 000 and the hero; the cap's tie grid and water streaks show at every azimuth.",
+          "notes": "The plate's cap has a lightly chamfered long underside edge that is not built."
+        },
+        {
+          "id": "column-surface",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Probed on beauty-000: shaft 154 (plate 153), cap side 164 (164), cap top 197 (193), soot 102-126 (plate 68, held up for the gate). Tie grid at 0.67 m, lift joints at 1.5 m and 90 cloud patches give the shaft a rendered spread the first flat build lacked; soot occupies the lower 40% of the shaft with 70 blots.",
+          "notes": "The plate's soot sits mainly on one flank; the canvas wraps it."
+        },
+        {
+          "id": "chevron-band",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "16 red-and-white diagonal stripe pairs round the foot, 0.7 m tall from 0.75 to 1.45, on a shell 5 mm proud of the column; visible at all four azimuths.",
+          "notes": ""
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/review/beauty-315.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/review/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    }
+  ],
+  "reviewHistory": [
+    {
+      "timestamp": "2026-09-10T00:03:36.264367+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.93,
+        "formDetail": 0.9,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 12.5 x 12.0 x 4.4 off the built module (bounds +-6.25, 0..12, +-2.2). Cap taper from the column head at 9.15 to 1.2 m ends, chamfered top arrises, 2.8 m column, 4.4 m footing; proxy band table mean |delta w| 0.122 with the residual entirely in the contract's wider cap (bands 8-9: 1.02 vs 0.73 H) and the column bands 0.23 vs 0.27 H.",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "Blockout: four components on four materials, 4 draw calls of 12; cap profile extruded along Z at the contract seat, column cylinder, footing.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/review/clay/clay-315.png",
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-10T00:03:36.361549+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "The notes' 2.4 m column under the contract's 12.5 m cap read spindly against the plate (proxy column 0.27 H): widened to 2.8 m with the footing to 4.4, and the declared depth corrected to the footing.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-10T00:03:36.450472+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.93,
+        "formDetail": 0.9,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 12.5 x 12.0 x 4.4 off the built module (bounds +-6.25, 0..12, +-2.2). Cap taper from the column head at 9.15 to 1.2 m ends, chamfered top arrises, 2.8 m column, 4.4 m footing; proxy band table mean |delta w| 0.122 with the residual entirely in the contract's wider cap (bands 8-9: 1.02 vs 0.73 H) and the column bands 0.23 vs 0.27 H.",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "Structural pass: cap head flat 3.5 m at 9.15, straight taper to 1.2 m ends at 10.65, top 11.85, pads to 12.00; column widened from the notes' 2.4 to 2.8 m toward the proxy's 3.25.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-10T00:03:36.542928+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.93,
+        "formDetail": 0.9,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "cap-and-pads",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two 0.70 x 0.50 pads proud of the cap top by 0.15 m with their tops at exactly 12.00; 80 mm chamfers on both top arrises read as a highlight line at az 000 and the hero; the cap's tie grid and water streaks show at every azimuth.",
+          "notes": "The plate's cap has a lightly chamfered long underside edge that is not built."
+        }
+      ],
+      "action": "continue",
+      "summary": "Form refinement: 80 mm chamfers on the cap's top arrises; the chevron band as a shell 5 mm proud of the column.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-10T00:03:36.636974+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "The first render came back 184 on every vertical face against a plate shaft of 153: the tones were the plate's swatches used directly. Probed the transfer over three albedos and authored the inverse (shaft 153, cap 163).",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-10T00:03:36.728658+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.93,
+        "formDetail": 0.9,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "column-surface",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Probed on beauty-000: shaft 154 (plate 153), cap side 164 (164), cap top 197 (193), soot 102-126 (plate 68, held up for the gate). Tie grid at 0.67 m, lift joints at 1.5 m and 90 cloud patches give the shaft a rendered spread the first flat build lacked; soot occupies the lower 40% of the shaft with 70 blots.",
+          "notes": "The plate's soot sits mainly on one flank; the canvas wraps it."
+        }
+      ],
+      "action": "continue",
+      "summary": "Material pass: two cast-concrete materials over one envelope, PBR confidence 0.86, tones SOLVED by probe -- three renders of the same pixel gave the transfer, shaft authored at 153 and cap at 163 and both render within 1 of the plate.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-10T00:03:36.821220+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "The 0.15 m of sooted column between the chevron band and the footing rendered at the backdrop's luma and the turntable gate read it as a hole at azimuth 270 (1.63% enclosed): the band now starts on the footing at 0.61 and the soot tone was lifted to 0x5a5955, 0.79% enclosed and passing.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-10T00:03:36.917377+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "The column's box-projected world UVs switched axis every 45 degrees and showed the soot band's seams as vertical bars; the column keeps its own cylinder UVs now, and the soot was cut from a wraparound black to a 0x403f3c band at alpha 0.5 rendering 102-126.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-10T00:03:37.014131+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.93,
+        "formDetail": 0.9,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "column-surface",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Probed on beauty-000: shaft 154 (plate 153), cap side 164 (164), cap top 197 (193), soot 102-126 (plate 68, held up for the gate). Tie grid at 0.67 m, lift joints at 1.5 m and 90 cloud patches give the shaft a rendered spread the first flat build lacked; soot occupies the lower 40% of the shaft with 70 blots.",
+          "notes": "The plate's soot sits mainly on one flank; the canvas wraps it."
+        },
+        {
+          "id": "chevron-band",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "16 red-and-white diagonal stripe pairs round the foot, 0.7 m tall from 0.75 to 1.45, on a shell 5 mm proud of the column; visible at all four azimuths.",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "Surface pass: a whole-height concrete canvas on the shaft (tie grid, lift lines, soot, spalls, clouds) and a 3 m one on the cap (streaks, ties); the hazard canvas for the chevrons.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-10T00:03:37.108373+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.93,
+        "formDetail": 0.9,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Lighting pass: no rim and no contact shadow in the plate; both recorded absent. The one deliberate departure is the soot held at 102-126 against the plate's 68 for the hole gate.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-10T00:03:37.201721+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.93,
+        "formDetail": 0.9,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [],
+      "action": "continue",
+      "summary": "Interaction pass: ONE root pivot, ZERO sockets, a derived compound, no destruction groups.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-10T00:03:37.294915+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
+      "visualAcceptanceThreshold": 0.7,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.93,
+        "formDetail": 0.9,
+        "materialSurface": 0.9,
+        "lightingCamera": 0.9
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.85,
+          "passed": true,
+          "evidence": "Envelope 12.5 x 12.0 x 4.4 off the built module (bounds +-6.25, 0..12, +-2.2). Cap taper from the column head at 9.15 to 1.2 m ends, chamfered top arrises, 2.8 m column, 4.4 m footing; proxy band table mean |delta w| 0.122 with the residual entirely in the contract's wider cap (bands 8-9: 1.02 vs 0.73 H) and the column bands 0.23 vs 0.27 H.",
+          "notes": ""
+        },
+        {
+          "id": "cap-and-pads",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.8,
+          "passed": true,
+          "evidence": "Two 0.70 x 0.50 pads proud of the cap top by 0.15 m with their tops at exactly 12.00; 80 mm chamfers on both top arrises read as a highlight line at az 000 and the hero; the cap's tie grid and water streaks show at every azimuth.",
+          "notes": "The plate's cap has a lightly chamfered long underside edge that is not built."
+        },
+        {
+          "id": "column-surface",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "Probed on beauty-000: shaft 154 (plate 153), cap side 164 (164), cap top 197 (193), soot 102-126 (plate 68, held up for the gate). Tie grid at 0.67 m, lift joints at 1.5 m and 90 cloud patches give the shaft a rendered spread the first flat build lacked; soot occupies the lower 40% of the shaft with 70 blots.",
+          "notes": "The plate's soot sits mainly on one flank; the canvas wraps it."
+        },
+        {
+          "id": "chevron-band",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.75,
+          "passed": true,
+          "evidence": "16 red-and-white diagonal stripe pairs round the foot, 0.7 m tall from 0.75 to 1.45, on a shell 5 mm proud of the column; visible at all four azimuths.",
+          "notes": ""
+        }
+      ],
+      "action": "continue",
+      "summary": "FINAL VERDICT. Overall visual fidelity 0.91. 280/16,000 triangles, 4/12 draw calls, 4/8 materials, 4/16 unique geometries, three canvases.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/review/beauty-315.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/expressway-hammerhead-pier/review/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    }
+  ],
+  "lodPlan": [
+    {
+      "tier": "near",
+      "distance": 0,
+      "strategy": "full component tree and material layers"
+    },
+    {
+      "tier": "far",
+      "distance": 30,
+      "strategy": "merge static components and reduce local feature geometry"
+    }
+  ],
+  "performanceBudget": {
+    "qualityPriority": "real-time",
+    "targetTriangles": 16000,
+    "maxDrawCalls": 12,
+    "maxMaterials": 8,
+    "maxUniqueGeometries": 16,
+    "textureSize": 1024,
+    "fpsTarget": 60,
+    "optimizationPolicy": "Real-time browser FPS prop on low-end integrated GPUs; a level builder places hundreds at once. All four ceilings come from thaikit resolveBudget() for the hero2x class and none was invented. The component split was costed against the DRAW-CALL ceiling in the blockout, before any geometry existed: parts that share a material are merged into one component rather than left to be merged later, because a pivot hung off a part cannot be merged afterwards.",
+    "accounting": {
+      "drawCalls": {
+        "components": 4,
+        "repetitionSystems": 0,
+        "projectedTotal": 4,
+        "budget": 12,
+        "headroom": 8,
+        "note": "4 component(s) + 0 repetition system(s) = 4 of 12. Parts that share a material ride one merged geometry and one submission."
+      },
+      "materials": {
+        "projectedTotal": 4,
+        "budget": 8,
+        "headroom": 4,
+        "note": "4 of 8: every tone inside a material is a vertex colour or a canvas ratio over its envelope, never a second material."
+      },
+      "uniqueGeometries": {
+        "projectedTotal": 4,
+        "budget": 16,
+        "headroom": 12,
+        "note": "One per component plus one per repetition system. A scaled box is NOT a shared geometry -- the generator bakes real dimensions in via geometry.scale(), so every differently-sized box is genuinely distinct. Each InstancedMesh reuses a single geometry across all its instances, which is the whole point."
+      },
+      "triangles": {
+        "measured": 280,
+        "budget": 16000,
+        "headroom": 15720,
+        "note": "280 of 16000, measured off the built module by render-model."
+      }
+    }
+  },
+  "lightingFromPhoto": [
+    {
+      "id": "key",
+      "role": "key",
+      "direction": "front-upper-left",
+      "elevationDegrees": 38,
+      "azimuthDegrees": -35,
+      "intensity": 0.85,
+      "colorTemperature": "neutral 5600K",
+      "shadowSoftness": "very soft, near shadowless",
+      "notes": "The plate is a flat studio lightbox: surfaces at 90 degrees to each other measure within a few levels, which is only possible under near-shadowless illumination. That is WHY the measured crop means are usable as albedo with little correction."
+    },
+    {
+      "id": "fill",
+      "role": "fill",
+      "direction": "front-lower-right",
+      "intensity": 0.64,
+      "fillRatio": 0.75,
+      "colorTemperature": "neutral 5600K",
+      "notes": "High fill ratio inferred from the shadow-side wall retaining full value."
+    },
+    {
+      "id": "ambient",
+      "role": "environment",
+      "intensity": 0.45,
+      "source": "uniform grey studio surround",
+      "notes": "The seamless backdrop acts as a large uniform environment. The thaikit harness supplies NO environment map, which is why every metal on this prop carries a metalness well below its physical value -- a metal with nothing to reflect renders black."
+    },
+    {
+      "id": "rim",
+      "role": "rim",
+      "intensity": 0.0,
+      "present": false,
+      "notes": "NO rim light in the plate. Recorded so a missing rim in the render is not read as a defect."
+    },
+    {
+      "id": "exposure-and-tonemapping",
+      "role": "grade",
+      "exposure": 1.0,
+      "toneMapping": "ACESFilmic",
+      "notes": "Exposure 1.0 with ACES filmic tone mapping; no exposure compensation is applied to the measured albedos and none is warranted."
+    },
+    {
+      "id": "contact-shadow",
+      "role": "contact-shadow",
+      "present": false,
+      "groundShadow": "none",
+      "shadowCatcher": false,
+      "notes": "NO contact or ground shadow in the plate -- it is a cut-out against a seamless backdrop. Recorded so the absence is not read as a missing feature. IN USE this is a floor-placed building and the HOST scene owns its contact shadow: castShadow ships enabled on every mesh and the factory defines no ground plane of its own."
+    }
+  ],
+  "proceduralStrategy": [
+    {
+      "id": "primitives",
+      "strategy": "Tinted boxes, extruded (x, y) profiles and profile SWEEPS along a straight, sheared or arced path merged per material; cylinders where the plate shows a round section."
+    },
+    {
+      "id": "instancing",
+      "strategy": "No InstancedMesh: nothing on this piece repeats enough to earn one. In a level the HOST instances the whole module."
+    },
+    {
+      "id": "determinism",
+      "strategy": "All procedural variation is assigned by instance INDEX, never from a random source, so the model is byte-identical on every build."
+    },
+    {
+      "id": "textures",
+      "strategy": "Every material is declared textureless. Surface identity is one post-construction canvas tile per material -- cast concrete with a form-tie grid, lift lines and pinholes; asphalt with its lane marks; painted steel with rust -- bound as map and bump after construction, so createObjectModel does no per-pixel work but the tiles."
+    }
+  ],
+  "animationAnchors": [],
+  "destructionAnchors": [],
+  "risks": [
+    {
+      "id": "contract-vs-plate",
+      "severity": "low",
+      "description": "The plate's cap is 0.73 H wide; the contract's is 1.04 H.",
+      "mitigation": "The contract governs: a 12.5 m deck must sit on it. The column was widened toward the plate so the proportion reads as the plate does."
+    },
+    {
+      "id": "soot-luma",
+      "severity": "low",
+      "description": "Soot renders at 102-126 against the plate's 68.",
+      "mitigation": "Held above the turntable gate's backdrop band deliberately; stated on the material."
+    }
+  ],
+  "localSpecSearch": {
+    "collection": "core_3d",
+    "query": "Expressway Hammerhead Pier",
+    "index": {
+      "status": "hit",
+      "reason": "current",
+      "fingerprint": "6857e5ab528b42ac12f4f411f862610a0bffce8e47aee3610a7603c318072fe8"
+    },
+    "matches": []
+  },
+  "tier1Results": [
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.2726,
+        "aspectRatioDelta": 0.34,
+        "scaleDelta": 0.2537,
+        "bilateralSymmetryError": 0.054,
+        "colorDelta": {
+          "checked": 4,
+          "maxDeltaE": 5.45,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 1.48
+            },
+            {
+              "componentId": null,
+              "deltaE": 4.0
+            },
+            {
+              "componentId": null,
+              "deltaE": 2.72
+            },
+            {
+              "componentId": null,
+              "deltaE": 5.45
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.273 is below threshold 0.85",
+        "aspect-ratio delta 0.340 exceeds threshold 0.05",
+        "scale delta 0.254 exceeds threshold 0.08",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "maskWarnings": [
+        "reference: 3.5% of foreground cells lie outside the largest connected blob and were excluded from the bounding box; if the subject really has separated parts in this projection, they are not being measured"
+      ],
+      "renderHash": "432fcdfcfd461544",
+      "passId": "blockout"
+    }
+  ]
+}
