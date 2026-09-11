@@ -76,6 +76,7 @@ export function partitionCells({ bake }) {
     const byPlacement = new Map(bake.placements.map((p) => [p.id, p]));
     const cells = new Map();
     const dynamic = new Map();
+    const nonCastingMaterials = new Map();
     const stray = [];
 
     const cellNode = (key, ix, iz) => {
@@ -97,6 +98,22 @@ export function partitionCells({ bake }) {
       if (!p) { stray.push(node.getName()); continue; }
       scene.removeChild(node);
       if (p.static) {
+        if (p.castShadow === false) {
+          const sourceMesh = node.getMesh();
+          const uniqueMesh = doc.createMesh(sourceMesh.getName());
+          for (const prim of sourceMesh.listPrimitives()) uniqueMesh.addPrimitive(prim.clone());
+          node.setMesh(uniqueMesh);
+          for (const prim of node.getMesh().listPrimitives()) {
+            const material = prim.getMaterial();
+            if (!material) continue;
+            if (!nonCastingMaterials.has(material)) {
+              const copy = material.clone().setName(`${material.getName()}_no_cast`);
+              copy.setExtras({ ...copy.getExtras(), tkBakeCastShadow: false });
+              nonCastingMaterials.set(material, copy);
+            }
+            prim.setMaterial(nonCastingMaterials.get(material));
+          }
+        }
         cellNode(p.cell, p.ix, p.iz).lod0.addChild(node);
         node.setExtras({});
       } else {

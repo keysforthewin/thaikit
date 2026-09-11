@@ -289,6 +289,7 @@ test('the sky sidecar drives settings.sky and the moon; a billboard ships no col
   const tower = bake.placements.find((p) => p.source.actor === 'bb_Tower');
   assert.equal(tower.billboard, 'yaw');
   assert.equal(tower.static, false);
+  assert.equal(tower.castShadow, false, 'skyline cards must not occlude the baked lamps or moon');
   assert.deepEqual(tower.colliders, [], 'a billboard never ships the kit compound');
   assert.ok(!bake.placements.some((p) => p.source.actor === 'tk_sky'), 'the BP_TK_Sky preview sphere is not a placement');
   assert.ok(report.notes.some((n) => n.includes('dropped backdrop "tk_sky"')));

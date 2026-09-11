@@ -19,6 +19,13 @@ const bake = {
 const flag = (args, name) => args[args.indexOf(name) + 1];
 const eqFlag = (args, name) => args.find((a) => a.startsWith(`${name}=`))?.slice(name.length + 1);
 
+test('large light inventories can travel by file without exceeding OS argument limits', () => {
+  const spec = blenderBakeSpec({ bake });
+  const args = buildBlenderArgs(spec, { script: 's', glb: 'g', out: 'o', lights: 'o/lamps.json' }, (p) => `/repo/${p}`);
+  assert.equal(eqFlag(args, '--lights-file'), '/repo/o/lamps.json');
+  assert.equal(eqFlag(args, '--lights'), undefined);
+});
+
 test('spec: CPU off by default, GPU+CPU when asked', () => {
   assert.equal(blenderBakeSpec({ bake }).device, 'GPU');
   assert.equal(blenderBakeSpec({ bake, cpu: true }).device, 'GPU+CPU');

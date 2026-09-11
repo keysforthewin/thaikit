@@ -119,6 +119,10 @@ export function localShapes(p) {
  * lamps it loses are named in the log.
  */
 export function selectLiveLamps(lights, spawns, liveLamps, bakedLights) {
+  if (liveLamps === 'moon-only') {
+    if (!bakedLights) throw new Error('moon-only requires a lightmap containing every lamp');
+    return { live: lights.filter((l) => l.role === 'moon'), bakedOnly: lights.filter((l) => l.role !== 'moon').map((l) => l.id ?? l.node), dropped: [] };
+  }
   if (!liveLamps || liveLamps <= 0) return { live: lights, bakedOnly: [], dropped: [] };
   const anchors = spawns.length ? spawns.map((s) => s.position) : [[0, 0, 0]];
   const near = (p) => Math.min(...anchors.map((a) => Math.hypot(p[0] - a[0], p[1] - a[1], p[2] - a[2])));

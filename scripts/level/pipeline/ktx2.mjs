@@ -64,7 +64,7 @@ export async function encodeKtx2(bytes, { mode = 'etc1s', srgb = true, mipmaps =
     // Block compression wants dimensions that are multiples of 4, and a mip
     // chain wants power-of-two friendliness; resize to the nearest multiple of
     // 4 within the cap, never enlarging.
-    const img = sharp(bytes, { failOn: 'none' });
+    const img = sharp(bytes, { failOn: 'none', limitInputPixels: 536870912 });
     const meta = await img.metadata();
     let w = Math.min(meta.width ?? 4, maxSize);
     let h = Math.min(meta.height ?? 4, maxSize);

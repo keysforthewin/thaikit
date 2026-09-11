@@ -111,8 +111,9 @@ async function main() {
     noiseThreshold: args['noise-threshold'] != null ? Number(args['noise-threshold']) : preset.lightmap.noiseThreshold ?? null,
   };
   if (quality) progress('quality', `${quality}: baker ${baker}${lightmapOverride.size ? `, lightmap up to ${lightmapOverride.size}²` : ''}${lightmapOverride.samples ? ` / ${lightmapOverride.samples} samples` : ''}${baker === 'none' ? ' (no lightmap)' : ''}; delivers ${exportNameOf(id, assertCellKey(args.cell ?? null), quality)}`);
-  // Live lamps shipped beside the lightmap (0 = all). See selectLiveLamps in pipeline/manifest.mjs.
-  const liveLamps = Number(args['live-lamps'] ?? 0);
+  // 0 = all live; moon-only requires all lamps in the lightmap and keeps only
+  // the moon live. See selectLiveLamps in pipeline/manifest.mjs.
+  const liveLamps = args['live-lamps'] === 'moon-only' ? 'moon-only' : Number(args['live-lamps'] ?? 0);
   const cell = assertCellKey(args.cell ?? null);
   const buildDir = buildDirOf(id, cell);
   const rawFile = path.join(buildDir, 'raw.glb');
@@ -178,6 +179,10 @@ async function main() {
   // so it happens once, here, before the bake that now depends on it.
   const skySettings = bake.settings?.sky ?? null;
   const budget = textureBudgetFor(bake.settings?.textures ?? {}, preset);
+  if (args['preserve-textures']) {
+    budget.maxSize = bake.settings?.textures?.maxSize ?? 2048;
+    budget.maxFace = null;
+  }
   const skyImages = await prepareSkyImages(id, skySettings, { onProgress: (m) => progress('sky', m), ...(budget.maxFace ? { maxFace: budget.maxFace } : {}) });
   for (const note of skyImages.notes) progress('sky', note);
 

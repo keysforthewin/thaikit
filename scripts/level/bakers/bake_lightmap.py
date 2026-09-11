@@ -45,7 +45,7 @@ from lightmap_padding import prepare_bake_images, dilate_lightmap
 import bpy
 import bmesh
 import numpy as np
-from mathutils import Vector
+from mathutils import Vector, Matrix
 
 argv = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []
 ap = argparse.ArgumentParser()
@@ -59,6 +59,7 @@ ap.add_argument('--sky', default='0.53,0.59,0.76,0.35')
 ap.add_argument('--ground', default='0.05,0.04,0.03')
 ap.add_argument('--env', default=None)
 ap.add_argument('--env-strength', type=float, default=1.0)
+ap.add_argument('--env-color', default='1,1,1')
 ap.add_argument('--env-rotation', type=float, default=0.0)
 ap.add_argument('--exposure', type=float, default=1.0)
 # The level's authored point and spot lights, as a JSON array in THREE's units:
@@ -69,6 +70,7 @@ ap.add_argument('--exposure', type=float, default=1.0)
 # Built here rather than read from the glTF so the units are ours; see the
 # lamp block below. Callers pass it as `--lights=[...]`.
 ap.add_argument('--lights', default='[]')
+ap.add_argument('--lights-file', default=None)
 ap.add_argument('--margin', type=float, default=0.004,
                 help='Deprecated compatibility argument; padding is derived from --gutter.')
 # Gap between packed islands, in TEXELS of the final atlas. The old pack used
@@ -162,13 +164,15 @@ def placement_flags(obj):
 
 no_cast = 0
 for obj in bpy.data.objects:
-    if obj.type != 'MESH' or obj in static:
+    if obj.type != 'MESH':
         continue
     cast, _receive = placement_flags(obj)
+    if obj in static:
+        cast = not (len(obj.data.materials) and all(m and m.get('tkBakeCastShadow') is False for m in obj.data.materials))
     if not cast:
         obj.visible_shadow = False
         no_cast += 1
-log(f'{no_cast} dynamic mesh(es) with cast shadow off are hidden from shadow rays')
+log(f'{no_cast} mesh(es) with cast shadow off are hidden from shadow rays')
 
 # --- one mesh per object, or they share one lightmap island ------------------
 #
@@ -460,12 +464,21 @@ def to_blender(v):
 
 
 lamps = []
-for spec in json.loads(args.lights):
-    kind = 'SPOT' if spec.get('type') == 'spot' else 'POINT'
+lamp_specs = json.load(open(args.lights_file)) if args.lights_file else json.loads(args.lights)
+for spec in lamp_specs:
+    kind = 'AREA' if spec.get('shape') == 'rectangle' else 'SPOT' if spec.get('type') == 'spot' else 'POINT'
     data = bpy.data.lights.new(f"thaikit_lamp_{spec.get('name', len(lamps))}", kind)
     data.color = tuple(float(c) for c in spec['color'][0:3])
-    data.energy = float(spec['intensity']) * LAMP_WATTS_PER_CANDELA
-    data.shadow_soft_size = LAMP_RADIUS
+    # A Lambertian rectangle's on-axis intensity is power/pi; the diffuse
+    # irradiance bake adds the same pi conversion as the calibrated point path.
+    data.energy = float(spec['intensity']) * (math.pi ** 2 if kind == 'AREA' else LAMP_WATTS_PER_CANDELA)
+    data.use_shadow = spec.get('castShadow', True)
+    if kind == 'AREA':
+        data.shape = 'RECTANGLE'
+        data.size = max(.001, float(spec['sourceWidth']))
+        data.size_y = max(.001, float(spec['sourceHeight']))
+    else:
+        data.shadow_soft_size = float(spec.get('sourceRadius') if spec.get('sourceRadius') is not None else LAMP_RADIUS)
     if hasattr(data, 'use_soft_falloff'):
         data.use_soft_falloff = False  # 4.0+: bends the near field away from 1/d^2
     if kind == 'SPOT':
@@ -478,9 +491,14 @@ for spec in json.loads(args.lights):
     if d:
         # A Blender spot shines down its local -Z, as the sun does.
         obj.rotation_euler = to_blender(d).normalized().to_track_quat('-Z', 'Y').to_euler()
+        if kind == 'AREA' and spec.get('up'):
+            z = -to_blender(d).normalized()
+            y = to_blender(spec['up']).normalized()
+            x = y.cross(z).normalized()
+            obj.rotation_euler = Matrix((x, y, z)).transposed().to_euler()
     lamps.append(obj)
 n_spot = sum(1 for o in lamps if o.data.type == 'SPOT')
-log(f'built {len(lamps)} authored lamp(s) to bake ({len(lamps) - n_spot} point, {n_spot} spot); hid {hidden} imported light(s)')
+log(f'built {len(lamps)} authored lamp(s) to bake ({sum(o.data.type == "POINT" for o in lamps)} point, {n_spot} spot, {sum(o.data.type == "AREA" for o in lamps)} area); hid {hidden} imported light(s)')
 
 world = scene.world or bpy.data.worlds.new('thaikit_world')
 scene.world = world
@@ -523,7 +541,12 @@ if args.env:
     mapping.inputs['Rotation'].default_value[2] = math.radians(args.env_rotation)
     wlinks.new(coord.outputs['Generated'], mapping.inputs['Vector'])
     wlinks.new(mapping.outputs['Vector'], tex.inputs['Vector'])
-    wlinks.new(tex.outputs['Color'], bg.inputs['Color'])
+    tint = wnodes.new('ShaderNodeMixRGB')
+    tint.blend_type = 'MULTIPLY'
+    tint.inputs[0].default_value = 1.0
+    tint.inputs[2].default_value = (*floats(args.env_color), 1.0)
+    wlinks.new(tex.outputs['Color'], tint.inputs[1])
+    wlinks.new(tint.outputs[0], bg.inputs['Color'])
     bg.inputs['Strength'].default_value = args.env_strength
     log(f'world: the level\'s sky ({args.env_strength:.3f}x, yaw {args.env_rotation:+.1f} deg)')
 else:
@@ -834,6 +857,9 @@ stats = {
     # direct term on static materials; a lightmap.json from an older bake has
     # no key and the level renders as it did.
     'bakedLights': len(lamps),
+    'bakedLightNames': [s['name'] for s in lamp_specs],
+    'bakedAreaLights': sum(o.data.type == 'AREA' for o in lamps),
+    'skyStrength': args.env_strength if args.env else None,
 }
 # --- write the PNG OURSELVES --------------------------------------------------
 #

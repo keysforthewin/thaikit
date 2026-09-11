@@ -168,6 +168,10 @@ export async function bakeWithBlender({ io, doc, bake, skyImages = null, outDir,
   onProgress?.(`${spec.lights.length} authored lamp(s) go into the bake (direct + bounce); the moon stays live, masked by alpha`);
 
   const paths = { script: SCRIPT, glb: inFile, out: outDir, env: envFile };
+  if (!host) {
+    paths.lights = path.join(outDir, 'authored-lights.json');
+    await fs.writeFile(paths.lights, JSON.stringify(spec.lights));
+  }
   const where = `up to ${spec.size}², ${spec.texelsPerMeter} texels/m, ${spec.samples} samples, cpu ${cpu ? 'on' : 'off'}`;
   if (host) {
     // Repo-relative for the wire. The script is named by its FIXED repo path

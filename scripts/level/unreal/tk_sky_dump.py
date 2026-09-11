@@ -166,7 +166,7 @@ try:
     moon_label = str(prop(actor, "MoonActorLabel", "Moon") or "Moon")
     moon = {"actor": moon_label, "found": False, "intensityOverride": num(actor, "MoonIntensity", 0.6)}
     for a in sub.get_all_level_actors():
-        if a.get_actor_label() != moon_label: continue
+        if a.get_actor_label() != moon_label and not a.get_actor_label().startswith(moon_label + '__'): continue
         comp = a.get_component_by_class(unreal.DirectionalLightComponent)
         if comp is None: continue
         rot = a.get_actor_rotation()

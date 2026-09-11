@@ -40,14 +40,14 @@ const srgbToLinear = (c) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) **
 
 /** Read an RGBA lightmap as floats in 0..1, at whatever bit depth it carries. */
 export async function readAtlas(file) {
-  const meta = await sharp(file, { unlimited: true }).metadata();
+  const meta = await sharp(file, { limitInputPixels: 536870912 }).metadata();
   const deep = meta.depth === 'ushort' || meta.depth === 'short';
   const depth = deep ? 'ushort' : 'uchar';
   // `raw({ depth: 'ushort' })` alone gives you a ushort BUFFER holding values
   // libvips has already squashed into 0..255 -- Blender's 40000 comes back as
   // 156. Only an explicit `toColourspace('rgb16')` keeps the pipeline 16-bit,
   // and without it every number this tool prints is quantised to a byte.
-  let img = sharp(file, { unlimited: true }).ensureAlpha();
+  let img = sharp(file, { limitInputPixels: 536870912 }).ensureAlpha();
   if (deep) img = img.toColourspace('rgb16');
   const { data, info } = await img.raw({ depth }).toBuffer({ resolveWithObject: true });
   const scale = depth === 'ushort' ? 65535 : 255;

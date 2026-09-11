@@ -74,9 +74,12 @@ async function main() {
 
   const { server, port } = await serveRepo();
   const puppeteer = await import('puppeteer-core');
+  const angle = String(args.angle ?? 'swiftshader');
+  if (!['swiftshader', 'gl'].includes(angle)) throw new Error('--angle must be swiftshader or gl');
   const browser = await puppeteer.launch({
     executablePath: await findChrome(),
-    args: ['--headless=new', '--no-sandbox', '--disable-dev-shm-usage', '--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'],
+    headless: !args.headed,
+    args: [...(args.headed ? [] : ['--headless=new']), '--no-sandbox', '--disable-dev-shm-usage', '--use-gl=angle', `--use-angle=${angle}`, '--disable-gpu-sandbox', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'],
   });
   try {
     const page = await browser.newPage();
@@ -85,9 +88,9 @@ async function main() {
     page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') errors.push(m.text()); });
     page.on('pageerror', (e) => errors.push(e.message));
     const levelUrl = `/${toRepoRelative(glb)}`;
-    const view = args.cam ? `&cam=${encodeURIComponent(String(args.cam))}${args.look ? `&look=${encodeURIComponent(String(args.look))}` : ''}` : '';
+    const view = (args.cam ? `&cam=${encodeURIComponent(String(args.cam))}${args.look ? `&look=${encodeURIComponent(String(args.look))}` : ''}` : '') + (args['shadow-probe'] ? '&shadowProbe=1' : '');
     page.goto(`http://127.0.0.1:${port}/render/level-harness.html?level=${encodeURIComponent(levelUrl)}&size=${size}${args['ibl-size'] ? `&iblSize=${Number(args['ibl-size'])}` : ''}${view}`).catch(() => {});
-    const deadline = Date.now() + 120_000;
+    const deadline = Date.now() + Number(args['timeout-ms'] ?? 120_000);
     let result = null;
     while (Date.now() < deadline) {
       result = await page.evaluate(() => window.__smoke ?? null).catch(() => null);

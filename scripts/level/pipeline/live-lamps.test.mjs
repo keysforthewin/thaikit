@@ -7,6 +7,14 @@ const moon = { id: 'moon', type: 'directional', role: 'moon', intensity: 0.6, po
 const lamps = Array.from({ length: 6 }, (_, i) => ({ id: `l${i}`, type: 'point', role: null, intensity: 10 - i, position: [i * 5, 3, 0] }));
 const spawns = [{ position: [0, 0, 0] }];
 
+test('moon-only preserves every lamp in the bake and refuses an unlit deliverable', () => {
+  const r = selectLiveLamps([moon, ...lamps], spawns, 'moon-only', true);
+  assert.deepEqual(r.live, [moon]);
+  assert.deepEqual(r.bakedOnly, lamps.map((l) => l.id));
+  assert.deepEqual(r.dropped, []);
+  assert.throws(() => selectLiveLamps([moon, ...lamps], spawns, 'moon-only', false), /requires a lightmap/);
+});
+
 test('nominated shadow lamps survive the live cap ahead of brighter decorative lamps', () => {
   const nominated = { id: 'street', type: 'spot', castShadow: true, intensity: 1, position: [40, 8, 0] };
   const r = selectLiveLamps([moon, ...lamps, nominated], spawns, 2, true);

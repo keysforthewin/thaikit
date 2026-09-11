@@ -41,12 +41,19 @@ export function blenderBakeSpec({ bake, cpu = false, hasEnv = false }) {
   // unbaked, because the runtime only cuts point/spot on static materials.
   const lights = (bake.lights ?? [])
     .filter((l) => l.role !== 'moon' && (l.type === 'point' || l.type === 'spot'))
-    .map((l) => ({
-      name: String(l.id ?? l.node ?? ''), type: l.type,
-      position: l.position, direction: l.direction ?? null,
-      color: hexToLinear(l.color ?? '#ffffff'), intensity: l.intensity ?? 1,
-      angle: l.angle ?? null, penumbra: l.penumbra ?? null, distance: l.distance ?? null, decay: l.decay ?? null,
-    }));
+    .map((l) => {
+      const color = l.bakeColor ?? hexToLinear(l.color ?? '#ffffff');
+      const gain = Math.max(1, ...color);
+      return {
+        name: String(l.name ?? l.id ?? l.node ?? ''), type: l.type,
+        shape: l.bakeShape ?? null, castShadow: l.bakeCastShadow ?? true,
+        sourceRadius: l.sourceRadius ?? null, sourceWidth: l.sourceWidth ?? null, sourceHeight: l.sourceHeight ?? null,
+        up: l.up ?? null, right: l.right ?? null,
+        position: l.position, direction: l.direction ?? null,
+        color: color.map((c) => c / gain), intensity: (l.intensity ?? 1) * gain,
+        angle: l.angle ?? null, penumbra: l.penumbra ?? null, distance: l.distance ?? null, decay: l.decay ?? null,
+      };
+    });
   return {
     size: lm.size ?? 4096,
     samples: lm.samples ?? 128,
@@ -61,9 +68,10 @@ export function blenderBakeSpec({ bake, cpu = false, hasEnv = false }) {
     device: cpu ? 'GPU+CPU' : 'GPU',
     lights,
     env: hasEnv ? {
-      // `sky.base.intensity` ALONE; see blender-cycles.mjs for why the
-      // hemisphere intensity no longer multiplies in.
-      strength: bake.settings?.sky?.base?.intensity ?? 1,
+      // An exported SkyLight captures the authored sky brightness, then applies
+      // its own intensity and tint. The hemisphere fallback is independent.
+      strength: (bake.settings?.sky?.base?.intensity ?? 1) * (bake.skyLight?.intensity ?? 1),
+      color: bake.skyLight?.color ?? [1, 1, 1],
       // NEGATED: Blender's Mapping node rotates the lookup vector, the runtime
       // turns the dome. Derived, not measured -- see blender-cycles.mjs.
       rotation: -(bake.settings?.sky?.base?.rotationDeg ?? 0),
@@ -91,15 +99,16 @@ export function buildBlenderArgs(spec, paths, mapPath) {
     `--ground=${spec.ground.map(f4).join(',')}`,
     '--exposure', String(spec.exposure),
     '--device', spec.device,
-    // Inline JSON, not a file: nothing in it is a path, so both bakers emit
-    // the identical flag, and both spawn with an argv ARRAY and no shell.
-    `--lights=${JSON.stringify(spec.lights ?? [])}`,
+    // A file avoids OS argument-length limits for large inventories. Older
+    // callers can still pass the small inline form. Neither route uses a shell.
+    paths.lights ? `--lights-file=${mapPath(paths.lights)}` : `--lights=${JSON.stringify(spec.lights ?? [])}`,
   ];
   if (spec.noiseThreshold != null) args.push(`--noise-threshold=${Number(spec.noiseThreshold)}`);
   if (spec.env) {
     if (!paths.env) throw new Error('spec has a sky env but no env path');
     args.push(`--env=${mapPath(paths.env)}`);
     args.push(`--env-strength=${f4(spec.env.strength)}`);
+    args.push(`--env-color=${(spec.env.color ?? [1, 1, 1]).map(f4).join(',')}`);
     args.push(`--env-rotation=${Number(spec.env.rotation).toFixed(3)}`);
   }
   return args;

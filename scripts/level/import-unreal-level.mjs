@@ -53,6 +53,7 @@ import { CUBE_FACES, LevelSettings, SkySettings } from '@thai-kit/level-schema';
 
 import { ok, fail, parseArgs } from '../lib/out.mjs';
 import { buildDirOf } from './pipeline/build-dir.mjs';
+import { applyLightSidecar } from './unreal/light-sidecar.mjs';
 
 const VERSION = '0.1.0';
 const EPIC_LIGHTMAP = 'EPIC_lightmap_textures';
@@ -632,9 +633,9 @@ export async function convertUnrealLevel({ id, doc, json, bin, kit, extMeshes = 
       position: t.map((v) => +v.toFixed(4)), rotation, scale: s.map((v) => +v.toFixed(4)),
       bounds: { min: b.min.map((v) => +v.toFixed(3)), max: b.max.map((v) => +v.toFixed(3)) },
       physics: { enabled: dynamic && Boolean(item?.physics?.enabled ?? true), massKg: item?.physics?.massKg ?? null },
-      billboard, castShadow: true, receiveShadow: true,
+      billboard, castShadow: billboard === 'none' && actorMap?.[name]?.castShadow !== false, receiveShadow: true,
       destructionGroups: item?.destructionGroups ?? [],
-      colliders, colliderYaw: 0, tags,
+      colliders: /NO_COLLISION/.test(actorMap?.[name]?.collisionEnabled ?? '') ? [] : colliders, colliderYaw: 0, tags,
       source: { actor: name, mesh: meshName || null, kit: Boolean(item) },
     };
     placements.push(row);
@@ -755,6 +756,13 @@ async function main() {
   if (skyMap) log(`sky sidecar: ${toRepoRelative(skyMapFile)} (${skyMap.generatedAt ?? 'undated'})`);
   const extMeshes = await readExtManifest(path.resolve(REPO_ROOT, String(args['ext-manifest'] ?? path.join('exports', 'unreal', 'ext', 'manifest.json'))));
   const { bake, doc: out, report, lightmapPng } = await convertUnrealLevel({ id, doc, json, bin, kit, extMeshes, actorMap, skyMap, cellSize, sun, bboxColliders, settings, lightmapDir: path.join(buildDir, 'lightmap'), ground, lightScale, emissiveScale });
+  if (args['light-map']) {
+    const lightMap = JSON.parse(await fs.readFile(path.resolve(REPO_ROOT, String(args['light-map'])), 'utf8'));
+    report.lightInventory = applyLightSidecar(bake, lightMap, lightScale, settings?.moonShadow, Boolean(args['include-disabled-lights']));
+    report.lights = bake.lights.length;
+    report.notes.push(`complete light sidecar: ${JSON.stringify(report.lightInventory)}`);
+    out.getRoot().listScenes()[0].setExtras({ thaikitBake: bake });
+  }
 
   const rawFile = path.join(buildDir, 'raw.glb');
   await io.write(rawFile, out);

@@ -77,8 +77,35 @@ window.__smoke = { ready: false };
     }
     level.cells.forceTier(0);
     renderer.render(scene, camera);
+    let shadowProbe = null;
+    if (params.has('shadowProbe')) {
+      // A temporary player-sized caster above the map isolates the live moon
+      // from already-baked occlusion. Compare the same frame with casting off/on.
+      const savedPosition = camera.position.clone();
+      const savedQuaternion = camera.quaternion.clone();
+      const at = new THREE.Vector3(0, b.max[1] + 20, 0);
+      const floor = new THREE.Mesh(new THREE.PlaneGeometry(12, 12), new THREE.MeshStandardMaterial({ color: 0xaaaaaa, roughness: 1 }));
+      floor.rotation.x = -Math.PI / 2; floor.position.copy(at); floor.receiveShadow = true;
+      const player = new THREE.Mesh(new THREE.CapsuleGeometry(.4, 1.1, 4, 12), new THREE.MeshStandardMaterial({ color: 0xcccccc, roughness: 1 }));
+      player.position.copy(at).add(new THREE.Vector3(0, .95, 0));
+      scene.add(floor, player);
+      camera.position.copy(at).add(new THREE.Vector3(5, 5, 7)); camera.lookAt(at);
+      level.update(1 / 60, at);
+      const gl = renderer.getContext();
+      const before = new Uint8Array(size * size * 4), after = new Uint8Array(before.length);
+      renderer.render(scene, camera); gl.readPixels(0, 0, size, size, gl.RGBA, gl.UNSIGNED_BYTE, before);
+      player.castShadow = true;
+      renderer.render(scene, camera); gl.readPixels(0, 0, size, size, gl.RGBA, gl.UNSIGNED_BYTE, after);
+      let darkerPixels = 0;
+      for (let i = 0; i < before.length; i += 4) if (before[i] + before[i+1] + before[i+2] - after[i] - after[i+1] - after[i+2] > 6) darkerPixels++;
+      shadowProbe = { darkerPixels, moonMapSize: level.lights.moon?.shadow.mapSize.x, liveLights: level.lights.list.length };
+      scene.remove(floor, player); floor.geometry.dispose(); floor.material.dispose(); player.geometry.dispose(); player.material.dispose();
+      camera.position.copy(savedPosition); camera.quaternion.copy(savedQuaternion);
+      level.update(1 / 60, camera.position); renderer.render(scene, camera);
+      if (darkerPixels < 32) throw new Error(`player shadow probe failed: only ${darkerPixels} darker pixels`);
+    }
     window.__smoke = {
-      ready: true, ok: true, frames, cells: level.cells.cells.length, lightmap: Boolean(level.lightmap),
+      ready: true, ok: true, frames, shadowProbe, cells: level.cells.cells.length, lightmap: Boolean(level.lightmap),
       environment: level.environment
         ? { size: level.environment.size, source: level.environment.source, ms: level.environment.ms, mb: +(level.environment.bytes / 1048576).toFixed(2) }
         : null,
