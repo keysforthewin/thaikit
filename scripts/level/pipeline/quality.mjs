@@ -2,16 +2,12 @@
  * Bake QUALITY tiers: one word that picks the baker and the lightmap budget,
  * and stamps the delivered file so the three never overwrite each other.
  *
- *   low     `--baker none`: no lightmap, the geometry, colliders, LOD tiers and
- *           sky as they ship, lit by the live moon, with textures and the sky
- *           cubemap capped at 1024 -- a smoke test of the level's SHAPE. It has
- *           to be quick, and the geometry stages are not what a bake costs:
- *           measured on bangkoksoi, stages 1-3 took 21 s and the KTX2 encode
- *           of 286 textures at 2048 plus six 2608² sky faces took 122 s, so the
- *           texture cap is what brings it under two minutes.
- *   medium  Cycles at 2048² / 16 samples, adaptive: the lamps, the sky and the
- *           moon's shadows land roughly where they will. About ten minutes.
- *   high    Cycles at the level's OWN lightmap settings (bangkoksoi: 8192² /
+ *   low     Cycles at 4096² / 4096 samples, adaptive off. This is the first
+ *           shippable lighting tier: it retains the level's texture budget and
+ *           bakes lamps, sky, and moon visibility into the atlas.
+ *   medium  Cycles at 8192² / 4096 samples, adaptive off. This is the higher
+ *           resolution shipping tier when the low atlas needs more detail.
+ *   high    Cycles at the level's OWN lightmap settings (bangkoksoi: 16384² /
  *           4096 samples / adaptive off) -- the shipping bake, hours.
  *
  * `--quality medium` delivers `<id>_medium.glb`, builds `build/level_medium.glb`
@@ -25,8 +21,8 @@
 export const QUALITIES = ['low', 'medium', 'high'];
 
 export const QUALITY_PRESETS = {
-  low: { baker: 'none', lightmap: {}, textures: { maxSize: 1024, maxFace: 1024 } },
-  medium: { baker: 'blender', lightmap: { size: 2048, samples: 16, noiseThreshold: null } },
+  low: { baker: 'blender', lightmap: { size: 4096, samples: 4096, noiseThreshold: 0 } },
+  medium: { baker: 'blender', lightmap: { size: 8192, samples: 4096, noiseThreshold: 0 } },
   high: { baker: 'blender', lightmap: {} },
 };
 

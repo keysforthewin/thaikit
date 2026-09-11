@@ -361,24 +361,16 @@ docker compose run --rm --no-deps -e HOME=/tmp web node scripts/level/import-unr
   --level bangkoksoi --settings levels/bangkoksoi/settings.json \
   --ground=-0.12,#2b2b29 --light-scale 0.25 --emissive-scale 0.18
 docker compose run --rm --no-deps -e HOME=/tmp web node scripts/level/bake-level.mjs \
-  --level bangkoksoi --quality low --live-lamps 20      # ~52 s, no Cycles
+  --level bangkoksoi --quality low --live-lamps moon-only # 4096² / 4096, adaptive off
 docker compose run --rm --no-deps -e HOME=/tmp web node scripts/level/bake-level.mjs \
-  --level bangkoksoi --quality medium --live-lamps 20   # ~9 min, 2048²/16
+  --level bangkoksoi --quality medium --live-lamps moon-only # 8192² / 4096, adaptive off
 docker compose run --rm --no-deps -e HOME=/tmp web node scripts/level/bake-level.mjs \
-  --level bangkoksoi --quality high --live-lamps 20     # ~2h20m
+  --level bangkoksoi --quality high --live-lamps moon-only # 16384² / 4096, adaptive off
 ```
 
-**Do not pass `--lightmap-size 8192 --samples 4096 --noise-threshold 0` to the
-MEDIUM tier.** Those flags override medium's own 2048²/16 preset and make it cost
-the same as a high bake, which is the whole reason medium exists as a cheap check.
-The command recorded in the 09-07 section above does exactly that. `high` needs no
-size or sample flags at all — `settings.json` already carries 8192 / 4096 /
-noiseThreshold 0, and `--quality high` reads them.
-
-Medium is a **pipeline** check, not a coverage preview: at 2048² this level gets
-1.8 texels/m against high's 7.1, so its atlas coverage (~0.21) and dark percentiles
-are atlas starvation and say nothing about the lighting. What medium does settle is
-that the lamps baked, verify passes, and the moon-visibility alpha is bimodal.
+Low and medium now use the validated shipping presets without extra lightmap flags.
+Low is 4096² / 4096 samples; medium is 8192² / 4096 samples; both disable adaptive
+sampling. Use `--live-lamps moon-only` to match the shipped BangkokSoi lighting.
 
 Verification: `light-coverage.mjs --mode atlas --quality high` against
 `baseline-atlas-high.json`; `probe-lightmap.mjs --compare` (coverage ~0.49,
