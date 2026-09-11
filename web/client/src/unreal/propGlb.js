@@ -3,6 +3,8 @@ import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
 import { getPrototype } from '../three/instances.js';
+import { namedMeshPlugin } from './namedMeshPlugin.js';
+import { assertMaterialCompatibility } from './materialCompatibility.js';
 
 /**
  * One prop as ONE glTF binary that Unreal's importer turns into ONE Static Mesh.
@@ -354,6 +356,7 @@ function inferredEmitters(groups, propHeight) {
  * none, the inferred lamp head (inferredEmitters).
  */
 export function flattenPrototype(root, propName, { category = null } = {}) {
+  assertMaterialCompatibility(root, propName);
   const work = root.clone(true);
   work.updateMatrixWorld(true);
   expandInstances(work);
@@ -460,6 +463,9 @@ export async function buildPropGlb(item, { maxTextureSize = 2048, collision = tr
   for (const c of ucx) scene.add(c);
 
   const exporter = new GLTFExporter();
+  // Three names scene nodes but leaves mesh definitions unnamed. Interchange
+  // identifies UCX geometry by the mesh definition's name before combining it.
+  exporter.register(namedMeshPlugin);
   const glb = await exporter.parseAsync(scene, {
     binary: true,
     onlyVisible: false,

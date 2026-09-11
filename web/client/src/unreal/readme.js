@@ -35,9 +35,9 @@ Textures were baked at up to ${options.maxTextureSize} px; collision ${options.c
      (The export already merged every prop into one mesh, so this is belt and braces.)
    - Common Meshes -> **Import Collision According To Mesh Name: ON** (default).
      The \`UCX_\` meshes become the mesh's simple collision and are not rendered.
-   - Materials -> **Import Materials: ON**, **Create Material Instances**. Unreal builds
-     one material instance per slot from its glTF material functions, vertex colour
-     included.
+   - Materials -> **Import Materials: ON**, **Material Import: Materials**. Generate
+     material graphs that preserve vertex colours. Material-instance presets can
+     drop those colours, turning tinted glass white and losing livery.
    - Leave the scale alone: glTF is metres, Unreal is centimetres, the importer
      converts (a 0.85 m oil drum arrives 85 cm tall).
    - Common Meshes -> **Build Nanite: OFF**. It has been ON by default since UE 5.5, and a

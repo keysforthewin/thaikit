@@ -79,15 +79,24 @@ function fender(zc:number,r:number,start:number,end:number,width:number,color:nu
  for(let i=0;i<idx.length;i+=3)[idx[i+1],idx[i+2]]=[idx[i+2],idx[i+1]];
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setIndex(idx);const flat=g.toNonIndexed();flat.computeVertexNormals();return surface(weldedNormals(flat),color,.35,0);
 }
-function material(name:string,options:Options) {
- const m=new THREE.MeshStandardMaterial({color:0xffffff,vertexColors:true,roughness:1,metalness:1,wireframe:!!options.wireframe});m.name=name;
- // Vertex material parameters keep physically distinct rubber, paint and metal in shared batches.
- m.onBeforeCompile=s=>{
-  s.vertexShader=s.vertexShader.replace('#include <common>','#include <common>\nattribute vec2 surface; varying vec2 vSurface;').replace('#include <begin_vertex>','#include <begin_vertex>\nvSurface=surface;');
-  s.fragmentShader=s.fragmentShader.replace('#include <common>','#include <common>\nvarying vec2 vSurface;').replace('#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\nroughnessFactor=vSurface.x;').replace('#include <metalnessmap_fragment>','#include <metalnessmap_fragment>\nmetalnessFactor=vSurface.y;');
- };
- m.customProgramCacheKey=()=> 'honda-wave-surface-v1';return m;
+// A linear lookup map stores roughness in G and metalness in B, the glTF channels.
+// UVs encode the original per-vertex surface parameters, including wheel transitions.
+function surfaceTexture() {
+ const data=new Uint8Array(256*256*4);
+ for(let y=0;y<256;y++)for(let x=0;x<256;x++){
+  const i=(y*256+x)*4;data[i]=255;data[i+1]=x;data[i+2]=y;data[i+3]=255;
+ }
+ const texture=new THREE.DataTexture(data,256,256,THREE.RGBAFormat);
+ texture.name='honda-wave-metallic-roughness';
+ texture.minFilter=texture.magFilter=THREE.LinearFilter;
+ texture.generateMipmaps=false;texture.needsUpdate=true;
+ return texture;
 }
+function material(name:string,options:Options,map:THREE.DataTexture) {
+ const m=new THREE.MeshStandardMaterial({color:0xffffff,vertexColors:true,roughness:1,metalness:1,roughnessMap:map,metalnessMap:map,wireframe:!!options.wireframe});m.name=name;
+ return m;
+}
+
 function underbone(){
  // One continuous closed manufactured body. The profile traces both the step
  // opening and the rear wheel arch; width and crown vary across the leg shield.
@@ -106,7 +115,8 @@ function saddle(){const g=profile([[.025,.71],[.01,.77],[-.08,.79],[-.33,.78],[-
 
 export function createObjectModel(_spec?:unknown,options:Options={}):THREE.Group {
  const root=new THREE.Group();root.name='honda-wave';
- const mats={paint:material('paint and dielectric fittings',options),metal:material('metal fittings',options),wheel:material('tyre, rim and hub',options)};
+ const surfaceMap=surfaceTexture();
+ const mats={paint:material('paint and dielectric fittings',options,surfaceMap),metal:material('metal fittings',options,surfaceMap),wheel:material('tyre, rim and hub',options,surfaceMap)};
  const nodes:Record<string,THREE.Object3D>={},meshes:Record<string,THREE.Mesh>={};
  const add=(id:string,gs:THREE.BufferGeometry[],mat:keyof typeof mats,parent:THREE.Object3D=root,origin:V=[0,0,0])=>{
   const g=merge(gs);g.translate(-origin[0],-origin[1],-origin[2]);const mesh=new THREE.Mesh(g,mats[mat]);mesh.name=id;mesh.castShadow=options.castShadow!==false;mesh.receiveShadow=options.receiveShadow!==false;
@@ -185,6 +195,17 @@ export function createObjectModel(_spec?:unknown,options:Options={}):THREE.Group
  // Translate the root's children, so the root pivot remains at (0,0,0).
  root.updateMatrixWorld(true);const bounds=new THREE.Box3().setFromObject(root),center=bounds.getCenter(new THREE.Vector3()),offset=new THREE.Vector3(-center.x,-bounds.min.y,-center.z);
  for(const child of root.children)child.position.add(offset);root.updateMatrixWorld(true);
+ const mapped=new Set<THREE.BufferGeometry>();
+ root.traverse(object=>{
+  const g=(object as THREE.Mesh).geometry;if(!g||mapped.has(g))return;mapped.add(g);
+  const parameters=g.getAttribute('surface');if(!parameters)return;
+  const uv=new Float32Array(parameters.count*2);
+  for(let i=0;i<parameters.count;i++){
+   uv[2*i]=(THREE.MathUtils.clamp(parameters.getX(i),0,1)*255+.5)/256;
+   uv[2*i+1]=(THREE.MathUtils.clamp(parameters.getY(i),0,1)*255+.5)/256;
+  }
+  g.setAttribute('uv',new THREE.BufferAttribute(uv,2));g.deleteAttribute('surface');
+ });
  return root;
 }
 export function createModel(options:Options={}){return createObjectModel(undefined,options);}

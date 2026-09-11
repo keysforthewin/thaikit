@@ -7,6 +7,11 @@ mesh with a material slot per material, its physics compound as collision, and
 a `manifest.json` describing every prop. This page is how to run the export and
 how to get the result into Unreal Editor as placeable Static Meshes.
 
+Asset materials must use standard glTF-compatible PBR properties, textures and
+vertex colors. Custom shader programs and material callbacks are rejected by
+model promotion and GLB export; they cannot be saved into a GLB. See the
+[material audit](glb-material-audit-20260911.md) for the current kit's results.
+
 ---
 
 ## 1. Run the export
@@ -83,7 +88,7 @@ the Interchange framework. (5.0 needs the *glTF Importer* plugin turned on.)
    | --- | --- | --- |
    | Common Meshes → **Combine Static Meshes** | on | One Static Mesh per file. The export already merged each prop, so this is a safeguard. |
    | Common Meshes → **Import Collision According To Mesh Name** | on (default) | Turns the `UCX_` meshes into simple collision. |
-   | Materials → **Import Materials** / **Create Material Instances** | on | One material instance per slot, built from Unreal's glTF material functions, vertex-colour multiply included. |
+   | Materials → **Import Materials** / **Material Import** | on / Materials | Generate material graphs that preserve the glTF vertex-color multiply. Material-instance presets can drop vertex colors, turning tinted glass white and losing livery. |
    | Common Meshes → Uniform Scale | 1.0 | glTF is metres, Unreal centimetres; the translator converts. A 0.85 m oil drum arrives 85 cm tall. |
    | Common Meshes → **Build Nanite** | **off** | ON by default since UE 5.5. A Nanite mesh renders every translucent slot with the DEFAULT material (`Invalid material ... used on Nanite static mesh` in the Output Log) and simplifies a door's 15 mm of relief into its wall at distance. These are 2 k-triangle meshes; Nanite buys nothing. |
    | Common Meshes → Generate Lightmap UVs | on | The export ships one UV set; Unreal's baked lighting wants a second. |

@@ -4,6 +4,7 @@ import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
 import { getPrototype, instantiate } from '../../three/instances.js';
 import { buildLight } from './lights.js';
 import { LEVEL_SCHEMA_VERSION } from '@thai-kit/level-schema';
+import { assertMaterialCompatibility } from '../../unreal/materialCompatibility.js';
 
 /**
  * Let the browser paint. An `await` on an already-resolved promise only yields to
@@ -59,6 +60,7 @@ export async function buildProjectScene(doc, catalogue, orphans, { onProgress } 
     };
     if (item?.supported) {
       const proto = await getPrototype(item);
+      assertMaterialCompatibility(proto.root, p.ref);
       g.add(instantiate(proto, { castShadow: p.castShadow !== false, receiveShadow: p.receiveShadow !== false }));
       const pk = catalogue.packs.find((k) => k.id === item.pack);
       if (pk) packsInUse.set(pk.id, { id: pk.id, version: pk.version ?? null, source: pk.source ?? null });
@@ -99,6 +101,7 @@ export async function buildProjectScene(doc, catalogue, orphans, { onProgress } 
 }
 
 export async function exportGlb(scene, { maxTextureSize = 2048 } = {}) {
+  assertMaterialCompatibility(scene);
   const exporter = new GLTFExporter();
   const out = await exporter.parseAsync(scene, { binary: true, onlyVisible: false, maxTextureSize, includeCustomExtensions: false });
   return out;

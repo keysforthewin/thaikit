@@ -45,6 +45,7 @@ import { ok, fail, log, parseArgs } from './lib/out.mjs';
 import { entrySource } from './lib/vibe3d-entry.mjs';
 import { judgeAsset, formatAxis, overBudgetMessage, runtimeVerdict, colliderVerdict } from './lib/budget.mjs';
 import { readSkillReview } from './lib/review.mjs';
+import { assertMaterialCompatibility } from '../web/client/src/unreal/materialCompatibility.js';
 import { writeThumb } from './lib/thumb.mjs';
 
 const nodeRequire = createRequire(import.meta.url);
@@ -81,6 +82,7 @@ function constructsUnderNode(bundlePath) {
     // map load behind `if (options.baseUrl)` safe and an unguarded one fatal.
     const root = factory(null, {});
     if (!root?.isObject3D) return { ok: false, error: 'the factory did not return an Object3D' };
+    assertMaterialCompatibility(root, root.name || bundlePath, THREE.Material);
     return { ok: true };
   } catch (err) {
     return { ok: false, error: err.message };
