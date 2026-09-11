@@ -161,3 +161,10 @@ A level laid out in Unreal from these props can come BACK as a baked thaikit
 level for Operation X: `docs/unreal-level-export.md`. Keep the `SM_TK_*` names
 when you place them, because that is how the round trip finds each prop's
 physics and collider compound.
+
+For this return trip, use the Unreal bake skill's `export_materials.export_level`
+wrapper. Current Interchange imports may use Substrate materials that render
+correctly in Unreal but are not recognised by the glTF exporter. The wrapper
+creates compatible export proxies temporarily; no change to the Three.js prop
+export or the working Unreal viewport materials is needed. The import/bake
+pipeline checks for black material regressions before lighting the map.

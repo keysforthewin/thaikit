@@ -54,6 +54,7 @@ import { CUBE_FACES, LevelSettings, SkySettings } from '@thai-kit/level-schema';
 import { ok, fail, parseArgs } from '../lib/out.mjs';
 import { buildDirOf } from './pipeline/build-dir.mjs';
 import { applyLightSidecar } from './unreal/light-sidecar.mjs';
+import { assertUnrealMaterials } from './unreal/material-audit.mjs';
 
 const VERSION = '0.1.0';
 const EPIC_LIGHTMAP = 'EPIC_lightmap_textures';
@@ -742,6 +743,7 @@ async function main() {
 
   const bytes = new Uint8Array(await fs.readFile(inFile));
   const { json, bin } = parseGlb(bytes);
+  await assertUnrealMaterials(json, manifestFile);
   const io = new NodeIO().setLogger(new Logger(Logger.Verbosity.SILENT)).registerExtensions(ALL_EXTENSIONS);
   const doc = await io.readBinary(bytes);
   const kit = await readKitManifest(manifestFile);

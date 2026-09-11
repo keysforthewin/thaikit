@@ -48,7 +48,8 @@ import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import { dedup, flatten, join, weld, meshopt, prune } from '@gltf-transform/functions';
 import { MeshoptDecoder, MeshoptEncoder } from 'meshoptimizer';
 
-import { toRepoRelative } from '@thaikit/registry-core';
+import { REPO_ROOT, toRepoRelative } from '@thaikit/registry-core';
+import { assertUnrealMaterials, readGlbJson } from './unreal/material-audit.mjs';
 
 import { ok, fail, parseArgs } from '../lib/out.mjs';
 import { readTags, stripEditorExtras, foldBaseColorIntoVertexColor, normaliseAttributes } from './pipeline/normalise.mjs';
@@ -118,6 +119,13 @@ async function main() {
   const cell = assertCellKey(args.cell ?? null);
   const buildDir = buildDirOf(id, cell);
   const rawFile = path.join(buildDir, 'raw.glb');
+  // Also gate resumed bakes: normalisation has already hidden black factors in
+  // vertex colours by stage 1. Check the original RAW before any costly work.
+  const rawJson = await readGlbJson(rawFile);
+  const rawSource = rawJson.scenes?.[rawJson.scene ?? 0]?.extras?.thaikitBake?.source;
+  if (rawSource?.tool === 'unreal-gltf-exporter') {
+    await assertUnrealMaterials(rawJson, path.resolve(REPO_ROOT, rawSource.kitManifest ?? 'exports/unreal/manifest.json'));
+  }
   // Stage 1 does not depend on the tier; stages 2 and 3 carry the tier's
   // lightmap (or its absence), so their checkpoints are stamped -- a
   // `--resume-from 3` for `high` must never pick up `low`'s unlit stage 2.

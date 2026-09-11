@@ -75,6 +75,28 @@ textures (`bake_material_inputs = Use Mesh Data`, PNG), hidden actors off, and
 **export lightmaps on if the option exists** (5.6+; it was removed in 5.2 and
 came back in 5.6). The skill's `references/export.md` has the Python.
 
+Call `export_materials.export_level(world, out, options, actors)` from
+`scripts/level/unreal/export_materials.py` instead of calling the engine's
+exporter directly. The helper supplies temporary legacy glTF proxies for stock
+Interchange Substrate materials, preserving the live texture and parameter
+overrides. It validates exported colours, roughness, metallic values, alpha,
+double-sidedness, texture embedding and required UV channels before replacing
+the destination. It restores the original material user data even on failure;
+no viewport material assignments or Unreal assets are saved by the helper.
+The audit is written beside the GLB as `level.glb.materials.json`.
+
+New imports can look correct in Unreal yet export as black with UE 5.8's
+Substrate parent. `USE_MESH_DATA` alone does not fix this. Custom Substrate
+graphs and unsupported extension materials need explicit export-compatible
+proxies; the helper stops instead of silently flattening those materials.
+Existing explicit proxies take precedence. See
+[the export recipe](../.claude/skills/thaikit-unreal-bake/references/export.md).
+
+Both import and bake (including resume) reject a known nonblack kit material
+that became untextured black. Keep the original kit export and manifest
+available for this comparison. Correct and re-export a rejected material;
+increasing lighting samples does not repair missing colour data.
+
 ## 3. Convert
 
 ```
