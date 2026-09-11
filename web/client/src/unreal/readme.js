@@ -23,7 +23,21 @@ Textures were baked at up to ${options.maxTextureSize} px; collision ${options.c
   This is the file to read when choosing what to place where.
 - \`_previews/\` -- a thumbnail per prop. Not for import; keep it out of Content.
 
-## Getting it into Unreal (5.1 or later)
+## Checked import (Unreal Interchange + Python)
+
+Enable Unreal's Python Editor Script Plugin. In the Output Log's Python console:
+
+\`import runpy; runpy.run_path(r"C:/path/to/export/import_into_unreal.py", run_name="__main__")\`
+
+The script explicitly generates Materials, disables material reuse and Nanite,
+then verifies every visible material and texture presence. It writes
+\`unreal-import-report.json\` and raises an error on failures. Imports go into
+\`/Game/ThaiKit/GLBImports/<asset>\`; existing level actors are not automatically
+rebound. For a subset, load with runpy.run_path without run_name, then call the
+returned import_kit function with the export folder and refs=["@thai-kit/tuk-tuk"].
+Use the same checked script for subsequent updates to these imported assets.
+
+## Manual import
 
 1. Unzip. Keep the folder structure.
 2. In the Content Browser, make a folder (e.g. \`Content/ThaiKit\`) and drag the
@@ -35,7 +49,7 @@ Textures were baked at up to ${options.maxTextureSize} px; collision ${options.c
      (The export already merged every prop into one mesh, so this is belt and braces.)
    - Common Meshes -> **Import Collision According To Mesh Name: ON** (default).
      The \`UCX_\` meshes become the mesh's simple collision and are not rendered.
-   - Materials -> **Import Materials: ON**, **Material Import: Materials**. Generate
+   - Materials -> **Import Materials: ON**, **Material Import: Materials**, **Reuse Existing Materials: OFF**. Generate
      material graphs that preserve vertex colours. Material-instance presets can
      drop those colours, turning tinted glass white and losing livery.
    - Leave the scale alone: glTF is metres, Unreal is centimetres, the importer
@@ -51,8 +65,9 @@ Textures were baked at up to ${options.maxTextureSize} px; collision ${options.c
    Complex* on hero props if you want the UCX shapes to be the ONLY collision.
 5. Drag props from the Content Browser into the level. \`End\` snaps a selected actor
    to the floor; every thaikit pivot is at the base centre so it lands standing.
-6. Re-exporting: overwrite the folder, then right-click the folder in Content and
-   **Reimport**. Unreal remembers the source path per asset.
+6. Re-exporting: use the checked importer for assets it imported. Older assets
+   may remember material-instance settings; correct those settings and regenerate
+   their materials before reimporting. A new GLB alone cannot repair empty instances.
 
 ## Things worth knowing
 

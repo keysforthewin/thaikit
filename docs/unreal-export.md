@@ -30,7 +30,7 @@ in the header. The dialog offers:
 
 A prop's own drawer has an **export to Unreal** button too: it opens the same dialog
 preselected to that one prop, so after fixing a building you re-export it alone,
-then right-click its `SM_TK_*` asset in Unreal and *Reimport*.
+then use the checked importer below. Older imports may retain incompatible material settings.
 
 The export runs **in the browser**, for the same reason the level bake starts
 there: the props' textures are canvases that exist only in a page. Every prop is
@@ -89,12 +89,13 @@ the Interchange framework. (5.0 needs the *glTF Importer* plugin turned on.)
    | Common Meshes → **Combine Static Meshes** | on | One Static Mesh per file. The export already merged each prop, so this is a safeguard. |
    | Common Meshes → **Import Collision According To Mesh Name** | on (default) | Turns the `UCX_` meshes into simple collision. |
    | Materials → **Import Materials** / **Material Import** | on / Materials | Generate material graphs that preserve the glTF vertex-color multiply. Material-instance presets can drop vertex colors, turning tinted glass white and losing livery. |
+   | Materials → **Reuse Existing Materials** | off | Regenerate materials instead of reusing broken instances. |
    | Common Meshes → Uniform Scale | 1.0 | glTF is metres, Unreal centimetres; the translator converts. A 0.85 m oil drum arrives 85 cm tall. |
    | Common Meshes → **Build Nanite** | **off** | ON by default since UE 5.5. A Nanite mesh renders every translucent slot with the DEFAULT material (`Invalid material ... used on Nanite static mesh` in the Output Log) and simplifies a door's 15 mm of relief into its wall at distance. These are 2 k-triangle meshes; Nanite buys nothing. |
    | Common Meshes → Generate Lightmap UVs | on | The export ships one UV set; Unreal's baked lighting wants a second. |
 
 4. **Import All.** Each file becomes an `SM_TK_*` Static Mesh with its material
-   instances beside it.
+   graphs beside it.
 5. Open one. The material slots are on the right; *Show → Simple Collision*
    draws the UCX shapes in green. Under *Collision*, leave complexity at *Project
    Default* (simple for movement, complex for traces) or set *Use Simple Collision
@@ -144,8 +145,9 @@ the Interchange framework. (5.0 needs the *glTF Importer* plugin turned on.)
 - **Skyline imposters** (`tags` includes `imposter`) are single unlit quads with
   an alpha texture, meant to stand 150–300 m out and face the camera. Either give
   them a Blueprint that yaws toward the camera each tick, or leave them out.
-- **Re-export**: run the export again over the same folder, then right-click the
-  Content folder → **Reimport**. Unreal remembers each asset's source path.
+- **Re-export**: run the export again over the same folder, then use the checked
+  importer for assets it imported. Correct older imports' stored material settings
+  before using right-click Reimport.
 
 ---
 
@@ -173,3 +175,36 @@ correctly in Unreal but are not recognised by the glTF exporter. The wrapper
 creates compatible export proxies temporarily; no change to the Three.js prop
 export or the working Unreal viewport materials is needed. The import/bake
 pipeline checks for black material regressions before lighting the map.
+
+
+### Checked imports and the black TukTuk repair
+
+Every new export includes `import_into_unreal.py`. Enable Unreal's Python Editor
+Script Plugin and run this in the Output Log's **Python** console:
+
+```python
+import runpy
+runpy.run_path(r"C:/path/to/export/import_into_unreal.py", run_name="__main__")
+```
+
+It explicitly selects `IMPORT_AS_MATERIALS`, disables material reuse and Nanite,
+checks each visible material is a generated Material graph, and checks that
+textured GLB materials have imported textures. Failures raise an error and are
+recorded in `unreal-import-report.json`. This is a structural check, not a visual
+quality guarantee. UCX-only collision material slots are excluded.
+
+Imports live under `/Game/ThaiKit/GLBImports/<asset>`. Run the same script to update
+those imports. It does not rebind actors using older assets. For a subset:
+
+```python
+importer = runpy.run_path(r"C:/path/to/export/import_into_unreal.py")
+importer["import_kit"](r"C:/path/to/export", refs=["@thai-kit/tuk-tuk"])
+```
+
+The September 11 TukTuk failure was in Unreal: four empty generic PBR material
+instances had no vector, scalar or texture overrides. The GLB retained vertex
+colours and two embedded textures. Regenerating full Material graphs restored the
+colours. Both placed actors now use the repaired original StaticMesh; its saved
+Interchange pipeline was also changed from material instances to Materials with
+reuse disabled. The earlier shader audit could not detect these broken imports.
+The export dialog's contradictory material-instance instruction has been removed.

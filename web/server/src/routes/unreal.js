@@ -1,4 +1,5 @@
 import express from 'express';
+import { unrealReadme } from '../../../client/src/unreal/readme.js';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
@@ -129,7 +130,8 @@ export function unrealRouter(state) {
           const tmp = path.join(target, `manifest.json.tmp-${process.pid}`);
           await fs.writeFile(tmp, JSON.stringify(merged, null, 2));
           await fs.rename(tmp, path.join(target, 'manifest.json'));
-          written += 1;
+          await fs.writeFile(path.join(target, 'README.md'), unrealReadme({ ...merged, packs: packs.map((p) => p.id) }));
+          written += 2;
         } else {
           // `ext/` is not the kit's: the scratch/_unreal builders write their
           // meshes and collider manifest there, and a full export used to take

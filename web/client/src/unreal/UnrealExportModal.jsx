@@ -8,6 +8,7 @@ import { evictUnused } from '../three/instances.js';
 import { buildPropGlb, packFolder } from './propGlb.js';
 import { zipStore } from './zip.js';
 import { unrealReadme } from './readme.js';
+import unrealImporter from './import_into_unreal.py?raw';
 
 const TEXTURE_SIZES = [512, 1024, 2048, 4096];
 
@@ -147,6 +148,7 @@ export function UnrealExportModal({ packs, items, onClose, initialRefs = null })
         failures,
       };
       entries.push({ name: 'manifest.json', data: JSON.stringify(manifest, null, 2) });
+      entries.push({ name: 'import_into_unreal.py', data: unrealImporter });
       entries.push({ name: 'README.md', data: unrealReadme({ generatedAt, packs: packIds, items: manifestItems, options: { maxTextureSize, collision } }) });
 
       setProgress({ i: candidates.length, n: candidates.length, name: 'zipping' });
@@ -273,7 +275,7 @@ export function UnrealExportModal({ packs, items, onClose, initialRefs = null })
               {result.saved && (
                 <tr><th>on disk</th><td>
                   {result.saved.merged
-                    ? <><span className="mono">{result.saved.dir}</span>: {result.saved.merged.updated} prop(s) updated in place, {result.saved.merged.total} in the manifest. Right-click the changed <span className="mono">SM_TK_*</span> asset(s) in Unreal and <em>Reimport</em>.</>
+                    ? <><span className="mono">{result.saved.dir}</span>: {result.saved.merged.updated} prop(s) updated in place, {result.saved.merged.total} in the manifest. Follow the checked import instructions in README.md; older imports may remember incompatible material settings.</>
                     : <><span className="mono">{result.saved.dir}</span> ({result.saved.files} files). Drag the <span className="mono">{result.saved.folders?.join(', ')}</span> folder(s) into Unreal's Content Browser.</>}
                 </td></tr>
               )}
@@ -288,10 +290,10 @@ export function UnrealExportModal({ packs, items, onClose, initialRefs = null })
             <summary><strong>Getting these into Unreal Editor</strong></summary>
             <ol className="small">
               <li>Unzip (or open <span className="mono">exports/unreal/</span>). In the Content Browser make a folder such as <span className="mono">Content/ThaiKit</span> and drag the <span className="mono">ThaiKit</span> folder's <span className="mono">.glb</span> files onto it. Leave <span className="mono">_previews</span>, <span className="mono">manifest.json</span> and <span className="mono">README.md</span> out.</li>
-              <li>In the Interchange import dialog: <em>Build Nanite</em> <strong>OFF</strong> (it is on by default since UE 5.5; Nanite drops translucent slots to the default material and melts a door's 15 mm of relief into its wall), <em>Combine Static Meshes</em> ON, <em>Import Collision According To Mesh Name</em> ON, <em>Import Materials</em> ON with material instances, scale untouched (glTF metres become Unreal centimetres). Tick "same options for all", Import All.</li>
+              <li>In the Interchange import dialog: <em>Build Nanite</em> <strong>OFF</strong> (it is on by default since UE 5.5; Nanite drops translucent slots to the default material and melts a door's 15 mm of relief into its wall), <em>Combine Static Meshes</em> ON, <em>Import Collision According To Mesh Name</em> ON, <em>Import Materials</em> ON, <em>Material Import</em> <strong>Materials</strong>, <em>Reuse Existing Materials</em> OFF, scale untouched (glTF metres become Unreal centimetres). Tick "same options for all", Import All.</li>
               <li>Each file becomes one <span className="mono">SM_TK_*</span> Static Mesh with a material slot per material and the compound as simple collision (Show → Simple Collision to check).</li>
               <li>Drag a Static Mesh into the level; <kbd>End</kbd> drops it to the floor. Every pivot is the base centre, so it lands standing. Emissive signs and lamp heads glow but need a Point or Spot Light to cast light; <span className="mono">manifest.json</span> lists the <span className="mono">lighting</span> props, sizes and sockets.</li>
-              <li>To update: export again over the same folder and right-click → <em>Reimport</em> in the Content Browser.</li>
+              <li>Use the included <span className="mono">import_into_unreal.py</span> for checked imports (see README.md). It verifies generated materials and texture presence. Older imports must have their material settings corrected before reimporting.</li>
             </ol>
             <p className="muted small">Ask Claude to run the <span className="mono">thaikit-unreal-level</span> skill with a live Unreal MCP connection and it will import this folder and lay out a Thai night street from it.</p>
           </details>

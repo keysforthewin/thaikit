@@ -173,11 +173,61 @@ Bake in TIERS, low first. Each tier delivers its own file (`<id>_low.glb`,
 (`build/level_<q>.glb`, `build/lightmap_<q>/`), so a test bake never
 overwrites the build the game is playing and nothing has to be restored:
 
+| Tier | Preset (`scripts/level/pipeline/quality.mjs`) | bangkoksoi, Blender time |
+| --- | --- | --- |
+| `low` | Cycles 4096² / 4096 samples, adaptive off | ~1.5 h |
+| `medium` | Cycles 8192² / 4096 samples, adaptive off | ~8 h |
+| `high` | Cycles at the level's own settings (16384² on bangkoksoi) | many hours |
+
+Read `quality.mjs` before quoting a duration; the presets have changed before,
+and `low` was once a one-minute no-lightmap tier.
+
+### Always bake in a DETACHED container
+
+**Never run a bake as a foreground or `run_in_background` Bash command.** Both
+are children of the Claude Code session, and the session kills its background
+jobs when the machine runs low on memory. Blender takes 12-23 GB on a 30 GB
+host. On 2026-09-11 the `low` bake of `bangkoksoi` was killed that way after
+1 h 01 m, with its diffuse pass finished and its moon mask just started, and the
+whole lightmap stage had to be redone. `docker compose run -d` hands the
+container to the Docker daemon, which the session's guard cannot touch.
+
+Chain the tiers, verify and smoke in ONE detached container. Logs go to files
+under the build dir, because `--rm` deletes the container and its
+`docker logs` when it exits. Substitute `<id>` in both places:
+
 ```
-docker compose run --rm web node scripts/level/bake-level.mjs --level <id> --quality low    --live-lamps 20   # no lightmap, ~1 min: geometry, colliders, LOD, sky
-docker compose run --rm web node scripts/level/bake-level.mjs --level <id> --quality medium --live-lamps 20   # Cycles 2048²/16, ~10 min: approximate lighting
-docker compose run --rm web node scripts/level/bake-level.mjs --level <id> --quality high   --live-lamps 20   # Cycles at the level's settings, hours: the shipping bake
+docker compose run -d --rm --name tk-bake-<id> web sh -c '
+  B=/repo/levels/<id>/build/cli; mkdir -p $B; : > $B/status.log
+  for q in low medium; do
+    echo "$(date -u +%H:%MZ) $q bake start" >> $B/status.log
+    node scripts/level/bake-level.mjs --level <id> --quality $q --live-lamps 20 > $B/bake_$q.out 2> $B/bake_$q.err; r=$?
+    echo "$(date -u +%H:%MZ) $q bake exit=$r" >> $B/status.log; [ $r -eq 0 ] || continue
+    node scripts/level/verify-level.mjs --level <id> --quality $q > $B/verify_$q.out 2> $B/verify_$q.err
+    echo "$(date -u +%H:%MZ) $q verify exit=$?" >> $B/status.log
+    node scripts/level/smoke-level.mjs --level <id> --quality $q > $B/smoke_$q.out 2> $B/smoke_$q.err
+    echo "$(date -u +%H:%MZ) $q smoke exit=$?" >> $B/status.log
+  done
+  echo "$(date -u +%H:%MZ) ALL DONE" >> $B/status.log'
 ```
+
+Set the `for q in` list to the tiers the user asked for. Then watch
+`levels/<id>/build/cli/` with a **persistent** Monitor. A tier runs for hours
+and a non-persistent Monitor times out at one hour. The Monitor must emit:
+- every new `status.log` line;
+- any `"phase":"failed"`, `Traceback`, `Killed` or `out of memory` in `bake_<q>.err`;
+- the `bake 1/2 ... done` and `bake 2/2` lines;
+- `CONTAINER GONE` when `docker ps` no longer lists `tk-bake-<id>` and there is
+  no `ALL DONE`.
+
+The container's clock is UTC. For progress, read the last
+`"phase":"lightmap"` line of `bake_<q>.err`: it is written once per 256-object
+group, so its `elapsed` lags the wall clock by up to one group. Say that
+instead of quoting it as the run's age. `docker stop tk-bake-<id>` cancels.
+
+If a bake dies after stage 1 (read, normalise, partition, merge),
+`--resume-from 2` reuses `build/stage1.glb` and starts at the lightmap. A
+killed lightmap stage is NOT resumable; the whole stage reruns.
 
 (`--baker unreal|blender|blender-host` without a tier is the old form and
 delivers the plain `<id>.glb`; `--lightmap-size`/`--samples` override a
@@ -186,9 +236,10 @@ cells, join, LOD tiers, KTX2 textures, meshopt, manifest, verify. The result is
 copied to `$THAIKIT_EXPORT_DIR/` when that folder is mounted (the game's GLB
 folder); the result line says where. One tier at a time -- the raw and the stage
 checkpoints are shared, and a second Blender does not fit in memory beside an
-8192² bake. Check `swapon --show` before `high`.
+8192² bake. Check `swapon --show` and `free -g` before starting, and before `high`.
 
-Then, always, with the same `--quality`:
+Verify and smoke are part of the chain above. To re-check a finished tier on
+its own (minutes, so a normal command is fine), run both with the same `--quality`:
 
 ```
 docker compose run --rm web node scripts/level/verify-level.mjs --level <id> --quality <q>
