@@ -60,6 +60,14 @@ has no prop for (cables, rain, fog, puddle decals, the moon).
   has the Python fallback (`unreal.AssetImportTask` + Interchange pipeline) if the
   toolset offers a script-execute path but no import tool.
 - Leave `_previews/`, `manifest.json` and `README.md` out of Content.
+- New imports may use Interchange's Substrate material parent. That is valid
+  for the Unreal viewport, but the return trip must use
+  `scripts/level/unreal/export_materials.py` through the `thaikit-unreal-bake`
+  skill's `references/export.md`. It supplies export-compatible proxies and
+  validates them. Do not replace the working viewport materials or assume
+  `USE_MESH_DATA` makes every Substrate graph exportable. For custom material
+  graphs, supply an explicit export-compatible proxy and test a selected-actor
+  export before baking the map.
 - **Verify**, do not trust: query the imported `SM_TK_TukTuk`'s bounds. Expect
   about 140 x 290 x 197 uu (the manifest `size` x 100, axes permuted). If it is
   100x smaller or larger the scale option was wrong; fix and reimport before

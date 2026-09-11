@@ -52,7 +52,7 @@ convention was not followed.
 | Spawns | a **Camera actor** labelled `spawn_<name>` (or `spawn_<team>_<name>`: red/blue/green/yellow) facing the way the player starts | the exporter writes cameras; empties and PlayerStarts do not export |
 | The moon | ONE Directional Light, **Movable**; its `light_source_angle` is the shadow softness (6 = thaikit's `softDeg` 6) and `BP_TK_Sky`'s Moon Intensity is its brightness in three's units (0 = `lux x --light-scale`) | it stays a live light in the runtime; a Static/Stationary sun would also be in the lightmap and count twice (`--sun baked` drops it instead). Rotator from a thaikit direction `[x,y,z]`: `pitch = asin(y)`, `yaw = atan2(z, x)` -- thepurge's moon is pitch −39.85, yaw 134.6 (measured swizzle, docs/unreal-level-export.md) |
 | Lamps | Point/Spot lights **Static** if you want them in the lightmap; their intensity in candela | the converter carries them as `bake.lights`; with `--baker blender` Cycles bakes them, with `--baker unreal` they are already in Unreal's atlas |
-| Materials | anything; `bake_material_inputs` bakes them to textures | the runtime wants glTF PBR, not Unreal material graphs |
+| Materials | export through `scripts/level/unreal/export_materials.py` as shown in `references/export.md` | supplies temporary compatible proxies for stock Interchange Substrate instances; custom graphs need explicit proxies. `USE_MESH_DATA` alone does not prevent black exports |
 | Cables, rain, fog, decals, post-process | fine to leave; cables export as meshes (no collider), the rest does not export | the runtime has its own fog and sky settings, none of Unreal's |
 | Hidden actors | `export_hidden_in_game` OFF | editor-only helpers must not ship |
 
@@ -71,8 +71,14 @@ usual route). Then run `references/export.md`'s script, which:
    `bake_material_inputs = USE_MESH_DATA`, PNG textures, `export_hidden_in_game`
    off, no animation, and `export_lightmaps` **if the property exists** (Unreal
    5.6+; it was absent 5.2–5.5);
-2. calls `GLTFExporter.export_to_gltf(world, "<repo>/levels/<id>/unreal/level.glb", options, [])`;
-3. prints the option set it actually used and the file size.
+2. calls `export_materials.export_level(world, "<repo>/levels/<id>/unreal/level.glb", options, [])`, never the engine exporter directly;
+3. validates proxy materials before replacing the destination, writes
+   `level.glb.materials.json`, and prints the option set and file size.
+
+Read `references/export.md` for the wrapper invocation and unsupported-material
+handling. This is required on every export, including later batches and scripts
+adapted from earlier runs. The importer/baker reject black material regressions;
+fix the export rather than bypassing that check or increasing lighting samples.
 
 Then, in the same session, `actor_map.py` (the label → mesh sidecar) and
 `tk_sky_dump.py` (the sky sidecar + textures). All three write straight into
