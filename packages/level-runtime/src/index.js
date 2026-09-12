@@ -1,6 +1,7 @@
 export { loadLevel } from './loadLevel.js';
 export { CellSet, CASTER_LAYER } from './cells.js';
-export { attachLightmap } from './materials.js';
+export { attachLightmap, unshareMaterials } from './materials.js';
+export { findNode } from './names.js';
 export { applyLights } from './lights.js';
 export { buildEnvironment, applyEnvironment, environmentBytes } from './environment.js';
 export { buildColliders, ladderVolumes, shapesBounds } from './colliders.js';

@@ -112,6 +112,15 @@ window.__smoke = { ready: false };
       loadMs,
       lights: level.lights.list.map((l) => l.entry.node), textures: renderer.info.memory.textures, geometries: renderer.info.memory.geometries,
       colliders: level.colliders.staticShapes.length, dynamic: level.colliders.dynamic.length,
+      // What each dynamic placement is actually wearing, so a black prop can be
+      // told apart from an unlit one: a lightmap or the lightmap patch on a
+      // dynamic material means the loader shared it with a static cell.
+      dynamicMaterials: level.manifest.dynamic.map((d) => {
+        const node = level.dynamicNodes.get(d.node);
+        const materials = [];
+        node?.traverse((o) => { if (o.isMesh) for (const m of Array.isArray(o.material) ? o.material : [o.material]) materials.push({ name: m.name, lightMap: Boolean(m.lightMap), patched: Boolean(m.userData?.thaikitLightmap), vertexColors: m.vertexColors, map: Boolean(m.map), color: m.color?.getHexString(), visible: o.visible, layers: o.layers.mask }); });
+        return { node: d.node, found: Boolean(node), materials };
+      }),
     };
   } catch (err) {
     window.__smoke = { ready: true, ok: false, error: err.message, stack: err.stack };

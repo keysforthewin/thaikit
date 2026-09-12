@@ -17,7 +17,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
 
-import { attachLightmap, DIRECT_LINE, HEMI_LINE, IBL_LINE, POINT_GUARD, SPOT_GUARD, BAKED_PUNCTUAL } from '../src/materials.js';
+import { attachLightmap, eachMaterial, unshareMaterials, DIRECT_LINE, HEMI_LINE, IBL_LINE, POINT_GUARD, SPOT_GUARD, BAKED_PUNCTUAL } from '../src/materials.js';
 
 test('three still contains every anchor we splice against', () => {
   const begin = THREE.ShaderChunk.lights_fragment_begin;
@@ -157,4 +157,34 @@ test('iblDiffuse is dialable and changes the program cache key', () => {
   assert.equal(compile(lifted).shader.defines.THAIKIT_IBL_DIFFUSE, '0.200');
   // Two materials generating different source must not share a compiled program.
   assert.notEqual(dark.customProgramCacheKey(), lifted.customProgramCacheKey());
+});
+
+test('unshareMaterials splits a material shared between static and dynamic roots before the static side is patched', () => {
+  const shared = new THREE.MeshStandardMaterial({ name: 'M_TK_TukTuk_paint' });
+  const dynamicOnly = new THREE.MeshStandardMaterial({ name: 'M_TK_TrafficCone_pvc' });
+  const staticOnly = new THREE.MeshStandardMaterial({ name: 'M_TK_Wall_render' });
+  const geo = new THREE.BufferGeometry();
+  const tier = new THREE.Group();
+  const staticShared = new THREE.Mesh(geo, shared);
+  const staticMulti = new THREE.Mesh(geo, [staticOnly, shared]);
+  tier.add(staticShared, staticMulti);
+  const dynamicNode = new THREE.Group();
+  const tuktuk = new THREE.Mesh(geo, shared);
+  const cone = new THREE.Mesh(geo, dynamicOnly);
+  dynamicNode.add(tuktuk, cone);
+
+  const split = unshareMaterials([tier, null], [dynamicNode].values());
+
+  assert.equal(split, 1, 'only the shared material is copied');
+  assert.equal(tuktuk.material, shared, 'the dynamic prop keeps the loader material');
+  assert.notEqual(staticShared.material, shared, 'the static mesh took a copy');
+  assert.equal(staticShared.material, staticMulti.material[1], 'one copy per material, not per mesh');
+  assert.equal(staticMulti.material[0], staticOnly, 'a static-only material is untouched');
+  assert.equal(cone.material, dynamicOnly, 'a dynamic-only material is untouched');
+
+  const lightmap = new THREE.Texture();
+  eachMaterial(tier, (m) => attachLightmap(m, lightmap, { bakedPunctual: true }));
+  assert.equal(staticShared.material.lightMap, lightmap);
+  assert.equal(tuktuk.material.lightMap, null, 'the patch never reaches the dynamic prop');
+  assert.equal(tuktuk.material.userData.thaikitLightmap, undefined);
 });

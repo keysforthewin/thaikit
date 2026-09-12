@@ -5,11 +5,12 @@ import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.j
 
 import { manifestFromScene } from './manifest.js';
 import { CellSet, CASTER_LAYER } from './cells.js';
-import { attachLightmap, eachMaterial } from './materials.js';
+import { attachLightmap, eachMaterial, unshareMaterials } from './materials.js';
 import { applyLights } from './lights.js';
 import { buildSky } from './sky.js';
 import { buildEnvironment, applyEnvironment, environmentIntensity } from './environment.js';
 import { applyBillboard, isBillboard } from './billboard.js';
+import { findNode } from './names.js';
 import { buildColliders } from './colliders.js';
 import { LevelRaycaster } from './bvh.js';
 import { NullPhysics } from './physics/null.js';
@@ -47,7 +48,9 @@ export async function loadLevel(source, opts) {
   const manifest = manifestFromScene(root);
 
   const cells = new CellSet(manifest, root);
-  const dynamicNodes = new Map(manifest.dynamic.map((d) => [d.node, root.getObjectByName(d.node)]).filter(([, n]) => n));
+  // By the manifest's spelling, under the loader's: GLTFLoader strips the `/`
+  // from `dynamic/<placement>`, and a plain getObjectByName found none of them.
+  const dynamicNodes = new Map(manifest.dynamic.map((d) => [d.node, findNode(root, d.node)]).filter(([, n]) => n));
   // Billboards are always dynamic -- a static placement is merged into its
   // cell's one mesh at bake and can never turn again -- so they are all here.
   const billboards = manifest.dynamic
@@ -92,6 +95,9 @@ export async function loadLevel(source, opts) {
     // A bake that carried the lamps means static geometry must not ALSO get
     // them live; an older bake did not, and keeps them.
     const bakedPunctual = manifest.lightmap.bakedLights === true;
+    // A material the loader shares between a cell and a dynamic node must be
+    // split first, or the patch below reaches the dynamic prop and blacks it out.
+    unshareMaterials(cells.cells.flatMap((c) => c.tiers), dynamicNodes.values());
     for (const cell of cells.cells) for (const tier of cell.tiers) if (tier) eachMaterial(tier, (m) => { if (!m.userData.thaikitLightmap) attachLightmap(m, lightmap, { intensity, bakedPunctual }); });
   }
 
@@ -156,7 +162,7 @@ export async function loadLevel(source, opts) {
 
   const followTarget = new THREE.Vector3();
   return {
-    manifest, root, cells, lights, sky, environment, billboards, lightmap, colliders, physics, gltf,
+    manifest, root, cells, lights, sky, environment, billboards, lightmap, colliders, physics, gltf, dynamicNodes,
     spawns: { list: manifest.spawns, pick: (team) => pickSpawn(manifest.spawns, team) },
     raycast: (ray, o) => raycaster.raycast(ray, o),
     /** Step physics, sync dynamic nodes, switch LOD tiers, keep the moon's shadow box around `cameraPosition`. */

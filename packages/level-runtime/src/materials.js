@@ -132,4 +132,38 @@ export function eachMaterial(root, fn) {
   });
 }
 
+/**
+ * Give the static roots their own copy of any material a dynamic root also
+ * uses, BEFORE the static side is patched with the lightmap.
+ *
+ * GLTFLoader hands every primitive that names the same glTF material the same
+ * THREE.Material, and a bake whose dedup merged a dynamic prop's materials
+ * with its static twins' ships exactly that. `attachLightmap` then reaches the
+ * dynamic prop through the shared object: it samples a lightmap it has no UVs
+ * for, its point and spot loops are compiled out and its hemisphere term is
+ * zeroed -- solid black, while a dynamic prop with materials of its own beside
+ * it renders. The static side takes the clone because it is the side about to
+ * be changed; the dynamic prop keeps the loader's material untouched. Returns
+ * the number of materials split.
+ */
+export function unshareMaterials(staticRoots, dynamicRoots) {
+  const dynamic = new Set();
+  for (const root of dynamicRoots) if (root) eachMaterial(root, (m) => dynamic.add(m));
+  if (!dynamic.size) return 0;
+  const copies = new Map();
+  const copyOf = (m) => {
+    if (!dynamic.has(m)) return m;
+    if (!copies.has(m)) copies.set(m, m.clone());
+    return copies.get(m);
+  };
+  for (const root of staticRoots) {
+    if (!root) continue;
+    root.traverse((o) => {
+      if (!o.isMesh || !o.material) return;
+      o.material = Array.isArray(o.material) ? o.material.map(copyOf) : copyOf(o.material);
+    });
+  }
+  return copies.size;
+}
+
 export { THREE, DIRECT_LINE, HEMI_LINE, IBL_LINE, POINT_GUARD, SPOT_GUARD, BAKED_PUNCTUAL };

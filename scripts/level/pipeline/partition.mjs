@@ -136,6 +136,53 @@ export function partitionCells({ bake }) {
         holder.addChild(node);
       }
     }
+    unshareDynamicMaterials({ doc, cells, dynamic });
     return { cells, dynamic, stray };
   };
+}
+
+/**
+ * A lightmapped material and a live-lit material are DIFFERENT materials, even
+ * when every property agrees.
+ *
+ * The material dedup that runs before this stage merges by signature, so a
+ * dynamic tuk-tuk and five static copies of the same prop end up on one
+ * Material. The runtime then attaches the lightmap to everything under the
+ * cells -- which is that shared object -- and the dynamic placement, which has
+ * no lightmap UVs and needs its lamps live, samples atlas texel (0,0) with its
+ * point and spot loops compiled out: solid black, with the cones beside it
+ * (dynamic-only materials) rendering fine. Give every dynamic placement its own
+ * copy of any material a static primitive also references; a dynamic-only
+ * material stays shared, so six cones are still one material. The mesh is
+ * cloned only when it must be: after the mesh dedup a dynamic and a static
+ * placement of one prop may share a Mesh, and a material swap on a shared
+ * primitive would swap the static one too.
+ */
+export function unshareDynamicMaterials({ doc, cells, dynamic }) {
+  const staticMaterials = new Set();
+  for (const { node } of cells.values()) {
+    node.traverse((n) => { for (const prim of n.getMesh()?.listPrimitives() ?? []) { const m = prim.getMaterial(); if (m) staticMaterials.add(m); } });
+  }
+  const copies = new Map();
+  const copyOf = (material) => {
+    if (!copies.has(material)) copies.set(material, material.clone().setName(`${material.getName()}_dynamic`));
+    return copies.get(material);
+  };
+  let swapped = 0;
+  for (const holder of dynamic.values()) {
+    holder.traverse((n) => {
+      const mesh = n.getMesh();
+      if (!mesh || !mesh.listPrimitives().some((p) => staticMaterials.has(p.getMaterial()))) return;
+      const own = doc.createMesh(mesh.getName());
+      for (const prim of mesh.listPrimitives()) {
+        const copy = prim.clone();
+        const m = copy.getMaterial();
+        if (m && staticMaterials.has(m)) { copy.setMaterial(copyOf(m)); swapped += 1; }
+        own.addPrimitive(copy);
+      }
+      n.setMesh(own);
+      if (!mesh.listParents().some((p) => p.propertyType === 'Node')) mesh.dispose();
+    });
+  }
+  return { materials: copies.size, primitives: swapped };
 }

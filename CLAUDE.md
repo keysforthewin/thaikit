@@ -834,6 +834,25 @@ placed geometry. Export writes a second, self-contained GLB.
   `dynamic` entries (defaulted true, so an older level parses). A STATIC placement has no such
   switch: it is merged into its cell's mesh and its shadow IS the lightmap. If a static prop must
   not shadow, make it dynamic.
+- **GLTFLoader SANITISES node names, so look dynamic nodes up through `findNode`, never
+  `getObjectByName` with the manifest's spelling.** three's loader runs every node name through
+  `PropertyBinding.sanitizeNodeName`, which drops `[ ] . : /`, so the bake's `dynamic/<placement>`
+  holder arrives as `dynamicdyn-tuktuk` -- and for the life of the runtime `loadLevel` resolved
+  ZERO dynamic nodes: no shadow flags, no billboard list, no physics sync, and no way to keep the
+  lightmap patch off them. `packages/level-runtime/src/names.js` tries the exact name, then the
+  sanitised one. Cells and lights never hit this because their names carry no reserved character.
+  **And a lightmapped material and a live-lit material are DIFFERENT materials, even when every
+  property agrees.** The bake's material dedup merged the dynamic tuk-tuk's four materials with
+  its five static twins', the runtime attached the lightmap to everything under the cells --
+  which is that shared object -- and the dynamic tuk-tuk, with no lightmap UVs and its point and
+  spot loops compiled out, shipped solid black beside cones (dynamic-only materials) that rendered
+  fine (2026-09-11). Both halves are fixed: `unshareDynamicMaterials` in `partition.mjs` gives a
+  dynamic placement its own `<name>_dynamic` copy of any material a static primitive also uses
+  (cloning the Mesh only when the dedup shared that too), and `unshareMaterials` in the runtime
+  splits whatever an older bake still shares BEFORE `attachLightmap` runs. `smoke-level.mjs`
+  reports `dynamicMaterials` per placement -- `found: false` or `lightMap: true` on a dynamic
+  node is this fault. Read that before the Unreal side: this one wore the same symptom as the
+  Substrate black-export regression and was nothing to do with Unreal.
 - **three has no runtime GI; it consumes two kinds of precomputed lighting.** `material.lightMap`
   is the Cycles bake. `scene.environment` is the other half -- ambient specular, and diffuse for
   anything with no lightmap -- and `packages/level-runtime/src/environment.js` (`buildEnvironment`)
