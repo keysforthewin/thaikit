@@ -181,7 +181,7 @@ export function assetsRouter(state) {
         );
       }
       if (minScore) items = items.filter((a) => (score(a) ?? -1) >= Number(minScore));
-      if (maxScore) items = items.filter((a) => (score(a) ?? 101) <= Number(maxScore));
+      if (maxScore != null && maxScore !== '') items = items.filter((a) => (score(a) ?? 0) <= Number(maxScore));
       if (q) {
         const needle = String(q).toLowerCase();
         items = items.filter((a) =>

@@ -29,6 +29,9 @@ def validate_materials(mesh, expected, unreal):
         if material is None:
             errors.append(name + ': missing material')
             continue
+        if material.get_path_name().startswith('/Engine/EngineMaterials/'):
+            errors.append(name + ': default engine material assigned instead of the GLB material')
+            continue
         # A generated Material graph is required. Empty generic PBR instances
         # lost vertex colours and every texture on the TukTuk in Unreal.
         if not isinstance(material, unreal.Material):
@@ -36,8 +39,13 @@ def validate_materials(mesh, expected, unreal):
             continue
         pbr = source.get('pbrMetallicRoughness', {})
         needs_texture = any(k.endswith('Texture') for k in source) or any(k.endswith('Texture') for k in pbr)
-        if needs_texture and not unreal.MaterialEditingLibrary.get_used_textures(material):
-            errors.append(name + ': GLB has textures but imported material has none')
+        if needs_texture:
+            # Interchange graphs reference stock white/normal fallback textures
+            # even when every image from the GLB failed to bind.
+            textures = unreal.MaterialEditingLibrary.get_used_textures(material)
+            imported = [t for t in textures if not t.get_path_name().startswith(('/Engine/', '/InterchangeAssets/'))]
+            if not imported:
+                errors.append(name + ': GLB has textures but imported material has none (only missing/default textures)')
     if errors:
         raise RuntimeError('\n'.join(errors))
 

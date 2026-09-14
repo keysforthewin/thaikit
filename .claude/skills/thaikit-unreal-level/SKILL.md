@@ -49,16 +49,20 @@ has no prop for (cables, rain, fog, puddle decals, the moon).
 5. Note the project's Content path for the kit (`/Game/ThaiKit` by default) and
    whether it is already imported (`AssetTools` / asset registry query for
    `SM_TK_`). Skip the import if the assets are there and the manifest's
-   `generatedAt` is older than the import.
+   `generatedAt` is older than the import AND its visible material slots match
+   the current GLB and pass the checked importer's material validation.
 
 ## 1. Import the kit
 
 - Describe the asset-import toolset (`AssetTools`, or whatever `list_toolsets`
   shows that imports files). Import every `ThaiKit/*.glb` into `/Game/ThaiKit`
-  with: combine static meshes ON, collision-from-mesh-name ON, materials as
-  instances, scale 1.0, Nanite OFF, lightmap UVs ON. `references/unreal-recipes.md`
-  has the Python fallback (`unreal.AssetImportTask` + Interchange pipeline) if the
-  toolset offers a script-execute path but no import tool.
+  using the checked `import_into_unreal.py` included with the export: generated
+  Material graphs, material reuse OFF, collision-from-mesh-name ON, scale 1.0,
+  Nanite OFF. `references/unreal-recipes.md` has the invocation. The importer
+  uses isolated `/Game/ThaiKit/GLBImports/<asset>` folders; use its reported mesh
+  paths when placing actors. For existing placements, inspect the referenced
+  mesh and component overrides before explicitly rebinding to a repaired import.
+  Reject missing/default checker materials even if geometry imported successfully.
 - Leave `_previews/`, `manifest.json` and `README.md` out of Content.
 - New imports may use Interchange's Substrate material parent. That is valid
   for the Unreal viewport, but the return trip must use

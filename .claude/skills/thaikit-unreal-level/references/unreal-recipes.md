@@ -14,37 +14,23 @@ in **lux**, sky light in cd/m². Colour as linear RGB 0-1 or a temperature with
 
 ## Import (AssetTools / asset-import toolset)
 
-Target: every `exports/unreal/ThaiKit/*.glb` → `/Game/ThaiKit/SM_TK_*`, one Static
-Mesh each, UCX collision attached, material instances created.
-
-Python fallback:
+Target: one StaticMesh per GLB with UCX collision and generated Material graphs.
+Use the checked importer rather than project-default import tasks, which can
+reuse stale materials or leave renamed slots assigned to the default checker.
 
 ```python
-import unreal, glob, os
-src = r"<repo>/exports/unreal/ThaiKit"          # respell for the host that runs the editor
-dest = "/Game/ThaiKit"
-tasks = []
-for f in sorted(glob.glob(os.path.join(src, "*.glb"))):
-    t = unreal.AssetImportTask()
-    t.filename = f
-    t.destination_path = dest
-    t.automated = True
-    t.replace_existing = True
-    t.save = True
-    tasks.append(t)
-unreal.AssetToolsHelpers.get_asset_tools().import_asset_tasks(tasks)
-# Interchange picks up the project's default glTF pipeline. If meshes did not
-# combine or collision is missing, set the defaults first:
-# Project Settings -> Interchange -> Content Import Settings -> Assets pipeline
-#   Common Meshes: bCombineStaticMeshes=True, bImportCollisionAccordingToMeshName=True,
-#   bBuildNanite=False, bGenerateLightmapUVs=True; Materials: bImportMaterials=True,
-#   MaterialImport=CreateMaterialInstances.
+import runpy
+src = r"<repo>/exports/unreal"  # path on the machine running Unreal
+importer = runpy.run_path(src + "/import_into_unreal.py")
+report = importer["import_kit"](src, refs=["@thai-kit/honda-wave"])
+print(report)  # use each returned mesh path for placement
 ```
 
-Verify: `unreal.EditorAssetLibrary.find_asset_data("/Game/ThaiKit/SM_TK_TukTuk")`
-exists, and its `get_bounds().box_extent * 2` is about (140, 290, 197) in some
-axis order. Tens of thousands means the scale was applied twice; 1.4 means not
-at all.
+Omit `refs` for the full kit. Imports live under
+`/Game/ThaiKit/GLBImports/<asset>`. This does not rebind existing actors: inspect
+which mesh and material overrides they use, then apply the repaired asset when
+repairing an existing level. Check dimensions and visually inspect colors and
+surface response before baking. See `docs/unreal-export.md`.
 
 ## Spawn a prop (actor / level toolset)
 

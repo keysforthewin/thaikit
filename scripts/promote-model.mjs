@@ -29,7 +29,7 @@
  * Usage:
  *   node scripts/promote-model.mjs --id <id> [--from <scratchdir>] [--thumb-size 512]
  *                                  [--allow-over-budget] [--allow-contract-drift] [--allow-no-colliders]
- *                                  [--no-pack-refresh]
+ *                                  [--no-pack-refresh] [--preview]
  */
 import fs from 'node:fs/promises';
 import { readFileSync } from 'node:fs';
@@ -64,7 +64,7 @@ const nodeRequire = createRequire(import.meta.url);
  * The three the harness hands the factory is the page's own, so this shim gives
  * it the repo's -- the same contract, and the same refusal of anything else.
  */
-function constructsUnderNode(bundlePath) {
+function constructsUnderNode(bundlePath, { preview = false } = {}) {
   try {
     const THREE = nodeRequire('three');
     const mod = { exports: {} };
@@ -82,7 +82,12 @@ function constructsUnderNode(bundlePath) {
     // map load behind `if (options.baseUrl)` safe and an unguarded one fatal.
     const root = factory(null, {});
     if (!root?.isObject3D) return { ok: false, error: 'the factory did not return an Object3D' };
-    assertMaterialCompatibility(root, root.name || bundlePath, THREE.Material);
+    try {
+      assertMaterialCompatibility(root, root.name || bundlePath, THREE.Material);
+    } catch (error) {
+      if (!preview) throw error;
+      log(`preview: browser material effects retained; GLB export remains blocked: ${error.message}`);
+    }
     return { ok: true };
   } catch (err) {
     return { ok: false, error: err.message };
@@ -206,14 +211,14 @@ async function main() {
   );
   if (!collider.ok) {
     const detail = collider.problems.join('\n  ');
-    if (!args['allow-no-colliders']) {
+    if (!args['allow-no-colliders'] && !args.preview) {
       return fail(
         `${asset.name}'s physics compound is not fit to ship:\n  ${detail}\n` +
           `Run node scripts/derive-colliders.mjs --id ${id}, correct it by hand in the ` +
           'viewer, or pass --allow-no-colliders.',
       );
     }
-    log(`WARN   : shipping without a usable compound on --allow-no-colliders\n  ${detail}`);
+    log(`WARN   : ${args.preview ? 'preview checkpoint' : '--allow-no-colliders'} has no usable compound\n  ${detail}`);
   }
 
   const from = args.from ? path.resolve(args.from) : workDir(id);
@@ -228,7 +233,7 @@ async function main() {
     );
   }
 
-  const node = constructsUnderNode(bundleFrom);
+  const node = constructsUnderNode(bundleFrom, { preview: Boolean(args.preview) });
   if (!node.ok) {
     return fail(
       `${asset.name}'s module does not construct under plain Node: ${node.error}\n` +
@@ -349,7 +354,9 @@ async function main() {
     // img2threejs's state file stays in scratch/: it is a resume index, not a
     // shipped artefact, and pointing at it keeps a rebuild resumable.
     a.model.state = toRepoRelative(path.join(from, '.img2threejs/state.json'));
-    if (review) a.model.review = { ...a.model.review, ...review };
+    if (review || args.preview) {
+      a.model.review = { ...a.model.review, ...review, preview: Boolean(args.preview) || Boolean(review?.preview) };
+    }
     a.model.status = 'done';
     a.status.model = 'done';
     return a;
@@ -396,8 +403,17 @@ async function main() {
     log(`pack   : ${pack.bundle ?? '(bundle)'} (${pack.bytes != null ? `${(pack.bytes / 1024).toFixed(1)} KB` : 'size unknown'}, version ${pack.version ?? '?'})`);
   }
 
+  if (args.preview) {
+    await fs.writeFile(path.join(from, 'preview-checkpoint.json'), JSON.stringify({
+      at: new Date().toISOString(), corrections: review?.corrections?.total ?? null,
+      version: pack?.version ?? null, qualityPassed: review?.passed ?? false,
+      workInProgress: true,
+    }, null, 2) + '\n');
+  }
+
   return ok({
     id,
+    preview: Boolean(args.preview),
     source: moved.source ? toRepoRelative(moved.source) : null,
     entry: entryFile ? toRepoRelative(entryFile) : null,
     spec: moved.spec ? toRepoRelative(moved.spec) : null,

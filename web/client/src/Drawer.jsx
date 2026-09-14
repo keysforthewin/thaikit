@@ -746,6 +746,7 @@ export function Drawer({ itemRef, rev, onClose, onChanged, onExportUnreal }) {
               )}
               <span className="muted mono">{asset?.subject ?? item.pack}</span>
             </div>
+            {review?.preview && <p className="muted">Work in progress — this preview updates during modeling. Quality review is still in progress.</p>}
             <Viewer
               url={item.supported ? item.bundleUrl : null}
               exportName={item.exportName}
@@ -778,7 +779,7 @@ export function Drawer({ itemRef, rev, onClose, onChanged, onExportUnreal }) {
         {tab === 'quality' && item.editable && (
           (() => {
             const r = review ?? {};
-            if (r.score == null && !r.passesComplete?.length) {
+            if (r.score == null && !r.passesComplete?.length && !r.critique) {
               return (
                 <p className="muted">
                   No review recorded. Every number on this tab is img2threejs's own — read off
@@ -855,7 +856,7 @@ export function Drawer({ itemRef, rev, onClose, onChanged, onExportUnreal }) {
 
                 <Field label="Corrections">
                   <div className="muted mono">
-                    {r.corrections?.total ?? 0} / {r.corrections?.maxTotal ?? 10} used
+                    {r.corrections?.total ?? 0} / {r.corrections?.stopLimitsDisabled ? "unlimited" : (r.corrections?.maxTotal ?? 10)} used
                     {r.decision ? ` · last decision: ${r.decision}` : ''}
                   </div>
                 </Field>

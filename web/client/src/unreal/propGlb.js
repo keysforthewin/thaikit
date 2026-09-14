@@ -2,7 +2,6 @@ import * as THREE from 'three';
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
-import { getPrototype } from '../three/instances.js';
 import { namedMeshPlugin } from './namedMeshPlugin.js';
 import { assertMaterialCompatibility } from './materialCompatibility.js';
 
@@ -106,7 +105,7 @@ function splitByGroups(geometry) {
  * factory attached (uv1 for a lightmap probe, tangents) is dropped -- Unreal
  * builds its own lightmap UVs and tangents at import.
  */
-function normalise(geometry, matrixWorld, { useVertexColor, tint, standOff = 0 }) {
+function normalise(geometry, matrixWorld, { useVertexColor, tint, standOff = 0, textured = false }) {
   let geo = geometry.clone();
   for (const name of Object.keys(geo.attributes)) {
     if (!['position', 'normal', 'uv', 'color'].includes(name)) geo.deleteAttribute(name);
@@ -147,7 +146,10 @@ function normalise(geometry, matrixWorld, { useVertexColor, tint, standOff = 0 }
     geo.setIndex(new THREE.BufferAttribute(idx, 1));
   }
   geo.clearGroups();
-  repairDegenerateUvs(geo);
+  // Constant/one-dimensional UVs can intentionally address a lookup texture.
+  // Reprojecting them changes the material (Honda's roughness/metalness map).
+  // Only invent charts when no texture consumes the authored coordinates.
+  if (!textured || !geometry.attributes.uv) repairDegenerateUvs(geo);
   return geo;
 }
 
@@ -371,7 +373,8 @@ export function flattenPrototype(root, propName, { category = null } = {}) {
       const mat = mats[Math.min(materialIndex, mats.length - 1)];
       if (!mat) continue;
       const standOff = mat.polygonOffset && mat.polygonOffsetFactor < 0 ? 0.003 : 0;
-      const piece = normalise(geometry, o.matrixWorld, { useVertexColor: Boolean(mat.vertexColors), tint: o.userData.tint ?? null, standOff });
+      const textured = Object.values(mat).some((value) => value?.isTexture);
+      const piece = normalise(geometry, o.matrixWorld, { useVertexColor: Boolean(mat.vertexColors), tint: o.userData.tint ?? null, standOff, textured });
       if (!byMaterial.has(mat)) byMaterial.set(mat, []);
       byMaterial.get(mat).push(piece);
     }
@@ -451,10 +454,12 @@ function triangleCount(mesh) {
  * @returns {Promise<{glb: ArrayBuffer, asset: string, triangles: number, materials: number, collision: number, bbox: number[][]}>}
  */
 export async function buildPropGlb(item, { maxTextureSize = 2048, collision = true } = {}) {
+  const { getPrototype } = await import('../three/instances.js');
   const proto = await getPrototype(item);
   const name = assetName(item.ref);
   const mesh = flattenPrototype(proto.root, name, { category: item.category ?? null });
   if (!mesh) throw new Error('no renderable geometry');
+  prepareExportTextures(mesh.material);
 
   const scene = new THREE.Scene();
   scene.name = name;
@@ -492,4 +497,36 @@ export async function buildPropGlb(item, { maxTextureSize = 2048, collision = tr
   for (const m of mesh.material) m.dispose?.();
   for (const c of ucx) c.geometry.dispose();
   return result;
+}
+
+/** glTF's normal-map and ORM conversion paths call drawImage, which cannot
+ * consume DataTexture.image ({ data, width, height }). Give the exporter a
+ * canvas with the same bytes without changing the cached prototype's textures.
+ */
+export function prepareExportTextures(materials) {
+  const converted = new Map();
+  for (const material of materials) {
+    for (const [slot, texture] of Object.entries(material)) {
+      if (!texture?.isDataTexture) continue;
+      if (!converted.has(texture)) {
+        const { data, width, height } = texture.image;
+        if (texture.type !== THREE.UnsignedByteType || texture.format !== THREE.RGBAFormat) {
+          throw new Error(`Cannot export ${texture.name || slot}: expected an RGBA unsigned-byte DataTexture`);
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width; canvas.height = height;
+        const context = canvas.getContext('2d');
+        const pixels = context.createImageData(width, height);
+        pixels.data.set(data);
+        context.putImageData(pixels, 0, 0);
+        const copy = new THREE.Texture().copy(texture);
+        // Texture.copy shares Source; replacing image on that source would also
+        // mutate the live viewer. A separate Source keeps the conversion local.
+        copy.source = new THREE.Source(canvas);
+        copy.needsUpdate = true;
+        converted.set(texture, copy);
+      }
+      material[slot] = converted.get(texture);
+    }
+  }
 }

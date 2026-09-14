@@ -42,6 +42,18 @@ A prop is a **JavaScript module**, not a GLB:
 
 ## Step 0 — gates
 
+**A reset means reconstruction from the plate.** When rebuilding after
+`thaikit-delete-model`, use only the current reference image and the asset's
+authoring fields as prop-specific inputs. Initialize a new img2threejs state,
+assessment and sculpt spec. Submit a new Meshy request and record its new request
+ID; do not use `--from-glb`, an old request/result URL, old seed, or old generated
+PBR maps to resurrect the discarded reference mesh. Do not recover model code,
+specs, measurements or evidence from git history, scratch archives, exports,
+other working directories, or earlier conversation. Shared tool code and domain
+reference documentation remain usable. Keep all new per-prop caches and outputs
+inside `scratch/<id>/` (qualified assets use `scratch/<namespace>/<name>/`).
+If a reset failed, finish it before starting a new run.
+
 **The plate must exist.**
 
 ```bash
@@ -156,12 +168,13 @@ never invent it.
 > - **Working directory:** `<ABSOLUTE repo path>/scratch/<id>/`. Write the spec,
 >   assessment, renders and factory there. Run every `forge/` script from the
 >   img2threejs skill root with absolute `--state` / `--out` paths.
-> - **Iteration budget — strict quality, up to 6 corrections per pass and 10 total:**
->   `state.py init --profile <generic|character> --max-per-pass 6 --max-total 10`.
+> - **Iteration budget — strict quality, up to 20 corrections per pass and 20 total:**
+>   `state.py init --profile <generic|character> --max-per-pass 20 --max-total 20`.
 >   These ceilings apply to every pass, including blockout and form refinement;
 >   they do not lower visual acceptance scores or change the asset's scene budget.
 >   Existing runs retain their saved limits unless the user approves an extension.
->   When extending a run, preserve its correction counts and review history.
+>   When extending a run, preserve its correction counts and review history unless
+>   the user explicitly requests a reset; archive the prior state and reviews before resetting.
 >   Run `validate_sculpt_spec.py --strict-quality` and do not generate a factory
 >   until it passes. Do not stop at "improved" — stop at the gate or the ceiling.
 > - **Work every pass:** `blockout → structural-pass → form-refinement →
@@ -255,9 +268,52 @@ never invent it.
 >   the host page injects its own instance, so any other import fails at runtime.
 
 If `forge/next.py` exits 3 or reports `status=stopped`, that is a hard stop.
-Report the reason and stop. Never reconstruct progress from the conversation —
+An explicit user instruction to continue beyond correction stops overrides this rule.
+For those runs, preserve history and record the authorization in the saved state;
+`loops.stopLimitsDisabled: true` disables the count stops in the local workflow.
+Keep quality evidence and acceptance honest. Otherwise, report the reason and stop.
+Never reconstruct progress from the conversation —
 `scratch/<id>/.img2threejs/state.json` is the authority, and it survives a
 restart precisely so you do not have to.
+
+The installed entry also requires `export interface ProceduralModelOptions` and
+`export function createModel(options: ProceduralModelOptions = {})` delegating to
+`createObjectModel(null, options)`. Include both exports in every factory so the
+pack wrapper can build the promoted preview.
+
+## Promote throughout the work
+
+**Always make the current model available in the editor.** Promote after the first
+usable browser render, then after every **three corrections** (and after any
+substantial visual improvement). Do not wait for the final quality target, all
+passes to complete, or the correction loop to stop. The user inspects these
+promoted previews and gives corrections while modeling continues.
+
+Use `node scripts/promote-model.mjs --id <id> --preview` for work-in-progress
+checkpoints. This retains browser-only material effects for live review; it does
+not make those effects GLB-compatible. Use ordinary promotion for the final build.
+
+Run build → render → promote at each checkpoint so source, measured costs,
+thumbnail, review and installed pack all describe the same draft. Carry the
+actual incomplete/failed review across; promotion means the model is available,
+not that it met the quality target. Keep the img2threejs state active and continue
+working after each preview promotion. Never invent a passing score to promote.
+When the user asks to see scores on failing drafts, inspect the current reference/render
+pair and append an honest numeric visual estimate through img2threejs before promotion.
+Include layer scores and concrete defects, and identify it as a whole-asset estimate
+so it is not confused with a blockout-only score. A failed deterministic gate still
+blocks acceptance, but must not erase that requested visual estimate. Do not use an
+`UNSCORED` sentinel for a draft that has actually received this visual review.
+Keep the action `refine-code` or `refine-spec` while corrections remain; a visible
+number is not a passing verdict. Never overwrite earlier reviews to add the score.
+The preview flag permits promotion before physics is authored; disclose that
+the preview lacks a usable compound. Resolve over-budget drafts or use an
+explicitly user-authorized preview override; never hide measured costs.
+
+At the end of a work session, always promote the latest usable checkpoint even
+if fewer than three corrections have elapsed. If a new candidate is broken,
+promote the most recent usable draft from the current run, preserve the failed
+candidate as evidence, and continue repairing it. Do not leave the editor empty.
 
 ## Step 3 — bundle, render, promote
 
@@ -300,6 +356,28 @@ node scripts/promote-model.mjs --id <id>     # ends by refreshing the @thai-kit 
   `packs/` -- the only place a bundle exists -- carries the new build. Nothing
   else needs running; `build-vibe3d-registry.mjs` is the PUBLISH step only.
 
+## Unreal export verification
+
+When building or repairing a model for Unreal, promotion is not the final check.
+Use standard PBR maps and vertex colors; custom material shader callbacks cannot
+survive glTF export. `textureless` means no image is needed for that surface, not
+that its authored colors or roughness may be discarded.
+
+Export the promoted **installed prototype** through the browser's Unreal export
+path. Verify the resulting GLB's visible primitives retain their material slots,
+`COLOR_0`, texture references, embedded images and sampled UV values. An image
+count alone cannot detect corrupted mapping: constant UVs may deliberately
+address a roughness/metalness lookup texture, as on the Honda Wave.
+
+For live Unreal verification, use the checked importer in
+[docs/unreal-export.md](../../../docs/unreal-export.md). Check the mesh actually
+used by the level, including component material overrides. An existing asset or
+successful geometry reimport does not prove its materials survived: renamed
+slots can point to `WorldGridMaterial`. Compare slot names with the current GLB,
+verify textures and vertex colors in the imported graphs, and visually inspect
+the bike. Report GLB, Unreal viewport and baked-level verification separately;
+a previously baked level must be exported and baked again after a repair.
+
 ## Step 4 — report
 
 Say all of it:
@@ -307,7 +385,7 @@ Say all of it:
 - **Cost.** Meshy is metered by compute-second. Stop and ask before exceeding
   **$3 on one asset** (`budgets.json` `limits.maxCostPerAssetUsd`).
 - Fidelity score, which passes reached `continue`, and the correction count
-  against the 10 ceiling.
+  against the 20 ceiling.
 - **Fidelity, and which layer is carrying it.** The overall number hides the
   answer: 0.90 made of a 0.95 silhouette and a 0.35 material surface is a prop
   whose shape is right and whose surface is not finished. Report the layer scores

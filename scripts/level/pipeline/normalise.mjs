@@ -7,7 +7,7 @@
  * same attribute set at the same types, or `join()` refuses them.
  */
 import { Accessor, PropertyType } from '@gltf-transform/core';
-import { dedup, flatten, prune } from '@gltf-transform/functions';
+import { dedup, flatten, prune, listTextureInfoByMaterial } from '@gltf-transform/functions';
 
 const KEEP = new Set(['POSITION', 'NORMAL', 'TEXCOORD_0', 'COLOR_0']);
 
@@ -129,6 +129,38 @@ export function foldBaseColorIntoVertexColor() {
 export function normaliseAttributes({ keep = [] } = {}) {
   const kept = new Set([...KEEP, ...keep]);
   return (doc) => {
+    // Unreal's mesh-baked material textures may use UV1. The level lightmap
+    // owns that channel downstream, so move the material's coordinates to UV0
+    // before stripping attributes. Capture all routes before changing shared
+    // materials: each primitive has its own accessor for the same UV channel.
+    const routes = new Map();
+    for (const mesh of doc.getRoot().listMeshes()) for (const prim of mesh.listPrimitives()) {
+      if (prim.getMode() !== 4) continue;
+      const material = prim.getMaterial();
+      if (!material) continue;
+      if (!routes.has(material)) {
+        const infos = listTextureInfoByMaterial(material);
+        const channels = new Set(infos.map(info => info.getExtension('KHR_texture_transform')?.getTexCoord() ?? info.getTexCoord()));
+        if (channels.size > 1) throw new Error(`Material ${material.getName()} uses multiple texture UV channels; consolidate them before the level bake`);
+        routes.set(material, { infos, channel: channels.size ? [...channels][0] : null });
+      }
+      const { channel } = routes.get(material);
+      if (channel !== null && !prim.getAttribute(`TEXCOORD_${channel}`)) {
+        throw new Error(`Material ${material.getName()} needs missing TEXCOORD_${channel} on ${mesh.getName()}`);
+      }
+    }
+    for (const mesh of doc.getRoot().listMeshes()) for (const prim of mesh.listPrimitives()) {
+      if (prim.getMode() !== 4) continue;
+      const channel = routes.get(prim.getMaterial())?.channel;
+      if (channel != null && channel !== 0) prim.setAttribute('TEXCOORD_0', prim.getAttribute(`TEXCOORD_${channel}`));
+    }
+    for (const { infos, channel } of routes.values()) if (channel != null && channel !== 0) {
+      for (const info of infos) {
+        info.setTexCoord(0);
+        const transform = info.getExtension('KHR_texture_transform');
+        if (transform?.getTexCoord() != null) transform.setTexCoord(0);
+      }
+    }
     for (const mesh of doc.getRoot().listMeshes()) {
       for (const prim of mesh.listPrimitives()) {
         if (prim.getMode() !== 4) continue;

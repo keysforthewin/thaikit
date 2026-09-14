@@ -2,6 +2,8 @@
 
 Run inside Unreal Python. Call export_level(world, out, options, actors=[]).
 No assets are saved. Original export options/user data are restored in finally.
+Linear default/mask textures temporarily use HDR compression during export to
+bypass the engine's gamma-applying LDR preview; compression is restored afterward.
 Only the stock Interchange metallic/roughness Substrate parent is adapted;
 custom Substrate graphs require an artist-authored export proxy.
 """
@@ -10,6 +12,7 @@ import math
 import os
 import struct
 import uuid
+from contextlib import contextmanager
 
 SUBSTRATE_PARENT = '/InterchangeAssets/gltf/Substrate/M_GLTF.M_GLTF'
 LEGACY_PARENT = '/InterchangeAssets/gltf/M_Default.M_Default'
@@ -181,6 +184,38 @@ def _proxy(material, chain, unreal):
     return proxy, row
 
 
+@contextmanager
+def linear_texture_export(materials, unreal):
+    """Bypass UE's gamma-applying LDR texture preview for linear data maps.
+
+    The exporter uses a no-gamma preview for HDR textures. Temporarily rebuild
+    linear default/mask textures through that path, then restore compression.
+    sRGB color maps and normal maps retain their own export paths. No save.
+    """
+    textures = {}
+    for material in materials:
+        chain, top = _chain(material, unreal)
+        used = list(unreal.MaterialEditingLibrary.get_used_textures(top)) if top else []
+        for instance in chain:
+            used.extend(p.parameter_value for p in instance.get_editor_property('texture_parameter_values'))
+        for texture in used:
+            if isinstance(texture, unreal.Texture2D):
+                textures[texture.get_path_name()] = texture
+    saved = []
+    try:
+        for texture in textures.values():
+            compression = texture.get_editor_property('compression_settings')
+            if texture.get_editor_property('srgb') or compression not in (
+                    unreal.TextureCompressionSettings.TC_DEFAULT, unreal.TextureCompressionSettings.TC_MASKS):
+                continue
+            saved.append((texture, compression))
+            texture.set_editor_property('compression_settings', unreal.TextureCompressionSettings.TC_HDR)
+        yield [texture.get_path_name() for texture, _ in saved]
+    finally:
+        for texture, compression in reversed(saved):
+            texture.set_editor_property('compression_settings', compression)
+
+
 def export_level(world, out, options, actors=None):
     """Drop-in replacement for GLTFExporter.export_to_gltf(world, out, options, actors).
 
@@ -225,7 +260,13 @@ def export_level(world, out, options, actors=None):
             material.set_editor_property('asset_user_data', [d for d in old_data if not isinstance(d, unreal.GLTFMaterialExportOptions)] + [data])
             keep_alive.extend([proxy, data])
             expected.append(row)
-        result = unreal.GLTFExporter.export_to_gltf(world, temp, options, selected)
+        export_materials = list(materials.values())
+        for material in materials.values():
+            data = material.get_asset_user_data_of_class(unreal.GLTFMaterialExportOptions)
+            if data and data.get_editor_property('proxy'):
+                export_materials.append(data.get_editor_property('proxy'))
+        with linear_texture_export(export_materials, unreal) as linear_textures:
+            result = unreal.GLTFExporter.export_to_gltf(world, temp, options, selected)
         success = result[0] if isinstance(result, tuple) else result
         messages = result[1] if isinstance(result, tuple) and len(result) > 1 else result
         errors = getattr(messages, 'errors', [])
@@ -233,7 +274,8 @@ def export_level(world, out, options, actors=None):
             raise RuntimeError('Unreal glTF exporter failed: ' + str(result))
         validate_export(read_glb_json(temp), expected)
         os.replace(temp, out)
-        report = {'schema': 'thaikit-unreal-material-export/1', 'file': out, 'proxies': expected}
+        report = {'schema': 'thaikit-unreal-material-export/1', 'file': out, 'proxies': expected,
+                  'linearTextures': linear_textures}
         with open(out + '.materials.json', 'w', encoding='utf-8') as stream:
             json.dump(report, stream, indent=2)
         unreal.log('[thaikit] validated export: %d temporary material proxies' % len(expected))

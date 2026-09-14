@@ -6,7 +6,7 @@
  * works at either place. Paths the SERVER hands out (thumbnails, bundles,
  * images) already carry the prefix; `url()` leaves those alone.
  */
-export const BASE = import.meta.env.BASE_URL.replace(/\/+$/, '');
+export const BASE = (import.meta.env?.BASE_URL ?? '/').replace(/\/+$/, '');
 
 export function url(appPath) {
   if (!appPath) return appPath;

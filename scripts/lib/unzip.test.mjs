@@ -8,7 +8,7 @@ import path from 'node:path';
 import { unzipSync } from './unzip.mjs';
 import { faceFromFilename } from '@thai-kit/level-schema';
 
-/** A real archive from the `zip` CLI -- the point is to read what tools write. */
+/** A real archive from Python’s zipfile, supplied by the container toolchain. */
 function makeZip(files, args = []) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'tk-unzip-'));
   for (const [name, body] of Object.entries(files)) {
@@ -16,7 +16,18 @@ function makeZip(files, args = []) {
     fs.writeFileSync(path.join(dir, name), body);
   }
   const zip = path.join(dir, 'out.zip');
-  execFileSync('zip', ['-q', '-r', ...args, zip, ...Object.keys(files)], { cwd: dir });
+  execFileSync('python3', ['-c', `
+import pathlib, sys, zipfile
+mode = zipfile.ZIP_STORED if sys.argv[2] == 'stored' else zipfile.ZIP_DEFLATED
+with zipfile.ZipFile(sys.argv[1], 'w', compression=mode) as archive:
+    directories = set()
+    for name in sys.argv[3:]:
+        for parent in pathlib.PurePosixPath(name).parents:
+            if str(parent) != '.' and str(parent) not in directories:
+                archive.writestr(str(parent) + '/', '')
+                directories.add(str(parent))
+        archive.write(name, name)
+`, zip, args.includes('-0') ? 'stored' : 'deflated', ...Object.keys(files)], { cwd: dir });
   const buf = fs.readFileSync(zip);
   fs.rmSync(dir, { recursive: true, force: true });
   return buf;

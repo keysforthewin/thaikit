@@ -69,7 +69,8 @@ export async function readSkillReview({ specPath, statePath }) {
     ),
   ];
 
-  const fidelity = isNumber(last?.estimatedFidelity)
+  const unscored = /^UNSCORED\b/.test(last?.summary ?? "");
+  const fidelity = unscored ? null : isNumber(last?.estimatedFidelity)
     ? last.estimatedFidelity
     : isNumber(last?.aiVisionScore)
       ? last.aiVisionScore
@@ -87,14 +88,17 @@ export async function readSkillReview({ specPath, statePath }) {
 
   return {
     fidelity,
+    preview: Boolean(state && state.status !== "complete"),
     score: fidelity == null ? null : Math.round(fidelity * 1000) / 10,
     threshold: Math.round(bar * 100),
-    passed: fidelity != null && fidelity >= bar,
+    passed: fidelity != null && fidelity >= bar
+      && (last?.action === 'continue' || (last?.action === 'stop' && state?.status === 'complete')),
     passesComplete,
     layerScores: last?.layerScores && typeof last.layerScores === 'object' ? last.layerScores : {},
     featureReviews: Array.isArray(last?.featureReviews) ? last.featureReviews : [],
     corrections: {
       perPass,
+      stopLimitsDisabled: Boolean(loops.stopLimitsDisabled),
       total: isNumber(loops.total) ? loops.total : 0,
       maxTotal: isNumber(loops.maxTotal) && loops.maxTotal > 0 ? loops.maxTotal : 10,
     },

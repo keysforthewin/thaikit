@@ -45,8 +45,9 @@ import { fileURLToPath } from 'node:url';
 
 import { NodeIO, PropertyType, Logger } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
-import { dedup, flatten, join, weld, meshopt, prune } from '@gltf-transform/functions';
+import { dedup, flatten, join, weld, prune } from '@gltf-transform/functions';
 import { MeshoptDecoder, MeshoptEncoder } from 'meshoptimizer';
+import { compressLevelGeometry } from './pipeline/compress-geometry.mjs';
 
 import { REPO_ROOT, toRepoRelative } from '@thaikit/registry-core';
 import { assertUnrealMaterials, readGlbJson } from './unreal/material-audit.mjs';
@@ -264,8 +265,8 @@ async function main() {
   const extra = [lightmapImage != null && 'lightmap', skyIndices.base != null && 'sky', skyIndices.clouds != null && 'clouds'].filter(Boolean);
   progress('textures', `${count} texture(s) as KTX2${extra.length ? ` + ${extra.join(' + ')}` : ''}`);
 
-  progress('compress', 'meshopt (EXT_meshopt_compression, medium)');
-  await doc.transform(meshopt({ encoder: MeshoptEncoder, level: 'medium' }));
+  progress('compress', 'meshopt (EXT_meshopt_compression, exact lightmap UVs)');
+  await doc.transform(compressLevelGeometry({ encoder: MeshoptEncoder }));
 
   const manifest = writeManifest({ bake, lodStats, lightmapImage, lightmapStats, skyIndices, generator: { tool: 'thaikit', version: VERSION }, liveLamps, onNote: (m) => progress('manifest', m) })(doc);
   if (manifest.lightmap?.bakedOnlyLamps) progress('manifest', `${manifest.lightmap.bakedOnlyLamps} lamp(s) ship baked-only (--live-lamps ${liveLamps}); ${manifest.lights.length} light(s) stay live`);

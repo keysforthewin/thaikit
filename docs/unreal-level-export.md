@@ -205,3 +205,31 @@ const level = await loadLevel('/GLB/<id>_high.glb', { scene, renderer, camera, p
 
 `level.manifest.source` is `{ tool: 'unreal-gltf-exporter', lightmap: 'adopted' | 'blender' | 'none', ... }`
 for an Unreal level and `null` for an editor level. Nothing else differs.
+
+### Long black stripes after the final bake
+
+If base textures render correctly but narrow curved or corrugated surfaces gain
+long black stripes only in the baked level, compare its lightmap UVs with the
+stage 3 checkpoint before changing material proxies. Meshopt's default 12-bit
+texture-coordinate quantization can collapse narrow lightmap islands and move
+samples into empty gutters on a 4096/8192 atlas. This affected BangkokSoi's zinc
+hoarding and stainless pavement bin.
+
+Some strips were already narrower than a pixel before compression and received
+no Cycles samples at all. The baker now aligns those packed islands to a texel
+centre and gives their narrow axis one pixel of coverage, staying within the
+packed gutter. Material UV0 is untouched. This second repair needs lighting to
+be baked for the affected surfaces; recompressing alone cannot recover missing
+lighting. `lightmap_islands_test.py` checks coverage and the gutter movement
+bound. `lightmap_islands_blender_test.py` verifies that Cycles changes from
+zero sampled texels to a fully sampled strip, while retaining mesh positions,
+material UV0 and shared UV seams. Alignment requires a gutter of at least two
+pixels.
+
+The level compressor now keeps `TEXCOORD_1` as exact Float32 data and compresses
+it losslessly, while retaining the existing quantization for other attributes.
+`scripts/level/compress-geometry.test.mjs` checks precision after the actual
+compressed GLB write/read, including shared UV0/UV1 accessors. Existing bakes can
+be rebuilt with `--resume-from 4` using their matching stage 3 checkpoints and
+lightmaps. Increasing compression precision on an already rounded final GLB
+cannot recover the original atlas coordinates.

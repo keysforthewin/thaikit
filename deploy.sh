@@ -23,9 +23,9 @@ dir="${DEPLOY_TARGET#*:}"
 base_path="$(printf '%s' "$DEPLOY_URL" | sed -E 's#^[a-z]+://[^/]+##; s#/+$##')"
 
 echo "==> building client (base path '${base_path:-/}') in the container"
-docker compose run --rm --no-deps -T -e HOME=/tmp -e npm_config_cache=/tmp/npm-cache \
+docker compose run --rm --no-deps -T -e npm_config_cache=/tmp/npm-cache \
   -e THAIKIT_BASE_PATH="$base_path" web npm run build --workspace @thaikit/client -- --outDir dist-public \
-  2>&1 | grep -v -i 'tini\|subreaper' || true
+  2>&1
 test -f web/client/dist-public/index.html
 
 echo "==> rsync -> $DEPLOY_TARGET"
@@ -37,6 +37,7 @@ ssh "$host" "mkdir -p '$dir'"
 rsync -az --delete \
   --exclude '.git' --exclude 'node_modules' --exclude '.env' --exclude '.env.local' \
   --exclude 'scratch' --exclude 'levels/*/build' --exclude 'web/client/dist' \
+  --exclude 'levels/*/unreal/before-*' \
   --exclude 'web/client/dist-public' --exclude '*.tmp-*' \
   ./ "$DEPLOY_TARGET/"
 # The client bundle built above lands where the production server serves from.
@@ -45,8 +46,8 @@ rsync -az --delete web/client/dist-public/ "$DEPLOY_TARGET/web/client/dist/"
 echo "==> installing node_modules and starting the public stack on $host"
 ssh "$host" "cd '$dir' \
   && docker compose -f compose.public.yaml build -q \
-  && docker compose -f compose.public.yaml run --rm --no-deps -T -e HOME=/tmp -e npm_config_cache=/tmp/npm-cache web npm ci --no-audit --no-fund 2>&1 | grep -v -i 'tini\|subreaper' \
-  ; docker compose -f compose.public.yaml up -d"
+  && docker compose -f compose.public.yaml run --rm --no-deps -T -e npm_config_cache=/tmp/npm-cache web npm ci --no-audit --no-fund \
+  && docker compose -f compose.public.yaml up -d --force-recreate web"
 
 sleep 5
 port="$(ssh "$host" "grep -E '^THAIKIT_PORT=' '$dir/.env' 2>/dev/null | cut -d= -f2")"

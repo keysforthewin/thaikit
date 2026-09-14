@@ -1028,7 +1028,10 @@ export function createMosqueModel(options: ProceduralModelOptions = {}): THREE.G
     const det = tx * (-dy) - (-dx) * ty;
     let s = ((ax - px) * (-dy) - (-dx) * (ay - py)) / det;
     if (!(s > 0) || !isFinite(s)) s = 0.1 * R;
-    const cxp = px + s * tx, cyp = py + s * ty;
+    // Keep each half on its own side of the apex. The tangent intersection can
+    // cross x=0 or overshoot the crown on broad arches, producing a self-crossing
+    // contour and overlapping front triangles when ExtrudeGeometry triangulates it.
+    const cxp = Math.max(0, px + s * tx), cyp = Math.min(ay, py + s * ty);
     const th0 = -Math.asin(a / R);
     const n = 8;
     target.moveTo(hw, sill);
@@ -1116,7 +1119,7 @@ export function createMosqueModel(options: ProceduralModelOptions = {}): THREE.G
       parts.push(extrudeZ(block, C.hz - GT.d, C.hz, 8));
       const F = GT.frame;
       for (const s of [-1, 1]) {
-        const zf = (C.hz - GT.d / 2) + s * (GT.d / 2 + F.proud / 2) - (s > 0 ? F.proud + 0.0 : 0);
+        const zf = (C.hz - GT.d / 2) + s * (GT.d / 2 + F.proud / 2);
         const xo = GT.w / 2 - F.inset, yTop = GT.h - F.inset, yBot = 0.35;
         parts.push(boxAt(-(xo - F.band / 2), (yTop + yBot) / 2, zf, F.band, yTop - yBot, F.proud));
         parts.push(boxAt(xo - F.band / 2, (yTop + yBot) / 2, zf, F.band, yTop - yBot, F.proud));
@@ -1235,12 +1238,12 @@ export function createMosqueModel(options: ProceduralModelOptions = {}): THREE.G
   /* ---------------------------------------------------------------- arcade surrounds
    * Three white Moorish surrounds over the open arches, one geometry as an InstancedMesh. Each is
    * a plate with a REAL aperture a hair smaller than the screen's opening, extruded from inside the
-   * screen to 0.05 m proud of the green field, so it lines the reveal and overlaps the field. */
+   * screen to 0.07 m proud of the green field (clear of the plinth face), so it lines the reveal and overlaps the field. */
   {
     const H = G.hall, A = G.arch, FR = A.frame, open = A.open as any;
     const outer: Arch = { w: open.w + 2 * FR.band, spring: open.spring - 0.4 * FR.band, rise: open.rise + 1.25 * FR.band, sill: open.sill - 0.05, shoulder: open.shoulder };
-    const innerA: Arch = { w: open.w - 0.02, spring: open.spring, rise: open.rise - 0.01, sill: open.sill - 0.03, shoulder: open.shoulder - 0.01 };
-    const frame = extrudeZ(archShape(outer, innerA), H.zFront - FR.back, H.zFront + H.field.t + FR.proud, 10);
+    const innerA: Arch = { w: open.w - 0.02, spring: open.spring - 0.02, rise: open.rise - 0.01, sill: open.sill - 0.03, shoulder: open.shoulder - 0.01 };
+    const frame = extrudeZ(archShape(outer, innerA), H.zFront - FR.back, H.zFront + H.field.t + FR.proud + 0.02, 10);
     topUv(frame, H.wallTop);
     addInst('arch-frames', 'Arcade surrounds', frame, 'white',
       (open.xs as number[]).map((x) => new THREE.Matrix4().setPosition(x, 0, 0)));

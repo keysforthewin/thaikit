@@ -264,6 +264,7 @@ const Reference = z.object({
  * carried only so the grid, the filters and the sort keep working.
  */
 const Review = z.object({
+  preview: z.boolean().default(false),
   fidelity: z.number().min(0).max(1).nullable().default(null),
   score: z.number().min(0).max(100).nullable().default(null),
   threshold: z.number().min(0).max(100).default(85),
@@ -287,6 +288,7 @@ const Review = z.object({
       perPass: z.number().int().nonnegative().default(0),
       total: z.number().int().nonnegative().default(0),
       maxTotal: z.number().int().positive().default(10),
+      stopLimitsDisabled: z.boolean().default(false),
     })
     .default({}),
   /** continue | refine-spec | refine-code | request-input | stop */

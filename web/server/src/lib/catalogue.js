@@ -279,7 +279,7 @@ export function filterItems(items, query = {}) {
     if (imageStatus && it.status?.image !== imageStatus) return false;
     if (modelStatus && it.status?.model !== modelStatus) return false;
     if (minScore && (it.review?.score ?? -1) < Number(minScore)) return false;
-    if (maxScore && (it.review?.score ?? 101) > Number(maxScore)) return false;
+    if (maxScore != null && maxScore !== '' && (it.review?.score ?? 0) > Number(maxScore)) return false;
     if (pickedCategories.length || pickedTags.length) {
       if (!(pickedCategories.includes(it.category) || it.tags.some((t) => pickedTags.includes(t)))) return false;
     }

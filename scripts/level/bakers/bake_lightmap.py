@@ -41,6 +41,7 @@ import time
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from lightmap_padding import prepare_bake_images, dilate_lightmap
+from lightmap_islands import ensure_sampled_islands
 
 import bpy
 import bmesh
@@ -364,6 +365,14 @@ if median and median > 0:
 else:
     size = args.size
     log(f'WARNING atlas {size}² (no measurable UV area after packing; the lightmap will be EMPTY)')
+
+# Thin corrugations and cylinder strips can fit entirely between pixel centres.
+# Give those islands a sample before baking, using only their packed gutter.
+sampled_strips = (sum(ensure_sampled_islands(obj.data, size) for obj in static)
+                  if args.gutter >= 2.0 else 0)
+log(f'aligned {sampled_strips} sub-texel lightmap islands to pixel centres')
+if args.gutter < 2.0:
+    log('sub-texel alignment requires a gutter of at least 2 pixels')
 
 img_rgb = bpy.data.images.new('lm_rgb', size, size, alpha=True, float_buffer=True)
 img_shadow = bpy.data.images.new('lm_shadow', size, size, alpha=True, float_buffer=True)

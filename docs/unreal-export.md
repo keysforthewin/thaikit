@@ -103,6 +103,12 @@ the Interchange framework. (5.0 needs the *glTF Importer* plugin turned on.)
 
 ### If something looks off
 
+- **A repaired vehicle still looks old in Unreal** — check `manifest.json` for
+  export failures and confirm its GLB exists. Raw normal-map `DataTexture`s used
+  to fail in the exporter's `drawImage` conversion, leaving vehicles out of the
+  export. The browser export now supplies canvas-backed copies while retaining
+  the authored texture bytes and sampling. Export again, run the checked
+  importer, and bind legacy level actors to its updated `GLBImports` mesh.
 - **Collision missing** — the import dialog had *Import Collision According To
   Mesh Name* off, or the mesh was renamed on import so the `UCX_` prefix no
   longer matches. Re-import with the option on, or add collision in the Static
@@ -122,8 +128,10 @@ the Interchange framework. (5.0 needs the *glTF Importer* plugin turned on.)
   those props with *Build Nanite* off.
 - **`degenerate tangent bases` / `nearly zero bi-normals` warnings** — a face
   with no UV area. The export now gives such faces a planar projection in
-  metres, so a current export should log none; an older one is harmless under
-  Lumen but starves those faces of lightmap space under baked lighting.
+  metres where the surface is untextured or has no authored UVs. Textured
+  surfaces retain their authored coordinates: constant UVs can deliberately
+  address a lookup texture. Generate separate lightmap charts if needed; do not
+  reproject UV0 and change the material merely to silence tangent warnings.
 - **Signs glow but light nothing** — emissive is colour, not a light. Add a
   Point or Spot Light at the fascia, or turn on Lumen's emissive contribution.
 
@@ -201,6 +209,20 @@ importer = runpy.run_path(r"C:/path/to/export/import_into_unreal.py")
 importer["import_kit"](r"C:/path/to/export", refs=["@thai-kit/tuk-tuk"])
 ```
 
+An existing Interchange import can retain stale mesh material assignments even
+with material reuse disabled. The September 13 full refresh caught this on Honda
+Wave and TukTuk. If the checked reimport still reports default materials, import
+into a fresh destination, validate it, then explicitly rebind placed components
+using the returned mesh path. Preserve intentional component overrides by slot
+name rather than carrying old material indices across changed meshes:
+
+```python
+report = importer["import_kit"](
+    r"C:/path/to/export", refs=["@thai-kit/tuk-tuk"],
+    destination="/Game/ThaiKit/GLBImports/FreshRevision",
+)
+```
+
 The September 11 TukTuk failure was in Unreal: four empty generic PBR material
 instances had no vector, scalar or texture overrides. The GLB retained vertex
 colours and two embedded textures. Regenerating full Material graphs restored the
@@ -208,3 +230,16 @@ colours. Both placed actors now use the repaired original StaticMesh; its saved
 Interchange pipeline was also changed from material instances to Materials with
 reuse disabled. The earlier shader audit could not detect these broken imports.
 The export dialog's contradictory material-instance instruction has been removed.
+
+
+### Honda Wave repair and linear data maps
+
+The [Honda repair audit](honda-unreal-material-repair-20260912.md) covers three
+separate failures: default checker materials on the placed mesh, UV repair
+corrupting a lookup texture, and gamma conversion on the return trip from Unreal.
+The checked importer rejects default engine materials and stock fallback textures
+as evidence of a successful textured import. The level export wrapper temporarily
+uses Unreal's HDR texture preview path for linear default/mask maps and restores
+their compression afterward. The Honda's final round-trip map was checked pixel
+for pixel against its source. Rebuild existing baked levels after repairing their
+Unreal assets; changing a StaticMesh does not update a previously baked GLB.
