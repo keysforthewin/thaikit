@@ -38,7 +38,7 @@ rsync -az --delete \
   --exclude '.git' --exclude 'node_modules' --exclude '.env' --exclude '.env.local' \
   --exclude 'scratch' --exclude 'levels/*/build' --exclude 'web/client/dist' \
   --exclude 'levels/*/unreal/before-*' \
-  --exclude 'web/client/dist-public' --exclude '*.tmp-*' \
+  --exclude 'web/client/dist-public' --exclude '*.tmp-*' --exclude '*.pending-*' \
   ./ "$DEPLOY_TARGET/"
 # The client bundle built above lands where the production server serves from.
 rsync -az --delete web/client/dist-public/ "$DEPLOY_TARGET/web/client/dist/"
