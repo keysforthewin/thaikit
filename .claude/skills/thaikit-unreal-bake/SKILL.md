@@ -175,9 +175,9 @@ overwrites the build the game is playing and nothing has to be restored:
 
 | Tier | Preset (`scripts/level/pipeline/quality.mjs`) | bangkoksoi, Blender time |
 | --- | --- | --- |
-| `low` | Cycles 4096² / 4096 samples, adaptive off | ~1.5 h |
-| `medium` | Cycles 8192² / 4096 samples, adaptive off | ~8 h |
-| `high` | Cycles at 8192² / 8192 samples, adaptive sampling off; same atlas resolution as medium | roughly twice medium's sampling work |
+| `low` | Cycles 2048² / 8192 samples, adaptive off | unmeasured; half the sampling work of the former 4096² / 4096 preset |
+| `medium` | Cycles 4096² / 8192 samples, adaptive off | unmeasured; four times low’s sampling work |
+| `high` | Cycles at 4096² / 16384 samples, adaptive sampling off; same atlas resolution as medium | roughly twice medium's sampling work |
 
 Read `quality.mjs` before quoting a duration; the presets have changed before,
 and `low` was once a one-minute no-lightmap tier.

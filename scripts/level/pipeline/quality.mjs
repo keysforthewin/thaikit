@@ -2,12 +2,12 @@
  * Bake QUALITY tiers: one word that picks the baker and the lightmap budget,
  * and stamps the delivered file so the three never overwrite each other.
  *
- *   low     Cycles at 4096² / 4096 samples, adaptive off. This is the first
+ *   low     Cycles at 2048² / 8192 samples, adaptive off. This is the first
  *           shippable lighting tier: it retains the level's texture budget and
  *           bakes lamps, sky, and moon visibility into the atlas.
- *   medium  Cycles at 8192² / 4096 samples, adaptive off. This is the higher
+ *   medium  Cycles at 4096² / 8192 samples, adaptive off. This is the higher
  *           resolution shipping tier when the low atlas needs more detail.
- *   high    Cycles at 8192² / 8192 samples, adaptive off. More convergence
+ *   high    Cycles at 4096² / 16384 samples, adaptive off. More convergence
  *           at the same lightmap resolution and runtime memory budget as medium.
  *
  * `--quality medium` delivers `<id>_medium.glb`, builds `build/level_medium.glb`
@@ -21,9 +21,9 @@
 export const QUALITIES = ['low', 'medium', 'high'];
 
 export const QUALITY_PRESETS = {
-  low: { baker: 'blender', lightmap: { size: 4096, samples: 4096, noiseThreshold: 0 } },
-  medium: { baker: 'blender', lightmap: { size: 8192, samples: 4096, noiseThreshold: 0 } },
-  high: { baker: 'blender', lightmap: { size: 8192, samples: 8192, noiseThreshold: 0 } },
+  low: { baker: 'blender', lightmap: { size: 2048, samples: 8192, noiseThreshold: 0 } },
+  medium: { baker: 'blender', lightmap: { size: 4096, samples: 8192, noiseThreshold: 0 } },
+  high: { baker: 'blender', lightmap: { size: 4096, samples: 16384, noiseThreshold: 0 } },
 };
 
 /** The texture ceilings a tier imposes over the level's own (`min`), or the level's as they are. */

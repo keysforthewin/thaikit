@@ -156,9 +156,9 @@ the game's folder and nothing has to be restored after a test bake:
 
 | `--quality` | What it is | Delivers | bangkoksoi, measured |
 | --- | --- | --- | --- |
-| `low` | `--baker none`: no lightmap, textures and sky faces capped at 1024, lit by the live moon. Tests the geometry, colliders, LOD, spawns and sky. | `<id>_low.glb` | 52 s |
-| `medium` | Cycles at 2048² / 16 samples (adaptive). The lamps, the sky light and the moon's shadows land roughly where they will. | `<id>_medium.glb` | ~9 min |
-| `high` | Cycles at 8192² / 8192 samples / adaptive off. Cleaner lighting at medium's lightmap resolution and runtime memory budget. | `<id>_high.glb` | roughly twice medium's sampling work; depends on scene and hardware |
+| `low` | Cycles at 2048² / 8192 samples, adaptive sampling off; retains the level’s texture budget. | `<id>_low.glb` | Unmeasured; half the sampling work of the former 4096² / 4096 preset. |
+| `medium` | Cycles at 4096² / 8192 samples, adaptive sampling off. Higher lightmap resolution than low. | `<id>_medium.glb` | Unmeasured; four times low’s sampling work. |
+| `high` | Cycles at 4096² / 16384 samples / adaptive off. Cleaner lighting at medium's lightmap resolution and runtime memory budget. | `<id>_high.glb` | roughly twice medium's sampling work; depends on scene and hardware |
 
 ```
 docker compose run --rm web node scripts/level/bake-level.mjs --level <id> --quality low --live-lamps 20

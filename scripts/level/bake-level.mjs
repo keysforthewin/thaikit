@@ -14,8 +14,8 @@
  * Usage:
  *   node scripts/level/bake-level.mjs --level <id> [--quality low|medium|high] [--baker blender|blender-host|unreal|none] [--cpu] [--samples N] [--noise-threshold T] [--resume-from 2|3|4] [--cell <ix>_<iz>]
  *
- * `--quality` is a preset AND a name: `low` is Cycles at 4096²/4096 samples,
- * `medium` is Cycles at 8192²/4096 samples, and `high` is 8192²/8192 samples.
+ * `--quality` is a preset AND a name: `low` is Cycles at 2048²/8192 samples,
+ * `medium` is Cycles at 4096²/8192 samples, and `high` is 4096²/16384 samples.
  * All three disable adaptive sampling; each delivers
  * `<id>_<quality>.glb`,
  * builds `build/level_<quality>.glb` and bakes into `build/lightmap_<quality>/`
