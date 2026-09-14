@@ -69,39 +69,28 @@ async function main() {
       if (s.position.some((v, i) => v < b.min[i] - 1 || v > b.max[i] + 1)) warnings.push(`spawn ${s.name} lies outside the level bounds`);
     }
     if (manifest.lightmap) {
-      const tex = root.listTextures()[manifest.lightmap.image];
-      if (!tex) failures.push('manifest.lightmap.image points at no texture');
-      else {
-        let k = null;
+      const pages = manifest.lightmap.atlases ?? [{ image: manifest.lightmap.image, range: manifest.lightmap.range ?? 1 }];
+      report.lightmap = { atlasCount: pages.length, texelsPerMeter: manifest.lightmap.texelsPerMeter, atlases: [] };
+      for (const [i, page] of pages.entries()) {
+        const tex = root.listTextures()[page.image];
+        if (!tex) { failures.push(`lightmap atlas ${i}: missing image`); continue; }
         try {
-          k = readKtx(tex.getImage());
-        } catch (err) { failures.push(`lightmap is not a KTX2 file: ${err.message}`); }
-        if (k) {
-          report.lightmap = {
-            width: k.pixelWidth, height: k.pixelHeight, levels: k.levels.length,
-            supercompression: k.supercompressionScheme,
-            // 1 = linear, 2 = sRGB. The atlas is written through Blender's
-            // 'Standard' view transform, which IS sRGB, and the runtime reads
-            // it as sRGB -- so a container claiming linear is mislabelled.
-            transferFunction: k.dataFormatDescriptor?.[0]?.transferFunction ?? null,
-            range: manifest.lightmap.range ?? 1,
-            bakedLights: manifest.lightmap.bakedLights ?? false,
-          };
-          if (report.lightmap.transferFunction === 1) {
-            warnings.push('the lightmap KTX2 is labelled linear but holds sRGB; re-bake to correct the label');
-          }
-          // The atlas size is derived from `texelsPerMeter`. Hitting the
-          // ceiling exactly is the signal that the level wanted more than it
-          // was allowed, i.e. the props are under-lit in texels.
-          // The atlas size is derived from `texelsPerMeter`, capped by the
-          // level's ceiling. Sitting exactly on a power of two at or above
-          // 4096 is the signal that the cap bound and the props are short of
-          // texels. (The ceiling itself is a bake setting, not something the
-          // shipped manifest carries, so 4096 is the documented default.)
-          if (k.pixelWidth >= 4096) {
-            warnings.push(`the lightmap atlas is ${k.pixelWidth}px, at or above the default ceiling; raise the atlas max if props look blocky`);
-          }
-        }
+          const k = readKtx(tex.getImage());
+          const transfer = k.dataFormatDescriptor?.[0]?.transferFunction;
+          report.lightmap.atlases.push({ width:k.pixelWidth,height:k.pixelHeight,levels:k.levels.length,range:page.range,transferFunction:transfer });
+          if (transfer !== 2) failures.push(`lightmap atlas ${i}: expected sRGB`);
+          if (manifest.lightmap.atlases && (k.pixelWidth !== page.size || k.pixelHeight !== page.size || k.levels.length !== 1)) failures.push(`lightmap atlas ${i}: dimensions/mipmaps disagree with manifest`);
+        } catch (err) { failures.push(`lightmap atlas ${i}: ${err.message}`); }
+      }
+      if (manifest.lightmap.atlases) for (const cell of manifest.cells.list) {
+        const node = nodes.get(`cell_${cell.ix}_${cell.iz}`);
+        node?.traverse(n => { for (const p of n.getMesh()?.listPrimitives() ?? []) {
+          const index=p.getMaterial()?.getExtras()?.tk?.lightmapAtlas;
+          if (!Number.isInteger(index) || index<0 || index>=pages.length) failures.push(`${n.getName()}: invalid atlas assignment`);
+          const uv=p.getAttribute('TEXCOORD_1');
+          if (!uv) { failures.push(`${n.getName()}: missing lightmap UVs`); continue; }
+          for (const v of uv.getArray()) if (!Number.isFinite(v) || v<0 || v>1) { failures.push(`${n.getName()}: invalid lightmap coordinate`); break; }
+        }});
       }
     }
   }

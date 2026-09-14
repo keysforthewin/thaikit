@@ -24,9 +24,9 @@ test('assertQuality accepts the three words and nothing else', () => {
 });
 
 test('presets: high increases samples while keeping the medium atlas budget', () => {
-  assert.deepEqual(QUALITY_PRESETS.low, { baker: 'blender', lightmap: { size: 2048, samples: 8192, noiseThreshold: 0 } });
-  assert.deepEqual(QUALITY_PRESETS.medium, { baker: 'blender', lightmap: { size: 4096, samples: 8192, noiseThreshold: 0 } });
-  assert.deepEqual(QUALITY_PRESETS.high, { baker: 'blender', lightmap: { size: 4096, samples: 16384, noiseThreshold: 0 } });
+  assert.deepEqual(QUALITY_PRESETS.low, { baker: 'blender', lightmap: { size: 4096, samples: 128, noiseThreshold: 0, texelsPerMeter: 12, maxAtlases: 32 } });
+  assert.deepEqual(QUALITY_PRESETS.medium, { baker: 'blender', lightmap: { size: 4096, samples: 2048, noiseThreshold: 0, texelsPerMeter: 12, maxAtlases: 32 } });
+  assert.deepEqual(QUALITY_PRESETS.high, { baker: 'blender', lightmap: { size: 4096, samples: 16384, noiseThreshold: 0, texelsPerMeter: 12, maxAtlases: 32 } });
 });
 
 test('the texture budget caps a tier below the level and never raises it', () => {

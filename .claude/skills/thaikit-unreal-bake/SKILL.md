@@ -127,17 +127,12 @@ directional from the runtime's lights so it is not counted twice).
 Unreal `far_ground` plane); `bangkoksoi` uses `--ground=-0.12,#2b2b29` (the `=`
 matters: a bare `-0.12` reads as an option).
 `--settings <json>` to pass thaikit level settings (LOD distances, lightmap
-size for a Cycles bake, ambient); the defaults are the editor's. **`--quality
-high` bakes at whatever the RAW carries**, so an import without
-`--settings levels/<id>/settings.json` ships a "high" build at the importer's
-defaults (4096², 128 samples, adaptive) -- bangkoksoi's shipping recipe is
-`--settings levels/bangkoksoi/settings.json` (8192², 4096 samples, adaptive
-off) on every re-import; read the bake's `running blender` line to confirm.
-Do not reduce the level's shipping sample count just because the atlas is
-8192 pixels. A 128-sample BangkokSoi bake produced large black blotches in
-lamp illumination. Compare a representative patch against a converged
-reference and inspect player-height renders, including self-shadows, before
-accepting a changed sample count. File validation does not measure noise.
+size for a Cycles bake, ambient). Quality presets override lightmap settings:
+all tiers allocate 4096² atlases at 12 texels/metre, up to 32 pages, and fail
+instead of lowering density. Low uses 128 samples, medium 2048, high 16384;
+adaptive sampling is off. Explicit CLI overrides take precedence. Coverage
+and lighting noise are separate gates: inspect player-height renders before
+accepting any finished tier. See `docs/lightmap-atlases.md` for reports and format.
 Keep Cycles' per-batch bake margin at zero. The baker pads the completed atlas
 once using geometric coverage, so neighboring islands and fully black shadow
 texels survive. The old 16-pixel per-batch margin overwrote islands separated
@@ -175,9 +170,9 @@ overwrites the build the game is playing and nothing has to be restored:
 
 | Tier | Preset (`scripts/level/pipeline/quality.mjs`) | bangkoksoi, Blender time |
 | --- | --- | --- |
-| `low` | Cycles 2048² / 8192 samples, adaptive off | unmeasured; half the sampling work of the former 4096² / 4096 preset |
-| `medium` | Cycles 4096² / 8192 samples, adaptive off | unmeasured; four times low’s sampling work |
-| `high` | Cycles at 4096² / 16384 samples, adaptive sampling off; same atlas resolution as medium | roughly twice medium's sampling work |
+| `low` | 4096² pages at 12 texels/m, 128 samples, adaptive off | measure current scene |
+| `medium` | same layout, 2048 samples, adaptive off | measure current scene |
+| `high` | same layout, 16384 samples, adaptive off | measure current scene |
 
 Read `quality.mjs` before quoting a duration; the presets have changed before,
 and `low` was once a one-minute no-lightmap tier.
@@ -192,7 +187,9 @@ host. On 2026-09-11 the `low` bake of `bangkoksoi` was killed that way after
 whole lightmap stage had to be redone. `docker compose run -d` hands the
 container to the Docker daemon, which the session's guard cannot touch.
 
-Chain the tiers, verify and smoke in ONE detached container. Logs go to files
+Chain the tiers and file verification in ONE detached container. Run browser
+smoke on the WSL host through Chrome DevTools MCP on port 9222 afterwards.
+Never launch Linux Chrome, Puppeteer or a software-rendering fallback. Logs go to files
 under the build dir, because `--rm` deletes the container and its
 `docker logs` when it exits. Substitute `<id>` in both places:
 
@@ -201,12 +198,10 @@ docker compose run -d --rm --name tk-bake-<id> web sh -c '
   B=/repo/levels/<id>/build/cli; mkdir -p $B; : > $B/status.log
   for q in low medium; do
     echo "$(date -u +%H:%MZ) $q bake start" >> $B/status.log
-    node scripts/level/bake-level.mjs --level <id> --quality $q --live-lamps 20 > $B/bake_$q.out 2> $B/bake_$q.err; r=$?
+    THAIKIT_EXPORT_DIR= node scripts/level/bake-level.mjs --level <id> --quality $q --live-lamps 20 > $B/bake_$q.out 2> $B/bake_$q.err; r=$?
     echo "$(date -u +%H:%MZ) $q bake exit=$r" >> $B/status.log; [ $r -eq 0 ] || continue
     node scripts/level/verify-level.mjs --level <id> --quality $q > $B/verify_$q.out 2> $B/verify_$q.err
     echo "$(date -u +%H:%MZ) $q verify exit=$?" >> $B/status.log
-    node scripts/level/smoke-level.mjs --level <id> --quality $q > $B/smoke_$q.out 2> $B/smoke_$q.err
-    echo "$(date -u +%H:%MZ) $q smoke exit=$?" >> $B/status.log
   done
   echo "$(date -u +%H:%MZ) ALL DONE" >> $B/status.log'
 ```
@@ -227,7 +222,8 @@ instead of quoting it as the run's age. `docker stop tk-bake-<id>` cancels.
 
 If a bake dies after stage 1 (read, normalise, partition, merge),
 `--resume-from 2` reuses `build/stage1.glb` and starts at the lightmap. A
-killed lightmap stage is NOT resumable; the whole stage reruns.
+killed lightmap stage reuses completed page/pass checkpoints only when their
+fingerprints match the geometry, layout, lighting and bake settings.
 
 (`--baker unreal|blender|blender-host` without a tier is the old form and
 delivers the plain `<id>.glb`; `--lightmap-size`/`--samples` override a
@@ -238,12 +234,12 @@ folder); the result line says where. One tier at a time -- the raw and the stage
 checkpoints are shared, and a second Blender does not fit in memory beside an
 8192² bake. Check `swapon --show` and `free -g` before starting, and before `high`.
 
-Verify and smoke are part of the chain above. To re-check a finished tier on
+Verify runs in the chain above; browser smoke and visual review precede delivery. To re-check a finished tier on
 its own (minutes, so a normal command is fine), run both with the same `--quality`:
 
 ```
 docker compose run --rm web node scripts/level/verify-level.mjs --level <id> --quality <q>
-docker compose run --rm web node scripts/level/smoke-level.mjs --level <id> --quality <q>
+node scripts/level/smoke-level.mjs --level <id> --quality <q>
 ```
 
 `verify` must pass; `smoke` renders the level through the real runtime and

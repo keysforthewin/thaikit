@@ -70,7 +70,7 @@ test('args: same spec, two path spellings', () => {
   const rel = { script: 'scripts/level/bakers/bake_lightmap.py', glb: 'levels/x/build/lightmap/in.glb', out: 'levels/x/build/lightmap', env: 'levels/x/build/lightmap/env.png' };
   const container = buildBlenderArgs(spec, rel, (p) => `/repo/${p}`);
   const windows = buildBlenderArgs(spec, rel, (p) => `\\\\wsl.localhost\\U\\repo\\${p.split('/').join('\\')}`);
-  assert.deepEqual(container.slice(0, 4), ['-b', '--python', '/repo/scripts/level/bakers/bake_lightmap.py', '--']);
+  assert.deepEqual(container.slice(0, 6), ['-b', '--python-exit-code', '1', '--python', '/repo/scripts/level/bakers/bake_lightmap.py', '--']);
   assert.equal(flag(container, '--glb'), '/repo/levels/x/build/lightmap/in.glb');
   assert.equal(flag(windows, '--glb'), '\\\\wsl.localhost\\U\\repo\\levels\\x\\build\\lightmap\\in.glb');
   assert.equal(eqFlag(windows, '--env'), '\\\\wsl.localhost\\U\\repo\\levels\\x\\build\\lightmap\\env.png');
@@ -108,4 +108,12 @@ test('line sink: forwards [thaikit] lines, keeps a tail, handles CRLF and split 
   sink.feed('ice: OPTIX\n[thaikit] 10%\nnoise\nmore\n');
   assert.deepEqual(got, ['cycles device: OPTIX', '10%']);
   assert.equal(sink.tail(), '[thaikit] 10%\nnoise\nmore');
+});
+
+
+test('layout-only explicitly requests preflight without changing default bakes', () => {
+  const spec = blenderBakeSpec({ bake });
+  const paths = { script: 's', glb: 'g', out: 'o' };
+  assert.equal(buildBlenderArgs(spec, paths, p => p).includes('--layout-only'), false);
+  assert.equal(buildBlenderArgs({ ...spec, layoutOnly: true }, paths, p => p).includes('--layout-only'), true);
 });

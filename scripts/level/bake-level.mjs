@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { auditAtlasCoverage } from './pipeline/atlas-coverage.mjs';
 /**
  * Bake a level: the editor's raw scene GLB in, one self-contained GLB out.
  *
@@ -105,11 +106,16 @@ async function main() {
   const baker = String(args.baker ?? preset.baker);
   if (!BAKERS.includes(baker)) return fail(`--baker must be one of ${BAKERS.join('|')}, got ${baker}`);
   const cpu = Boolean(args.cpu);
+  const layoutOnly = Boolean(args['layout-only']);
+  if (layoutOnly && !['blender', 'blender-host'].includes(baker)) throw new Error('--layout-only requires Blender');
   const resumeFrom = Number(args['resume-from'] ?? 1);
+  if (layoutOnly && resumeFrom > 2) throw new Error('--layout-only cannot skip the lightmap stage');
   // Overrides for the lightmap -- explicit flags first, then the quality
   // preset; the level's own settings otherwise.
   const lightmapOverride = {
     size: args['lightmap-size'] ? Number(args['lightmap-size']) : preset.lightmap.size ?? null,
+    texelsPerMeter: Number(args['texels-per-meter'] ?? preset.lightmap.texelsPerMeter ?? 12),
+    maxAtlases: Number(args['lightmap-max-atlases'] ?? preset.lightmap.maxAtlases ?? 32),
     samples: args.samples ? Number(args.samples) : preset.lightmap.samples ?? null,
     noiseThreshold: args['noise-threshold'] != null ? Number(args['noise-threshold']) : preset.lightmap.noiseThreshold ?? null,
   };
@@ -145,6 +151,7 @@ async function main() {
   let bake;
   let lodStats = [];
   let lightmapPng = null;
+  let lightmapPngs = [];
   let lightmapStats = null;
 
   // ---- stage 1 -------------------------------------------------------------
@@ -196,10 +203,12 @@ async function main() {
   const skyImages = await prepareSkyImages(id, skySettings, { onProgress: (m) => progress('sky', m), ...(budget.maxFace ? { maxFace: budget.maxFace } : {}) });
   for (const note of skyImages.notes) progress('sky', note);
 
+  if (layoutOnly && bake.settings?.lightmap?.enabled === false) throw new Error('--layout-only requires lightmaps enabled');
+
   // ---- stage 2: lightmap -----------------------------------------------------
   if (resumeFrom <= 2) {
-    if (lightmapOverride.size || lightmapOverride.samples || lightmapOverride.noiseThreshold != null) {
-      bake.settings = { ...bake.settings, lightmap: { ...(bake.settings?.lightmap ?? {}), ...(lightmapOverride.size ? { size: lightmapOverride.size } : {}), ...(lightmapOverride.samples ? { samples: lightmapOverride.samples } : {}), ...(lightmapOverride.noiseThreshold != null ? { noiseThreshold: lightmapOverride.noiseThreshold } : {}) } };
+    {
+      bake.settings = { ...bake.settings, lightmap: { ...(bake.settings?.lightmap ?? {}), texelsPerMeter: lightmapOverride.texelsPerMeter, maxAtlases: lightmapOverride.maxAtlases, ...(lightmapOverride.size ? { size: lightmapOverride.size } : {}), ...(lightmapOverride.samples ? { samples: lightmapOverride.samples } : {}), ...(lightmapOverride.noiseThreshold != null ? { noiseThreshold: lightmapOverride.noiseThreshold } : {}) } };
     }
     if (baker === 'unreal') {
       // Written by import-unreal-level.mjs alongside raw.glb; the UVs are
@@ -216,12 +225,14 @@ async function main() {
       if (missing) throw new Error(`${missing} of ${withUv.prims} static primitive(s) lost TEXCOORD_1 before the lightmap could be adopted`);
       progress('lightmap', `adopted Unreal's lightmap: ${lightmapStats.textures} texture(s) in a ${lightmapStats.atlas?.join('x')} atlas, ${lightmapStats.remappedPrimitives} primitive(s) remapped${lightmapStats.decode ? ' -- WARNING undecoded coefficient factors, check brightness' : ''}`);
     } else if (baker !== 'none' && bake.settings?.lightmap?.enabled !== false) {
-      const result = await bakeWithBlender({ io, doc, bake, skyImages, outDir: lightmapDir, onProgress: (m) => progress('lightmap', m), host: baker === 'blender-host', cpu, signal: cancel.signal });
+      const result = await bakeWithBlender({ io, doc, bake, skyImages, outDir: lightmapDir, onProgress: (m) => progress('lightmap', m), host: baker === 'blender-host', cpu, signal: cancel.signal, layoutOnly });
+      if (layoutOnly) return ok({ level: id, layoutOnly: true, coverage: result.coverage });
       doc = result.doc;
       lightmapPng = result.lightmapPng;
+      lightmapPngs = result.lightmapPngs ?? [];
       lightmapStats = result.lightmapStats;
       if (lightmapStats) await fs.writeFile(path.join(lightmapDir, 'lightmap.json'), JSON.stringify(lightmapStats));
-      await fs.writeFile(path.join(lightmapDir, 'lightmap.png'), lightmapPng);
+      if (lightmapPng) await fs.writeFile(path.join(lightmapDir, 'lightmap.png'), lightmapPng);
     } else {
       progress('lightmap', `skipped (${baker === 'none' ? 'baker: none' : 'lightmap disabled in the level settings'}); static geometry will be lit by the real-time moon`);
     }
@@ -230,6 +241,11 @@ async function main() {
     const dir = baker === 'unreal' ? path.join(buildDir, 'lightmap') : lightmapDir;
     try { lightmapPng = await fs.readFile(path.join(dir, 'lightmap.png')); } catch { lightmapPng = null; }
     try { lightmapStats = JSON.parse(await fs.readFile(path.join(dir, 'lightmap.json'), 'utf8')); } catch { lightmapStats = null; }
+    if (lightmapStats?.atlases) {
+      if (lightmapStats.coverage?.ok !== true) throw new Error('resumed layout has no passing coverage report');
+      lightmapPngs = await Promise.all(lightmapStats.atlases.map(p => fs.readFile(path.join(dir, p.file))));
+      lightmapPng = null;
+    }
   }
 
   // ---- stage 3: LOD ----------------------------------------------------------
@@ -252,7 +268,10 @@ async function main() {
     onProgress: (m, i, n) => progress('textures', `${m} (${i}/${n})`),
   })(doc);
   let lightmapImage = null;
-  if (lightmapPng) lightmapImage = await addLightmapTexture(doc, lightmapPng, { onProgress: (m) => progress('textures', m) });
+  if (lightmapPngs.length) {
+    lightmapImage = [];
+    for (const png of lightmapPngs) lightmapImage.push(await addLightmapTexture(doc, png, { onProgress: m => progress('textures', m) }));
+  } else if (lightmapPng) lightmapImage = await addLightmapTexture(doc, lightmapPng, { onProgress: (m) => progress('textures', m) });
 
   // The sky's images are sidecars beside the project; the shipped level is one
   // file, so they are folded in here as unreferenced KTX2, the lightmap's
@@ -274,9 +293,27 @@ async function main() {
 
   const outFile = path.join(buildDir, withQuality('level.glb', quality));
   await io.write(outFile, doc);
+  if (Array.isArray(lightmapImage)) {
+    progress('coverage', 'checking final compressed GLB against Cycles coverage');
+    const shipped = await io.read(outFile);
+    const coverage = await auditAtlasCoverage(shipped, lightmapDir);
+    await fs.writeFile(path.join(buildDir, withQuality('coverage-final.json', quality)), JSON.stringify(coverage));
+    if (!coverage.ok) throw new Error(`final lightmap coverage failed: ${coverage.failures.length} reported holes; delivery withheld`);
+  }
   const bytes = (await fs.stat(outFile)).size;
   progress('write', `${toRepoRelative(outFile)} (${(bytes / 1048576).toFixed(1)} MB)`);
 
+  // ---- verify ----------------------------------------------------------------
+  const verify = await new Promise((resolve) => {
+    const child = spawn(process.execPath, [path.join(here, 'verify-level.mjs'), '--level', id, ...(cell ? ['--cell', cell] : []), ...(quality ? ['--quality', quality] : [])], { stdio: ['ignore', 'pipe', 'inherit'] });
+    let out = '';
+    child.stdout.on('data', (d) => { out += d; });
+    child.on('close', () => { try { resolve(JSON.parse(out.trim().split('\n').pop())); } catch { resolve({ ok: false, failures: ['verify produced no result'] }); } });
+  });
+  await fs.writeFile(path.join(buildDir, withQuality('verify.json', quality)), JSON.stringify(verify, null, 2));
+  progress('verify', verify.ok ? 'passed' : `${verify.failures?.length ?? '?'} failure(s)`);
+
+  if (!verify.ok) throw new Error('baked level failed verification; delivery withheld');
   // Deliver it. THAIKIT_EXPORT_DIR is the game's GLB folder as mounted in the
   // container (compose maps the host's folder to /export); the finished level
   // is copied there as <id>.glb so nothing has to be fished out of build/.
@@ -299,16 +336,6 @@ async function main() {
       progress('export', `WARNING not copied to ${target}: ${e.code === 'ENOENT' ? 'folder is not mounted (THAIKIT_EXPORT_DIR)' : e.message}`);
     }
   }
-
-  // ---- verify ----------------------------------------------------------------
-  const verify = await new Promise((resolve) => {
-    const child = spawn(process.execPath, [path.join(here, 'verify-level.mjs'), '--level', id, ...(cell ? ['--cell', cell] : []), ...(quality ? ['--quality', quality] : [])], { stdio: ['ignore', 'pipe', 'inherit'] });
-    let out = '';
-    child.stdout.on('data', (d) => { out += d; });
-    child.on('close', () => { try { resolve(JSON.parse(out.trim().split('\n').pop())); } catch { resolve({ ok: false, failures: ['verify produced no result'] }); } });
-  });
-  await fs.writeFile(path.join(buildDir, withQuality('verify.json', quality)), JSON.stringify(verify, null, 2));
-  progress('verify', verify.ok ? 'passed' : `${verify.failures?.length ?? '?'} failure(s)`);
 
   const dc = lodStats.reduce((a, s) => a.map((v, i) => v + s.drawCalls[i]), [0, 0, 0]);
   const tri = lodStats.reduce((a, s) => a.map((v, i) => v + s.triangles[i]), [0, 0, 0]);

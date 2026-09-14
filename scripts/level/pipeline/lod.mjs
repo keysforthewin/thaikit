@@ -41,15 +41,26 @@ export function simplifiedCopy(doc, prim, { ratio, sloppy = false, error = slopp
   const triCount = indices.length / 3;
   const target = Math.max(3, Math.floor(triCount * ratio) * 3);
   let result;
-  if (sloppy) {
-    [result] = MeshoptSimplifier.simplifySloppy(indices, positions, 3, null, target, error);
+  const atlas = prim.getMaterial()?.getExtras()?.tk?.lightmapAtlas;
+  const uv = prim.getAttribute('TEXCOORD_1');
+  if (Number.isInteger(atlas) && uv) {
+    const attributes = Float32Array.from(uv.getArray());
+    // Chart seams are mesh borders after the UV split. Never invoke the
+    // topology-ignoring fallback on a baked atlas. Penalise UV error in pixels.
+    [result] = MeshoptSimplifier.simplifyWithAttributes(indices, positions, 3,
+      attributes, 2, [4096, 4096], null, target, 0.05, ['LockBorder', 'ErrorAbsolute']);
+    if (!result.length) result = indices;
   } else {
-    [result] = MeshoptSimplifier.simplify(indices, positions, 3, target, error, lockBorder ? ['LockBorder'] : []);
+    if (sloppy) {
+      [result] = MeshoptSimplifier.simplifySloppy(indices, positions, 3, null, target, error);
+    } else {
+      [result] = MeshoptSimplifier.simplify(indices, positions, 3, target, error, lockBorder ? ['LockBorder'] : []);
+    }
+    // Quality simplification stops at its error budget; if it could not get
+    // near the target, let the sloppy one finish the job.
+    if (!sloppy && result.length > target * 1.5) [result] = MeshoptSimplifier.simplifySloppy(indices, positions, 3, null, target, 0.5);
+    if (!result.length) [result] = MeshoptSimplifier.simplifySloppy(indices, positions, 3, null, target, 1);
   }
-  // Quality simplification stops at its error budget; if it could not get
-  // near the target, let the sloppy one finish the job.
-  if (!sloppy && result.length > target * 1.5) [result] = MeshoptSimplifier.simplifySloppy(indices, positions, 3, null, target, 0.5);
-  if (!result.length) [result] = MeshoptSimplifier.simplifySloppy(indices, positions, 3, null, target, 1);
   const copy = prim.clone();
   const buffer = doc.getRoot().listBuffers()[0];
   copy.setIndices(doc.createAccessor().setType('SCALAR').setArray(result.length ? result : indices.slice(0, 3)).setBuffer(buffer));

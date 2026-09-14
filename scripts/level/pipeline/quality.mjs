@@ -1,29 +1,13 @@
-/**
- * Bake QUALITY tiers: one word that picks the baker and the lightmap budget,
- * and stamps the delivered file so the three never overwrite each other.
- *
- *   low     Cycles at 2048² / 8192 samples, adaptive off. This is the first
- *           shippable lighting tier: it retains the level's texture budget and
- *           bakes lamps, sky, and moon visibility into the atlas.
- *   medium  Cycles at 4096² / 8192 samples, adaptive off. This is the higher
- *           resolution shipping tier when the low atlas needs more detail.
- *   high    Cycles at 4096² / 16384 samples, adaptive off. More convergence
- *           at the same lightmap resolution and runtime memory budget as medium.
- *
- * `--quality medium` delivers `<id>_medium.glb`, builds `build/level_medium.glb`
- * and bakes into `build/lightmap_medium/`, so a low, a medium and a high build
- * of the same level coexist in the game's GLB folder and in `build/`; the raw
- * and the stage checkpoints are shared, because stages 1 and 3 do not depend on
- * the tier. Explicit `--baker`, `--lightmap-size`, `--samples` and
- * `--noise-threshold` still win over the preset. No `--quality` keeps every
- * name exactly as it was (`<id>.glb`, `build/level.glb`).
+/** Fixed atlas resolution and density; quality changes integration samples.
+ * Atlas allocation is automatic up to maxAtlases. Explicit CLI overrides win.
+ * low=128, medium=2048, high=16384 samples; adaptive sampling is disabled.
  */
 export const QUALITIES = ['low', 'medium', 'high'];
 
 export const QUALITY_PRESETS = {
-  low: { baker: 'blender', lightmap: { size: 2048, samples: 8192, noiseThreshold: 0 } },
-  medium: { baker: 'blender', lightmap: { size: 4096, samples: 8192, noiseThreshold: 0 } },
-  high: { baker: 'blender', lightmap: { size: 4096, samples: 16384, noiseThreshold: 0 } },
+  low: { baker: 'blender', lightmap: { size: 4096, samples: 128, noiseThreshold: 0, texelsPerMeter: 12, maxAtlases: 32 } },
+  medium: { baker: 'blender', lightmap: { size: 4096, samples: 2048, noiseThreshold: 0, texelsPerMeter: 12, maxAtlases: 32 } },
+  high: { baker: 'blender', lightmap: { size: 4096, samples: 16384, noiseThreshold: 0, texelsPerMeter: 12, maxAtlases: 32 } },
 };
 
 /** The texture ceilings a tier imposes over the level's own (`min`), or the level's as they are. */

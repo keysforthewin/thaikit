@@ -3,10 +3,10 @@ Bake a level's lightmap in Blender, headless.
 
     blender -b --python bake_lightmap.py -- --glb in.glb --out <dir> --size 4096 --samples 128
         --moon dx,dy,dz,r,g,b,strength[,softDeg] --sky r,g,b,strength [--exposure 1.0]
-        [--lights '[...]'] [--device GPU|GPU+CPU|CPU] [--gutter 2] [--texels-per-meter 8]
+        [--lights '[...]'] [--device GPU|GPU+CPU|CPU] [--max-atlases 32] [--texels-per-meter 12]
 
 Reads the level's static geometry (the lod0 meshes under every cell_* node),
-unwraps a second UV layer across all of them into ONE atlas, and bakes two
+unwraps a second UV layer into coverage-validated, fixed-resolution atlases, and bakes two
 passes with Cycles:
 
   RGB  diffuse direct+indirect with the moon OFF and every authored point and
@@ -38,10 +38,12 @@ import struct
 import zlib
 import sys
 import time
+import hashlib
+import shutil
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from lightmap_padding import prepare_bake_images, dilate_lightmap
-from lightmap_islands import ensure_sampled_islands
+from lightmap_layout import prepare_layout, audit_baked_coverage, pad_owned
 
 import bpy
 import bmesh
@@ -53,6 +55,9 @@ ap = argparse.ArgumentParser()
 ap.add_argument('--glb', required=True)
 ap.add_argument('--out', required=True)
 ap.add_argument('--size', type=int, default=4096)
+ap.add_argument('--max-atlases', type=int, default=32)
+ap.add_argument('--layout-only', action='store_true')
+ap.add_argument('--coverage-only', action='store_true', help='Emission coverage and diagnostic export only; never production lighting')
 ap.add_argument('--samples', type=int, default=128)
 ap.add_argument('--shadow-samples', type=int, default=None)
 ap.add_argument('--moon', default='-0.4,-1,-0.3,0.72,0.78,0.95,1.0,1.5')
@@ -82,7 +87,7 @@ ap.add_argument('--margin', type=float, default=0.004,
 ap.add_argument('--gutter', type=float, default=2.0)
 # Requested lightmap density. `--size` is the CEILING the derived size is capped
 # at, not the size itself; see the atlas block below.
-ap.add_argument('--texels-per-meter', type=float, default=8.0)
+ap.add_argument('--texels-per-meter', type=float, default=12.0)
 # Which Cycles devices to enable. GPU: the first working backend of
 # OPTIX/CUDA/HIP/ONEAPI/METAL and nothing else. GPU+CPU: the same plus every
 # CPU device -- Cycles' hybrid mode, which used to be forced here and is usually
@@ -100,6 +105,9 @@ ap.add_argument('--join-groups', type=int, default=256)
 # more of it, 0 disables adaptive sampling so every texel takes every sample.
 ap.add_argument('--noise-threshold', type=float, default=None)
 args = ap.parse_args(argv)
+if args.size < 16 or args.max_atlases < 1 or args.texels_per_meter <= 0:
+    raise SystemExit('invalid atlas size, count or density')
+os.makedirs(args.out, exist_ok=True)
 
 T0 = time.time()
 
@@ -124,8 +132,20 @@ for block in (bpy.data.meshes, bpy.data.materials, bpy.data.images, bpy.data.lig
     for datablock in list(block):
         block.remove(datablock)
 
-log(f'importing {args.glb}')
-bpy.ops.import_scene.gltf(filepath=args.glb, merge_vertices=False)
+layout_hash=hashlib.sha256()
+for filename in [args.glb, os.path.join(os.path.dirname(__file__),'lightmap_layout.py'), os.path.join(os.path.dirname(__file__),'lightmap_atlas.py')]:
+    with open(filename,'rb') as fh:
+        for chunk in iter(lambda:fh.read(1048576),b''):layout_hash.update(chunk)
+layout_hash.update(json.dumps([args.size,args.texels_per_meter,args.max_atlases,bpy.app.version]).encode())
+layout_key=layout_hash.hexdigest()
+cache_dir=os.path.join(os.path.dirname(args.out),'atlas-layout-cache',layout_key)
+cache_ready=os.path.isfile(os.path.join(cache_dir,'complete.json')) and os.path.isfile(os.path.join(cache_dir,'scene.blend'))
+if cache_ready:
+    log('loading matching validated atlas layout')
+    bpy.ops.wm.open_mainfile(filepath=os.path.join(cache_dir,'scene.blend'))
+else:
+    log(f'importing {args.glb}')
+    bpy.ops.import_scene.gltf(filepath=args.glb, merge_vertices=False)
 scene = bpy.context.scene
 
 # Static bake targets: mesh objects whose parent is a 'lod0' empty under a cell.
@@ -215,164 +235,24 @@ for obj in static:
     obj.select_set(True)
 bpy.context.view_layer.objects.active = static[0]
 
-log('unwrapping (smart project + pack)')
-bpy.ops.object.mode_set(mode='EDIT')
-bpy.ops.mesh.select_all(action='SELECT')
-bpy.ops.uv.smart_project(angle_limit=math.radians(66), island_margin=0.0, correct_aspect=True, scale_to_bounds=False)
-bpy.ops.object.mode_set(mode='OBJECT')
+log('building world-metric lightmap charts')
 
-
-def pack(margin_uv):
-    """Pack every static island into the unit square with `margin_uv` added on
-    each side (ADD: absolute UV units, so the gap is the same for a 1 m box face
-    and the ground tile). scale=True so the islands FILL the square."""
-    bpy.ops.object.mode_set(mode='EDIT')
-    bpy.ops.mesh.select_all(action='SELECT')
-    try:
-        bpy.ops.uv.pack_islands(margin=margin_uv, rotate=True, scale=True, margin_method='ADD')
-    except TypeError:
-        bpy.ops.uv.pack_islands(margin=margin_uv, rotate=True)
-    bpy.ops.object.mode_set(mode='OBJECT')
-
-
-def count_islands():
-    """UV islands across the static set: faces joined by an edge whose UVs agree on both sides."""
-    n = 0
-    for obj in static:
-        bm = bmesh.new()
-        bm.from_mesh(obj.data)
-        uv = bm.loops.layers.uv['lightmap']
-        seen = set()
-        for f in bm.faces:
-            if f.index in seen:
-                continue
-            n += 1
-            seen.add(f.index)
-            stack = [f]
-            while stack:
-                cur = stack.pop()
-                for l in cur.loops:
-                    for l2 in l.edge.link_loops:
-                        g = l2.face
-                        if g is cur or g.index in seen:
-                            continue
-                        if (l[uv].uv - l2.link_loop_next[uv].uv).length < 1e-6 and (l.link_loop_next[uv].uv - l2[uv].uv).length < 1e-6:
-                            seen.add(g.index)
-                            stack.append(g)
-        bm.free()
-    return n
-
-
-# First pack with NO gutter: that measures how much surface there is per atlas
-# and decides the size. The gutter is then a known number of texels of THAT
-# size, and a second pack lays the islands out with it.
-pack(0.0)
-log(f'{count_islands():,} UV islands across {len(static)} static objects')
-
-# --- bake target -------------------------------------------------------------
-#
-# The atlas size is DERIVED from the density the level asked for.
-#
-# `texelsPerMeter` sat in the schema and in the editor's defaults and was read
-# by nothing at all: the unwrap packed whatever smart-project produced and the
-# atlas was whatever `--size` said, so the density a level actually got was an
-# accident of how much surface it happened to contain. A small level wasted most
-# of a 4096 atlas; a big one starved every prop on it.
-#
-# Measure it instead. For each triangle, sqrt(uv_area / world_area) is the
-# atlas fraction one metre of surface occupies, so `texels_per_meter / median`
-# is the atlas edge that delivers the requested density to the typical
-# triangle. The MEDIAN rather than the mean because one enormous island (the
-# ground) would otherwise set the size for everything.
-#
-# `--size` becomes the ceiling: asking for 8 texels/m on a city block should not
-# silently allocate a 16k atlas.
-def measure_density():
-    """Median atlas-fraction per metre of surface, over every static triangle."""
-    ratios = []
-    world_area = 0.0
-    uv_area = 0.0
-    for obj in static:
-        me = obj.data
-        layer = me.uv_layers.get('lightmap')
-        if layer is None:
-            continue
-        mw = obj.matrix_world
-        try:
-            me.calc_loop_triangles()  # a no-op / removed on newer Blender, where loop_triangles is always current
-        except (AttributeError, RuntimeError):
-            pass
-        uvs = layer.data
-        for tri in me.loop_triangles:
-            a, b, c = (mw @ me.vertices[i].co for i in tri.vertices)
-            wa = (b - a).cross(c - a).length * 0.5
-            ua, ub, uc = (uvs[i].uv for i in tri.loops)
-            ta = abs((ub - ua).cross(uc - ua)) * 0.5
-            if wa <= 1e-9 or ta <= 1e-12:
-                continue
-            world_area += wa
-            uv_area += ta
-            ratios.append(math.sqrt(ta / wa))
-    if not ratios:
-        return None, 0.0, 0.0, (0.0, 0.0)
-    ratios.sort()
-    mid = ratios[len(ratios) // 2]
-    p10 = ratios[int(len(ratios) * 0.10)]
-    p90 = ratios[int(len(ratios) * 0.90)]
-    return mid, world_area, uv_area, (p10, p90)
-
-
-def choose_size(median):
-    needed = args.texels_per_meter / median
-    return int(min(args.size, max(512, 2 ** math.ceil(math.log2(max(1.0, needed)))))), needed
-
-
-median, world_area, uv_area, spread = measure_density()
-if median and median > 0:
-    size, needed = choose_size(median)
-    log(f'atlas {size}² from the gutterless pack (wanted {int(needed)}, ceiling {args.size}); '
-        f'{world_area:.0f} m² of surface, islands cover {uv_area * 100:.1f}% of the atlas before the gutter')
-    # The real pack: `--gutter` texels between islands at this size. ADD margin
-    # is per SIDE, so half the gutter each. The gutter costs area, which drops
-    # the density; if that leaves the level under what it asked for and the
-    # ceiling allows, step the atlas up once and pack again for the new size.
-    for _ in range(3):
-        pack(args.gutter / (2.0 * size))
-        median, world_area, uv_area, spread = measure_density()
-        achieved = median * size
-        log(f'packed with a {args.gutter:g} texel gutter: islands cover {uv_area * 100:.1f}% of {size}², '
-            f'density {achieved:.1f} texels/m requested {args.texels_per_meter:g} '
-            f'(p10 {spread[0] * size:.1f}, p90 {spread[1] * size:.1f})')
-        bigger, _ = choose_size(median)
-        if achieved >= args.texels_per_meter * 0.5 or bigger <= size:
-            break
-        size = bigger
-        log(f'under half the requested density; stepping the atlas up to {size}² and packing again')
-    if uv_area > 1.0:
-        # A correct pack fits every island inside 0..1 exactly once, so the UV
-        # areas cannot sum past the atlas. Over 100% means islands OVERLAP, and
-        # overlapping islands bake on top of each other -- two surfaces sharing
-        # texels, each getting the other's light. Worth knowing about before
-        # trusting anything the atlas says.
-        log(f'WARNING islands cover {uv_area * 100:.1f}% of the atlas: they overlap and will bake over each other')
-    if spread[0] > 0 and spread[1] / spread[0] > 2.0:
-        # pack_islands(scale=True) is meant to preserve relative island scale.
-        # If it does not, the spread says so and `average_islands_scale` before
-        # packing is the follow-up -- measured, not guessed.
-        log(f'WARNING island scale spread is {spread[1] / spread[0]:.1f}x; the packer is not preserving relative scale')
-    if achieved < args.texels_per_meter * 0.5:
-        log(f'WARNING density is under half what was asked for; raise --size above {args.size}')
+size = args.size
+if cache_ready:
+    for filename in ('atlas-layout.json','coverage.json'):
+        shutil.copyfile(os.path.join(cache_dir,filename),os.path.join(args.out,filename))
+    with open(os.path.join(args.out,'atlas-layout.json')) as fh:atlas_mapping=json.load(fh)['objects']
+    with open(os.path.join(args.out,'coverage.json')) as fh:coverage_report=json.load(fh)
 else:
-    size = args.size
-    log(f'WARNING atlas {size}² (no measurable UV area after packing; the lightmap will be EMPTY)')
-
-# Thin corrugations and cylinder strips can fit entirely between pixel centres.
-# Give those islands a sample before baking, using only their packed gutter.
-sampled_strips = (sum(ensure_sampled_islands(obj.data, size) for obj in static)
-                  if args.gutter >= 2.0 else 0)
-log(f'aligned {sampled_strips} sub-texel lightmap islands to pixel centres')
-if args.gutter < 2.0:
-    log('sub-texel alignment requires a gutter of at least 2 pixels')
+    static, atlas_mapping, coverage_report = prepare_layout(static, size, args.texels_per_meter, args.max_atlases, args.out, log)
+    os.makedirs(cache_dir,exist_ok=True)
+    bpy.ops.wm.save_as_mainfile(filepath=os.path.join(cache_dir,'scene.blend'),compress=True)
+    for filename in ('atlas-layout.json','coverage.json'):
+        shutil.copyfile(os.path.join(args.out,filename),os.path.join(cache_dir,filename))
+    with open(os.path.join(cache_dir,'complete.json'),'w') as fh:json.dump({'key':layout_key},fh)
+if args.layout_only:
+    log('layout-only preflight passed')
+    raise SystemExit(0)
 
 img_rgb = bpy.data.images.new('lm_rgb', size, size, alpha=True, float_buffer=True)
 img_shadow = bpy.data.images.new('lm_shadow', size, size, alpha=True, float_buffer=True)
@@ -773,166 +653,297 @@ def bake_static(label, bake_type):
 # are freshly allocated and therefore already zero.
 scene.render.bake.use_clear = False
 
-# Pass 1: sky + bounce + emission + the authored lamps, moon off.
-log(f'bake 1/2: diffuse (sky + indirect + emission + {len(lamps)} lamp(s)) at {size}², {args.samples} samples, '
-    + (f'adaptive to {scene.cycles.adaptive_threshold:g}' if scene.cycles.use_adaptive_sampling else 'adaptive sampling off'))
-sun.hide_render = True
-for o in lamps:
-    o.hide_render = False
-# The world was built above (sky image or hemisphere ramp) and its Strength is
-# already set; pass 2 is the only thing that changes it.
-set_target(img_rgb)
-scene.render.bake.use_pass_direct = True
-scene.render.bake.use_pass_indirect = True
-scene.render.bake.use_pass_color = False
-bake_static('bake 1/2 diffuse', 'DIFFUSE')
+# Pages reuse the scene and two float buffers; completed pages are resumable.
+import hashlib
+fingerprint = hashlib.sha256()
+for source in [args.glb, __file__, os.path.join(os.path.dirname(__file__), 'lightmap_layout.py'), os.path.join(os.path.dirname(__file__), 'lightmap_atlas.py'), os.path.join(os.path.dirname(__file__), 'lightmap_padding.py'), args.env, args.lights_file]:
+    if source and os.path.isfile(source):
+        with open(source, 'rb') as fh:
+            for chunk in iter(lambda: fh.read(1048576), b''): fingerprint.update(chunk)
+fingerprint.update(json.dumps(vars(args), sort_keys=True).encode())
+fingerprint.update(json.dumps(atlas_mapping, sort_keys=True).encode())
+fingerprint = fingerprint.hexdigest()
+all_static = static
+with open(os.path.join(args.out,'atlas-layout.json')) as fh: atlas_layout=json.load(fh)
+coverage_material=bpy.data.materials.new('thaikit_coverage_only')
+coverage_material.use_nodes=True
+coverage_material.node_tree.nodes.clear()
+emit=coverage_material.node_tree.nodes.new('ShaderNodeEmission')
+emit.inputs['Color'].default_value=(1,1,1,1)
+output=coverage_material.node_tree.nodes.new('ShaderNodeOutputMaterial')
+coverage_material.node_tree.links.new(emit.outputs[0],output.inputs['Surface'])
+world_strength = bg.inputs['Strength'].default_value
+# Prove actual raster coverage for EVERY page before any production lighting.
+zero = np.zeros(size*size*4, dtype=np.float32)
+coverage_failures=[]
+for page in range(coverage_report['atlasCount']):
+    page_dir=os.path.join(args.out,f'atlas-{page:03d}')
+    os.makedirs(page_dir,exist_ok=True)
+    coverage_stamp=os.path.join(page_dir,'coverage.fingerprint')
+    if (os.path.isfile(coverage_stamp) and open(coverage_stamp).read()==fingerprint
+        and all(os.path.isfile(os.path.join(page_dir,f)) for f in ('owner.bin.gz','coverage.npz'))):
+        log(f'atlas {page+1}: reused validated coverage')
+        continue
+    static=[obj for obj in all_static if atlas_mapping[obj.name]['atlas']==page]
+    log(f'coverage preflight {page+1}/{coverage_report["atlasCount"]}')
+    img_rgb.pixels.foreach_set(zero)
+    # One-sample emission measures Cycles' own rasterisation before spending
+    # production samples. A legitimate black shadow still has coverage.
+    saved_materials={obj: list(obj.data.materials) for obj in static}
+    for obj in static:
+        for i in range(len(obj.data.materials)):obj.data.materials[i]=coverage_material
+    set_target(img_rgb)
+    scene.cycles.samples=1
+    bake_static('coverage-only', 'EMIT')
+    coverage_pixels=np.empty(size*size*4,dtype=np.float32)
+    img_rgb.pixels.foreach_get(coverage_pixels)
+    actual_coverage=coverage_pixels.reshape(size,size,4)[:,:,3]>.5
+    owner, failures=audit_baked_coverage(static,actual_coverage,atlas_layout['rectangles'],page,size)
+    with open(os.path.join(page_dir,'coverage.json'),'w') as fh:json.dump({'ok':not failures,'failures':failures},fh)
+    coverage_failures.extend(dict(f,atlas=page) for f in failures)
+    log(f'atlas {page+1}: {len(failures)} coverage failures')
+    np.savez_compressed(os.path.join(page_dir,'coverage.npz'),raw=actual_coverage,owner=owner)
+    import gzip
+    with gzip.open(os.path.join(page_dir,'owner.bin.gz'),'wb') as fh:fh.write(owner.astype('<i4').tobytes())
+    del owner,coverage_pixels
+    for obj,materials in saved_materials.items():
+        for i,material in enumerate(materials):obj.data.materials[i]=material
+    if not failures:
+        with open(coverage_stamp+'.tmp','w') as fh:fh.write(fingerprint)
+        os.replace(coverage_stamp+'.tmp',coverage_stamp)
+with open(os.path.join(args.out,'coverage-cycles.json'),'w') as fh:
+    json.dump({'ok':not coverage_failures,'atlasesChecked':coverage_report['atlasCount'],'failures':coverage_failures},fh)
+if coverage_failures:raise ValueError(f'Cycles coverage failed: {len(coverage_failures)} entries across all {coverage_report["atlasCount"]} atlases; see coverage-cycles.json')
+log('all atlas pages passed Cycles coverage')
+atlas_stats = []
+if args.coverage_only:
+    # Diagnostic textures exercise the real multi-atlas runtime and encoders.
+    # They are explicitly labelled; no diffuse or moon pass is run.
+    import struct,zlib
+    def chunk(kind,data):
+        return struct.pack('>I',len(data))+kind+data+struct.pack('>I',zlib.crc32(kind+data)&0xffffffff)
+    for page in range(coverage_report['atlasCount']):
+        filename=f'atlas-{page:03d}/lightmap.png'
+        with np.load(os.path.join(args.out,f'atlas-{page:03d}/coverage.npz')) as evidence:owner=evidence['owner']
+        color=np.zeros((size,size,4),dtype=np.uint8)
+        yy,xx=np.indices((size,size),sparse=True)
+        checker=((xx//16+yy//16)%2)*35
+        for channel in range(3):color[:,:,channel]=np.where(owner>=0,145+((page*37+channel*29)%50)+checker,0)
+        color[:,:,3]=255
+        body=b''.join(b'\x00'+row.tobytes() for row in color[::-1])
+        png=b'\x89PNG\r\n\x1a\n'+chunk(b'IHDR',struct.pack('>IIBBBBB',size,size,8,6,0,0,0))+chunk(b'IDAT',zlib.compress(body))+chunk(b'IEND',b'')
+        with open(os.path.join(args.out,filename),'wb') as fh:fh.write(png)
+        atlas_stats.append({'atlas':page,'file':filename,'size':size,'range':1,'coverageOnly':True})
+    log('coverage-only: diagnostic atlases written; production lighting skipped')
+for page in range(0 if args.coverage_only else coverage_report['atlasCount']):
+    page_dir = os.path.join(args.out, f'atlas-{page:03d}')
+    os.makedirs(page_dir, exist_ok=True)
+    complete = os.path.join(page_dir, 'complete.json')
+    if os.path.isfile(complete):
+        with open(complete) as fh: previous = json.load(fh)
+        if previous.get('fingerprint') == fingerprint and all(os.path.isfile(os.path.join(page_dir, f)) for f in ('lightmap.png', 'owner.bin.gz', 'coverage.npz')):
+            atlas_stats.append(previous['stats'])
+            log(f'atlas {page+1}: reused validated completed page')
+            continue
+    static = [obj for obj in all_static if atlas_mapping[obj.name]['atlas'] == page]
+    log(f'atlas {page+1}/{coverage_report["atlasCount"]}: {len(static)} objects')
+    zero = np.zeros(size*size*4, dtype=np.float32)
+    img_rgb.pixels.foreach_set(zero)
+    img_shadow.pixels.foreach_set(zero)
+    bg.inputs['Strength'].default_value = world_strength
+    scene.cycles.samples = args.samples
+    # Pass 1: sky + bounce + emission + the authored lamps, moon off.
+    log(f'bake 1/2: diffuse (sky + indirect + emission + {len(lamps)} lamp(s)) at {size}², {args.samples} samples, '
+        + (f'adaptive to {scene.cycles.adaptive_threshold:g}' if scene.cycles.use_adaptive_sampling else 'adaptive sampling off'))
+    sun.hide_render = True
+    for o in lamps:
+        o.hide_render = False
+    # The world was built above (sky image or hemisphere ramp) and its Strength is
+    # already set; pass 2 is the only thing that changes it.
+    set_target(img_rgb)
+    scene.render.bake.use_pass_direct = True
+    scene.render.bake.use_pass_indirect = True
+    scene.render.bake.use_pass_color = False
+    diffuse_cache=os.path.join(page_dir,'diffuse.npy')
+    diffuse_stamp=os.path.join(page_dir,'diffuse.fingerprint')
+    if os.path.isfile(diffuse_cache) and os.path.isfile(diffuse_stamp) and open(diffuse_stamp).read()==fingerprint:
+        img_rgb.pixels.foreach_set(np.load(diffuse_cache).reshape(-1))
+        log('reused completed diffuse pass')
+    else:
+        bake_static('bake 1/2 diffuse', 'DIFFUSE')
+        pixels=np.empty(size*size*4,dtype=np.float32);img_rgb.pixels.foreach_get(pixels)
+        with open(diffuse_cache+'.tmp','wb') as fh:np.save(fh,pixels)
+        os.replace(diffuse_cache+'.tmp',diffuse_cache)
+        with open(diffuse_stamp,'w') as fh:fh.write(fingerprint)
+        del pixels
 
-# Pass 2: moon visibility. The lamps go OFF so alpha is the moon's alone; a
-# lamp left on here reads as a smear across the middle of the probe's alpha
-# histogram.
-log('bake 2/2: moon shadow mask')
-scene.cycles.samples = args.shadow_samples or args.samples
-log(f'moon mask samples: {scene.cycles.samples}')
-sun.hide_render = False
-for o in lamps:
-    o.hide_render = True
-bg.inputs['Strength'].default_value = 0.0
-set_target(img_shadow)
-bake_static('bake 2/2 moon mask', 'SHADOW')
+    # Pass 2: moon visibility. The lamps go OFF so alpha is the moon's alone; a
+    # lamp left on here reads as a smear across the middle of the probe's alpha
+    # histogram.
+    log('bake 2/2: moon shadow mask')
+    scene.cycles.samples = args.shadow_samples or args.samples
+    log(f'moon mask samples: {scene.cycles.samples}')
+    sun.hide_render = False
+    for o in lamps:
+        o.hide_render = True
+    bg.inputs['Strength'].default_value = 0.0
+    set_target(img_shadow)
+    shadow_cache=os.path.join(page_dir,'shadow.npy')
+    shadow_stamp=os.path.join(page_dir,'shadow.fingerprint')
+    if os.path.isfile(shadow_cache) and os.path.isfile(shadow_stamp) and open(shadow_stamp).read()==fingerprint:
+        img_shadow.pixels.foreach_set(np.load(shadow_cache).reshape(-1))
+        log('reused completed moon mask pass')
+    else:
+        bake_static('bake 2/2 moon mask', 'SHADOW')
+        pixels=np.empty(size*size*4,dtype=np.float32);img_shadow.pixels.foreach_get(pixels)
+        with open(shadow_cache+'.tmp','wb') as fh:np.save(fh,pixels)
+        os.replace(shadow_cache+'.tmp',shadow_cache)
+        with open(shadow_stamp,'w') as fh:fh.write(fingerprint)
+        del pixels
 
-# --- combine and save ----------------------------------------------------------
-log('combining')
-n = size * size * 4
-rgb = np.empty(n, dtype=np.float32)
-img_rgb.pixels.foreach_get(rgb)
-sh = np.empty(n, dtype=np.float32)
-img_shadow.pixels.foreach_get(sh)
-rgb = rgb.reshape(-1, 4)
-sh = sh.reshape(-1, 4)
-out = np.empty_like(rgb)
-lin = rgb[:, 0:3] * args.exposure
+    # --- combine and save ----------------------------------------------------------
+    log('combining')
+    n = size * size * 4
+    rgb = np.empty(n, dtype=np.float32)
+    img_rgb.pixels.foreach_get(rgb)
+    sh = np.empty(n, dtype=np.float32)
+    img_shadow.pixels.foreach_get(sh)
+    rgb = rgb.reshape(-1, 4)
+    sh = sh.reshape(-1, 4)
+    out = np.empty_like(rgb)
+    lin = rgb[:, 0:3] * args.exposure
 
-# --- RANGE: stop throwing away everything brighter than 1 ---------------------
-#
-# This used to be `clip(lin, 0, 1)`, and on a real bake 7.5% of covered texels
-# came back pinned at full scale -- one texel in thirteen with its bounce
-# destroyed. That is not an edge case: a neon sign lighting its own wall, or any
-# emissive surface at all, is exactly the thing the RGB channel exists to carry,
-# and it is exactly what clips.
-#
-# The atlas cannot hold HDR (it ships as 8-bit KTX2), so the fix is a single
-# scalar divided out here and multiplied back at runtime. That costs NOTHING in
-# the shader: `lightMapIntensity` is already a plain multiply in three's
-# `lights_fragment_maps`, so the range folds into a uniform that was there
-# anyway. RGBM was the alternative and is worse -- three's lightmap chunk has no
-# decode hook, it loses the hardware sRGB decode, and bilinear filtering across
-# texels carrying different exponents is simply wrong.
-#
-# The divisor comes from the 99.9th percentile of LUMINANCE over covered texels
-# rather than the maximum, so one runaway specular texel cannot dim the whole
-# level; quantising to quarters keeps it a round number across re-bakes, and the
-# ceiling of 16 stops a pathological scene from crushing everything else into
-# the bottom of the 8-bit range. The baked lamps raise p99.9 (a 12 cd lamp is
-# 1.33 at 3 m), so `range` is usually above 1 on a lit level now; that is the
-# 8-bit atlas paying for the lamps with precision in the dark, and expected.
-covered = rgb[:, 3] > 0.5
-# The PER-CHANNEL peak, not the luminance. Clipping happens channel by channel,
-# and luminance weights blue at 0.0722 -- so on a blue night sky a texel can peg
-# its B channel at full scale while its luminance is 0.07, nowhere near a
-# luminance percentile. Measured on `thepurge`: luminance p99.9 said 0.396 and
-# implied nothing was clipping, while 2.1% of covered texels were actually at
-# full scale in at least one channel, two thirds of them in blue alone.
-peak = np.max(lin, axis=1)
-p999 = float(np.percentile(peak[covered], 99.9)) if covered.any() else 0.0
-rng = float(min(16.0, max(1.0, math.ceil(p999 * 4.0) / 4.0)))
-clipped_before = float(np.count_nonzero(np.any(lin > 1.0, axis=1) & covered)) / max(1, int(covered.sum()))
-out[:, 0:3] = np.clip(lin / rng, 0.0, 1.0)
-out[:, 3] = np.clip(sh[:, 0], 0.0, 1.0)
-still_clipped = float(np.count_nonzero(np.any(lin / rng > 1.0, axis=1) & covered)) / max(1, int(covered.sum()))
-log(f'range {rng:g} (p99.9 channel peak {p999:.3f}); clipped {clipped_before * 100:.2f}% -> {still_clipped * 100:.2f}% of covered texels')
+    # --- RANGE: stop throwing away everything brighter than 1 ---------------------
+    #
+    # This used to be `clip(lin, 0, 1)`, and on a real bake 7.5% of covered texels
+    # came back pinned at full scale -- one texel in thirteen with its bounce
+    # destroyed. That is not an edge case: a neon sign lighting its own wall, or any
+    # emissive surface at all, is exactly the thing the RGB channel exists to carry,
+    # and it is exactly what clips.
+    #
+    # The atlas cannot hold HDR (it ships as 8-bit KTX2), so the fix is a single
+    # scalar divided out here and multiplied back at runtime. That costs NOTHING in
+    # the shader: `lightMapIntensity` is already a plain multiply in three's
+    # `lights_fragment_maps`, so the range folds into a uniform that was there
+    # anyway. RGBM was the alternative and is worse -- three's lightmap chunk has no
+    # decode hook, it loses the hardware sRGB decode, and bilinear filtering across
+    # texels carrying different exponents is simply wrong.
+    #
+    # The divisor comes from the 99.9th percentile of LUMINANCE over covered texels
+    # rather than the maximum, so one runaway specular texel cannot dim the whole
+    # level; quantising to quarters keeps it a round number across re-bakes, and the
+    # ceiling of 16 stops a pathological scene from crushing everything else into
+    # the bottom of the 8-bit range. The baked lamps raise p99.9 (a 12 cd lamp is
+    # 1.33 at 3 m), so `range` is usually above 1 on a lit level now; that is the
+    # 8-bit atlas paying for the lamps with precision in the dark, and expected.
+    covered = rgb[:, 3] > 0.5
+    # The PER-CHANNEL peak, not the luminance. Clipping happens channel by channel,
+    # and luminance weights blue at 0.0722 -- so on a blue night sky a texel can peg
+    # its B channel at full scale while its luminance is 0.07, nowhere near a
+    # luminance percentile. Measured on `thepurge`: luminance p99.9 said 0.396 and
+    # implied nothing was clipping, while 2.1% of covered texels were actually at
+    # full scale in at least one channel, two thirds of them in blue alone.
+    peak = np.max(lin, axis=1)
+    p999 = float(np.percentile(peak[covered], 99.9)) if covered.any() else 0.0
+    rng = float(min(16.0, max(1.0, math.ceil(p999 * 4.0) / 4.0)))
+    clipped_before = float(np.count_nonzero(np.any(lin > 1.0, axis=1) & covered)) / max(1, int(covered.sum()))
+    out[:, 0:3] = np.clip(lin / rng, 0.0, 1.0)
+    out[:, 3] = np.clip(sh[:, 0], 0.0, 1.0)
+    still_clipped = float(np.count_nonzero(np.any(lin / rng > 1.0, axis=1) & covered)) / max(1, int(covered.sum()))
+    log(f'range {rng:g} (p99.9 channel peak {p999:.3f}); clipped {clipped_before * 100:.2f}% -> {still_clipped * 100:.2f}% of covered texels')
 
-stats = {
-    'range': rng,
-    'p999': p999,
-    'clipRateBefore': clipped_before,
-    'clipRate': still_clipped,
-    'coverage': float(covered.sum()) / float(covered.size),
-    'size': size,
-    'samples': args.samples,
-    'shadowSamples': args.shadow_samples or args.samples,
-    'noiseThreshold': (scene.cycles.adaptive_threshold if scene.cycles.use_adaptive_sampling else 0),
-    # How many authored lamps went into RGB. Its PRESENCE is what tells the
-    # manifest this atlas carries the lamps, so the runtime may cut their live
-    # direct term on static materials; a lightmap.json from an older bake has
-    # no key and the level renders as it did.
-    'bakedLights': len(lamps),
-    'bakedLightNames': [s['name'] for s in lamp_specs],
-    'bakedAreaLights': sum(o.data.type == 'AREA' for o in lamps),
-    'skyStrength': args.env_strength if args.env else None,
-}
-# --- write the PNG OURSELVES --------------------------------------------------
-#
-# Not `img_out.save_render()`. Blender's writer UN-PREMULTIPLIES on save --
-# it divides RGB by alpha -- and `alpha_mode = 'CHANNEL_PACKED'`, which exists
-# to say "these channels are unrelated, leave them alone", does not stop it.
-#
-# The lightmap packs the moon's visibility into alpha, so every shadowed texel
-# was having its sky-and-bounce colour divided by a number approaching zero and
-# saturating. Measured on a real bake: 24% of fully shadowed texels pinned at
-# full scale, and shadowed texels averaging 13.5x BRIGHTER than lit ones in a
-# channel the moon is not even part of -- physically backwards, since a
-# moon-shadowed spot is usually under something and sees less sky too. It was in
-# every level ever baked, and it is invisible unless you correlate RGB against
-# alpha, because a too-bright shadow still looks like a shadow.
-#
-# Doing it here also removes the view transform from the equation: the sRGB
-# encode below is explicit, rather than a scene setting that has to be talked
-# out of tone mapping first.
-def write_png16(path_out, rgba):
-    """A 16-bit RGBA PNG, big-endian samples, one IDAT. rgba is (n, 4) in 0..1."""
-    h, w = size, size
-    u16 = np.clip(rgba, 0.0, 1.0).reshape(h, w, 4)
-    # `Image.pixels` is BOTTOM row first (Blender's UV origin is bottom-left);
-    # a PNG is top row first, and the glTF exporter writes v' = 1 - v on the
-    # assumption that the image was saved that way round. Writing the rows in
-    # array order shipped the whole atlas upside down against its UVs: every
-    # ground tile sampled some other island -- roof rectangles, facade strips
-    # -- and read as jagged shadows nothing was casting. `save_render()` did
-    # this flip for free, and this writer replaced it.
-    u16 = u16[::-1]
-    u16 = np.rint(u16 * 65535.0).astype('>u2')
-    raw = np.zeros((h, w * 4 * 2 + 1), dtype=np.uint8)
-    raw[:, 1:] = u16.reshape(h, w * 4).view(np.uint8)  # filter byte 0 per row
-    body = zlib.compress(raw.tobytes(), 9)
+    stats = {
+        'range': rng,
+        'p999': p999,
+        'clipRateBefore': clipped_before,
+        'clipRate': still_clipped,
+        'coverage': float(covered.sum()) / float(covered.size),
+        'size': size,
+        'samples': args.samples,
+        'shadowSamples': args.shadow_samples or args.samples,
+        'noiseThreshold': (scene.cycles.adaptive_threshold if scene.cycles.use_adaptive_sampling else 0),
+        # How many authored lamps went into RGB. Its PRESENCE is what tells the
+        # manifest this atlas carries the lamps, so the runtime may cut their live
+        # direct term on static materials; a lightmap.json from an older bake has
+        # no key and the level renders as it did.
+        'bakedLights': len(lamps),
+        'bakedLightNames': [s['name'] for s in lamp_specs],
+        'bakedAreaLights': sum(o.data.type == 'AREA' for o in lamps),
+        'skyStrength': args.env_strength if args.env else None,
+    }
+    # --- write the PNG OURSELVES --------------------------------------------------
+    #
+    # Not `img_out.save_render()`. Blender's writer UN-PREMULTIPLIES on save --
+    # it divides RGB by alpha -- and `alpha_mode = 'CHANNEL_PACKED'`, which exists
+    # to say "these channels are unrelated, leave them alone", does not stop it.
+    #
+    # The lightmap packs the moon's visibility into alpha, so every shadowed texel
+    # was having its sky-and-bounce colour divided by a number approaching zero and
+    # saturating. Measured on a real bake: 24% of fully shadowed texels pinned at
+    # full scale, and shadowed texels averaging 13.5x BRIGHTER than lit ones in a
+    # channel the moon is not even part of -- physically backwards, since a
+    # moon-shadowed spot is usually under something and sees less sky too. It was in
+    # every level ever baked, and it is invisible unless you correlate RGB against
+    # alpha, because a too-bright shadow still looks like a shadow.
+    #
+    # Doing it here also removes the view transform from the equation: the sRGB
+    # encode below is explicit, rather than a scene setting that has to be talked
+    # out of tone mapping first.
+    def write_png16(path_out, rgba):
+        """A 16-bit RGBA PNG, big-endian samples, one IDAT. rgba is (n, 4) in 0..1."""
+        h, w = size, size
+        u16 = np.clip(rgba, 0.0, 1.0).reshape(h, w, 4)
+        # `Image.pixels` is BOTTOM row first (Blender's UV origin is bottom-left);
+        # a PNG is top row first, and the glTF exporter writes v' = 1 - v on the
+        # assumption that the image was saved that way round. Writing the rows in
+        # array order shipped the whole atlas upside down against its UVs: every
+        # ground tile sampled some other island -- roof rectangles, facade strips
+        # -- and read as jagged shadows nothing was casting. `save_render()` did
+        # this flip for free, and this writer replaced it.
+        u16 = u16[::-1]
+        u16 = np.rint(u16 * 65535.0).astype('>u2')
+        raw = np.zeros((h, w * 4 * 2 + 1), dtype=np.uint8)
+        raw[:, 1:] = u16.reshape(h, w * 4).view(np.uint8)  # filter byte 0 per row
+        body = zlib.compress(raw.tobytes(), 9)
 
-    def chunk(kind, data):
-        return (struct.pack('>I', len(data)) + kind + data
-                + struct.pack('>I', zlib.crc32(kind + data) & 0xffffffff))
+        def chunk(kind, data):
+            return (struct.pack('>I', len(data)) + kind + data
+                    + struct.pack('>I', zlib.crc32(kind + data) & 0xffffffff))
 
-    ihdr = struct.pack('>IIBBBBB', w, h, 16, 6, 0, 0, 0)
-    with open(path_out, 'wb') as fh:
-        fh.write(b'\x89PNG\r\n\x1a\n')
-        fh.write(chunk(b'IHDR', ihdr))
-        fh.write(chunk(b'IDAT', body))
-        fh.write(chunk(b'IEND', b''))
+        ihdr = struct.pack('>IIBBBBB', w, h, 16, 6, 0, 0, 0)
+        with open(path_out, 'wb') as fh:
+            fh.write(b'\x89PNG\r\n\x1a\n')
+            fh.write(chunk(b'IHDR', ihdr))
+            fh.write(chunk(b'IDAT', body))
+            fh.write(chunk(b'IEND', b''))
 
 
-# sRGB encode for the COLOUR only. Alpha is a mask, not a colour, and the
-# runtime samples it raw -- an sRGB texture stores alpha linearly, so encoding
-# it here would make the moon's shadow the wrong shape.
-srgb = np.empty_like(out)
-c = out[:, 0:3]
-srgb[:, 0:3] = np.where(c <= 0.0031308, c * 12.92, 1.055 * np.power(np.maximum(c, 1e-8), 1.0 / 2.4) - 0.055)
-srgb[:, 3] = out[:, 3]
-padding = max(0, int(args.gutter / 2))
-dilate_lightmap(srgb.reshape(size, size, 4), covered.reshape(size, size), padding)
-stats['paddingPixels'] = padding
-stats['paddingMode'] = 'global-coverage'
-log(f'padded {padding}px once using union surface coverage; baked texels preserved')
-write_png16(f'{args.out}/lightmap.png', srgb)
-with open(f'{args.out}/lightmap.json', 'w') as fh:
-    json.dump(stats, fh)
-log('wrote lightmap.png + lightmap.json')
+    # sRGB encode for the COLOUR only. Alpha is a mask, not a colour, and the
+    # runtime samples it raw -- an sRGB texture stores alpha linearly, so encoding
+    # it here would make the moon's shadow the wrong shape.
+    srgb = np.empty_like(out)
+    c = out[:, 0:3]
+    srgb[:, 0:3] = np.where(c <= 0.0031308, c * 12.92, 1.055 * np.power(np.maximum(c, 1e-8), 1.0 / 2.4) - 0.055)
+    srgb[:, 3] = out[:, 3]
+    padding = 2
+    pad_owned(srgb.reshape(size, size, 4), covered.reshape(size, size), atlas_layout['rectangles'], page)
+    stats['paddingPixels'] = padding
+    stats['paddingMode'] = 'chart-owned'
+    log(f'padded {padding}px within chart ownership; baked texels preserved')
+    write_png16(f'{page_dir}/lightmap.png', srgb)
+    with open(f'{page_dir}/lightmap.json', 'w') as fh:
+        json.dump(stats, fh)
+    log('wrote lightmap.png + lightmap.json')
+
+    stats['file'] = f'atlas-{page:03d}/lightmap.png'
+    stats['atlas'] = page
+    atlas_stats.append(stats)
+    with open(complete+'.tmp', 'w') as fh: json.dump({'fingerprint':fingerprint,'stats':stats},fh)
+    os.replace(complete+'.tmp', complete)
+static = all_static
+with open(os.path.join(args.out,'lightmap.json'),'w') as fh:
+    json.dump({'version':2,'atlases':atlas_stats,'coverage':coverage_report,
+               'coverageOnly':args.coverage_only,'bakedLights':0 if args.coverage_only else len(lamps),'texelsPerMeter':args.texels_per_meter},fh)
 
 # --- export the unwrapped static meshes ---------------------------------------
 for obj in bpy.data.objects:

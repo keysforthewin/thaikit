@@ -98,6 +98,19 @@ export function partitionCells({ bake }) {
       if (!p) { stray.push(node.getName()); continue; }
       scene.removeChild(node);
       if (p.static) {
+        // Transient provenance survives joining/welding and is consumed by
+        // the UV audit. It is not copied into the shipping geometry.
+        const original = node.getMesh();
+        const own = doc.createMesh(original.getName());
+        const sourceIndex = bake.placements.indexOf(p);
+        for (const originalPrim of original.listPrimitives()) {
+          const prim = originalPrim.clone();
+          const count = prim.getAttribute('POSITION').getCount();
+          prim.setAttribute('_TK_SOURCE', doc.createAccessor().setType('SCALAR')
+            .setArray(new Float32Array(count).fill(sourceIndex)).setBuffer(doc.getRoot().listBuffers()[0]));
+          own.addPrimitive(prim);
+        }
+        node.setMesh(own);
         if (p.castShadow === false) {
           const sourceMesh = node.getMesh();
           const uniqueMesh = doc.createMesh(sourceMesh.getName());

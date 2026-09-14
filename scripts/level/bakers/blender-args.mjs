@@ -58,7 +58,8 @@ export function blenderBakeSpec({ bake, cpu = false, hasEnv = false }) {
     size: lm.size ?? 4096,
     samples: lm.samples ?? 128,
     noiseThreshold: lm.noiseThreshold ?? null,
-    texelsPerMeter: lm.texelsPerMeter ?? 8,
+    texelsPerMeter: lm.texelsPerMeter ?? 12,
+    maxAtlases: lm.maxAtlases ?? 32,
     // The eighth number is the sun's angular diameter in degrees: the width
     // of the penumbra Cycles gives the moon's shadow on static geometry.
     moon: [...moonDir, ...moonRgb, moon?.intensity ?? 0.6, moon?.shadow?.softDeg ?? 1.5],
@@ -88,11 +89,12 @@ export function buildBlenderArgs(spec, paths, mapPath) {
   if (!CYCLES_DEVICES.includes(spec.device)) throw new Error(`unknown cycles device ${spec.device}`);
   const f4 = (n) => Number(n).toFixed(4);
   const args = [
-    '-b', '--python', mapPath(paths.script), '--',
+    '-b', '--python-exit-code', '1', '--python', mapPath(paths.script), '--',
     '--glb', mapPath(paths.glb), '--out', mapPath(paths.out),
-    // `--size` is the CEILING; the atlas is derived from the density below.
+    // Fixed page dimensions; allocate additional pages to retain density.
     '--size', String(spec.size), '--samples', String(spec.samples),
     `--texels-per-meter=${spec.texelsPerMeter}`,
+    `--max-atlases=${spec.maxAtlases ?? 32}`,
     // '=' form: a value starting with '-' (a downward moon) reads as an option otherwise.
     `--moon=${spec.moon.map(f4).join(',')}`,
     `--sky=${spec.sky.map(f4).join(',')}`,
@@ -111,6 +113,8 @@ export function buildBlenderArgs(spec, paths, mapPath) {
     args.push(`--env-color=${(spec.env.color ?? [1, 1, 1]).map(f4).join(',')}`);
     args.push(`--env-rotation=${Number(spec.env.rotation).toFixed(3)}`);
   }
+  if (spec.coverageOnly) args.push('--coverage-only');
+  if (spec.layoutOnly) args.push('--layout-only');
   return args;
 }
 

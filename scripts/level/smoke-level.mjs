@@ -1,12 +1,7 @@
 #!/usr/bin/env node
 /**
- * Render a baked level through the runtime package, headlessly.
- *
- * The same puppeteer arrangement render-model.mjs uses: an ephemeral static
- * server over the repo, SwiftShader flags (or renders come back black), the
- * navigation fired without awaiting (its promise never settles here) and
- * readiness polled. Reports draw calls and triangles per LOD tier and fails on
- * a frame that is no brighter than the backdrop.
+ * Render a baked level through the existing Chrome DevTools MCP browser on
+ * port 9222. This command never launches a browser or falls back to software.
  *
  *   node scripts/level/smoke-level.mjs --level <id> [--size 768] [--cell <ix>_<iz>] [--quality low|medium|high]
  *       [--cam x,y,z [--look x,y,z] --out <png>]   frame a spot in metres instead of the first spawn
@@ -17,6 +12,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import * as esbuild from 'esbuild';
+import { connectChromeMcp } from './chrome-mcp.mjs';
 
 import { REPO_ROOT, toRepoRelative } from '@thaikit/registry-core';
 
@@ -48,13 +44,6 @@ function serveRepo() {
   });
 }
 
-async function findChrome() {
-  for (const p of [process.env.CHROME_PATH, '/usr/bin/google-chrome', '/usr/bin/google-chrome-stable', '/usr/bin/chromium', '/usr/bin/chromium-browser'].filter(Boolean)) {
-    try { await fs.access(p); return p; } catch { /* next */ }
-  }
-  throw new Error('no Chrome found; set CHROME_PATH');
-}
-
 async function main() {
   const args = parseArgs();
   const id = String(args.level ?? '');
@@ -62,7 +51,7 @@ async function main() {
   const size = Number(args.size ?? 768);
   const cell = assertCellKey(args.cell ?? null);
   const quality = assertQuality(args.quality ?? null);
-  const glb = path.join(buildDirOf(id, cell), withQuality('level.glb', quality));
+  const glb = args.file ? path.resolve(String(args.file)) : path.join(buildDirOf(id, cell), withQuality('level.glb', quality));
   await fs.access(glb);
 
   log('bundling harness');
@@ -73,27 +62,29 @@ async function main() {
   });
 
   const { server, port } = await serveRepo();
-  const puppeteer = await import('puppeteer-core');
-  const angle = String(args.angle ?? 'swiftshader');
-  if (!['swiftshader', 'gl'].includes(angle)) throw new Error('--angle must be swiftshader or gl');
-  const browser = await puppeteer.launch({
-    executablePath: await findChrome(),
-    headless: !args.headed,
-    args: [...(args.headed ? [] : ['--headless=new']), '--no-sandbox', '--disable-dev-shm-usage', '--use-gl=angle', `--use-angle=${angle}`, '--disable-gpu-sandbox', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'],
-  });
+  const mcp = await connectChromeMcp().catch(error => { server.close(); throw error; });
+  let pageId;
   try {
-    const page = await browser.newPage();
-    await page.setViewport({ width: size, height: size });
+    const created = await mcp.call('new_page', { url: 'about:blank' });
+    pageId = Number(created.match(/(\d+):.*\[selected\]/)?.[1]);
+    if (!Number.isInteger(pageId)) throw new Error(`Cannot identify smoke page: ${created}`);
+    const browser = await mcp.evaluate(pageId, `() => {
+      const gl = document.createElement('canvas').getContext('webgl2');
+      const ext = gl?.getExtension('WEBGL_debug_renderer_info');
+      return { userAgent: navigator.userAgent, renderer: ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : null };
+    }`);
+    if (!/Windows/.test(browser.userAgent)) throw new Error(`Port 9222 is not the expected Windows browser: ${browser.userAgent}`);
+    if (!browser.renderer || /swiftshader|llvmpipe/i.test(browser.renderer)) throw new Error(`Hardware WebGL unavailable on port 9222: ${JSON.stringify(browser)}`);
+    log(`Chrome MCP 9222: ${browser.renderer}`);
+    await mcp.call('emulate', { pageId, viewport: `${size}x${size}x1` });
     const errors = [];
-    page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') errors.push(m.text()); });
-    page.on('pageerror', (e) => errors.push(e.message));
     const levelUrl = `/${toRepoRelative(glb)}`;
-    const view = (args.cam ? `&cam=${encodeURIComponent(String(args.cam))}${args.look ? `&look=${encodeURIComponent(String(args.look))}` : ''}` : '') + (args['shadow-probe'] ? '&shadowProbe=1' : '');
-    page.goto(`http://127.0.0.1:${port}/render/level-harness.html?level=${encodeURIComponent(levelUrl)}&size=${size}${args['ibl-size'] ? `&iblSize=${Number(args['ibl-size'])}` : ''}${view}`).catch(() => {});
+    const view = (args.cam ? `&cam=${encodeURIComponent(String(args.cam))}${args.look ? `&look=${encodeURIComponent(String(args.look))}` : ''}` : '') + (args['shadow-probe'] ? '&shadowProbe=1' : '') + (args.benchmark ? '&benchmark=1' : '') + (args['atlas-probe'] ? '&atlasProbe=1' : '') + (args['uv-debug'] ? '&uvDebug=1' : '') + (args['coverage-masks'] ? `&coverageMasks=${encodeURIComponent('/'+toRepoRelative(path.resolve(String(args['coverage-masks']))))}` : '');
+    await mcp.call('navigate_page', { pageId, url: `http://127.0.0.1:${port}/render/level-harness.html?level=${encodeURIComponent(levelUrl)}&size=${size}${args['ibl-size'] ? `&iblSize=${Number(args['ibl-size'])}` : ''}${view}`, type: 'url' });
     const deadline = Date.now() + Number(args['timeout-ms'] ?? 120_000);
     let result = null;
     while (Date.now() < deadline) {
-      result = await page.evaluate(() => window.__smoke ?? null).catch(() => null);
+      result = await mcp.evaluate(pageId, '() => window.__smoke ?? null');
       if (result?.ready) break;
       await new Promise((r) => setTimeout(r, 250));
     }
@@ -102,7 +93,8 @@ async function main() {
     // --cam x,y,z [--look x,y,z] frames a spot in metres; --out <png> keeps such a view from
     // overwriting the spawn-view smoke image the gates read.
     const shot = args.out ? path.resolve(String(args.out)) : path.join(buildDirOf(id, cell), withQuality('smoke.png', quality));
-    await page.screenshot({ path: shot });
+    await mcp.call('take_screenshot', { pageId, filePath: shot });
+    errors.push(await mcp.call('list_console_messages', { pageId, types: ['error', 'warn'] }));
     // Coverage, not brightness: a night level is dark by design, but a blank
     // frame (SwiftShader silently failing) has nothing in it at all.
     const blank = Object.entries(result.frames).filter(([, f]) => f.coverage < 0.01).map(([k]) => k);
@@ -110,6 +102,8 @@ async function main() {
     log(result.environment
       ? `environment: ${result.environment.source} at ${result.environment.size}² (${result.environment.mb} MB, ${result.environment.ms} ms); level loaded in ${result.loadMs} ms`
       : `environment: none; level loaded in ${result.loadMs} ms`);
+    if (args['coverage-masks'] && (!result.atlasCoverage?.length || result.atlasCoverage.some(p=>p.missingTexels))) throw new Error(`GPU atlas coverage failed: ${JSON.stringify(result.atlasCoverage)}`);
+    if (args['atlas-probe'] && (!result.atlasProbes?.length || result.atlasProbes.some(p=>p.luma<=.05))) throw new Error('a diagnostic atlas did not render on the GPU');
     if (blank.length) throw new Error(`frames with nothing drawn in them: ${blank.join(', ')}`);
     // The runtime warns rather than throws when three's shader source moves
     // under it, and for years nothing read those warnings -- which is how
@@ -117,9 +111,11 @@ async function main() {
     // anyone noticing. A runtime warning is a failed smoke run now.
     const runtime = errors.filter((e) => e.includes('[level-runtime]'));
     if (runtime.length) throw new Error(`the runtime warned: ${[...new Set(runtime)].join(' | ')}`);
+    if (errors.some(e=>/\[(?:error|warn|warning)\]/.test(e))) throw new Error(`browser reported an error or warning: ${errors.join(' | ')}`);
     return ok({ level: id, ...result, screenshot: toRepoRelative(shot), consoleErrors: errors.slice(0, 10) });
   } finally {
-    await browser.close();
+    if (pageId !== undefined) await mcp.call('close_page', { pageId }).catch(() => {});
+    mcp.close();
     server.close();
   }
 }

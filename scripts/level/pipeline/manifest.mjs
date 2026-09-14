@@ -198,7 +198,7 @@ export function writeManifest({ bake, lodStats, lightmapImage, lightmapStats = n
     const bounds = getBounds(scene);
     const settings = bake.settings ?? {};
     const manifest = ManifestExtras.parse({
-      schemaVersion: MANIFEST_SCHEMA_VERSION,
+      schemaVersion: Array.isArray(lightmapImage) ? MANIFEST_SCHEMA_VERSION : 1,
       id: bake.id, name: bake.name, generatedAt: new Date().toISOString(), generator,
       // An imported (Unreal) raw says so; the editor's raw has no `source`.
       source: bake.source ? { ...bake.source, lightmap: lightmapImage == null ? 'none' : lightmapStats?.source === 'unreal' ? 'adopted' : 'blender' } : null,
@@ -207,7 +207,10 @@ export function writeManifest({ bake, lodStats, lightmapImage, lightmapStats = n
       cells: { size: cellSize, list: cells },
       lod: { distances: [settings.lod?.lod1Distance ?? 60, settings.lod?.lod2Distance ?? 140], hysteresis: settings.lod?.hysteresis ?? 8 },
       lightmap: lightmapImage == null ? null : {
-        image: lightmapImage,
+        ...(Array.isArray(lightmapImage) ? {
+          atlases: lightmapImage.map((image, i) => ({ image, size: lightmapStats.atlases[i].size, range: lightmapStats.atlases[i].range })),
+          texelsPerMeter: lightmapStats.texelsPerMeter,
+        } : { image: lightmapImage }),
         channel: 1,
         intensity: settings.lightmap?.intensity ?? 1,
         // Anything brighter than 1 was divided out before the 8-bit atlas was

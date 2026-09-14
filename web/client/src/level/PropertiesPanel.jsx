@@ -180,6 +180,7 @@ export function PropertiesPanel() {
           */}
           <div className="field"><label>texels / metre</label><Num value={s.lightmap.texelsPerMeter ?? 8} step={1} min={1} onCommit={(n) => setSetting('lightmap.texelsPerMeter', n)} /></div>
           <div className="field"><label>samples</label><Num value={s.lightmap.samples} step={16} min={8} onCommit={(n) => setSetting('lightmap.samples', n)} /></div>
+          <div className="field"><label>maximum lightmap atlases</label><Num value={s.lightmap.maxAtlases ?? 32} step={1} min={1} onCommit={(n) => setSetting('lightmap.maxAtlases', n)} /></div>
           <div className="field"><label>lightmap intensity</label><Num value={s.lightmap.intensity} step={0.1} min={0} onCommit={(n) => setSetting('lightmap.intensity', n)} /></div>
         </div>
         <div className="row">

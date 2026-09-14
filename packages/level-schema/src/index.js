@@ -12,7 +12,7 @@
 import { z } from 'zod';
 
 export const LEVEL_SCHEMA_VERSION = 1;
-export const MANIFEST_SCHEMA_VERSION = 1;
+export const MANIFEST_SCHEMA_VERSION = 2;
 
 const num = z.number().finite();
 export const Vec3 = z.tuple([num, num, num]);
@@ -311,7 +311,8 @@ export const LevelSettings = z.object({
     .object({
       enabled: z.boolean().default(true),
       size: z.number().int().positive().default(4096),
-      texelsPerMeter: num.positive().default(8),
+      texelsPerMeter: num.positive().default(12),
+      maxAtlases: z.number().int().positive().max(256).default(32),
       samples: z.number().int().positive().default(128),
       // Cycles adaptive-sampling noise threshold. null leaves Blender's default
       // (adaptive on, 0.01), so `samples` is a CEILING most texels never reach;
@@ -446,7 +447,7 @@ export const ManifestLight = z.object({
 
 /** scene.extras.thaikitManifest on the baked GLB. */
 export const ManifestExtras = z.object({
-  schemaVersion: z.literal(MANIFEST_SCHEMA_VERSION),
+  schemaVersion: z.union([z.literal(1), z.literal(MANIFEST_SCHEMA_VERSION)]),
   id: Slug,
   name: z.string(),
   generatedAt: z.string().datetime(),
@@ -474,7 +475,13 @@ export const ManifestExtras = z.object({
   lod: z.object({ distances: z.tuple([num, num]), hysteresis: num.nonnegative() }),
   lightmap: z
     .object({
-      image: z.number().int().nonnegative(),
+      image: z.number().int().nonnegative().optional(),
+      atlases: z.array(z.object({
+        image: z.number().int().nonnegative(),
+        size: z.number().int().positive(),
+        range: num.positive().default(1),
+      })).min(1).optional(),
+      texelsPerMeter: num.positive().optional(),
       channel: z.number().int().default(1),
       intensity: num.nonnegative().default(1),
       /**
@@ -495,6 +502,7 @@ export const ManifestExtras = z.object({
       bakedOnlyLamps: z.number().int().nonnegative().default(0),
       layout: z.string().default('rgb=indirect+sky,a=moonVisibility'),
     })
+    .refine(v => (v.image != null) !== (v.atlases != null), 'lightmap requires exactly one of image or atlases')
     .nullable()
     .default(null),
   lights: z.array(ManifestLight).default([]),
@@ -593,6 +601,10 @@ export const ManifestExtras = z.object({
   spawns: z
     .array(z.object({ name: z.string(), position: Vec3, yawDeg: num.default(0), team: z.string().nullable().default(null) }))
     .default([]),
+}).superRefine((manifest, ctx) => {
+  if (manifest.lightmap && ((manifest.schemaVersion === 2) !== Boolean(manifest.lightmap.atlases))) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['lightmap'], message: 'schema 1 uses image; schema 2 uses atlases' });
+  }
 });
 
 export { emptyLevelGltf, emptyLevelExtras } from './emptyLevel.js';

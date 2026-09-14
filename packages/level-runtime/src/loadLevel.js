@@ -1,3 +1,4 @@
+import { loadLightmaps, bindLightmaps } from './lightmaps.js';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { KTX2Loader } from 'three/examples/jsm/loaders/KTX2Loader.js';
@@ -5,7 +6,7 @@ import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.j
 
 import { manifestFromScene } from './manifest.js';
 import { CellSet, CASTER_LAYER } from './cells.js';
-import { attachLightmap, eachMaterial, unshareMaterials } from './materials.js';
+import { eachMaterial } from './materials.js';
 import { applyLights } from './lights.js';
 import { buildSky } from './sky.js';
 import { buildEnvironment, applyEnvironment, environmentIntensity } from './environment.js';
@@ -73,32 +74,27 @@ export async function loadLevel(source, opts) {
   // slot for either), so they have no textures[] entry to load through the
   // parser: read the bufferView the manifest points at and transcode it
   // directly. `parser.loadTexture(i)` on one of these fails on 'source'.
+  const ownedEmbedded = new Set();
   const readEmbedded = async (index, what) => {
     const imageDef = gltf.parser.json.images?.[index];
     if (!imageDef || imageDef.bufferView == null) throw new Error(`manifest.${what} does not point at an embedded image`);
     const view = await gltf.parser.getDependency('bufferView', imageDef.bufferView);
-    return new Promise((resolve, reject) => ktx2.parse(view.slice(0), resolve, reject));
+    const texture = await new Promise((resolve, reject) => ktx2.parse(view.slice(0), resolve, reject));
+    ownedEmbedded.add(texture);
+    texture.addEventListener('dispose', () => ownedEmbedded.delete(texture));
+    return texture;
   };
 
-  let lightmap = null;
+  try {
+  const lightmaps = await loadLightmaps(manifest.lightmap, readEmbedded);
+  const lightmap = lightmaps[0] ?? null; // legacy public handle
   if (manifest.lightmap) {
-    lightmap = await readEmbedded(manifest.lightmap.image, 'lightmap.image');
-    lightmap.channel = manifest.lightmap.channel ?? 1;
-    lightmap.colorSpace = THREE.SRGBColorSpace;
-    lightmap.flipY = false;
-    lightmap.generateMipmaps = false;
-    lightmap.minFilter = THREE.LinearFilter;
-    // `range` is the scalar the bake divided out to fit bright bounce into an
-    // 8-bit atlas. Folding it into the intensity costs nothing: three's
-    // `lights_fragment_maps` already multiplies the lightmap by this uniform.
-    const intensity = (lightmapIntensity ?? manifest.lightmap.intensity ?? 1) * (manifest.lightmap.range ?? 1);
-    // A bake that carried the lamps means static geometry must not ALSO get
-    // them live; an older bake did not, and keeps them.
-    const bakedPunctual = manifest.lightmap.bakedLights === true;
-    // A material the loader shares between a cell and a dynamic node must be
-    // split first, or the patch below reaches the dynamic prop and blacks it out.
-    unshareMaterials(cells.cells.flatMap((c) => c.tiers), dynamicNodes.values());
-    for (const cell of cells.cells) for (const tier of cell.tiers) if (tier) eachMaterial(tier, (m) => { if (!m.userData.thaikitLightmap) attachLightmap(m, lightmap, { intensity, bakedPunctual }); });
+    try {
+      bindLightmaps(cells.cells.flatMap(c => c.tiers), manifest.lightmap, lightmaps, lightmapIntensity);
+    } catch (error) {
+      for (const texture of lightmaps) texture.dispose();
+      throw error;
+    }
   }
 
   if (camera) camera.layers.disable(CASTER_LAYER);
@@ -162,7 +158,7 @@ export async function loadLevel(source, opts) {
 
   const followTarget = new THREE.Vector3();
   return {
-    manifest, root, cells, lights, sky, environment, billboards, lightmap, colliders, physics, gltf, dynamicNodes,
+    manifest, root, cells, lights, sky, environment, billboards, lightmap, lightmaps, colliders, physics, gltf, dynamicNodes,
     spawns: { list: manifest.spawns, pick: (team) => pickSpawn(manifest.spawns, team) },
     raycast: (ray, o) => raycaster.raycast(ray, o),
     /** Step physics, sync dynamic nodes, switch LOD tiers, keep the moon's shadow box around `cameraPosition`. */
@@ -190,8 +186,9 @@ export async function loadLevel(source, opts) {
     dispose() {
       scene.remove(root);
       root.traverse((o) => { if (o.isMesh) { o.geometry.boundsTree?.dispose?.(); o.geometry.dispose(); } });
-      eachMaterial(root, (m) => { for (const v of Object.values(m)) if (v?.isTexture) v.dispose(); m.dispose(); });
-      lightmap?.dispose();
+      const textures = new Set(lightmaps);
+      eachMaterial(root, m => { for (const v of Object.values(m)) if (v?.isTexture) textures.add(v); m.dispose(); });
+      for (const texture of textures) texture.dispose();
       restoreEnvironment?.();
       environment?.dispose();
       if (sky) {
@@ -207,4 +204,11 @@ export async function loadLevel(source, opts) {
       if (!givenKtx2) ktx2.dispose();
     },
   };
+  } catch (error) {
+    scene.remove(root);
+    for (const texture of [...ownedEmbedded]) texture.dispose();
+    if (!givenKtx2) ktx2.dispose();
+    throw error;
+  }
+
 }

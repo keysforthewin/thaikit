@@ -112,7 +112,7 @@ function runBlender(exe, args, onLine, { signal } = {}) {
   });
 }
 
-export async function bakeWithBlender({ io, doc, bake, skyImages = null, outDir, onProgress, host = false, cpu = false, signal }) {
+export async function bakeWithBlender({ io, doc, bake, skyImages = null, outDir, onProgress, host = false, cpu = false, signal, layoutOnly = false, coverageOnly = false }) {
   const exe = host ? null : await blenderExe();
   if (!host && !exe) throw new Error('no Blender executable found (set THAIKIT_BLENDER_EXE); export with --baker none to skip the lightmap');
   await fs.mkdir(outDir, { recursive: true });
@@ -163,6 +163,8 @@ export async function bakeWithBlender({ io, doc, bake, skyImages = null, outDir,
   // 0, so this is derived rather than measured -- check it against a picture
   // the first time a level actually turns its sky.
   const spec = blenderBakeSpec({ bake, cpu, hasEnv: Boolean(envFile) });
+  if (layoutOnly) spec.layoutOnly = true;
+  if (coverageOnly) spec.coverageOnly = true;
   if (spec.env) onProgress?.(`world lit by the level's own sky (1024x512 equirect, strength ${spec.env.strength.toFixed(3)})`);
   else onProgress?.('no sky image; the world is the hemisphere ramp');
   onProgress?.(`${spec.lights.length} authored lamp(s) go into the bake (direct + bounce); the moon stays live, masked by alpha`);
@@ -186,6 +188,8 @@ export async function bakeWithBlender({ io, doc, bake, skyImages = null, outDir,
     await runBlender(exe, buildBlenderArgs(spec, paths, toBlenderPath), (line) => onProgress?.(line), { signal });
   }
 
+  if (layoutOnly) return { coverage: JSON.parse(await fs.readFile(path.join(outDir, 'coverage.json'), 'utf8')) };
+
   const outFile = path.join(outDir, 'out.glb');
   const baked = await io.read(outFile);
   baked.setLogger(doc.getLogger());
@@ -198,7 +202,21 @@ export async function bakeWithBlender({ io, doc, bake, skyImages = null, outDir,
   const copyAccessor = (acc) => doc.createAccessor().setType(acc.getType()).setArray(acc.getArray().slice()).setNormalized(acc.getNormalized()).setBuffer(buffer);
   let swapped = 0;
   let missing = 0;
-  for (const [name, { prim }] of map) {
+  const layout = JSON.parse(await fs.readFile(path.join(outDir, 'atlas-layout.json'), 'utf8'));
+  const materials = new Map();
+  for (const [name, assignment] of Object.entries(layout.objects)) {
+    const source = map.get(assignment.source);
+    if (!source) throw new Error(`unknown baked source ${assignment.source}`);
+    const prim = source.prim.clone();
+    prim.setAttribute('_TK_SOURCE', null);
+    const material = source.prim.getMaterial();
+    // Key by identity, not just material spelling.
+    let pages = materials.get(material);
+    if (!pages) materials.set(material, pages = new Map());
+    if (!pages.has(assignment.atlas)) pages.set(assignment.atlas, material.clone().setExtras({ ...material.getExtras(), tk: { ...material.getExtras()?.tk, lightmapAtlas: assignment.atlas } }));
+    prim.setMaterial(pages.get(assignment.atlas));
+    const node = doc.createNode(name).setMatrix(source.node.getMatrix()).setMesh(doc.createMesh(name).addPrimitive(prim));
+    source.node.getParentNode().addChild(node);
     const mesh = byName.get(name);
     const src = mesh?.listPrimitives()[0];
     if (!src || !src.getAttribute('TEXCOORD_1')) { missing += 1; continue; }
@@ -221,14 +239,23 @@ export async function bakeWithBlender({ io, doc, bake, skyImages = null, outDir,
     }
     swapped += 1;
   }
+  for (const { node } of map.values()) node.dispose();
+  if (missing) throw new Error(`${missing} baked primitives lost lightmap UVs`);
   onProgress?.(`${swapped} meshes carry lightmap UVs${missing ? `, ${missing} came back without them` : ''}`);
   if (!swapped) throw new Error('Blender returned no lightmap UVs');
-  const lightmapPng = await fs.readFile(path.join(outDir, 'lightmap.png'));
+  const lightmapPng = null;
   // The atlas is LDR, so anything brighter than 1 was divided by `range` before
   // it was written and has to be multiplied back at runtime. Absent (an older
   // bake) means 1, which is exactly what it used to be.
   let stats = null;
   try { stats = JSON.parse(await fs.readFile(path.join(outDir, 'lightmap.json'), 'utf8')); } catch { stats = null; }
-  if (stats) onProgress?.(`lightmap range ${stats.range}, ${(stats.clipRate * 100).toFixed(2)}% of covered texels still clipped`);
-  return { doc, lightmapPng, lightmapStats: stats, swapped, missing };
+  if (stats) onProgress?.(`${stats.atlases?.length ?? 1} lightmap atlas(es) returned`);
+  if (!stats?.atlases?.length || stats?.coverage?.ok !== true) throw new Error('bake has no validated atlas set');
+  for (const row of stats.coverage.objects ?? []) row.placements = (row.sources ?? []).map(i => {
+    const p = bake.placements?.[i];
+    return p ? { id:p.id, ref:p.ref } : { index:i };
+  });
+  const lightmapPngs = [];
+  for (const page of stats.atlases) lightmapPngs.push(await fs.readFile(path.join(outDir, page.file)));
+  return { doc, lightmapPng, lightmapPngs, lightmapStats: stats, swapped, missing };
 }
