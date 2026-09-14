@@ -1141,7 +1141,7 @@ placed geometry. Export writes a second, self-contained GLB.
   built client-side (`zip.js`, STORE only) with `manifest.json` and a README, downloads always, and
   on a writable instance is `PUT /api/exports/unreal` where the server unpacks it with the existing
   `unzip.mjs` into `exports/unreal/` (gitignored, replaced whole; static at `/exports/unreal`).
-  154 props, 37 s, 194 MB at 2048 px. `docs/unreal-export.md` is the import guide; the
+  The kit contains 180 props. `docs/unreal-export.md` is the import guide; the
   `thaikit-unreal-level` skill lays a Thai night street out of it over unreal-mcp. Verified by
   loading the files back through a stock `GLTFLoader`: colours, textures and sizes round-trip.
   **A round trip through three proves nothing about Unreal; read the editor's Output Log.**
@@ -1149,7 +1149,7 @@ placed geometry. Export writes a second, self-contained GLB.
   was structurally clean -- no flipped winding, unit normals, identity nodes. `Saved/Logs/<Project>.log`
   named three faults the file could not show: every `UCX_` mesh was written with a `wireframe`
   material, which `GLTFExporter` emits as primitive mode LINES and Interchange drops (`Primitive
-  Mode[LINES] ... Geometry won't be imported` -- 662 colliders across 154 props, so NO prop had
+  Mode[LINES] ... Geometry won't be imported` -- all 662 colliders in that earlier export, so NO prop had
   collision, whatever the import dialog said); Interchange has built a NANITE mesh by default
   since 5.5, and Nanite renders a BLEND slot with the default material (`Invalid material ...
   used on Nanite static mesh`), which is what the two glazing panes were; and zero-area UV

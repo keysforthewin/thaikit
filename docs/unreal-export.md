@@ -34,8 +34,8 @@ then use the checked importer below. Older imports may retain incompatible mater
 
 The export runs **in the browser**, for the same reason the level bake starts
 there: the props' textures are canvases that exist only in a page. Every prop is
-built once through the level editor's prototype cache, so the whole 154-prop
-kit takes about 40 seconds and 190 MB at 2048 px. The log names each file with
+built once through the level editor's prototype cache. The kit contains 180 props;
+export time and size depend on texture resolution and asset complexity. The log names each file with
 its triangle count, material slots and collider count; a prop that fails to
 build is listed and skipped, never half-written.
 

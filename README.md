@@ -10,7 +10,7 @@ pivoted, and every prop editable as source rather than as opaque geometry.
 
 ![A Bangkok soi at night, built from thaikit props and baked to one GLB](docs/images/bangkoksoi-street.jpg)
 
-**[Browse the 154 props](https://outdoordevs.com/thaikit/)** ·
+**[Browse the 180 props](https://outdoordevs.com/thaikit/)** ·
 **[Play a baked level](https://xplorerhq.live/purge)** ·
 **[Use a level in your game](docs/using-a-baked-level.md)**
 
