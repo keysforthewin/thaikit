@@ -7,8 +7,8 @@
  *           bakes lamps, sky, and moon visibility into the atlas.
  *   medium  Cycles at 8192² / 4096 samples, adaptive off. This is the higher
  *           resolution shipping tier when the low atlas needs more detail.
- *   high    Cycles at the level's OWN lightmap settings (bangkoksoi: 16384² /
- *           4096 samples / adaptive off) -- the shipping bake, hours.
+ *   high    Cycles at 8192² / 8192 samples, adaptive off. More convergence
+ *           at the same lightmap resolution and runtime memory budget as medium.
  *
  * `--quality medium` delivers `<id>_medium.glb`, builds `build/level_medium.glb`
  * and bakes into `build/lightmap_medium/`, so a low, a medium and a high build
@@ -23,7 +23,7 @@ export const QUALITIES = ['low', 'medium', 'high'];
 export const QUALITY_PRESETS = {
   low: { baker: 'blender', lightmap: { size: 4096, samples: 4096, noiseThreshold: 0 } },
   medium: { baker: 'blender', lightmap: { size: 8192, samples: 4096, noiseThreshold: 0 } },
-  high: { baker: 'blender', lightmap: {} },
+  high: { baker: 'blender', lightmap: { size: 8192, samples: 8192, noiseThreshold: 0 } },
 };
 
 /** The texture ceilings a tier imposes over the level's own (`min`), or the level's as they are. */

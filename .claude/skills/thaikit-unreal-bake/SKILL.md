@@ -177,7 +177,7 @@ overwrites the build the game is playing and nothing has to be restored:
 | --- | --- | --- |
 | `low` | Cycles 4096² / 4096 samples, adaptive off | ~1.5 h |
 | `medium` | Cycles 8192² / 4096 samples, adaptive off | ~8 h |
-| `high` | Cycles at the level's own settings (16384² on bangkoksoi) | many hours |
+| `high` | Cycles at 8192² / 8192 samples, adaptive sampling off; same atlas resolution as medium | roughly twice medium's sampling work |
 
 Read `quality.mjs` before quoting a duration; the presets have changed before,
 and `low` was once a one-minute no-lightmap tier.

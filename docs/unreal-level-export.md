@@ -158,7 +158,7 @@ the game's folder and nothing has to be restored after a test bake:
 | --- | --- | --- | --- |
 | `low` | `--baker none`: no lightmap, textures and sky faces capped at 1024, lit by the live moon. Tests the geometry, colliders, LOD, spawns and sky. | `<id>_low.glb` | 52 s |
 | `medium` | Cycles at 2048² / 16 samples (adaptive). The lamps, the sky light and the moon's shadows land roughly where they will. | `<id>_medium.glb` | ~9 min |
-| `high` | Cycles at the level's own lightmap settings (`settings.json`: 8192² / 4096 / adaptive off). The shipping bake. | `<id>_high.glb` | hours; depends on scene and hardware |
+| `high` | Cycles at 8192² / 8192 samples / adaptive off. Cleaner lighting at medium's lightmap resolution and runtime memory budget. | `<id>_high.glb` | roughly twice medium's sampling work; depends on scene and hardware |
 
 ```
 docker compose run --rm web node scripts/level/bake-level.mjs --level <id> --quality low --live-lamps 20

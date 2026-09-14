@@ -23,10 +23,10 @@ test('assertQuality accepts the three words and nothing else', () => {
   assert.throws(() => assertQuality('ultra'), /--quality must be one of low\|medium\|high/);
 });
 
-test('presets: low and medium are converged Cycles tiers, high defers to the level', () => {
+test('presets: high increases samples while keeping the medium atlas budget', () => {
   assert.deepEqual(QUALITY_PRESETS.low, { baker: 'blender', lightmap: { size: 4096, samples: 4096, noiseThreshold: 0 } });
   assert.deepEqual(QUALITY_PRESETS.medium, { baker: 'blender', lightmap: { size: 8192, samples: 4096, noiseThreshold: 0 } });
-  assert.deepEqual(QUALITY_PRESETS.high, { baker: 'blender', lightmap: {} });
+  assert.deepEqual(QUALITY_PRESETS.high, { baker: 'blender', lightmap: { size: 8192, samples: 8192, noiseThreshold: 0 } });
 });
 
 test('the texture budget caps a tier below the level and never raises it', () => {
