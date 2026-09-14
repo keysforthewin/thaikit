@@ -125,10 +125,12 @@ export function runtimeVerdict(asset, runtime) {
  * phase tests and the narrow phase may have to resolve, and a dynamic body pays
  * for all of them every frame -- which is why a kickable prop gets half the
  * ceiling of a static one it would otherwise share a class with.
+ * An explicit per-asset ceiling keeps open structures' supports separate;
+ * it receives the same dynamic-body discount as a class budget.
  */
 export function colliderPartCeiling(asset) {
   const byClass = { small: 2, medium: 4, large: 8, hero: 8, hero2x: 8, hero4x: 8, hero8x: 8 };
-  const base = byClass[asset.budgetClass] ?? 4;
+  const base = asset.physics?.maxColliderParts ?? byClass[asset.budgetClass] ?? 4;
   return asset.physics?.enabled ? Math.max(1, Math.floor(base / 2)) : base;
 }
 

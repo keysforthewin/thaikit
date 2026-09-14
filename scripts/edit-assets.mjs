@@ -47,6 +47,7 @@ const EDITABLE = new Set([
   'placement',
   'physics.enabled',
   'physics.massKg',
+  'physics.maxColliderParts',
   'destructionGroups',
   'prompts.image',
   'prompts.texture',

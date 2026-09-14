@@ -229,6 +229,8 @@ const Physics = z.object({
   enabled: z.boolean().default(false),
   /** Kilograms. Null means not decided yet, which is distinct from a declared 0. */
   massKg: z.number().positive().nullable().default(null),
+  /** Static collider part ceiling override; dynamic bodies use half this budget. */
+  maxColliderParts: z.number().int().min(1).max(128).optional(),
 });
 
 /**
