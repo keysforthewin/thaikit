@@ -489,6 +489,7 @@ export async function convertUnrealLevel({ id, doc, json, bin, kit, extMeshes = 
   let extHits = 0;
   let actorHits = 0;
   const orientationWarned = new Set();
+  const malformedWarned = new Set();
   const bboxFallback = new Map();
 
   for (const node of [...scene.listChildren()]) {
@@ -569,7 +570,7 @@ export async function convertUnrealLevel({ id, doc, json, bin, kit, extMeshes = 
     // The mesh's asset name: the sidecar by actor label first, then the exporter's own mesh name.
     const meshName = actorMap?.[name]?.mesh ?? mesh.getName();
     if (actorMap && actorMap[name]) actorHits += 1;
-    const item = kitItemFor(meshName, kit);
+    let item = kitItemFor(meshName, kit);
     const dynamic = /^dyn[_-]/i.test(name);
     const billboard = actorMap?.[name]?.billboard ?? (/^bb[_-]/i.test(name) ? 'yaw' : 'none');
     const bakeLighting = actorMap?.[name]?.bakeLighting !== false && node.getExtras()?.tk?.bakeLighting !== false;
@@ -600,6 +601,18 @@ export async function convertUnrealLevel({ id, doc, json, bin, kit, extMeshes = 
 
     let colliders = [];
     const ext = !item && extMeshes ? extMeshes[meshName] : null;
+    // A manifest item's `colliders` is the ARRAY of parts the browser export
+    // writes. A hand merge once pasted whole `colliders.json` documents
+    // (`{ parts, coverage, ... }`) over six props and one tree, and `.length`
+    // on an object is undefined -- so 235 placements silently fell through to
+    // a bounding box the size of the canopy or the whole fence run.
+    if (item && item.colliders != null && !Array.isArray(item.colliders)) {
+      if (!malformedWarned.has(item.asset)) {
+        malformedWarned.add(item.asset);
+        notes.push(`WARNING ${item.asset}: the kit manifest's colliders is a ${typeof item.colliders}, not an array of parts; re-export the kit (or run scripts/level/unreal/sync-manifest-colliders.mjs) before trusting this level's colliders. Using its .parts.`);
+      }
+      if (Array.isArray(item.colliders.parts)) item = { ...item, colliders: item.colliders.parts };
+    }
     if (billboard !== 'none' || item?.collisionPolicy === 'none') {
       // A billboard turns every frame and its compound cannot follow: the kit's
       // thin box for a skyline card would ship as a fixed 37 x 83 m wall at

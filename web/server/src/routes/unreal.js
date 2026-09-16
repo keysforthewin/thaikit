@@ -133,13 +133,18 @@ export function unrealRouter(state) {
           await fs.writeFile(path.join(target, 'README.md'), unrealReadme({ ...merged, packs: packs.map((p) => p.id) }));
           written += 2;
         } else {
-          // `ext/` is not the kit's: the scratch/_unreal builders write their
-          // meshes and collider manifest there, and a full export used to take
-          // it with the old tree -- after which every tree in the next level
-          // import was a bounding box. Carry it across unless the zip brought one.
-          const ext = path.join(UNREAL_EXPORT_DIR, 'ext');
-          const hasExt = await fs.stat(ext).then((s) => s.isDirectory()).catch(() => false);
-          if (hasExt && !entries.some((e) => safeEntryName(e.name)?.startsWith('ext/'))) await fs.cp(ext, path.join(target, 'ext'), { recursive: true });
+          // `ext/` and `foliage/` are not the kit's: the scratch/_unreal builders
+          // write their meshes and collider manifest to the first, and
+          // scripts/foliage/stage-exports.mjs writes the procedural foliage
+          // variants and their manifests to the second. A full export used to
+          // take them with the old tree -- after which every tree in the next
+          // level import was a bounding box. Carry each across unless the zip
+          // brought one.
+          for (const side of ['ext', 'foliage']) {
+            const dir = path.join(UNREAL_EXPORT_DIR, side);
+            const has = await fs.stat(dir).then((s) => s.isDirectory()).catch(() => false);
+            if (has && !entries.some((e) => safeEntryName(e.name)?.startsWith(`${side}/`))) await fs.cp(dir, path.join(target, side), { recursive: true });
+          }
           await fs.mkdir(path.dirname(UNREAL_EXPORT_DIR), { recursive: true });
           await fs.rm(UNREAL_EXPORT_DIR, { recursive: true, force: true });
           await fs.rename(target, UNREAL_EXPORT_DIR);

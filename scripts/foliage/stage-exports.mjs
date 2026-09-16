@@ -4,6 +4,7 @@ import { NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import { getBounds } from '@gltf-transform/functions';
 import { FOLIAGE } from './catalog.mjs';
+import { combineManifests } from './combine-manifest.mjs';
 const root=process.env.THAIKIT_REPO_ROOT??process.cwd();
 const rendered=path.join(root,'scratch/foliage-20260915/rendered');
 const reports=JSON.parse(await fs.readFile(path.join(rendered,'exports.json'),'utf8'));
@@ -28,10 +29,7 @@ for(const r of reports){
 }
 const manifest={schema:'thaikit-unreal-v1',generatedAt:new Date().toISOString(),source:'procedural-foliage-v1',units:'m',items,failures:[]};
 await fs.writeFile(path.join(dest,'manifest.json'),JSON.stringify(manifest,null,2));
-const full=JSON.parse(await fs.readFile(path.join(root,'exports/unreal/manifest.json'),'utf8'));
-full.items=full.items.filter(i=>!FOLIAGE.some(a=>i.ref===`@thai-kit/${a.id}`));
-full.items.push(...items.map(i=>({...i,file:`foliage/${i.file}`})));
-await fs.writeFile(path.join(dest,'combined-manifest.json'),JSON.stringify(full,null,2));
+await combineManifests(root);
 console.log(`Validated ${items.length} GLBs; staged ${dest}`);
 // Reapply measured collision policies after rebuilding representation metadata.
 await import('./sync-physical-colliders.mjs');

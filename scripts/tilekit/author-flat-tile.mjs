@@ -61,6 +61,22 @@ export function isSurfaceTile(asset) {
   return (asset.tags ?? []).includes('flat-quad') && !TILES[asset.id];
 }
 
+/**
+ * A tile tagged `two-sided` also gets an UNDERSIDE quad, in the same geometry.
+ *
+ * The ground set is single-sided by default because a tile on the ground is
+ * never seen from beneath, and a second quad on 269 laterite tiles is 538 wasted
+ * triangles plus a second lightmap island each. But the poured concrete apron
+ * is laid as a rooftop and a bridge landing too, and a single-sided quad seen
+ * from below is back-face culled to nothing: an invisible floor over the
+ * player's head. It costs two triangles; it stays one draw call, one geometry
+ * and one material. Opt in per asset with the tag rather than per run, so a
+ * `--all` re-author cannot strip it.
+ */
+export function isTwoSided(asset) {
+  return (asset.tags ?? []).includes('two-sided');
+}
+
 function spec(asset, pxPerMetre) {
   const { w, d } = asset.scale.declared;
   return {
@@ -117,6 +133,17 @@ function spec(asset, pxPerMetre) {
         material: 'surface',
         transform: { position: [0, 0, 0], rotation: [-90, 0, 0], scale: [w, d, 1] },
       },
+      ...(isTwoSided(asset)
+        ? [
+            {
+              id: 'underside',
+              name: 'Underside',
+              primitive: 'plane-card',
+              material: 'surface',
+              transform: { position: [0, 0, 0], rotation: [90, 0, 0], scale: [w, d, 1] },
+            },
+          ]
+        : []),
     ],
     runtimeContract: {
       pivots: ['root'],
@@ -138,12 +165,55 @@ function spec(asset, pxPerMetre) {
 
 function factory(asset) {
   const { w, d } = asset.scale.declared;
+  const twoSided = isTwoSided(asset);
+  const geometry = twoSided
+    ? `// Two quads back to back in ONE geometry: the deck faces +Y, the underside
+  // -Y. This tile is laid as a rooftop and a bridge landing as well as on the
+  // ground, and a single-sided quad seen from beneath is back-face culled to
+  // nothing -- an invisible floor over the player's head. Opposed faces in the
+  // same plane do not z-fight; only co-facing ones do.
+  const top = new THREE.PlaneGeometry(${w}, ${d}, 1, 1);
+  top.rotateX(-Math.PI / 2);
+  const under = new THREE.PlaneGeometry(${w}, ${d}, 1, 1);
+  under.rotateX(Math.PI / 2);
+  const geometry = mergeQuads(top, under);`
+    : `const geometry = new THREE.PlaneGeometry(${w}, ${d}, 1, 1);
+  geometry.rotateX(-Math.PI / 2);`;
+  const helper = twoSided
+    ? `
+/**
+ * Concatenate two indexed quads. Hand-rolled rather than imported from
+ * three/addons: a thaikit factory imports \`three\` and nothing else.
+ */
+function mergeQuads(a: THREE.BufferGeometry, b: THREE.BufferGeometry): THREE.BufferGeometry {
+  const out = new THREE.BufferGeometry();
+  for (const name of ['position', 'normal', 'uv']) {
+    const pa = a.getAttribute(name) as THREE.BufferAttribute;
+    const pb = b.getAttribute(name) as THREE.BufferAttribute;
+    const arr = new Float32Array(pa.array.length + pb.array.length);
+    arr.set(pa.array as Float32Array, 0);
+    arr.set(pb.array as Float32Array, pa.array.length);
+    out.setAttribute(name, new THREE.BufferAttribute(arr, pa.itemSize));
+  }
+  const ia = a.getIndex() as THREE.BufferAttribute;
+  const ib = b.getIndex() as THREE.BufferAttribute;
+  const offset = a.getAttribute('position').count;
+  const index = new Uint16Array(ia.count + ib.count);
+  for (let i = 0; i < ia.count; i += 1) index[i] = ia.getX(i);
+  for (let i = 0; i < ib.count; i += 1) index[ia.count + i] = ib.getX(i) + offset;
+  out.setIndex(new THREE.BufferAttribute(index, 1));
+  a.dispose();
+  b.dispose();
+  return out;
+}
+`
+    : '';
   return `import * as THREE from 'three';
 
 /**
  * ${asset.name} — a flat ground tile.
  *
- * Two triangles, one geometry, one material. Everything a player sees on this
+ * ${twoSided ? 'Four triangles (a deck and its underside)' : 'Two triangles'}, one geometry, one material. Everything a player sees on this
  * prop is in the albedo: every stone, joint, rut and stain is painted, never
  * built. Nothing stands proud of the ground plane, which is the point -- a
  * ground tile must not catch a player's feet.
@@ -169,8 +239,7 @@ export function createObjectModel(
   const root = new THREE.Group();
   root.name = '${asset.id}';
 
-  const geometry = new THREE.PlaneGeometry(${w}, ${d}, 1, 1);
-  geometry.rotateX(-Math.PI / 2);
+  ${geometry}
 
   const material = new THREE.MeshStandardMaterial({
     roughness: 1,
@@ -214,7 +283,7 @@ export function createObjectModel(
 
   return root;
 }
-
+${helper}
 /**
  * The one-argument entry point: vibe3d's contract, and img2threejs's own.
  *

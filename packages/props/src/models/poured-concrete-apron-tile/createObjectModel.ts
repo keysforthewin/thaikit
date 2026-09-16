@@ -3,7 +3,7 @@ import * as THREE from 'three';
 /**
  * Poured Concrete Apron Tile — a flat ground tile.
  *
- * Two triangles, one geometry, one material. Everything a player sees on this
+ * Four triangles (a deck and its underside), one geometry, one material. Everything a player sees on this
  * prop is in the albedo: every stone, joint, rut and stain is painted, never
  * built. Nothing stands proud of the ground plane, which is the point -- a
  * ground tile must not catch a player's feet.
@@ -29,8 +29,16 @@ export function createObjectModel(
   const root = new THREE.Group();
   root.name = 'poured-concrete-apron-tile';
 
-  const geometry = new THREE.PlaneGeometry(8, 8, 1, 1);
-  geometry.rotateX(-Math.PI / 2);
+  // Two quads back to back in ONE geometry: the deck faces +Y, the underside
+  // -Y. This tile is laid as a rooftop and a bridge landing as well as on the
+  // ground, and a single-sided quad seen from beneath is back-face culled to
+  // nothing -- an invisible floor over the player's head. Opposed faces in the
+  // same plane do not z-fight; only co-facing ones do.
+  const top = new THREE.PlaneGeometry(8, 8, 1, 1);
+  top.rotateX(-Math.PI / 2);
+  const under = new THREE.PlaneGeometry(8, 8, 1, 1);
+  under.rotateX(Math.PI / 2);
+  const geometry = mergeQuads(top, under);
 
   const material = new THREE.MeshStandardMaterial({
     roughness: 1,
@@ -75,17 +83,42 @@ export function createObjectModel(
   return root;
 }
 
-export default createObjectModel;
+/**
+ * Concatenate two indexed quads. Hand-rolled rather than imported from
+ * three/addons: a thaikit factory imports `three` and nothing else.
+ */
+function mergeQuads(a: THREE.BufferGeometry, b: THREE.BufferGeometry): THREE.BufferGeometry {
+  const out = new THREE.BufferGeometry();
+  for (const name of ['position', 'normal', 'uv']) {
+    const pa = a.getAttribute(name) as THREE.BufferAttribute;
+    const pb = b.getAttribute(name) as THREE.BufferAttribute;
+    const arr = new Float32Array(pa.array.length + pb.array.length);
+    arr.set(pa.array as Float32Array, 0);
+    arr.set(pb.array as Float32Array, pa.array.length);
+    out.setAttribute(name, new THREE.BufferAttribute(arr, pa.itemSize));
+  }
+  const ia = a.getIndex() as THREE.BufferAttribute;
+  const ib = b.getIndex() as THREE.BufferAttribute;
+  const offset = a.getAttribute('position').count;
+  const index = new Uint16Array(ia.count + ib.count);
+  for (let i = 0; i < ia.count; i += 1) index[i] = ia.getX(i);
+  for (let i = 0; i < ib.count; i += 1) index[ia.count + i] = ib.getX(i) + offset;
+  out.setIndex(new THREE.BufferAttribute(index, 1));
+  a.dispose();
+  b.dispose();
+  return out;
+}
 
 /**
  * The one-argument entry point: vibe3d's contract, and img2threejs's own.
  *
  * `createObjectModel` above keeps thaikit's historical (spec, options) shape so
  * the harness, the level editor and the Node-side gates carry on unchanged.
- * `spec` has never been passed by any caller -- it is inspection data that is
- * already baked into this module -- so this is the honest signature, and it is
- * what a vibe3d consumer installs and calls.
+ * `spec` has never been passed by any caller, so this is the honest signature,
+ * and it is what a vibe3d consumer installs and calls.
  */
 export function createModel(options: ProceduralModelOptions = {}): THREE.Group {
   return createObjectModel(undefined, options);
 }
+
+export default createObjectModel;
