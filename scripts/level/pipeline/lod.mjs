@@ -2,10 +2,9 @@
  * Stage 3: LOD tiers per cell.
  *
  * meshoptimizer's simplifiers return a new index buffer over the ORIGINAL
- * vertices, so every attribute -- the lightmap UVs included -- survives by
- * index. lod1 is the quality simplifier at the requested ratio; lod2 is the
- * sloppy one, which ignores topology and is what a 5,800-triangle plant pot
- * at 80 m deserves. Both tiers share the lod0 materials.
+ * vertices. Baked meshes retain their lightmap chart borders; masked foliage
+ * retains UV0 borders. Other geometry can use the sloppy fallback. Further
+ * reduction of baked meshes uses lod-transfer.mjs with new UVs and atlases.
  */
 import { MeshoptSimplifier } from 'meshoptimizer';
 import { compactPrimitive } from '@gltf-transform/functions';

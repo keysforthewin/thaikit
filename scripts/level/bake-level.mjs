@@ -13,11 +13,16 @@ import { auditAtlasCoverage } from './pipeline/atlas-coverage.mjs';
  * result is one JSON line on stdout.
  *
  * Usage:
- *   node scripts/level/bake-level.mjs --level <id> [--quality low|medium|high] [--baker blender|blender-host|unreal|none] [--cpu] [--samples N] [--noise-threshold T] [--resume-from 2|3|4] [--cell <ix>_<iz>]
+ *   node scripts/level/bake-level.mjs --level <id> [--quality low|medium|high] [--baker blender|blender-host|unreal|none] [--cpu] [--samples N] [--shadow-samples N] [--noise-threshold T] [--resume-from 2|3|4] [--cell <ix>_<iz>]
  *
- * `--quality` is a preset AND a name: all use 4096² lightmap pages at 12 texels/m,
- * with low/medium/high using 128/2048/16384 samples. Low caps material maps at 1024;
- * medium/high retain the level's material resolution.
+ * `--quality` is a preset AND a name: all use 4096² lightmap pages, with low
+ * at 6 texels/m and medium/high at 12. Low/medium/high use 128/2048/16384 samples.
+ * Low caps material maps at 1024 and uses ETC1S color textures;
+ * its Blender LODs receive reduced geometry with transferred lightmap atlases.
+ * --preserve-lods retains the conservative atlas-preserving tiers; --transfer-lods
+ * opts other Blender qualities into the transfer route. Sky face caps are
+ * 1024 for low and 2048 for medium, independent of the bake environment.
+ * medium/high retain the level's material resolution and color encoding.
  * All three disable adaptive sampling; each delivers
  * `<id>_<quality>.glb`,
  * builds `build/level_<quality>.glb` and bakes into `build/lightmap_<quality>/`
@@ -41,15 +46,18 @@ import { auditAtlasCoverage } from './pipeline/atlas-coverage.mjs';
  * down with it and the process exits 130.
  */
 import fs from 'node:fs/promises';
+import { createReadStream } from 'node:fs';
+import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 import { NodeIO, PropertyType, Logger } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
-import { dedup, flatten, join, weld, prune } from '@gltf-transform/functions';
+import { dedup, flatten, join } from '@gltf-transform/functions';
 import { MeshoptDecoder, MeshoptEncoder } from 'meshoptimizer';
 import { compressLevelGeometry } from './pipeline/compress-geometry.mjs';
+import { pruneUnusedGeometry, weldIndexedGeometry } from './pipeline/geometry-usage.mjs';
 
 import { REPO_ROOT, toRepoRelative } from '@thaikit/registry-core';
 import { assertUnrealMaterials, readGlbJson } from './unreal/material-audit.mjs';
@@ -58,10 +66,11 @@ import { ok, fail, parseArgs } from '../lib/out.mjs';
 import { readTags, stripEditorExtras, foldBaseColorIntoVertexColor, normaliseAttributes } from './pipeline/normalise.mjs';
 import { partitionCells } from './pipeline/partition.mjs';
 import { buildLodTiers } from './pipeline/lod.mjs';
+import { transferLodLightmaps, lodStatistics } from './pipeline/lod-transfer.mjs';
 import { compressTextures, addLightmapTexture } from './pipeline/textures.mjs';
 import { pruneUnusedTextures } from './pipeline/texture-usage.mjs';
 import { writeManifest } from './pipeline/manifest.mjs';
-import { prepareSkyImages, addSkyTextures } from './pipeline/sky.mjs';
+import { prepareSkyImages, capSkyImages, addSkyTextures } from './pipeline/sky.mjs';
 import { bakeWithBlender } from './bakers/blender-cycles.mjs';
 import { findKtx, KTX_INSTALL_HINT } from './pipeline/ktx2.mjs';
 import { assertCellKey, buildDirOf, exportNameOf } from './pipeline/build-dir.mjs';
@@ -77,6 +86,12 @@ const cancel = new AbortController();
 process.on('SIGTERM', () => { if (!cancel.signal.aborted) { progress('cancelled', 'cancelled by user'); cancel.abort(); setTimeout(() => process.exit(130), 200).unref(); } });
 
 const progress = (phase, message, extra = {}) => process.stderr.write(`${JSON.stringify({ phase, message, ...extra })}\n`);
+
+async function fileDigest(file) {
+  const hash = createHash('sha256');
+  for await (const bytes of createReadStream(file)) hash.update(bytes);
+  return hash.digest('hex');
+}
 
 async function makeIO() {
   await MeshoptDecoder.ready;
@@ -109,6 +124,7 @@ async function main() {
   if (!BAKERS.includes(baker)) return fail(`--baker must be one of ${BAKERS.join('|')}, got ${baker}`);
   const cpu = Boolean(args.cpu);
   const layoutOnly = Boolean(args['layout-only']);
+  if (args['transfer-lods'] && args['preserve-lods']) throw new Error('--transfer-lods and --preserve-lods are mutually exclusive');
   if (layoutOnly && !['blender', 'blender-host'].includes(baker)) throw new Error('--layout-only requires Blender');
   const resumeFrom = Number(args['resume-from'] ?? 1);
   if (args['stage1-only'] && resumeFrom !== 1) throw new Error('--stage1-only requires a fresh stage 1');
@@ -120,8 +136,12 @@ async function main() {
     texelsPerMeter: Number(args['texels-per-meter'] ?? preset.lightmap.texelsPerMeter ?? 12),
     maxAtlases: Number(args['lightmap-max-atlases'] ?? preset.lightmap.maxAtlases ?? 32),
     samples: args.samples ? Number(args.samples) : preset.lightmap.samples ?? null,
+    shadowSamples: args['shadow-samples'] != null ? Number(args['shadow-samples']) : preset.lightmap.shadowSamples ?? null,
     noiseThreshold: args['noise-threshold'] != null ? Number(args['noise-threshold']) : preset.lightmap.noiseThreshold ?? null,
   };
+  if (lightmapOverride.shadowSamples != null && (!Number.isInteger(lightmapOverride.shadowSamples) || lightmapOverride.shadowSamples < 1)) {
+    throw new Error('--shadow-samples must be a positive integer');
+  }
   if (quality) progress('quality', `${quality}: baker ${baker}${lightmapOverride.size ? `, lightmap up to ${lightmapOverride.size}²` : ''}${lightmapOverride.samples ? ` / ${lightmapOverride.samples} samples` : ''}${baker === 'none' ? ' (no lightmap)' : ''}; delivers ${exportNameOf(id, assertCellKey(args.cell ?? null), quality)}`);
   // 0 = all live; moon-only requires all lamps in the lightmap and keeps only
   // the moon live. See selectLiveLamps in pipeline/manifest.mjs.
@@ -141,6 +161,7 @@ async function main() {
   // `--resume-from 3` for `high` must never pick up `low`'s unlit stage 2.
   const stage = (n) => path.join(buildDir, n === 1 ? 'stage1.glb' : withQuality(`stage${n}.glb`, quality));
   const lodFile = path.join(buildDir, withQuality('lod.json', quality));
+  const transferFile = path.join(buildDir, withQuality('lod-transfer.json', quality));
   const bakeFile = path.join(buildDir, 'bake.json');
   // Where a Cycles bake writes its atlas; the unreal ADOPT path reads the
   // importer's own build/lightmap/ regardless of tier.
@@ -156,6 +177,7 @@ async function main() {
   let lightmapPng = null;
   let lightmapPngs = [];
   let lightmapStats = null;
+  let lodTransfer = null;
 
   // ---- stage 1 -------------------------------------------------------------
   if (resumeFrom <= 1) {
@@ -183,7 +205,7 @@ async function main() {
     // Custom stages are called directly: doc.transform() hands back the document, not their results.
     const { cells, dynamic, stray } = partitionCells({ bake })(doc);
     progress('partition', `${cells?.size ?? 0} cells, ${dynamic?.size ?? 0} dynamic objects${stray?.length ? `, ${stray.length} untagged nodes dropped` : ''}`);
-    await doc.transform(join({ keepMeshes: false, keepNamed: false }), weld(), prune({ propertyTypes: [PropertyType.NODE, PropertyType.MESH, PropertyType.ACCESSOR, PropertyType.MATERIAL], keepLeaves: true, keepAttributes: true }));
+    await doc.transform(join({ keepMeshes: false, keepNamed: false }), weldIndexedGeometry(), pruneUnusedGeometry());
     const after = countPrims(doc, 'cell_');
     progress('merge', `static geometry is now ${after.prims} draw calls (${after.tris.toLocaleString()} triangles) across ${cells?.size ?? 0} cells`);
     await io.write(stage(1), doc);
@@ -201,10 +223,9 @@ async function main() {
   const skySettings = bake.settings?.sky ?? null;
   const budget = textureBudgetFor(bake.settings?.textures ?? {}, preset);
   if (args['preserve-textures']) {
-    budget.maxSize = bake.settings?.textures?.maxSize ?? 2048;
-    budget.maxFace = null;
+    Object.assign(budget, textureBudgetFor(bake.settings?.textures ?? {}));
   }
-  const skyImages = await prepareSkyImages(id, skySettings, { onProgress: (m) => progress('sky', m), ...(budget.maxFace ? { maxFace: budget.maxFace } : {}) });
+  const skyImages = await prepareSkyImages(id, skySettings, { onProgress: (m) => progress('sky', m) });
   for (const note of skyImages.notes) progress('sky', note);
 
   if (layoutOnly && bake.settings?.lightmap?.enabled === false) throw new Error('--layout-only requires lightmaps enabled');
@@ -212,7 +233,7 @@ async function main() {
   // ---- stage 2: lightmap -----------------------------------------------------
   if (resumeFrom <= 2) {
     {
-      bake.settings = { ...bake.settings, lightmap: { ...(bake.settings?.lightmap ?? {}), texelsPerMeter: lightmapOverride.texelsPerMeter, maxAtlases: lightmapOverride.maxAtlases, ...(lightmapOverride.size ? { size: lightmapOverride.size } : {}), ...(lightmapOverride.samples ? { samples: lightmapOverride.samples } : {}), ...(lightmapOverride.noiseThreshold != null ? { noiseThreshold: lightmapOverride.noiseThreshold } : {}) } };
+      bake.settings = { ...bake.settings, lightmap: { ...(bake.settings?.lightmap ?? {}), texelsPerMeter: lightmapOverride.texelsPerMeter, maxAtlases: lightmapOverride.maxAtlases, ...(lightmapOverride.size ? { size: lightmapOverride.size } : {}), ...(lightmapOverride.samples ? { samples: lightmapOverride.samples } : {}), ...(lightmapOverride.shadowSamples != null ? { shadowSamples: lightmapOverride.shadowSamples } : {}), ...(lightmapOverride.noiseThreshold != null ? { noiseThreshold: lightmapOverride.noiseThreshold } : {}) } };
     }
     if (baker === 'unreal') {
       // Written by import-unreal-level.mjs alongside raw.glb; the UVs are
@@ -254,36 +275,70 @@ async function main() {
 
   // ---- stage 3: LOD ----------------------------------------------------------
   if (resumeFrom <= 3) {
-    progress('lod', `simplifying: lod1 ×${bake.settings?.lod?.lod1Ratio ?? 0.4}, lod2 ×${bake.settings?.lod?.lod2Ratio ?? 0.15} (sloppy)`);
+    await doc.transform(pruneUnusedGeometry(), weldIndexedGeometry(), pruneUnusedGeometry());
+    progress('lod', `simplifying: lod1 ×${bake.settings?.lod?.lod1Ratio ?? 0.4}, lod2 ×${bake.settings?.lod?.lod2Ratio ?? 0.15}; existing atlas charts protected`);
     lodStats = await buildLodTiers({ lod1Ratio: bake.settings?.lod?.lod1Ratio ?? 0.4, lod2Ratio: bake.settings?.lod?.lod2Ratio ?? 0.15 })(doc);
+    const transferLods = args['transfer-lods'] || (!args['preserve-lods'] && preset.lod?.transferLightmaps && baker.startsWith('blender') && lightmapStats?.atlases?.length);
+    if (transferLods) {
+      if (!lightmapStats?.atlases?.length || !baker.startsWith('blender')) throw new Error('--transfer-lods requires a validated Blender atlas bake');
+      lodTransfer = await transferLodLightmaps({ io, doc, lightmapStats, lightmapDir,
+        outDir: path.join(buildDir, withQuality('lod-lightmaps', quality)),
+        ratios: [bake.settings?.lod?.lod1Ratio ?? .4, bake.settings?.lod?.lod2Ratio ?? .15],
+        density: [lightmapStats.texelsPerMeter*.5, lightmapStats.texelsPerMeter*.25],
+        onProgress: m => progress('lod', m), signal: cancel.signal });
+      lodStats = lodStatistics(doc);
+    }
     const t = lodStats.reduce((acc, s) => acc.map((v, i) => v + s.triangles[i]), [0, 0, 0]);
     progress('lod', `triangles per tier: ${t.map((n) => n.toLocaleString()).join(' / ')}`);
     await fs.writeFile(lodFile, JSON.stringify(lodStats));
     await io.write(stage(3), doc);
+    if (lodTransfer) lodTransfer.checkpointSha256 = await fileDigest(stage(3));
+    await fs.writeFile(transferFile, JSON.stringify(lodTransfer));
   } else {
     lodStats = JSON.parse(await fs.readFile(lodFile, 'utf8'));
+    try { lodTransfer = JSON.parse(await fs.readFile(transferFile, 'utf8')); }
+    catch (error) { if (error.code !== 'ENOENT') throw error; }
+    if (lodTransfer?.groups?.length && lodTransfer.checkpointSha256 !== await fileDigest(stage(3))) {
+      throw new Error('LOD transfer sidecar does not match stage 3; resume from stage 3 to rebuild it');
+    }
+  }
+
+  // Keep LOD0's original bake and its checkpoints intact. A stage-3 checkpoint
+  // references extra transfer pages through this separate, resumable sidecar.
+  for (const group of lodTransfer?.groups ?? []) {
+    if (group.atlasOffset !== lightmapStats.atlases.length) throw new Error('LOD atlas offsets disagree with the source bake');
+    for (const page of group.atlases) {
+      lightmapPngs.push(await fs.readFile(page.file));
+      lightmapStats.atlases.push(page);
+    }
   }
 
   // ---- stage 4: textures, compression, manifest ----------------------------
+  await doc.transform(pruneUnusedGeometry(), weldIndexedGeometry(), pruneUnusedGeometry());
   const textureCleanup = await pruneUnusedTextures(doc);
   progress('textures', `removed ${textureCleanup.removed} unused images before encoding; ${textureCleanup.remaining} remain`);
   const tex = bake.settings?.textures ?? {};
   if (budget.maxSize < (tex.maxSize ?? 2048)) progress('textures', `${quality}: material textures capped at ${budget.maxSize}² (level ceiling: ${tex.maxSize ?? 2048}²)`);
   const { count } = await compressTextures({
-    colorMode: tex.colorMode ?? 'etc1s', dataMode: tex.dataMode ?? 'uastc', maxSize: budget.maxSize,
+    colorMode: budget.colorMode, dataMode: budget.dataMode, maxSize: budget.maxSize,
     onProgress: (m, i, n) => progress('textures', `${m} (${i}/${n})`),
   })(doc);
   let lightmapImage = null;
   if (lightmapPngs.length) {
     lightmapImage = [];
-    for (const png of lightmapPngs) lightmapImage.push(await addLightmapTexture(doc, png, { onProgress: m => progress('textures', m) }));
+    for (const [i, png] of lightmapPngs.entries()) {
+      const transferred = i >= (lodTransfer?.groups?.[0]?.atlasOffset ?? Infinity);
+      lightmapImage.push(await addLightmapTexture(doc, png, { mode: transferred ? preset.lod?.colorMode ?? 'uastc' : 'uastc', onProgress: m => progress('textures', m) }));
+    }
   } else if (lightmapPng) lightmapImage = await addLightmapTexture(doc, lightmapPng, { onProgress: (m) => progress('textures', m) });
 
   // The sky's images are sidecars beside the project; the shipped level is one
   // file, so they are folded in here as unreferenced KTX2, the lightmap's
   // arrangement. Both picture modes ship as one KTX2 with faceCount 6.
-  const skyIndices = await addSkyTextures(doc, skyImages, {
-    colorMode: tex.colorMode ?? 'etc1s', maxSize: tex.maxSize ?? 2048,
+  const shippingSkyImages = await capSkyImages(skyImages, budget.maxFace);
+  if (budget.maxFace) progress('sky', `shipping cubemap faces capped at ${budget.maxFace}; bake environment unchanged`);
+  const skyIndices = await addSkyTextures(doc, shippingSkyImages, {
+    colorMode: budget.colorMode, maxSize: tex.maxSize ?? 2048,
     onProgress: (m) => progress('textures', m),
   });
 
@@ -292,10 +347,12 @@ async function main() {
 
   progress('compress', 'meshopt (EXT_meshopt_compression, exact lightmap UVs)');
   await doc.transform(compressLevelGeometry({ encoder: MeshoptEncoder }));
+  // Quantization can make previously distinct corners bitwise identical.
+  await doc.transform(weldIndexedGeometry(), dedup({ propertyTypes: [PropertyType.MATERIAL, PropertyType.ACCESSOR] }), pruneUnusedGeometry());
 
   const manifest = writeManifest({ bake, lodStats, lightmapImage, lightmapStats, skyIndices, generator: { tool: 'thaikit', version: VERSION }, liveLamps, onNote: (m) => progress('manifest', m) })(doc);
   if (manifest.lightmap?.bakedOnlyLamps) progress('manifest', `${manifest.lightmap.bakedOnlyLamps} lamp(s) ship baked-only (--live-lamps ${liveLamps}); ${manifest.lights.length} light(s) stay live`);
-  await doc.transform(prune({ propertyTypes: [PropertyType.NODE, PropertyType.MESH, PropertyType.ACCESSOR, PropertyType.MATERIAL], keepLeaves: true, keepAttributes: true }));
+  await doc.transform(pruneUnusedGeometry());
 
   // Also catch textures orphaned by the final transforms, while remapping the
   // explicit image references used by the runtime's lightmaps and sky.
@@ -306,7 +363,13 @@ async function main() {
   if (Array.isArray(lightmapImage)) {
     progress('coverage', 'checking final compressed GLB against Cycles coverage');
     const shipped = await io.read(outFile);
-    const coverage = await auditAtlasCoverage(shipped, lightmapDir);
+    const groups = [{ directory: lightmapDir, atlasOffset: 0 }, ...(lodTransfer?.groups ?? [])];
+    const reports = [];
+    for (const group of groups) reports.push(await auditAtlasCoverage(shipped, group.directory, {
+      atlasOffset: group.atlasOffset, atlasCount: lightmapStats.atlases.length,
+      onProgress: m => progress('coverage', m),
+    }));
+    const coverage = { ok: reports.every(r => r.ok), atlases: reports.flatMap(r => r.atlases), failures: reports.flatMap(r => r.failures) };
     await fs.writeFile(path.join(buildDir, withQuality('coverage-final.json', quality)), JSON.stringify(coverage));
     if (!coverage.ok) throw new Error(`final lightmap coverage failed: ${coverage.failures.length} reported holes; delivery withheld`);
   }
@@ -315,7 +378,7 @@ async function main() {
 
   // ---- verify ----------------------------------------------------------------
   const verify = await new Promise((resolve) => {
-    const child = spawn(process.execPath, [path.join(here, 'verify-level.mjs'), '--level', id, '--max-texture-size', String(budget.maxSize), ...(cell ? ['--cell', cell] : []), ...(quality ? ['--quality', quality] : [])], { stdio: ['ignore', 'pipe', 'inherit'] });
+    const child = spawn(process.execPath, [path.join(here, 'verify-level.mjs'), '--level', id, '--strict-geometry', '--max-texture-size', String(budget.maxSize), ...(cell ? ['--cell', cell] : []), ...(quality ? ['--quality', quality] : [])], { stdio: ['ignore', 'pipe', 'inherit'] });
     let out = '';
     child.stdout.on('data', (d) => { out += d; });
     child.on('close', () => { try { resolve(JSON.parse(out.trim().split('\n').pop())); } catch { resolve({ ok: false, failures: ['verify produced no result'] }); } });

@@ -94,7 +94,8 @@ export async function renderPreviews(entries, { progress = () => {} } = {}) {
     import('sharp'),
   ]);
 
-  const executablePath = await findChrome();
+  const browserURL = process.env.THAIKIT_BROWSER_URL;
+  const executablePath = browserURL ? undefined : await findChrome();
   // Not fatal: by now the pack is installed and usable, and a thumbnail with
   // tofu is still a thumbnail. But say so, because it looks like a finished render.
   const font = checkThaiFont();
@@ -102,7 +103,7 @@ export async function renderPreviews(entries, { progress = () => {} } = {}) {
   const { server, port } = await serve(REPO_ROOT);
   const base = `http://127.0.0.1:${port}`;
 
-  const browser = await puppeteer.launch({
+  const browser = browserURL ? await puppeteer.connect({ browserURL }) : await puppeteer.launch({
     executablePath,
     // Without SwiftShader every render comes back silently black -- a valid PNG
     // of the backdrop, which is the failure that looks like success.
@@ -113,8 +114,9 @@ export async function renderPreviews(entries, { progress = () => {} } = {}) {
     ],
   });
 
+  let ownedPage;
   try {
-    const page = await browser.newPage();
+    const page = ownedPage = await browser.newPage();
     await page.setViewport({ width: RENDER, height: RENDER, deviceScaleFactor: 1 });
     const pageErrors = [];
     page.on('pageerror', (e) => pageErrors.push(String(e.message ?? e)));
@@ -162,7 +164,8 @@ export async function renderPreviews(entries, { progress = () => {} } = {}) {
       }
     }
   } finally {
-    await browser.close().catch(() => {});
+    if (browserURL) { await ownedPage?.close().catch(() => {}); browser.disconnect(); }
+    else await browser.close().catch(() => {});
     server.close();
   }
 

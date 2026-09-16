@@ -50,6 +50,40 @@ def validate_materials(mesh, expected, unreal):
         raise RuntimeError('\n'.join(errors))
 
 
+def preserve_alpha_settings(mesh, expected, unreal):
+    """Keep masked materials identical in the editor and a later glTF export.
+
+    UE's imported-material export shortcut reads the glTF function's AlphaCutoff
+    input, bypassing the Material's opacity_mask_clip_value. Interchange can leave
+    that input disconnected, silently exporting the glTF default of 0.5.
+    """
+    slots = {str(s.material_slot_name): s.material_interface for s in mesh.static_materials}
+    edit = unreal.MaterialEditingLibrary
+    for source in expected:
+        material = slots[source['name']]
+        material.set_editor_property('two_sided', source.get('doubleSided', False))
+        if source.get('alphaMode') != 'MASK':
+            continue
+        cutoff = source.get('alphaCutoff', 0.5)
+        material.set_editor_property('blend_mode', unreal.BlendMode.BLEND_MASKED)
+        material.set_editor_property('opacity_mask_clip_value', cutoff)
+        functions = [n for n in unreal.ObjectIterator(unreal.MaterialExpressionMaterialFunctionCall)
+                     if n.get_outer() == material and 'AlphaCutoff' in edit.get_material_expression_input_names(n)]
+        if len(functions) > 1:
+            raise RuntimeError(source['name'] + ': ambiguous glTF AlphaCutoff inputs')
+        if functions:
+            label = 'ThaiKit glTF alpha cutoff'
+            constants = [n for n in unreal.ObjectIterator(unreal.MaterialExpressionConstant)
+                         if n.get_outer() == material and n.get_editor_property('desc') == label]
+            node = constants[0] if constants else edit.create_material_expression(
+                material, unreal.MaterialExpressionConstant, -600, 1000)
+            node.set_editor_property('desc', label)
+            node.set_editor_property('r', cutoff)
+            if not edit.connect_material_expressions(node, '', functions[0], 'AlphaCutoff'):
+                raise RuntimeError(source['name'] + ': could not preserve AlphaCutoff')
+        edit.recompile_material(material)
+
+
 def import_kit(folder, refs=None, destination='/Game/ThaiKit/GLBImports'):
     import unreal
     folder = Path(folder)
@@ -80,6 +114,7 @@ def import_kit(folder, refs=None, destination='/Game/ThaiKit/GLBImports'):
             if len(meshes) != 1:
                 raise RuntimeError('Expected one StaticMesh, got ' + str(len(meshes)))
             validate_materials(meshes[0], expected, unreal)
+            preserve_alpha_settings(meshes[0], expected, unreal)
             for asset in assets:
                 unreal.EditorAssetLibrary.save_loaded_asset(asset)
             report.append({'ref': item['ref'], 'ok': True, 'mesh': meshes[0].get_path_name()})

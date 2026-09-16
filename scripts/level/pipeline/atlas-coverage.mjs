@@ -3,13 +3,14 @@ import path from 'node:path';
 import { gunzipSync } from 'node:zlib';
 
 /** Validate the actual exported UV lookups against Cycles' chart-owned mask. */
-export async function auditAtlasCoverage(doc, directory, { onProgress } = {}) {
+export async function auditAtlasCoverage(doc, directory, { onProgress, atlasOffset = 0, atlasCount = null } = {}) {
   const layout=JSON.parse(await fs.readFile(path.join(directory,'atlas-layout.json'),'utf8'));
+  atlasCount ??= layout.count;
   const size=layout.size, failures=[], rows=[];
   for(const node of doc.getRoot().listNodes())for(const p of node.getMesh()?.listPrimitives()??[]) {
     const page=p.getMaterial()?.getExtras()?.tk?.lightmapAtlas;
     const expected=layout.objects?.[node.getName()];
-    if((expected || page!==undefined) && (!Number.isInteger(page)||page<0||page>=layout.count||(expected&&expected.atlas!==page)))
+    if((expected || page!==undefined) && (!Number.isInteger(page)||page<0||page>=atlasCount||(expected&&expected.atlas+atlasOffset!==page)))
       failures.push({page,node:node.getName(),reason:'invalid atlas assignment'});
   }
   for(let page=0;page<layout.count;page++){
@@ -31,7 +32,7 @@ export async function auditAtlasCoverage(doc, directory, { onProgress } = {}) {
     };
     let checked=0;
     for(const node of doc.getRoot().listNodes())for(const p of node.getMesh()?.listPrimitives()??[]){
-      if(p.getMaterial()?.getExtras()?.tk?.lightmapAtlas!==page)continue;
+      if(p.getMaterial()?.getExtras()?.tk?.lightmapAtlas!==page+atlasOffset)continue;
       const assignment=layout.objects?.[node.getName()];
       if(layout.objects && (!assignment || assignment.atlas!==page)) {
         failures.push({page,node:node.getName(),reason:'atlas assignment does not match layout'});continue;
@@ -72,7 +73,7 @@ export async function auditAtlasCoverage(doc, directory, { onProgress } = {}) {
         if(!pass && failures.length<1000)failures.push({page,node:node.getName(),triangle:i/3,reason:'lookup leaves chart coverage'});
       }
     }
-    rows.push({atlas:page,triangles:checked});
+    rows.push({atlas:page+atlasOffset,triangles:checked});
     onProgress?.(`atlas ${page+1}/${layout.count}: checked ${checked} exported triangles; ${failures.length} failures so far`);
   }
   return {ok:failures.length===0,atlases:rows,failures};

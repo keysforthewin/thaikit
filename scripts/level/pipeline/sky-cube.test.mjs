@@ -24,7 +24,7 @@ import sharp from 'sharp';
 const LEVELS = await fs.mkdtemp(path.join(os.tmpdir(), 'tk-levels-'));
 process.env.THAIKIT_LEVELS_DIR = LEVELS;
 
-const { prepareSkyImages } = await import('./sky.mjs');
+const { prepareSkyImages, capSkyImages } = await import('./sky.mjs');
 const { CUBE_FACES } = await import('@thai-kit/level-schema');
 
 const RGB = [[255, 0, 0], [0, 255, 0], [0, 0, 255], [255, 255, 0], [255, 0, 255], [0, 255, 255]];
@@ -66,6 +66,23 @@ test('cube faces larger than the ceiling are capped, and say so', async () => {
   assert.equal(out.baseFaces?.length, 6);
   assert.equal((await sharp(out.baseFaces[0]).metadata()).width, 256);
   assert.ok(out.notes.some((n) => /capped at 256/.test(n)), `expected a cap note, got ${JSON.stringify(out.notes)}`);
+});
+
+test('shipping face caps preserve the original bake inputs and native small faces', async () => {
+  const source = await prepareSkyImages('shipping', await levelWithCube('shipping', 512));
+  const original = source.baseFaces.slice();
+  const capped = await capSkyImages(source, 256);
+  assert.equal(capped.baseFaces.length, 6);
+  for (let i = 0; i < 6; i++) {
+    assert.equal((await sharp(capped.baseFaces[i]).metadata()).width, 256);
+    assert.equal((await sharp(source.baseFaces[i]).metadata()).width, 512);
+    assert.equal(source.baseFaces[i], original[i]);
+    const pixel = await sharp(capped.baseFaces[i]).raw().toBuffer();
+    assert.deepEqual([...pixel.subarray(0, 3)], RGB[i]);
+  }
+  assert.deepEqual((await capSkyImages(capped, 1024)).baseFaces, capped.baseFaces);
+  assert.equal(await capSkyImages(source, null), source);
+  await assert.rejects(capSkyImages(source, 255), /multiple of four/);
 });
 
 test('a cube sky missing a face skips the base layer rather than half-shipping it', async () => {

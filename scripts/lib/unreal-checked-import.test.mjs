@@ -44,3 +44,43 @@ with tempfile.TemporaryDirectory() as tmp:
 `], { encoding: 'utf8' });
   assert.equal(result.status, 0, result.stderr || result.stdout);
 });
+
+test('masked imports retain their cutoff for the editor and the glTF shortcut', () => {
+  const result = spawnSync('python3', ['-c', String.raw`
+import runpy, types
+ns = runpy.run_path('web/client/src/unreal/import_into_unreal.py')
+class Material:
+    def __init__(self): self.props = {}
+    def set_editor_property(self, name, value): self.props[name] = value
+class Function:
+    def __init__(self, material): self.material = material
+    def get_outer(self): return self.material
+class Constant(Function):
+    def __init__(self, material): super().__init__(material); self.props = {'desc':''}
+    def set_editor_property(self, key, value): self.props[key] = value
+    def get_editor_property(self, key): return self.props[key]
+material, unrelated = Material(), Material()
+function, other = Function(material), Function(unrelated)
+constants, links = [], []
+def create(material, kind, x, y):
+    node = kind(material); constants.append(node); return node
+def connect(node, output, target, pin):
+    links.append((node, target, pin)); return True
+edit = types.SimpleNamespace(get_material_expression_input_names=lambda n: ['AlphaCutoff'],
+    create_material_expression=create, connect_material_expressions=connect, recompile_material=lambda m: None)
+u = types.SimpleNamespace(MaterialEditingLibrary=edit, MaterialExpressionMaterialFunctionCall=Function,
+    MaterialExpressionConstant=Constant, BlendMode=types.SimpleNamespace(BLEND_MASKED='masked'),
+    ObjectIterator=lambda cls: [function, other] if cls is Function else constants)
+mesh = types.SimpleNamespace(static_materials=[types.SimpleNamespace(material_slot_name='wire', material_interface=material)])
+source = {'name':'wire', 'alphaMode':'MASK', 'alphaCutoff':.25, 'doubleSided':True}
+for _ in range(2): ns['preserve_alpha_settings'](mesh, [source], u)
+assert material.props == {'two_sided':True, 'blend_mode':'masked', 'opacity_mask_clip_value':.25}
+assert len(constants) == 1, 'repeat import must reuse its repair node'
+assert constants[0].props['r'] == .25
+assert all(target is function and pin == 'AlphaCutoff' for node, target, pin in links)
+del source['alphaCutoff']
+ns['preserve_alpha_settings'](mesh, [source], u)
+assert constants[0].props['r'] == .5, 'missing cutoff uses glTF default'
+`], { encoding: 'utf8' });
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+});

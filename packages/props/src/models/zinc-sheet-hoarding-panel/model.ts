@@ -36,8 +36,27 @@ export type { ProceduralModelOptions } from './createObjectModel';
  * baseUrl default below.
  */
 
+/**
+ * Where this prop's shipped images live: beside this module, installed
+ * from this item's `artifacts`.
+ *
+ * Wrapped, because `import.meta` is EMPTY in a CommonJS bundle -- esbuild
+ * rewrites it to `{}`, so `new URL('.', undefined)` throws `Invalid URL`
+ * and takes the whole factory down at construction. thaikit's own pack
+ * installer bundles to CJS and hit exactly that. Falling back to
+ * undefined is safe: the caller's own baseUrl still wins below, and a
+ * factory with no baseUrl simply skips its texture load.
+ */
+const BASE_URL: string | undefined = (() => {
+  try {
+    return new URL('.', import.meta.url).href;
+  } catch {
+    return undefined;
+  }
+})();
+
 export function createModel(options: ProceduralModelOptions = {}): Group {
-  return createBaseModel(options);
+  return createBaseModel(BASE_URL ? { baseUrl: BASE_URL, ...options } : options);
 }
 
 /** The shape Vibe3D's docs catalogue expects back from `createPreview`. */

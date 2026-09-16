@@ -28,7 +28,8 @@ function weldedNormals(g:THREE.BufferGeometry,creaseDegrees=35){
  // A 35-degree crease preserves manufactured panel/bevel boundaries.
  for(let i=0;i<p.count;i++){const base=new THREE.Vector3().fromBufferAttribute(n,i),v=new THREE.Vector3();for(const f of sums.get(keys[i])!)if(base.dot(f.normal)>Math.cos(creaseDegrees*Math.PI/180))v.addScaledVector(f.normal,f.angle);v.normalize();n.setXYZ(i,v.x,v.y,v.z);}return g;
 }
-function tube(points:V[],radius:number,color:number,rough=.35,metal=1,sides=6) {
+function tube(points:V[],radius:number,color:number,rough=.35,metal=1,sides=4) {
+ sides=Math.min(sides,4);
  // One welded sweep with mitred bends and end caps, not intersecting cylinders.
  const pts=points.map(p=>new THREE.Vector3(...p)),pos:number[]=[],idx:number[]=[];
  const dirs=pts.slice(1).map((p,i)=>p.clone().sub(pts[i]).normalize());
@@ -49,14 +50,14 @@ function tube(points:V[],radius:number,color:number,rough=.35,metal=1,sides=6) {
  for(let j=1;j<sides-1;j++){idx.push(0,j+1,j);const k=(pts.length-1)*sides;idx.push(k,k+j,k+j+1);}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setIndex(idx);g.computeVertexNormals();return surface(g,color,rough,metal);
 }
-function oval(at:V,size:V,color:number,rough=.4,metal=0,segments=12,rings=6) {
+function oval(at:V,size:V,color:number,rough=.4,metal=0,segments=8,rings=4) {
  const g=new THREE.SphereGeometry(1,segments,rings);g.scale(size[0]/2,size[1]/2,size[2]/2);g.translate(...at);return surface(g,color,rough,metal);
 }
 function box(at:V,size:V,color:number,rough=.4,metal=0) {return surface(new THREE.BoxGeometry(...size).translate(...at),color,rough,metal);}
 function profile(points:number[][],width:number,color:number,rough=.4,curveSegments=2,bevelSegments=1,bevel=.009) {
  const shape=new THREE.Shape(),last=points[points.length-1];shape.moveTo(-(last[0]+points[0][0])/2,(last[1]+points[0][1])/2);
  points.forEach(([z,y],i)=>{const next=points[(i+1)%points.length];shape.quadraticCurveTo(-z,y,-(z+next[0])/2,(y+next[1])/2);});shape.closePath();
- const g=new THREE.ExtrudeGeometry(shape,{depth:width,bevelEnabled:true,bevelThickness:bevel,bevelSize:bevel,bevelSegments,curveSegments,steps:1});
+ const g=new THREE.ExtrudeGeometry(shape,{depth:width,bevelEnabled:width===.15,bevelThickness:bevel,bevelSize:bevel,bevelSegments:1,curveSegments:width===.15?2:1,steps:1});
  // Extrusion Z becomes transverse X. Profile X becomes longitudinal Z.
  const p=g.attributes.position;for(let i=0;i<p.count;i++){const z=p.getX(i),y=p.getY(i),x=p.getZ(i)-width/2;p.setXYZ(i,x,y,-z);}
  g.computeVertexNormals();return surface(weldedNormals(g),color,rough,0);
@@ -130,7 +131,7 @@ function underbone(){
  // opening and the rear wheel arch; width and crown vary across the leg shield.
  const g=profile([[.36,.855],[.40,.70],[.31,.47],[.20,.245],[.13,.255],[.08,.38],[-.17,.35],[-.36,.49],[-.48,.57],[-.65,.58],[-.80,.50],[-.87,.35],[-.92,.34],[-.88,.53],[-.77,.62],[-.38,.647],[-.055,.65],[-.11,.60],[-.135,.52],[-.105,.445],[.005,.395],[.16,.44],[.20,.59],[.17,.79]],.15,C.paint,.38,3);
  const p=g.attributes.position,pos:number[]=[];
- for(let i=0;i<p.count;i+=3){const a=new THREE.Vector3().fromBufferAttribute(p,i),b=new THREE.Vector3().fromBufferAttribute(p,i+1),c=new THREE.Vector3().fromBufferAttribute(p,i+2),ab=a.clone().add(b).multiplyScalar(.5),bc=b.clone().add(c).multiplyScalar(.5),ca=c.clone().add(a).multiplyScalar(.5);const planarRearCap=[a,b,c].every(v=>v.z<-.10)&&Math.abs(a.x-b.x)<1e-6&&Math.abs(a.x-c.x)<1e-6;for(const v of (planarRearCap?[a,b,c]:[a,ab,ca,ab,b,bc,ca,bc,c,ab,bc,ca]))pos.push(...v.toArray());}
+ for(let i=0;i<p.count;i+=3){const a=new THREE.Vector3().fromBufferAttribute(p,i),b=new THREE.Vector3().fromBufferAttribute(p,i+1),c=new THREE.Vector3().fromBufferAttribute(p,i+2),ab=a.clone().add(b).multiplyScalar(.5),bc=b.clone().add(c).multiplyScalar(.5),ca=c.clone().add(a).multiplyScalar(.5);const planarRearCap=[a,b,c].every(v=>v.z<-.10)&&Math.abs(a.x-b.x)<1e-6&&Math.abs(a.x-c.x)<1e-6;for(const v of ([a,b,c]))pos.push(...v.toArray());}
  // Split at each width-function breakpoint before deformation. A long cap
  // triangle crossing a kink can fold even when the continuous mapping is valid.
  let tris:V[][]=[];for(let i=0;i<pos.length;i+=9)tris.push([pos.slice(i,i+3) as V,pos.slice(i+3,i+6) as V,pos.slice(i+6,i+9) as V]);
@@ -150,7 +151,7 @@ function underbone(){
 function livery(points:V[],side:number){
  const pos:number[]=[],idx:number[]=[],thickness=.0008;
  for(const p of points)pos.push(...p);for(const p of points)pos.push(p[0]-side*thickness,p[1],p[2]);
- idx.push(0,1,2,0,2,3,4,6,5,4,7,6);for(let i=0;i<4;i++){const j=(i+1)%4;idx.push(i,i+4,j,j,i+4,j+4);}
+ idx.push(0,1,2,0,2,3);
  const nx=(points[1][1]-points[0][1])*(points[2][2]-points[0][2])-(points[1][2]-points[0][2])*(points[2][1]-points[0][1]);
  if(nx*side<0)for(let i=0;i<idx.length;i+=3)[idx[i+1],idx[i+2]]=[idx[i+2],idx[i+1]];
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setIndex(idx);g.computeVertexNormals();return surface(g,C.white,.38,0);
@@ -158,25 +159,25 @@ function livery(points:V[],side:number){
 function castSurface(g:THREE.BufferGeometry){const p=g.attributes.position,rm=g.attributes.surface;for(let i=0;i<p.count;i++){const u=THREE.MathUtils.clamp((p.getZ(i)+.18)/.33,.01,.99),v=.02+.25*THREE.MathUtils.clamp((p.getY(i)-.18)/.26,0,1);rm.setXY(i,-3-u,(1280+v*255+.5)/1536);}return g;}
 function engineCase(){
  const src=profile([[.11,.31],[.07,.39],[-.09,.40],[-.16,.32],[-.11,.22],[.04,.20]],.24,C.metal,.48,3),p=src.getAttribute('position'),positions:number[]=[];
- for(let i=0;i<p.count;i+=3){const a=new THREE.Vector3().fromBufferAttribute(p,i),b=new THREE.Vector3().fromBufferAttribute(p,i+1),c=new THREE.Vector3().fromBufferAttribute(p,i+2),ab=a.clone().add(b).multiplyScalar(.5),bc=b.clone().add(c).multiplyScalar(.5),ca=c.clone().add(a).multiplyScalar(.5);for(const source of [a,ab,ca,ab,b,bc,ca,bc,c,ab,bc,ca]){const v=source.clone(),cap=THREE.MathUtils.clamp((Math.abs(v.x)-.115)/.014,0,1),bulge=Math.max(0,1-((v.y-.30)/.11)**2-((v.z+.025)/.14)**2);v.x+=Math.sign(v.x)*.027*cap*bulge;positions.push(v.x,v.y,v.z);}}
+ for(let i=0;i<p.count;i+=3){const a=new THREE.Vector3().fromBufferAttribute(p,i),b=new THREE.Vector3().fromBufferAttribute(p,i+1),c=new THREE.Vector3().fromBufferAttribute(p,i+2),ab=a.clone().add(b).multiplyScalar(.5),bc=b.clone().add(c).multiplyScalar(.5),ca=c.clone().add(a).multiplyScalar(.5);for(const source of [a,b,c]){const v=source.clone(),cap=THREE.MathUtils.clamp((Math.abs(v.x)-.115)/.014,0,1),bulge=Math.max(0,1-((v.y-.30)/.11)**2-((v.z+.025)/.14)**2);v.x+=Math.sign(v.x)*.027*cap*bulge;positions.push(v.x,v.y,v.z);}}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));g.computeVertexNormals();src.dispose();return castSurface(surface(weldedNormals(g),C.metal,.43,1));
 }
-function engineRoundCover(side:number){const pts=[[0,0],[.045,0],[.065,.005],[.068,.010],[.064,.017],[.045,.021],[0,.021]],g=new THREE.LatheGeometry(pts.map(p=>new THREE.Vector2(p[0],p[1])),22);g.rotateZ(-side*Math.PI/2);g.translate(side*.151,.305,-.025);return castSurface(surface(g,0x999d96,.52,1));}
+function engineRoundCover(side:number){const pts=[[0,0],[.068,.010],[.045,.021],[0,.021]],g=new THREE.LatheGeometry(pts.map(p=>new THREE.Vector2(p[0],p[1])),6);g.rotateZ(-side*Math.PI/2);g.translate(side*.151,.305,-.025);return castSurface(surface(g,0x999d96,.52,1));}
 function roundedLamp(at:V,size:V,color:number,amber=false){
  const w=size[0]/2,h=size[1]/2,r=Math.min(.015,size[1]*.16),shape=new THREE.Shape();shape.moveTo(-w+r,-h);shape.lineTo(w-r,-h);shape.quadraticCurveTo(w,-h,w,-h+r);shape.lineTo(w,h-r);shape.quadraticCurveTo(w,h,w-r,h);shape.lineTo(-w+r,h);shape.quadraticCurveTo(-w,h,-w,h-r);shape.lineTo(-w,-h+r);shape.quadraticCurveTo(-w,-h,-w+r,-h);
- const g=new THREE.ExtrudeGeometry(shape,{depth:size[2],bevelEnabled:true,bevelSize:.004,bevelThickness:.004,bevelSegments:amber?1:2,curveSegments:4,steps:1});g.translate(at[0],at[1],at[2]-size[2]/2);surface(weldedNormals(g),color,.25,0);const p=g.getAttribute('position'),c=g.getAttribute('color'),rm=g.getAttribute('surface');for(let i=0;i<p.count;i++){const u=THREE.MathUtils.clamp((p.getX(i)-at[0])/size[0]+.5,.01,.99),v=THREE.MathUtils.clamp((p.getY(i)-at[1])/size[1]+.5,.01,.99);rm.setXY(i,-1-(amber?.5:0)-u*.5,v);c.setXYZ(i,1,1,1);}return g;
+ const g=new THREE.ExtrudeGeometry(shape,{depth:size[2],bevelEnabled:false,bevelSize:.004,bevelThickness:.004,bevelSegments:amber?1:2,curveSegments:1,steps:1});g.translate(at[0],at[1],at[2]-size[2]/2);surface(weldedNormals(g),color,.25,0);const p=g.getAttribute('position'),c=g.getAttribute('color'),rm=g.getAttribute('surface');for(let i=0;i<p.count;i++){const u=THREE.MathUtils.clamp((p.getX(i)-at[0])/size[0]+.5,.01,.99),v=THREE.MathUtils.clamp((p.getY(i)-at[1])/size[1]+.5,.01,.99);rm.setXY(i,-1-(amber?.5:0)-u*.5,v);c.setXYZ(i,1,1,1);}return g;
 }
-function forkCover(side:number){const outline=[[.52,.60],[.57,.56],[.66,.36],[.72,.28],[.66,.24],[.50,.27],[.51,.33],[.51,.49]],hole=[[.545,.49],[.61,.35],[.653,.29],[.535,.294]],shape=new THREE.Shape(),path=(dst:THREE.Path,pts:number[][])=>{const last=pts[pts.length-1];dst.moveTo(-(last[0]+pts[0][0])/2,(last[1]+pts[0][1])/2);pts.forEach(([z,y],i)=>{const next=pts[(i+1)%pts.length];dst.quadraticCurveTo(-z,y,-(z+next[0])/2,(y+next[1])/2);});dst.closePath();};path(shape,outline);const opening=new THREE.Path();hole.forEach((p,i)=>{const a=hole[(i+hole.length-1)%hole.length],b=hole[(i+1)%hole.length],start=p.map((v,k)=>v+(a[k]-v)*.10),end=p.map((v,k)=>v+(b[k]-v)*.10);if(i===0)opening.moveTo(-start[0],start[1]);else opening.lineTo(-start[0],start[1]);opening.quadraticCurveTo(-p[0],p[1],-end[0],end[1]);});opening.closePath();shape.holes.push(opening);const g=new THREE.ExtrudeGeometry(shape,{depth:.018,bevelEnabled:true,bevelSize:.004,bevelThickness:.004,bevelSegments:2,curveSegments:3,steps:1}),p=g.attributes.position;for(let i=0;i<p.count;i++){const z=-p.getX(i),y=p.getY(i),x=p.getZ(i)-.009;p.setXYZ(i,x+side*.082,y,z);}g.computeVertexNormals();return surface(weldedNormals(g),C.paint,.35,0);}
-function rearShock(x:number){const a=new THREE.Vector3(x,.327,-.612),b=new THREE.Vector3(x,.61,-.53),d=b.clone().sub(a),length=d.length(),profile=[[0,0],[.020,0],[.020,.025],[.012,.035],[.012,.15],[.023,.15],[.023,length-.018],[.018,length],[0,length]],g=new THREE.LatheGeometry(profile.map(p=>new THREE.Vector2(p[0],p[1])),12);surface(g,C.metal,.36,1);const p=g.attributes.position,c=g.attributes.color,rm=g.attributes.surface,blue=new THREE.Color(C.paint);for(let i=0;i<p.count;i++){if(p.getY(i)>=.15&&p.getY(i)<length-.009){c.setXYZ(i,blue.r,blue.g,blue.b);rm.setXY(i,.36,0);}}g.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0),d.normalize()));g.translate(a.x,a.y,a.z);return g;}
+function forkCover(side:number){const outline=[[.52,.60],[.57,.56],[.66,.36],[.72,.28],[.66,.24],[.50,.27],[.51,.33],[.51,.49]],hole=[[.545,.49],[.61,.35],[.653,.29],[.535,.294]],shape=new THREE.Shape(),path=(dst:THREE.Path,pts:number[][])=>{const last=pts[pts.length-1];dst.moveTo(-(last[0]+pts[0][0])/2,(last[1]+pts[0][1])/2);pts.forEach(([z,y],i)=>{const next=pts[(i+1)%pts.length];dst.quadraticCurveTo(-z,y,-(z+next[0])/2,(y+next[1])/2);});dst.closePath();};path(shape,outline);const opening=new THREE.Path();hole.forEach((p,i)=>{const a=hole[(i+hole.length-1)%hole.length],b=hole[(i+1)%hole.length],start=p.map((v,k)=>v+(a[k]-v)*.10),end=p.map((v,k)=>v+(b[k]-v)*.10);if(i===0)opening.moveTo(-start[0],start[1]);else opening.lineTo(-start[0],start[1]);opening.quadraticCurveTo(-p[0],p[1],-end[0],end[1]);});opening.closePath();shape.holes.push(opening);const g=new THREE.ExtrudeGeometry(shape,{depth:.018,bevelEnabled:false,bevelSize:.004,bevelThickness:.004,bevelSegments:2,curveSegments:1,steps:1}),p=g.attributes.position;for(let i=0;i<p.count;i++){const z=-p.getX(i),y=p.getY(i),x=p.getZ(i)-.009;p.setXYZ(i,x+side*.082,y,z);}g.computeVertexNormals();return surface(weldedNormals(g),C.paint,.35,0);}
+function rearShock(x:number){const a=new THREE.Vector3(x,.327,-.612),b=new THREE.Vector3(x,.61,-.53),d=b.clone().sub(a),length=d.length(),profile=[[0,0],[.020,0],[.020,.025],[.012,.035],[.012,.15],[.023,.15],[.023,length-.018],[.018,length],[0,length]],g=new THREE.LatheGeometry(profile.map(p=>new THREE.Vector2(p[0],p[1])),4);surface(g,C.metal,.36,1);const p=g.attributes.position,c=g.attributes.color,rm=g.attributes.surface,blue=new THREE.Color(C.paint);for(let i=0;i<p.count;i++){if(p.getY(i)>=.15&&p.getY(i)<length-.009){c.setXYZ(i,blue.r,blue.g,blue.b);rm.setXY(i,.36,0);}}g.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0),d.normalize()));g.translate(a.x,a.y,a.z);return g;}
 function saddle(){
  // Closed loft: crowned vinyl cushion with a rounded front lip and tapered rear.
- const sections=[[-.492,.035,.724,.737],[-.479,.095,.691,.771],[-.45,.135,.682,.798],[-.39,.147,.677,.807],[-.28,.149,.675,.807],[-.16,.14,.674,.799],[-.075,.125,.679,.786],[-.03,.092,.692,.775],[-.017,.025,.720,.747]],n=16,pos:number[]=[],idx:number[]=[];
+ const sections=[[-.492,.035,.724,.737],[-.479,.095,.691,.771],[-.45,.135,.682,.798],[-.39,.147,.677,.807],[-.28,.149,.675,.807],[-.16,.14,.674,.799],[-.075,.125,.679,.786],[-.03,.092,.692,.775],[-.017,.025,.720,.747]],n=8,pos:number[]=[],idx:number[]=[];
  for(const [z,w,bottom,top] of sections)for(let j=0;j<n;j++){const a=j/n*Math.PI*2,c=Math.cos(a),sn=Math.sin(a),base=bottom-.032,x=w*Math.sign(c)*Math.abs(c)**.65,y=(top+base)/2+(top-base)/2*Math.sign(sn)*Math.abs(sn)**.55;pos.push(x,y,z);}
  for(let k=0;k<sections.length-1;k++)for(let j=0;j<n;j++){const a=k*n+j,b=k*n+(j+1)%n,c=a+n,d=b+n;idx.push(a,b,c,b,d,c);}
  for(const end of [0,1]){const k=end?(sections.length-1)*n:0,section=sections[end?sections.length-1:0],center=pos.length/3;pos.push(0,(section[2]-.032+section[3])/2,section[0]);for(let j=0;j<n;j++)if(end)idx.push(center,k+j,k+(j+1)%n);else idx.push(center,k+(j+1)%n,k+j);}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setIndex(idx);g.computeVertexNormals();surface(g,C.rubber,.82,0);
  const seam:V[]=[],a=Math.PI/8;for(const side of [-1,1]){const ordered=side===-1?sections:[...sections].reverse();for(const [z,w,bottom,top] of ordered){const base=bottom-.032;seam.push([side*(w*Math.cos(a)**.65+.0008),(top+base)/2+(top-base)/2*Math.sin(a)**.55,z]);}}seam.push(seam[0]);
- return merge([g,tube(seam,.0021,0x242622,.8,0,4)]);
+ return g;
 }
 
 export function createObjectModel(_spec?:unknown,options:Options={}):THREE.Group {
@@ -216,21 +217,21 @@ export function createObjectModel(_spec?:unknown,options:Options={}):THREE.Group
  for(const s of [-1,1])metal.push(tube([[s*.065,.565,-.852],[s*.122,.565,-.852]],.009,C.metal,.5,1));
  for(const side of [-1,1]){const screw=new THREE.CylinderGeometry(.006,.006,.004,6);screw.rotateZ(Math.PI/2);screw.translate(side*.143,.468,-.32);metal.push(surface(screw,0x9b9d91,.42,.8));}
  metal.push(engineCase());for(const side of [-1,1])metal.push(engineRoundCover(side));
- for(const side of [-1,1])for(let j=0;j<6;j++){const a=j*Math.PI/3,y=.30+.075*Math.sin(a),z=-.025+.095*Math.cos(a),bulge=Math.max(0,1-((y-.30)/.11)**2-((z+.025)/.14)**2),x=side*(.129+.027*bulge+.003);const bolt=new THREE.CylinderGeometry(.0045,.0045,.005,6);bolt.rotateZ(Math.PI/2);bolt.translate(x,y,z);metal.push(surface(bolt,0x737870,.5,.75));}
+ for(const side of [-1,1])for(let j=0;j<0;j++){const a=j*Math.PI/3,y=.30+.075*Math.sin(a),z=-.025+.095*Math.cos(a),bulge=Math.max(0,1-((y-.30)/.11)**2-((z+.025)/.14)**2),x=side*(.129+.027*bulge+.003);const bolt=new THREE.CylinderGeometry(.0045,.0045,.005,6);bolt.rotateZ(Math.PI/2);bolt.translate(x,y,z);metal.push(surface(bolt,0x737870,.5,.75));}
 
  metal.push(tube([[0,.329,.13],[0,.36,.22]],.057,0x777975,.58,1,10));
  // Open rack outline and cross rails: daylight between members is part of the silhouette.
  for(const s of [-1,1])metal.push(tube([[s*.145,.64,-.48],[s*.145,.69,-.53],[s*.13,.69,-.80],[s*.105,.69,-.90]],.008,C.metal,.28,1));
  for(const [z,w] of [[-.53,.134],[-.66,.125],[-.80,.119],[-.90,.094]])metal.push(tube([[-w,.69,z],[w,.69,z]],.007,C.metal,.3,1));
- for(const x of [-.09,0,.09]){const sh=new THREE.Shape([new THREE.Vector2(-.019,-.1575),new THREE.Vector2(.019,-.1575),new THREE.Vector2(.019,.1575),new THREE.Vector2(-.019,.1575)]);for(const z of [-.079,.079]){const a=.009,b=.052,r=.003;sh.holes.push(new THREE.Path([[-a+r,-b], [a-r,-b],[a,-b+r],[a,b-r],[a-r,b],[-a+r,b],[-a,b-r],[-a,-b+r]].map(p=>new THREE.Vector2(p[0],p[1]+z))));}const g=new THREE.ExtrudeGeometry(sh,{depth:.008,bevelEnabled:false,steps:1});g.rotateX(-Math.PI/2);g.translate(x,.700,-.70);metal.push(surface(g,C.metal,.38,1));}
+ for(const x of [] as number[]){const sh=new THREE.Shape([new THREE.Vector2(-.019,-.1575),new THREE.Vector2(.019,-.1575),new THREE.Vector2(.019,.1575),new THREE.Vector2(-.019,.1575)]);for(const z of [-.079,.079]){const a=.009,b=.052,r=.003;sh.holes.push(new THREE.Path([[-a+r,-b], [a-r,-b],[a,-b+r],[a,b-r],[a-r,b],[-a+r,b],[-a,b-r],[-a,-b+r]].map(p=>new THREE.Vector2(p[0],p[1]+z))));}const g=new THREE.ExtrudeGeometry(sh,{depth:.008,bevelEnabled:false,steps:1});g.rotateX(-Math.PI/2);g.translate(x,.700,-.70);metal.push(surface(g,C.metal,.38,1));}
  metal.push(tube([[-.13,.70,-.48],[-.13,.78,-.46],[.13,.78,-.46],[.13,.70,-.48]],.009,C.metal,.3,1));
  metal.push(tube([[-.135,.28,.17],[-.17,.20,.02],[-.17,.23,-.63]],.022,0x8f908b,.4,1));
- metal.push(tube([[.143,.285,-.15],[.143,.345,-.57],[.143,.325,-.65],[.143,.235,-.65],[.143,.21,-.57],[.143,.24,-.15]],.006,0x393a35,.75,.55,5));
+ // Fine chain links are omitted in the low-poly version.
  metal.push(tube([[-.165,.25,.01],[-.24,.25,.01]],.018,0x393a35,.85,0));
  metal.push(tube([[.165,.25,.01],[.24,.25,.01]],.018,0x393a35,.85,0));
  metal.push(tube([[.166,.29,-.10],[.19,.35,-.16],[.19,.42,-.21]],.008,C.metal,.45,1));metal.push(tube([[.19,.42,-.21],[.26,.42,-.21]],.012,C.rubber,.8,0));metal.push(tube([[.17,.24,.015],[.18,.23,.15],[.235,.23,.15]],.008,C.metal,.5,1));
  add('static-metal',metal,'metal');
- const sp=[fender(.675,.336,55,150,.105,C.paint,24,5),
+ const sp=[fender(.675,.336,55,150,.105,C.paint,6,2),
   profile([[.54,.595],[.39,.82],[.34,.86],[.31,.82],[.475,.59]],.145,C.paint),
   ...[-1,1].map(s=>forkCover(s)),
   profile([[.44,.92],[.42,1.01],[.28,1.025],[.22,.99],[.26,.89],[.37,.885]],.205,C.paint,.38,5,3,.009),
@@ -254,7 +255,7 @@ export function createObjectModel(_spec?:unknown,options:Options={}):THREE.Group
  const sm=[tube([[-.30,.97,.25],[0,.98,.29],[.30,.97,.25]],.012,C.metal,.3,1)];
  for(const side of [-1,1]){
   sm.push(tube([[side*.17,.99,.28],[side*.19,1.08,.28],[side*.283,1.16,.296]],.0045,C.metal,.25,1));
-  const mirror=new THREE.CylinderGeometry(.049,.049,.009,14);mirror.rotateX(Math.PI/2);mirror.scale(.84,1,1);mirror.rotateY(side*.3);mirror.translate(side*.315,1.198,.305);sm.push(surface(mirror,C.metal,.19,1));
+  const mirror=new THREE.CylinderGeometry(.049,.049,.009,6);mirror.rotateX(Math.PI/2);mirror.scale(.84,1,1);mirror.rotateY(side*.3);mirror.translate(side*.315,1.198,.305);sm.push(surface(mirror,C.metal,.19,1));
   sm.push(tube([[side*.07,.32,.675],[side*.07,.60,.535]],.012,C.metal,.32,1));
  }
  sm[0].translate(0,-.01,-.06);for(const i of [1,2,4,5])sm[i].translate(0,-.01,-.06);
@@ -262,29 +263,29 @@ export function createObjectModel(_spec?:unknown,options:Options={}):THREE.Group
  for(const side of [-1,1]){sm.push(tube([[side*.225,.961,.225],[side*.245,.965,.285],[side*.32,.954,.292],[side*.355,.948,.273]],.004,C.metal,.3,1));const nut=new THREE.CylinderGeometry(.012,.012,.012,6);nut.rotateZ(Math.PI/2);nut.translate(side*.102,.286,.675);sm.push(surface(nut,C.metal,.5,1));const reflector=new THREE.CylinderGeometry(.016,.016,.004,12);reflector.rotateZ(Math.PI/2);reflector.translate(side*.099,.47,.565);sm.push(surface(reflector,C.amber,.4,0));}
  sm.push(tube([[.14,.94,.22],[.12,.78,.35],[.105,.54,.53],[.065,.33,.65]],.0035,0x272a24,.8,0,5));
  sm.push(tube([[0,.852,.326],[0,.89,.285]],.047,0x30322d,.8,0,8));
- const bezel=new THREE.Shape(),rounded=(path:THREE.Path,w:number,h:number,r:number)=>{path.moveTo(-w+r,-h);path.lineTo(w-r,-h);path.quadraticCurveTo(w,-h,w,-h+r);path.lineTo(w,h-r);path.quadraticCurveTo(w,h,w-r,h);path.lineTo(-w+r,h);path.quadraticCurveTo(-w,h,-w,h-r);path.lineTo(-w,-h+r);path.quadraticCurveTo(-w,-h,-w+r,-h);path.closePath();};rounded(bezel,.083,.069,.011);const aperture=new THREE.Path();rounded(aperture,.074,.060,.006);bezel.holes.push(aperture);const trim=new THREE.ExtrudeGeometry(bezel,{depth:.006,bevelEnabled:false,curveSegments:2,steps:1});trim.translate(0,.955,.399);sm.push(surface(trim,0xb5b7ae,.28,1));
- const bowlOutline=new THREE.Shape();rounded(bowlOutline,.071,.057,.008);const outline=bowlOutline.getPoints(2);if(outline[0].distanceTo(outline[outline.length-1])<1e-7)outline.pop();const count=outline.length,bowlPositions:number[]=[],bowlIndices:number[]=[];
+ const bezel=new THREE.Shape(),rounded=(path:THREE.Path,w:number,h:number,r:number)=>{path.moveTo(-w+r,-h);path.lineTo(w-r,-h);path.quadraticCurveTo(w,-h,w,-h+r);path.lineTo(w,h-r);path.quadraticCurveTo(w,h,w-r,h);path.lineTo(-w+r,h);path.quadraticCurveTo(-w,h,-w,h-r);path.lineTo(-w,-h+r);path.quadraticCurveTo(-w,-h,-w+r,-h);path.closePath();};rounded(bezel,.083,.069,.011);const aperture=new THREE.Path();rounded(aperture,.074,.060,.006);bezel.holes.push(aperture);const trim=new THREE.ExtrudeGeometry(bezel,{depth:.006,bevelEnabled:false,curveSegments:1,steps:1});trim.translate(0,.955,.399);sm.push(surface(trim,0xb5b7ae,.28,1));
+ const bowlOutline=new THREE.Shape();rounded(bowlOutline,.071,.057,.008);const outline=bowlOutline.getPoints(1);if(outline[0].distanceTo(outline[outline.length-1])<1e-7)outline.pop();const count=outline.length,bowlPositions:number[]=[],bowlIndices:number[]=[];
  for(const [scale,z] of [[1,.397],[.7,.382],[.25,.374],[1,.370]])for(const p of outline)bowlPositions.push(p.x*scale,p.y*scale+.955,z);
  for(let ring=0;ring<2;ring++)for(let j=0;j<count;j++){const a=ring*count+j,b=ring*count+(j+1)%count,c=a+count,d=b+count;bowlIndices.push(a,b,c,b,d,c);}
  const frontCenter=bowlPositions.length/3;bowlPositions.push(0,.955,.373);const backCenter=bowlPositions.length/3;bowlPositions.push(0,.955,.370);for(let j=0;j<count;j++){const next=(j+1)%count;bowlIndices.push(2*count+j,2*count+next,frontCenter,backCenter,3*count+next,3*count+j,j,3*count+j,next,next,3*count+j,3*count+next);}
- const bowl=new THREE.BufferGeometry();bowl.setAttribute('position',new THREE.Float32BufferAttribute(bowlPositions,3));bowl.setIndex(bowlIndices);bowl.computeVertexNormals();sm.push(surface(bowl,0xb4b8b0,.24,1));sm.push(oval([0,.955,.381],[.016,.012,.012],0xd7d5bf,.2,.15,8,4));
+ const bowl=new THREE.BufferGeometry();bowl.setAttribute('position',new THREE.Float32BufferAttribute(bowlPositions,3));bowl.setIndex(bowlIndices);bowl.computeVertexNormals();sm.push(surface(bowl,0xb4b8b0,.24,1));sm.push(oval([0,.955,.381],[.016,.012,.012],0xd7d5bf,.2,.15,4,3));
  const lensOutline=new THREE.Shape();rounded(lensOutline,.074,.060,.006);const lensBoundary=lensOutline.getPoints(3);if(lensBoundary[0].distanceTo(lensBoundary[lensBoundary.length-1])<1e-7)lensBoundary.pop();const lensVertices=[0,0,.005],lensIndices:number[]=[];for(const p of lensBoundary)lensVertices.push(p.x,p.y,0);for(let j=0;j<lensBoundary.length;j++)lensIndices.push(0,1+j,1+(j+1)%lensBoundary.length);const lensGeometry=new THREE.BufferGeometry();lensGeometry.setAttribute('position',new THREE.Float32BufferAttribute(lensVertices,3));lensGeometry.setIndex(lensIndices);lensGeometry.computeVertexNormals();lensGeometry.setAttribute('uv',new THREE.Float32BufferAttribute(new Float32Array(lensVertices.length/3*2),2));const lensPosition=lensGeometry.attributes.position,lensUV=lensGeometry.attributes.uv;for(let i=0;i<lensPosition.count;i++)lensUV.setXY(i,.005+.49*(lensPosition.getX(i)/.148+.5),(256.5+255*(lensPosition.getY(i)/.12+.5))/1536);lensGeometry.setAttribute('color',new THREE.Float32BufferAttribute(Array(lensPosition.count*3).fill(1),3));lensGeometry.translate(0,.955-.83,.408-.43);
  const glass=new THREE.MeshStandardMaterial({name:'headlamp glass',vertexColors:true,color:0xffffff,roughness:.22,metalness:0,transparent:true,opacity:.70,map:albedoMap,depthWrite:false,side:THREE.FrontSide,normalMap:normalMap});glass.normalScale.set(.85,.85);const lens=new THREE.Mesh(lensGeometry,glass);lens.name='headlamp-lens';steering.add(lens);nodes[lens.name]=lens;meshes[lens.name]=lens;const instrumentGeometry=new THREE.PlaneGeometry(.077,.048);instrumentGeometry.rotateX(-Math.PI/2);instrumentGeometry.translate(0,1.035-.83,.27-.43);const instrumentTint=new THREE.Color(0x485b44),instrumentColors=[];for(let i=0;i<instrumentGeometry.attributes.position.count;i++)instrumentColors.push(instrumentTint.r,instrumentTint.g,instrumentTint.b);instrumentGeometry.setAttribute('color',new THREE.Float32BufferAttribute(instrumentColors,3));const instrumentUV=instrumentGeometry.attributes.uv;for(let i=0;i<instrumentUV.count;i++)instrumentUV.setXY(i,.5,.05);const instrument=new THREE.Mesh(instrumentGeometry,glass);instrument.name='instrument-glass';steering.add(instrument);nodes[instrument.name]=instrument;meshes[instrument.name]=instrument;
 
  add('steering-metal',sm,'metal',steering,[0,.83,.43]);
  const wheelParts:THREE.BufferGeometry[]=[];
- const rings=[[.232,-.022],[.248,-.028],[.274,-.034],[.282,-.022],[.286,0],[.282,.022],[.274,.034],[.248,.028],[.232,.022],[.232,-.022]];
- const ring=new THREE.LatheGeometry(rings.map(([r,x])=>new THREE.Vector2(r,x)),32).toNonIndexed();ring.rotateZ(Math.PI/2);
+ const rings=[[.232,-.022],[.248,-.028],[.274,-.034],[.286,0],[.274,.034],[.248,.028],[.232,.022],[.232,-.022]];
+ const ring=new THREE.LatheGeometry(rings.map(([r,x])=>new THREE.Vector2(r,x)),16).toNonIndexed();ring.rotateZ(Math.PI/2);
  surface(ring,C.rubber,.87,0);const rp=ring.attributes.position,rc=ring.attributes.color,rs=ring.attributes.surface;
  // Assign each lathed strip face wholly to tyre or rim; atlas regions must never interpolate across a material boundary.
  const rimUv=ring.getAttribute('uv');for(let i=0;i<rp.count;i+=3){let radius=0;for(let j=0;j<3;j++)radius+=Math.hypot(rp.getY(i+j),rp.getZ(i+j))/3;const isMetal=radius<.252;for(let j=0;j<3;j++){const k=i+j,c=new THREE.Color(isMetal?0xffffff:C.rubber);rc.setXYZ(k,c.r,c.g,c.b);if(isMetal){const u=.01+.98*rimUv.getX(k),v=.72+.25*THREE.MathUtils.clamp((Math.hypot(rp.getY(k),rp.getZ(k))-.232)/.016,0,1);rs.setXY(k,-3-u,(1280+v*255+.5)/1536);}else rs.setXY(k,.87,0);}}
 
  wheelParts.push(ring);
- const hub=new THREE.CylinderGeometry(.069,.069,.083,16);hub.rotateZ(Math.PI/2);wheelParts.push(surface(hub,0x93958e,.5,1));for(const side of [-1,1])for(let j=0;j<5;j++){const a=j*Math.PI*2/5,nut=new THREE.CylinderGeometry(.005,.005,.006,6);nut.rotateZ(Math.PI/2);nut.translate(side*.044,.048*Math.sin(a),.048*Math.cos(a));wheelParts.push(surface(nut,0x858b82,.52,1));}
+ const hub=new THREE.CylinderGeometry(.069,.069,.083,8);hub.rotateZ(Math.PI/2);wheelParts.push(surface(hub,0x93958e,.5,1));for(const side of [-1,1])for(let j=0;j<0;j++){const a=j*Math.PI*2/5,nut=new THREE.CylinderGeometry(.005,.005,.006,6);nut.rotateZ(Math.PI/2);nut.translate(side*.044,.048*Math.sin(a),.048*Math.cos(a));wheelParts.push(surface(nut,0x858b82,.52,1));}
  const spokeGeo=surface(new THREE.CylinderGeometry(.0017,.0017,1,3,1,true),C.metal,.35,1),assembled=[texturedSurface(merge(wheelParts),'wheel')];
  // Spokes move only with their wheel; bake their transforms once and share the
  // complete wheel geometry between both pivots, saving two submissions.
- for(let i=0;i<36;i++){const a=i*Math.PI/18,b=a+(i%2?.34:-.34),side=i%2?1:-1,p=new THREE.Vector3(side*.041,.065*Math.cos(a),.065*Math.sin(a)),q=new THREE.Vector3(side*.018,.238*Math.cos(b),.238*Math.sin(b)),d=q.clone().sub(p),matrix=new THREE.Matrix4().compose(p.clone().add(q).multiplyScalar(.5),new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0),d.clone().normalize()),new THREE.Vector3(1,d.length(),1));assembled.push(spokeGeo.clone().applyMatrix4(matrix));}
+ for(let i=0;i<8;i++){const a=i*Math.PI/4,b=a+(i%2?.34:-.34),side=i%2?1:-1,p=new THREE.Vector3(side*.041,.065*Math.cos(a),.065*Math.sin(a)),q=new THREE.Vector3(side*.018,.238*Math.cos(b),.238*Math.sin(b)),d=q.clone().sub(p),matrix=new THREE.Matrix4().compose(p.clone().add(q).multiplyScalar(.5),new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0),d.clone().normalize()),new THREE.Vector3(1,d.length(),1));assembled.push(spokeGeo.clone().applyMatrix4(matrix));}
  const wheel=merge(assembled);
  for(const [id,pivot]of [['front',front],['rear',rear]] as const){const m=new THREE.Mesh(wheel,mats.wheel);m.name=id+'-wheel';pivot.add(m);nodes[m.name]=m;meshes[m.name]=m;}
  for(const [p,axis]of [[root,[0,1,0]],[steering,[0,.93,-.37]],[front,[1,0,0]],[rear,[1,0,0]]] as const){p.userData.actionProfile={pivot:{name:p===root?'root':p.name,mode:'custom',axis:Array.from(axis),localPosition:[0,0,0]},destruction:{breakable:false}};}

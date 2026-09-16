@@ -155,7 +155,10 @@ the Interchange framework. (5.0 needs the *glTF Importer* plugin turned on.)
   them a Blueprint that yaws toward the camera each tick, or leave them out.
 - **Re-export**: run the export again over the same folder, then use the checked
   importer for assets it imported. Correct older imports' stored material settings
-  before using right-click Reimport.
+  before using right-click Reimport. If a changed texture transform survives as
+  its old value, import into a fresh destination and rebind the affected actors:
+  `replace_existing` can retain old material graphs even with material reuse off.
+  Check a selected-actor GLB round trip before exporting the whole level.
 
 ---
 
@@ -183,6 +186,11 @@ correctly in Unreal but are not recognised by the glTF exporter. The wrapper
 creates compatible export proxies temporarily; no change to the Three.js prop
 export or the working Unreal viewport materials is needed. The import/bake
 pipeline checks for black material regressions before lighting the map.
+
+The checked importer also preserves masked materials' `alphaCutoff` in both the
+Material property and the imported glTF function input. Unreal's glTF shortcut
+reads that input and can otherwise silently export 0.5 even when the viewport
+uses a different cutoff. This matters for thin chain-link wires and leaf cards.
 
 
 ### Checked imports and the black TukTuk repair

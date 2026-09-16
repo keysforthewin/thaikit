@@ -17,6 +17,7 @@ import { ok, fail, parseArgs } from '../lib/out.mjs';
 import { assertCellKey, buildDirOf } from './pipeline/build-dir.mjs';
 import { QUALITY_PRESETS, assertQuality, withQuality } from './pipeline/quality.mjs';
 import { auditTextureUsage } from './pipeline/texture-usage.mjs';
+import { auditGeometryUsage } from './pipeline/geometry-usage.mjs';
 import { readGlbJson } from './unreal/material-audit.mjs';
 
 async function main() {
@@ -44,8 +45,17 @@ async function main() {
   const primsUnder = (node) => { let n = 0; let t = 0; node.traverse((x) => { const m = x.getMesh(); if (!m) return; for (const p of m.listPrimitives()) { n += 1; t += (p.getIndices()?.getCount() ?? p.getAttribute('POSITION').getCount()) / 3; } }); return { n, t }; };
 
   const report = { cells: [], textures: [], extensions: root.listExtensionsUsed().map((e) => e.extensionName) };
-  report.textureUsage = auditTextureUsage(await readGlbJson(file));
+  const glbJson = await readGlbJson(file);
+  report.textureUsage = auditTextureUsage(glbJson);
   failures.push(...report.textureUsage.failures);
+  report.geometryUsage = auditGeometryUsage(glbJson);
+  // Older exporters may still be running with the previous in-memory cleanup.
+  // New pipeline invocations require clean geometry; standalone audits also
+  // report legacy orphan data without invalidating an otherwise loadable file.
+  for (const message of report.geometryUsage.failures) {
+    if (message.startsWith('unused geometry accessors:') && !args['strict-geometry']) warnings.push(message);
+    else failures.push(message);
+  }
   const materialImages = new Set(report.textureUsage.materialImages);
   const materialMaxSize = args['max-texture-size'] == null ? QUALITY_PRESETS[quality]?.textures?.maxSize ?? null : Number(args['max-texture-size']);
   if (materialMaxSize != null && (!Number.isInteger(materialMaxSize) || materialMaxSize < 4)) throw new Error('--max-texture-size must be an integer >= 4');

@@ -124,7 +124,8 @@ async function main() {
   const modes = (args.modes ? String(args.modes).split(',') : ['beauty']);
   const elevation = args.elevation !== undefined ? Number(args.elevation) : TURNTABLE_ELEVATION;
 
-  const executablePath = await findChrome();
+  const browserURL = process.env.THAIKIT_BROWSER_URL;
+  const executablePath = browserURL ? undefined : await findChrome();
   // A hero with tofu glyphs is a valid PNG that becomes a shipped thumbnail, so a
   // missing Thai font fails the run here rather than being found in the browse grid.
   const font = checkThaiFont();
@@ -132,7 +133,7 @@ async function main() {
   const { server, port } = await serve(REPO_ROOT);
   const base = `http://127.0.0.1:${port}`;
 
-  const browser = await puppeteer.launch({
+  const browser = browserURL ? await puppeteer.connect({ browserURL }) : await puppeteer.launch({
     executablePath,
     // Without SwiftShader every render comes back silently black -- a valid PNG
     // of nothing, which reads downstream as "the model is invisible".
@@ -144,8 +145,9 @@ async function main() {
   });
 
   const written = [];
+  let ownedPage;
   try {
-    const page = await browser.newPage();
+    const page = ownedPage = await browser.newPage();
     await page.setViewport({ width: SIZE, height: SIZE, deviceScaleFactor: 1 });
 
     const errors = [];
@@ -345,7 +347,8 @@ async function main() {
       pageErrors: errors,
     });
   } finally {
-    await browser.close().catch(() => {});
+    if (browserURL) { await ownedPage?.close().catch(() => {}); browser.disconnect(); }
+    else await browser.close().catch(() => {});
     server.close();
   }
 }

@@ -12,10 +12,13 @@ const upstream=JSON.parse(await read('scripts/foliage/vendor/ez-tree/UPSTREAM.js
 const license=await read('scripts/foliage/vendor/ez-tree/LICENSE');
 const sourceTypes=(await read('scripts/foliage/factory.ts')).match(/export type ProceduralModelOptions = .*;/)[0];
 const registry=await readRegistry();
-for(const a of FOLIAGE){
+const selected=process.argv.includes('--id')?process.argv[process.argv.indexOf('--id')+1]:null;
+if(process.argv.includes('--id')&&!selected)throw new Error('--id requires a foliage id');
+if(selected&&!FOLIAGE.some(a=>a.id===selected))throw new Error(`Unknown foliage ${selected}`);
+for(const a of FOLIAGE.filter(a=>!selected||a.id===selected)){
  const asset=registry.assets.find(r=>r.id===a.id);if(!asset)throw new Error(`Register ${a.id} first`);
  const rel=`packages/props/src/models/${a.id}`,dir=path.join(root,rel);
- const built=await build({stdin:{contents:`import {makeFoliage} from './factory.ts';\nconst recipe=${JSON.stringify(a)};\nexport function createModel(options={}){return makeFoliage(recipe,options);}\nexport function createObjectModel(spec={},options={}){return makeFoliage(recipe,options);}`,resolveDir:path.join(process.cwd(),'scripts/foliage'),sourcefile:`${a.id}.ts`,loader:'ts'},bundle:true,write:false,format:'esm',platform:'browser',external:['three'],legalComments:'inline'});
+ const built=await build({stdin:{contents:`import {makeFoliage} from './factory.ts';\nconst recipe=${JSON.stringify(a)};\nexport function createModel(options={}){return makeFoliage(recipe,options);}\nexport function createObjectModel(spec={},options={}){return makeFoliage(recipe,options);}`,resolveDir:path.join(process.cwd(),'scripts/foliage'),sourcefile:`${a.id}.ts`,loader:'ts'},bundle:true,write:false,format:'esm',platform:'browser',plugins:[{name:'shared-three',setup(b){b.onResolve({filter:/^three$/},()=>({path:'three',external:true}));}}],legalComments:'inline'});
  const source=`/*! EZ-Tree (MIT), pinned source.\n${license.replaceAll('*/','* /')}\n*/\n${built.outputFiles[0].text}\n${sourceTypes}\n`;
  await fs.mkdir(dir,{recursive:true});await fs.writeFile(path.join(dir,'createObjectModel.ts'),source);
  await fs.writeFile(path.join(dir,'model.ts'),entryModule(asset,previewHelpers(source),true));

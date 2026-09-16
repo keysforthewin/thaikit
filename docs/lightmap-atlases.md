@@ -12,13 +12,26 @@ padding, coverage repairs and packing overhead. Low uses 128 samples, medium
 2048 and high 16384, for both diffuse lighting and moon visibility.
 Adaptive sampling is off. More samples reduce integration noise; they cannot
 repair missing UV coverage.
+`--shadow-samples N` (or `lightmap.shadowSamples` in level settings) sets a separate
+moon-visibility budget; otherwise that pass follows `--samples`. For example,
+`--quality low --samples 2048 --shadow-samples 512` retains low's 6 texels/m while
+spending more sampling work on RGB illumination. Sample changes require stage 2;
+resuming only stage 4 repackages existing lighting and cannot change its noise.
 
 Material texture resolution is independent of lightmap resolution. `low` caps
-material images at 1024 pixels per dimension; `medium` and `high` retain the
-level's configured ceiling (4096 for BangkokSoi). Lower authored ceilings are
-respected. Lighting atlases and sky images keep their existing resolutions.
+material images at 1024 pixels per dimension and uses ETC1S for color maps
+(including sky color encoding); `medium` and `high` retain the level's configured
+ceiling (4096 for BangkokSoi) and encoding. Data-map encoding remains authored
+(UASTC by default). Lower authored ceilings are respected. Lighting atlases and
+sky images keep their existing resolutions. `--preserve-textures` bypasses low's
+material resolution and color-encoding overrides.
 
 Before texture encoding, the pipeline removes images with no material users.
+Geometry cleanup disposes detached primitives before unused accessors, preventing
+obsolete bake-source buffers from surviving after their meshes have been removed.
+The verifier reports serialized accessor reachability; new pipeline builds pass
+`--strict-geometry` to reject orphan data. Standalone verification of older builds
+reports orphan accessors as warnings unless that flag is supplied.
 Final cleanup also preserves and remaps images referenced directly by the
 manifest (legacy lightmap, atlas pages, sky and clouds). `verify-level` audits
 the serialized GLB independently and fails on unused images/textures, broken
@@ -149,6 +162,26 @@ every covered texel against the decoded KTX2 texture. This check is only for
 bright diagnostic textures, not production lighting that can legitimately be
 black. It reports checked and missing texels per page. A negative test with one
 false covered texel verifies that the GPU gate detects a single missing texel.
+
+## Reduced LOD lightmaps
+
+Low Blender exports now reduce eligible LOD1/LOD2 geometry after reconstructing
+connectivity without the original UV1 seams, then transfer existing RGB lighting
+and linear moon visibility onto 2048-pixel pages, packed without resampling into
+4096-pixel quadrants to retain the original draw count. Accepted LOD1 geometry
+and lighting are shared with LOD2; far-only accepted reductions keep their own
+page. Low uses ETC1S for these extra pages, while original pages remain UASTC.
+They retain
+LOD0's original lighting and coverage reports. New pages use half/quarter of
+LOD0's linear density; the manifest's global `texelsPerMeter` describes LOD0.
+The existing per-material atlas index selects the appropriate page at runtime.
+
+`--preserve-lods` keeps the conservative original-atlas LODs. Other Blender
+qualities can opt in with `--transfer-lods`. Changing this mode requires stage 3;
+stage 4 resumes its saved geometry and verifies the transfer sidecar's checkpoint
+hash. Each original or transferred atlas group gets its own final coverage audit.
+See [geometry optimization](level-geometry-optimization.md) for projection limits,
+fallback behavior, measurements and visual comparisons.
 
 ## Scenery without lightmaps
 

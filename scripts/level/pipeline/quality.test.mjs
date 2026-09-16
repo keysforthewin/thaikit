@@ -24,15 +24,24 @@ test('assertQuality accepts the three words and nothing else', () => {
 });
 
 test('presets: high increases samples while keeping the medium atlas budget', () => {
-  assert.deepEqual(QUALITY_PRESETS.low, { baker: 'blender', textures: { maxSize: 1024 }, lightmap: { size: 4096, samples: 128, noiseThreshold: 0, texelsPerMeter: 6, maxAtlases: 32 } });
-  assert.deepEqual(QUALITY_PRESETS.medium, { baker: 'blender', lightmap: { size: 4096, samples: 2048, noiseThreshold: 0, texelsPerMeter: 12, maxAtlases: 32 } });
+  assert.deepEqual(QUALITY_PRESETS.low, { baker: 'blender', textures: { maxSize: 1024, maxFace: 1024, colorMode: 'etc1s' }, lod: { transferLightmaps: true, colorMode: 'etc1s' }, lightmap: { size: 4096, samples: 128, noiseThreshold: 0, texelsPerMeter: 6, maxAtlases: 32 } });
+  assert.deepEqual(QUALITY_PRESETS.medium, { baker: 'blender', textures: { maxFace: 2048 }, lightmap: { size: 4096, samples: 2048, noiseThreshold: 0, texelsPerMeter: 12, maxAtlases: 32 } });
   assert.deepEqual(QUALITY_PRESETS.high, { baker: 'blender', lightmap: { size: 4096, samples: 16384, noiseThreshold: 0, texelsPerMeter: 12, maxAtlases: 32 } });
 });
 
 test('the texture budget caps a tier below the level and never raises it', () => {
-  assert.deepEqual(textureBudgetFor({}, null), { maxSize: 2048, maxFace: null });
-  assert.deepEqual(textureBudgetFor({ maxSize: 2048 }, QUALITY_PRESETS.low), { maxSize: 1024, maxFace: null });
-  assert.deepEqual(textureBudgetFor({ maxSize: 4096 }, QUALITY_PRESETS.medium), { maxSize: 4096, maxFace: null });
-  assert.deepEqual(textureBudgetFor({ maxSize: 512 }, QUALITY_PRESETS.low), { maxSize: 512, maxFace: null });
-  assert.deepEqual(textureBudgetFor({ maxSize: 4096 }, QUALITY_PRESETS.high), { maxSize: 4096, maxFace: null });
+  const defaults = { maxFace: null, colorMode: 'etc1s', dataMode: 'uastc' };
+  assert.deepEqual(textureBudgetFor({}, null), { maxSize: 2048, ...defaults });
+  assert.deepEqual(textureBudgetFor({ maxSize: 2048 }, QUALITY_PRESETS.low), { maxSize: 1024, ...defaults, maxFace: 1024 });
+  assert.deepEqual(textureBudgetFor({ maxSize: 4096 }, QUALITY_PRESETS.medium), { maxSize: 4096, ...defaults, maxFace: 2048 });
+  assert.deepEqual(textureBudgetFor({ maxSize: 512 }, QUALITY_PRESETS.low), { maxSize: 512, ...defaults, maxFace: 1024 });
+  assert.deepEqual(textureBudgetFor({ maxSize: 4096 }, QUALITY_PRESETS.high), { maxSize: 4096, ...defaults });
+});
+
+test('low selects compact color encoding while retaining authored data encoding; other tiers keep authored modes', () => {
+  const authored = { maxSize: 4096, colorMode: 'uastc', dataMode: 'uastc' };
+  assert.deepEqual(textureBudgetFor(authored, QUALITY_PRESETS.low), { maxSize: 1024, maxFace: 1024, colorMode: 'etc1s', dataMode: 'uastc' });
+  for (const preset of [null, QUALITY_PRESETS.medium, QUALITY_PRESETS.high]) {
+    assert.deepEqual(textureBudgetFor(authored, preset), { ...authored, maxFace: preset?.textures?.maxFace ?? null });
+  }
 });

@@ -57,6 +57,7 @@ export function blenderBakeSpec({ bake, cpu = false, hasEnv = false }) {
   return {
     size: lm.size ?? 4096,
     samples: lm.samples ?? 128,
+    shadowSamples: lm.shadowSamples ?? null,
     noiseThreshold: lm.noiseThreshold ?? null,
     texelsPerMeter: lm.texelsPerMeter ?? 12,
     maxAtlases: lm.maxAtlases ?? 32,
@@ -105,6 +106,10 @@ export function buildBlenderArgs(spec, paths, mapPath) {
     // callers can still pass the small inline form. Neither route uses a shell.
     paths.lights ? `--lights-file=${mapPath(paths.lights)}` : `--lights=${JSON.stringify(spec.lights ?? [])}`,
   ];
+  if (spec.shadowSamples != null) {
+    if (!Number.isInteger(spec.shadowSamples) || spec.shadowSamples < 1) throw new Error('shadowSamples must be a positive integer');
+    args.push('--shadow-samples', String(spec.shadowSamples));
+  }
   if (spec.noiseThreshold != null) args.push(`--noise-threshold=${Number(spec.noiseThreshold)}`);
   if (spec.env) {
     if (!paths.env) throw new Error('spec has a sky env but no env path');

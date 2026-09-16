@@ -129,7 +129,9 @@ async function declaredMaps(specPath) {
   }
   const out = [];
   for (const material of spec.materials ?? []) {
-    const maps = material?.referencePbr?.maps;
+    // Hand-authored or generated albedo maps need not invent a full inferred
+    // PBR set. Scalar roughness/metalness remain valid material inputs.
+    const maps = material?.authoredMaps ?? material?.referencePbr?.maps;
     if (!maps || typeof maps !== 'object') continue;
     for (const role of MAP_ROLES) {
       const entry = maps[role];

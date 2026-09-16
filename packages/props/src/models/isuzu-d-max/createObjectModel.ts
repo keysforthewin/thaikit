@@ -29,17 +29,17 @@ function geometry(b:Batch){const g=new THREE.BufferGeometry();g.setAttribute('po
 function sheet(b:Batch,points:number[][],color:string){const a=new THREE.Vector3(...points[0] as [number,number,number]),c=new THREE.Color(color);for(let j=1;j<points.length-1;j++){
  const v=new THREE.Vector3(...points[j] as [number,number,number]),w=new THREE.Vector3(...points[j+1] as [number,number,number]),n=v.clone().sub(a).cross(w.clone().sub(a)).normalize();for(const t of [a,v,w]){b.p.push(t.x,t.y,t.z);b.n.push(n.x,n.y,n.z);b.c.push(c.r,c.g,c.b);}
 }}
-function roundedLoop(pts:number[][],radius=.035,steps=4){const out:number[][]=[];for(let i=0;i<pts.length;i++){const p=pts[i],a=pts[(i+pts.length-1)%pts.length],b=pts[(i+1)%pts.length];const la=Math.hypot(a[0]-p[0],a[1]-p[1]),lb=Math.hypot(b[0]-p[0],b[1]-p[1]);const r=Math.min(radius,la*.2,lb*.2),start=p.map((v,k)=>v+(a[k]-v)*r/la),end=p.map((v,k)=>v+(b[k]-v)*r/lb);for(let j=0;j<=steps;j++){const t=j/steps;out.push(p.map((v,k)=>(1-t)*(1-t)*start[k]+2*t*(1-t)*v+t*t*end[k]));}}return out;}
+function roundedLoop(pts:number[][],radius=.035,steps=1){const out:number[][]=[];for(let i=0;i<pts.length;i++){const p=pts[i],a=pts[(i+pts.length-1)%pts.length],b=pts[(i+1)%pts.length];const la=Math.hypot(a[0]-p[0],a[1]-p[1]),lb=Math.hypot(b[0]-p[0],b[1]-p[1]);const r=Math.min(radius,la*.2,lb*.2),start=p.map((v,k)=>v+(a[k]-v)*r/la),end=p.map((v,k)=>v+(b[k]-v)*r/lb);for(let j=0;j<=steps;j++){const t=j/steps;out.push(p.map((v,k)=>(1-t)*(1-t)*start[k]+2*t*(1-t)*v+t*t*end[k]));}}return out;}
 function panel(b:Batch,outline:number[][],holes:number[][][],x:number,thickness:number,color:string){
  const shape=new THREE.Shape(outline.map(p=>new THREE.Vector2(p[0],p[1])));for(const h of holes)shape.holes.push(new THREE.Path(h.map(p=>new THREE.Vector2(p[0],p[1]))));
  const g=new THREE.ExtrudeGeometry(shape,{depth:thickness,bevelEnabled:false,steps:1,curveSegments:1});g.rotateY(-Math.PI/2);add(b,g,color,[x,0,0]);
 }
-function tube(b:Batch,start:number[],end:number[],radius:number,color:string,segments=6){const a=new THREE.Vector3(...start as [number,number,number]),z=new THREE.Vector3(...end as [number,number,number]);const dir=z.clone().sub(a);const g=new THREE.CylinderGeometry(radius,radius,dir.length(),segments,1);g.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0),dir.normalize()));add(b,g,color,a.add(z).multiplyScalar(.5).toArray());}
+function tube(b:Batch,start:number[],end:number[],radius:number,color:string,segments=4){const a=new THREE.Vector3(...start as [number,number,number]),z=new THREE.Vector3(...end as [number,number,number]);const dir=z.clone().sub(a);const g=new THREE.CylinderGeometry(radius,radius,dir.length(),segments,1);g.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0),dir.normalize()));add(b,g,color,a.add(z).multiplyScalar(.5).toArray());}
 function frame(b:Batch,inner:number[][],color:string,width=.02,thickness=.012){
  const center=new THREE.Vector3();inner.forEach(p=>center.add(new THREE.Vector3(...p as [number,number,number])));center.multiplyScalar(1/inner.length);
  const normal=new THREE.Vector3(...inner[1] as [number,number,number]).sub(new THREE.Vector3(...inner[0] as [number,number,number])).cross(new THREE.Vector3(...inner[2] as [number,number,number]).sub(new THREE.Vector3(...inner[0] as [number,number,number]))).normalize();
  const outer=inner.map(p=>new THREE.Vector3(...p as [number,number,number]).sub(center).multiplyScalar(1+width*3).add(center).toArray());const back=(p:number[])=>new THREE.Vector3(...p as [number,number,number]).addScaledVector(normal,-thickness).toArray();
- for(let i=0;i<inner.length;i++){const j=(i+1)%inner.length;sheet(b,[outer[i],outer[j],inner[j],inner[i]],color);sheet(b,[back(inner[i]),back(inner[j]),back(outer[j]),back(outer[i])],color);sheet(b,[outer[j],outer[i],back(outer[i]),back(outer[j])],color);sheet(b,[inner[i],inner[j],back(inner[j]),back(inner[i])],color);}
+ for(let i=0;i<inner.length;i++){const j=(i+1)%inner.length;sheet(b,[outer[i],outer[j],inner[j],inner[i]],color);sheet(b,[outer[j],outer[i],back(outer[i]),back(outer[j])],color);sheet(b,[inner[i],inner[j],back(inner[j]),back(inner[i])],color);}
 }
 function ribbedFloor(b:Batch,width:number,length:number,bottom:number,top:number,z:number,color:string,count:number,rise:number){
  const pts:number[][]=[[-width/2,bottom],[width/2,bottom],[width/2,top]];
@@ -70,10 +70,10 @@ function cabShell(b:Batch,color:string){
  for(let edge=0;edge<outer.length;edge++){
  const crownAt=(k:number)=>k===2||k===3?.04:0;
  const map=(inside:boolean,p:number[])=>{const prof=inside?inner:outer,a=prof[edge],z=prof[(edge+1)%prof.length],u=p[0],t=p[1],crown=edge===3?.04*Math.max(0,1-t/.12):crownAt(edge)*(1-t)+crownAt((edge+1)%outer.length)*t;return [(inside?.78:.82)*u,a[1]+(z[1]-a[1])*t+crown*Math.cos(u*Math.PI/2),a[0]+(z[0]-a[0])*t];};
- const outline=[];for(let i=0;i<=12;i++)outline.push([-1+i/6,edge===3?.12:0]);for(let i=12;i>=0;i--)outline.push([-1+i/6,1]);
- if(edge===3)for(let k=0;k<12;k++){const u=-1+k/6,z=u+1/6,pts=[[u,0],[z,0],[z,.12],[u,.12]];sheet(b,pts.map(p=>map(false,p)).reverse(),color);sheet(b,pts.map(p=>map(true,p)),'#686c63');}
- const windowLoop=(edge===0||edge===3)?roundedLoop([[-.86,edge===0?.48:.15],[.86,edge===0?.48:.15],[.86,.90],[-.86,.90]],.055,2):[];
- if(windowLoop.length){mappedFace(b,outline,[windowLoop],p=>map(false,p),color,true);mappedFace(b,outline,[windowLoop],p=>map(true,p),'#686c63',false);}else for(let k=0;k<12;k++){const u=-1+k/6,z=u+1/6,pts=[[u,0],[z,0],[z,1],[u,1]];sheet(b,pts.map(p=>map(false,p)).reverse(),color);sheet(b,pts.map(p=>map(true,p)),'#686c63');}
+ const outline=[];for(let i=0;i<=4;i++)outline.push([-1+i/2,edge===3?.12:0]);for(let i=4;i>=0;i--)outline.push([-1+i/2,1]);
+ if(edge===3)for(let k=0;k<4;k++){const u=-1+k/2,z=u+1/2,pts=[[u,0],[z,0],[z,.12],[u,.12]];sheet(b,pts.map(p=>map(false,p)).reverse(),color);sheet(b,pts.map(p=>map(true,p)),'#686c63');}
+ const windowLoop=(edge===0||edge===3)?roundedLoop([[-.86,edge===0?.48:.15],[.86,edge===0?.48:.15],[.86,.90],[-.86,.90]],.055,1):[];
+ if(windowLoop.length){mappedFace(b,outline,[windowLoop],p=>map(false,p),color,true);mappedFace(b,outline,[windowLoop],p=>map(true,p),'#686c63',false);}else for(let k=0;k<4;k++){const u=-1+k/2,z=u+1/2,pts=[[u,0],[z,0],[z,1],[u,1]];sheet(b,pts.map(p=>map(false,p)).reverse(),color);sheet(b,pts.map(p=>map(true,p)),'#686c63');}
  if(windowLoop.length){for(let i=0;i<windowLoop.length;i++){const a=windowLoop[i],z=windowLoop[(i+1)%windowLoop.length];sheet(b,[map(false,a),map(true,a),map(true,z),map(false,z)],color);}windows[edge===3?'front':'rear']=windowLoop.map(p=>map(false,p)).reverse();}
  }
  return windows;
@@ -146,22 +146,22 @@ export function createObjectModel(spec:any={},options:any={}):THREE.Group{
  const paint=batch(),trim=batch(),glass=batch(),interior=batch(),tail=batch(),wheel=batch();
  const green='#49674c',dark='#272b28',grey='#707570',silver='#aaaaa1';
  // Closed hood volume, crown and shoulders sampled across both axes.
- const rings=[];for(let j=0;j<=3;j++){const t=j/3,z=v.hoodFront+(v.hoodRear-v.hoodFront)*t,w=.83+.005*Math.sin(t*Math.PI/2),y=1.005+.035*t;
-  const ring=[];for(let i=0;i<=8;i++){const a=-Math.PI/2+i*Math.PI/8;ring.push([Math.sin(a)*w,y+.030*Math.cos(a),z]);}ring.push([w,.70,z],[-w,.70,z]);rings.push(ring);}
- for(let j=0;j<3;j++)for(let i=0;i<11;i++){const k=(i+1)%11;sheet(paint,[rings[j][i],rings[j][k],rings[j+1][k],rings[j+1][i]],green);}
- sheet(paint,[...rings[0]].reverse(),green);sheet(paint,rings[3],green);
+ const rings=[];for(let j=0;j<=1;j++){const t=j,z=v.hoodFront+(v.hoodRear-v.hoodFront)*t,w=.83+.005*Math.sin(t*Math.PI/2),y=1.005+.035*t;
+  const ring=[];for(let i=0;i<=4;i++){const a=-Math.PI/2+i*Math.PI/4;ring.push([Math.sin(a)*w,y+.030*Math.cos(a),z]);}ring.push([w,.70,z],[-w,.70,z]);rings.push(ring);}
+ for(let j=0;j<1;j++)for(let i=0;i<7;i++){const k=(i+1)%7;sheet(paint,[rings[j][i],rings[j][k],rings[j+1][k],rings[j+1][i]],green);}
+ sheet(paint,[...rings[0]].reverse(),green);sheet(paint,rings[1],green);
 
  for(const side of [-1,1]){const wing=[[side*.833,1.006,v.hoodFront],[side*.89,1.005,v.hoodFront],[side*.89,1.07,v.hoodRear],[side*.838,1.041,v.hoodRear]];slab(paint,side<0?wing.reverse():wing,green,.010);}
  // Continuous side sill profiles cut around front and rear tires.
  const lower:any[]=[[v.bedRear,.52]];
  for(const axle of [v.rearAxle,v.frontAxle]){
-  lower.push([axle-.43,.52]);for(let i=0;i<=12;i++){const a=Math.PI-i*Math.PI/12;lower.push([axle+Math.cos(a)*.43,.38+Math.sin(a)*.43]);}lower.push([axle+.43,.52]);
+  lower.push([axle-.43,.52]);for(let i=0;i<=8;i++){const a=Math.PI-i*Math.PI/8;lower.push([axle+Math.cos(a)*.43,.38+Math.sin(a)*.43]);}lower.push([axle+.43,.52]);
  }
  lower.push([v.hoodFront,.52],[v.hoodFront,1.005],[v.hoodRear,1.07],[v.cabRear,1.07],[v.cabRear,v.bedRail],[v.bedRear,v.bedRail]);
  for(const side of [-1,1]){
   panel(paint,lower,[],side*v.bodyHalfWidth+(side<0?.045:0),.045,green);
   // Grey arch trim follows the true wheel opening rather than a solid disc.
-  for(const axle of [v.rearAxle,v.frontAxle]){const section=[[.433,.897],[.440,.947],[.456,.966],[.497,.970],[.523,.958],[.545,.928],[.555,.897]];const point=(i:number,j:number)=>{const [r,x]=section[i],a=j*Math.PI/12,q=(r-.433)/(.555-.433),exponent=1+(v.fenderArchExponent-1)*q,c=Math.cos(a),sn=Math.max(0,Math.sin(a));return [side*x,.38+r*Math.pow(sn,exponent),axle+r*Math.sign(c)*Math.pow(Math.abs(c),exponent)];};for(let j=0;j<12;j++)for(let i=0;i<section.length;i++){const k=(i+1)%section.length,pts=[point(i,j),point(k,j),point(k,j+1),point(i,j+1)];if(side>0)pts.reverse();sheet(trim,pts,grey);}for(const j of [0,12]){const pts=section.map((_,i)=>point(i,j));if((j===12)===(side>0))pts.reverse();sheet(trim,pts,grey);}}
+  for(const axle of [v.rearAxle,v.frontAxle]){const section=[[.433,.897],[.497,.970],[.555,.897]];const point=(i:number,j:number)=>{const [r,x]=section[i],a=j*Math.PI/8,q=(r-.433)/(.555-.433),exponent=1+(v.fenderArchExponent-1)*q,c=Math.cos(a),sn=Math.max(0,Math.sin(a));return [side*x,.38+r*Math.pow(sn,exponent),axle+r*Math.sign(c)*Math.pow(Math.abs(c),exponent)];};for(let j=0;j<8;j++)for(let i=0;i<section.length;i++){const k=(i+1)%section.length,pts=[point(i,j),point(k,j),point(k,j+1),point(i,j+1)];if(side>0)pts.reverse();sheet(trim,pts,grey);}for(const j of [0,8]){const pts=section.map((_,i)=>point(i,j));if((j===8)===(side>0))pts.reverse();sheet(trim,pts,grey);}}
 
   const cab=[[v.cabRear,1.081],[v.cabRear,1.62],[-.73,1.72],[.64,1.72],[1.14,1.081]];
   const back=roundedLoop([[-.73,1.13],[-.73,1.64],[-.1,1.64],[-.1,1.13]],.07);
@@ -177,12 +177,12 @@ export function createObjectModel(spec:any={},options:any={}):THREE.Group{
   // Narrow door gaps are geometry, with no coplanar overlays.
   // Door seam relief is deferred to form-refinement; no intersecting seam tubes in blockout.
  }
- const cabWindows=cabShell(cabPaint,green),cabSolid=conformEdges(cabPaint);paint.p.push(...cabSolid.p);paint.n.push(...cabSolid.n);paint.c.push(...cabSolid.c);
+ const cabWindows=cabShell(cabPaint,green),cabSolid=cabPaint;paint.p.push(...cabSolid.p);paint.n.push(...cabSolid.n);paint.c.push(...cabSolid.c);
  slab(glass,cabWindows.front,'#68716b');slab(glass,cabWindows.rear,'#4c5650');
  // Wheel wells and cargo cavity are open, with real interior surfaces.
  cargoTub(interior,dark);
- for(let i=0;i<8;i++)box(interior,[.018,.010,1.14],[-.70+i*.20,.758,-1.54],'#41443c');
- for(const side of [-1,1])for(const z of [-1.15,-1.40,-1.65,-1.90])box(interior,[.012,.28,.024],[side*.791,.98,z],'#363a32');
+ for(let i=0;i<4;i++)box(interior,[.018,.010,1.14],[-.60+i*.40,.758,-1.54],'#41443c');
+ // Small cargo-wall ribs omitted for the low-poly mesh.
  // Seats and instrument fascia are independent geometry in the interior batch.
  for(const side of [-1,1]){const shape=new THREE.Shape([[-.08,.75],[.51,.75],[.51,.87],[.07,.87],[.02,1.43],[-.12,1.43]].map(p=>new THREE.Vector2(p[0],p[1])));const g=new THREE.ExtrudeGeometry(shape,{depth:.55,bevelEnabled:false,steps:1});g.rotateY(-Math.PI/2);add(interior,g,'#70756b',[side*.38+.275,0,0]);}
  box(interior,[1.45,.12,.28],[0,1.04,.91],'#2d312c');
@@ -202,13 +202,13 @@ export function createObjectModel(spec:any={},options:any={}):THREE.Group{
  sheet(trim,[[.89,by[j],2.43],[.89,by[j],2.21],[.89,by[j+1],2.21],[.89,by[j+1],2.43]],grey);
  sheet(trim,[[-.89,by[j],2.21],[-.89,by[j],2.43],[-.89,by[j+1],2.43],[-.89,by[j+1],2.21]],grey);
  }
- const grille=roundedLoop([[-.43,.77,2.455],[.43,.77,2.455],[.58,1.04,2.425],[-.58,1.04,2.425]],.045,3);
+ const grille=roundedLoop([[-.43,.77,2.455],[.43,.77,2.455],[.58,1.04,2.425],[-.58,1.04,2.425]],.045,1);
  frame(trim,grille,silver,.02,.016);
  const gr=[];for(let j=0;j<=20;j++){const t=j/20,y=.791+.228*t,w=.41+.127*t,z=2.449-.025*t+((j%5===1||j%5===2)?.018:0);gr.push([[-w,y,z],[w,y,z]]);}
  for(let j=0;j<20;j++){const a=gr[j],z=gr[j+1];sheet(trim,[a[0],a[1],z[1],z[0]],j%5===1||j%5===2?silver:dark);sheet(trim,[[a[1][0],a[1][1],2.405],[a[0][0],a[0][1],2.405],[z[0][0],z[0][1],2.405],[z[1][0],z[1][1],2.405]],dark);for(const side of [0,1]){const pts=[a[side],z[side],[z[side][0],z[side][1],2.405],[a[side][0],a[side][1],2.405]];if(side===1)pts.reverse();sheet(trim,pts,dark);}}
  for(const j of [0,20]){const a=gr[j];const pts=[a[0],a[1],[a[1][0],a[1][1],2.405],[a[0][0],a[0][1],2.405]];if(j===0)pts.reverse();sheet(trim,pts,dark);}
  for(const side of [-1,1]){
-  const lamp=[[side*.48,.735,2.442],[side*.86,.76,2.38],[side*.865,.93,2.37],[side*.61,.985,2.442]];lensSlab(trim,roundedLoop(side<0?lamp.reverse():lamp,.035,3),'#a4aba5');
+  const lamp=[[side*.48,.735,2.442],[side*.86,.76,2.38],[side*.865,.93,2.37],[side*.61,.985,2.442]];lensSlab(trim,roundedLoop(side<0?lamp.reverse():lamp,.035,1),'#a4aba5');
 
   box(trim,[.055,.27,.06],[side*.855,1.0,-2.19],'#982e27');
  }
@@ -224,24 +224,15 @@ export function createObjectModel(spec:any={},options:any={}):THREE.Group{
  add(interior,new THREE.ExtrudeGeometry(steeringShape,{depth:.022,bevelEnabled:false,steps:1}),dark,[-.45,1.20,.62],[-.40,0,0]);
  tube(trim,[-.45,1.20,.632],[-.45,1.04,.87],.025,dark,6);
  // Open tailgate local frame; transform remains at its physical hinge axis.
- ribbedFloor(tail,1.66,.49,-.0275,.0275,-.245,green,12,.014);
+ ribbedFloor(tail,1.66,.49,-.0275,.0275,-.245,green,6,.014);
  // Pressed-steel wheel and tire share a vertex-coloured geometry and draw submission.
- const profile=[[0,-.12],[.075,-.12],[.105,-.13],[.14,-.105],[.20,-.105],[.235,-.13],[.27,-.14],[.315,-.125],[.36,-.085],[.38,-.035],[.38,.035],[.36,.085],[.315,.125],[.27,.14],[.235,.13],[.20,.105],[.14,.105],[.105,.13],[.075,.12],[0,.12]];
- const wp=(i:number,j:number)=>{const [r,x]=profile[i],a=j*Math.PI/12;return [-x,r*Math.sin(a),r*Math.cos(a)];};
- for(let i=0;i<profile.length-1;i++)for(let j=0;j<24;j++){
-  if((i===3||i===15)&&j%4===0)continue;
-  if(i>=7&&i<=11){
-   const cuts=[0,.40,.60,1];
-   const tread=(ring:number,angle:number)=>{const whole=Math.floor(angle),f=angle-whole;if(ring===7||ring===12){const a=wp(ring,whole),b=wp(ring,whole+1);return a.map((v,k)=>v+(b[k]-v)*f);}const q=wp(ring,angle),r=profile[ring][0],cut=f>=.43&&f<=.61?.016:0,scale=(r-cut)/r;return [q[0],q[1]*scale,q[2]*scale];};
-   for(let k=0;k<cuts.length-1;k++)sheet(wheel,[tread(i,j+cuts[k]),tread(i,j+cuts[k+1]),tread(i+1,j+cuts[k+1]),tread(i+1,j+cuts[k])],'#282b26');
-   continue;
-  }
+ const profile=[[0,-.12],[.27,-.14],[.315,-.125],[.38,-.035],[.38,.035],[.315,.125],[.27,.14],[0,.12]];
+ const segments=12,wp=(i:number,j:number)=>{const [r,x]=profile[i],a=j*Math.PI*2/segments;return [-x,r*Math.sin(a),r*Math.cos(a)];};
+ for(let i=0;i<profile.length-1;i++)for(let j=0;j<segments;j++){
   const pts=[wp(i,j),wp(i,j+1),wp(i+1,j+1),wp(i+1,j)];
-  const color=(i<6||i>=13)?(i===0||i===18?'#777b72':silver):'#282b26';
-  if(i===0)sheet(wheel,[pts[0],pts[2],pts[3]],color);else if(i===18)sheet(wheel,[pts[0],pts[1],pts[2]],color);else sheet(wheel,pts,color);
+  const color=i<1||i>=6?silver:'#282b26';
+  if(i===0)sheet(wheel,[pts[0],pts[2],pts[3]],color);else if(i===profile.length-2)sheet(wheel,[pts[0],pts[1],pts[2]],color);else sheet(wheel,pts,color);
  }
- // Six actual rim ventilation openings, with walls through the pressed-steel dish.
- for(let j=0;j<24;j+=4){const f=[wp(3,j),wp(3,j+1),wp(4,j+1),wp(4,j)],b=[wp(16,j),wp(16,j+1),wp(15,j+1),wp(15,j)];for(let k=0;k<4;k++){const n=(k+1)%4;sheet(wheel,[f[k],f[n],b[n],b[k]],'#64685f');}}
  // Round the closed bumper and its vent walls with the same continuous mapping.
  for(let i=0;i<trim.p.length;i+=3){let x=trim.p[i],y=trim.p[i+1],z=trim.p[i+2];if(z<2.209||z>2.431||y<.404||y>.721)continue;const dx=Math.max(0,Math.abs(x)-.66),dz=Math.max(0,z-2.21);if(dx>0&&dz>0){const f=Math.min(1,.22/Math.hypot(dx,dz));x=Math.sign(x)*(.66+dx*f);z=2.21+dz*f;}for(const [cy,sign,r] of [[.675,1,.045],[.44,-1,.035]]){const dy=sign*(y-cy),dz=Math.max(0,z-(2.43-r));if(dy>0&&dz>0){const f=Math.min(1,r/Math.hypot(dy,dz));y=cy+sign*dy*f;z=2.43-r+dz*f;}}trim.p[i]=x;trim.p[i+1]=y;trim.p[i+2]=z;}
 
@@ -249,9 +240,7 @@ export function createObjectModel(spec:any={},options:any={}):THREE.Group{
  for(let i=0;i<paint.p.length;i+=3){const x=paint.p[i],z=paint.p[i+2],dx=Math.abs(x)-.66,dz=z-2.21;if(dx>0&&dz>0){const f=Math.min(1,.22/Math.hypot(dx,dz));paint.p[i]=Math.sign(x)*(.66+dx*f);paint.p[i+2]=2.21+dz*f;}}
  const closedWheel=conformEdges(wheel);wheel.p=closedWheel.p;wheel.n=closedWheel.n;wheel.c=closedWheel.c;
  for(const b of [paint,trim])for(let i=0;i<b.p.length;i+=3)if(b.p[i+2]>2.15){const t=Math.min(1,(b.p[i+2]-2.15)/.20);b.p[i+2]-=.07*Math.pow(Math.abs(b.p[i])/.89,4)*t;}
- // Round both cab skins through a 100 mm roof shoulder, preserving finite wall thickness.
- for(const b of [paint,trim,glass]){splitAt(b,1,1.62);const high=batch(),low=batch();for(let i=0;i<b.p.length;i+=9){const part=Math.min(b.p[i+1],b.p[i+4],b.p[i+7])>=1.619999?high:low;part.p.push(...b.p.slice(i,i+9));part.n.push(...b.n.slice(i,i+9));part.c.push(...b.c.slice(i,i+9));}for(const cut of [-.75,-.70,.70,.75])splitAt(high,0,cut);splitAt(high,1,1.68);Object.assign(b,{p:[...low.p,...high.p],n:[...low.n,...high.n],c:[...low.c,...high.c]});}
- for(const b of [paint,trim,glass]){const closed=conformEdges(b);Object.assign(b,closed);for(let i=0;i<b.p.length;i+=3){const x=b.p[i],y=b.p[i+1],dx=Math.abs(x)-.70,dy=y-1.62;if(dx<=0||dy<=0)continue;const len=Math.hypot(dx,dy),factor=Math.min(1,(.10+.20*Math.max(0,len-.10))/len);b.p[i]=Math.sign(x)*(.70+dx*factor);b.p[i+1]=1.62+dy*factor;}}
+ // Low-poly cab retains the closed authored shell without extra shoulder cuts.
  for(const b of [paint,trim,glass,interior,tail,wheel])b.p=b.p.map(Math.fround);
  weldNormals(interior);weldNormals(glass,Math.PI/12);const wheelOriginalNormals=wheel.n.slice();weldNormals(wheel);for(let i=0;i<wheel.p.length;i+=9){const old=new THREE.Vector3(...wheelOriginalNormals.slice(i,i+3) as [number,number,number]);if(Math.abs(old.x)>.995)for(let j=0;j<9;j+=3){wheel.n[i+j]=old.x;wheel.n[i+j+1]=old.y;wheel.n[i+j+2]=old.z;}}weldNormals(paint,70*Math.PI/180);weldNormals(trim,70*Math.PI/180);
  const mats={paint:new THREE.MeshPhysicalMaterial({clearcoat:.25,clearcoatRoughness:.32,color:0xffffff,vertexColors:true,roughness:.38,metalness:0,side:THREE.DoubleSide}),trim:new THREE.MeshStandardMaterial({color:0xffffff,vertexColors:true,roughness:.42,metalness:.35,side:THREE.DoubleSide}),glass:new THREE.MeshStandardMaterial({color:0xffffff,vertexColors:true,roughness:.10,metalness:0,side:THREE.DoubleSide,transparent:true,opacity:.46,depthWrite:false}),interior:new THREE.MeshStandardMaterial({color:0xffffff,vertexColors:true,roughness:.82,metalness:0,side:THREE.DoubleSide})};

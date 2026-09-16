@@ -57,8 +57,14 @@ window.__smoke = { ready: false };
     // `sky: false` but IBL still on: the environment is prefiltered from the
     // sky's own texture, which loadLevel reads whether or not a dome is built,
     // so the geometry here is lit the way the shipped level lights it.
-    const level = await loadLevel(url, { scene, renderer, camera, sky: false, iblSize, transcoderPath: '/node_modules/three/examples/jsm/libs/basis/' });
+    const level = await loadLevel(url, { scene, renderer, camera, sky: params.has('showSky'), iblSize, transcoderPath: '/node_modules/three/examples/jsm/libs/basis/' });
     const loadMs = Math.round(performance.now() - t0);
+    if (params.has('onlyCell')) {
+      const chosen = params.get('onlyCell');
+      if (!level.cells.cells.some(c => c.node.name === chosen || c.key === chosen)) throw new Error(`Unknown comparison cell ${chosen}`);
+      for (const cell of level.cells.cells) cell.node.visible = cell.node.name === chosen || cell.key === chosen;
+      for (const node of level.dynamicNodes.values()) node.visible = false;
+    }
     if (params.has('uvDebug')) {
       const debugMaterials=new Map();
       const debugMaterial=source=>{
@@ -79,12 +85,14 @@ window.__smoke = { ready: false };
     else camera.position.set(spawn.position[0], spawn.position[1] + 1.7, spawn.position[2]).add(new THREE.Vector3(0, 6, 14));
     camera.lookAt(lookAt ?? center);
     const frames = {};
+    window.__tierImages = {};
     for (const tier of [0, 1, 2]) {
       level.cells.forceTier(tier);
       level.update(1 / 60, camera.position);
       renderer.info.reset();
       renderer.render(scene, camera);
       frames[`tier${tier}`] = { calls: renderer.info.render.calls, triangles: renderer.info.render.triangles, ...frameStats() };
+      if (params.has('captureTiers')) window.__tierImages[`tier${tier}`] = renderer.domElement.toDataURL('image/png');
     }
     level.cells.forceTier(0);
     renderer.render(scene, camera);
@@ -188,7 +196,7 @@ window.__smoke = { ready: false };
       bytes:(t.mipmaps ?? []).reduce((n,m)=>n+(m.data?.byteLength ?? 0),0) || t.image?.data?.byteLength || null,
     }));
     window.__smoke = {
-      ready: true, ok: true, uvDebug: params.has('uvDebug'), frames, shadowProbe, gpu, benchmark, atlasTextures, atlasProbes, atlasCoverage, cells: level.cells.cells.length, lightmap: Boolean(level.lightmap),
+      ready: true, ok: true, uvDebug: params.has('uvDebug'), camera: camera.position.toArray(), onlyCell: params.get('onlyCell'), frames, shadowProbe, gpu, benchmark, atlasTextures, atlasProbes, atlasCoverage, cells: level.cells.cells.length, lightmap: Boolean(level.lightmap),
       environment: level.environment
         ? { size: level.environment.size, source: level.environment.source, ms: level.environment.ms, mb: +(level.environment.bytes / 1048576).toFixed(2) }
         : null,

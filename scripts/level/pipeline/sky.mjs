@@ -11,13 +11,10 @@
  *
  * Two shapes of backdrop ship from here, and which one is a real decision.
  *
- * `cube` mode resamples six faces into ONE equirect, because six SEPARATE KTX2
- * files cannot be assembled into a `CubeTexture` -- three has no loader that
- * stitches compressed 2D images together. `panoramic` mode goes the other way
- * and ships a single KTX2 with `faceCount: 6`, which `ktx create --cubemap`
- * writes and `KTX2Loader` hands back as a `CompressedCubeTexture` unasked. One
- * container, one download, one `parse` -- so there is no second runtime path,
- * which was the only thing wrong with cubes before.
+ * Both `cube` and `panoramic` ship a single KTX2 with `faceCount: 6`, which
+ * `ktx create --cubemap` writes and `KTX2Loader` loads as a compressed cubemap.
+ * The quality ceiling applies to the displayed faces after bake lighting has
+ * consumed the source-resolution faces.
  *
  * The cubemap is the better of the two where it applies. An equirect backdrop
  * has to ship with NO mip chain (its u singularity collapses the zenith to the
@@ -54,6 +51,19 @@ const EQUIRECT_WIDTH = 2048;
 export const MAX_FACE = 3072;
 
 const skyDir = (id) => path.join(levelDir(id), 'sky');
+
+/** Cap the shipped backdrop without changing the faces used for bake lighting. */
+export async function capSkyImages(images, maxFace) {
+  if (maxFace == null || !images.baseFaces) return images;
+  if (!Number.isInteger(maxFace) || maxFace < 4 || maxFace % 4) throw new Error('sky face ceiling must be a positive multiple of four');
+  const faces = [];
+  for (const face of images.baseFaces) {
+    const { width, height } = await sharp(face).metadata();
+    if (width !== height) throw new Error('sky cubemap faces must be square');
+    faces.push(width > maxFace ? await sharp(face).resize(maxFace, maxFace).png().toBuffer() : face);
+  }
+  return { ...images, baseFaces: faces };
+}
 
 async function readSlot(id, file) {
   if (!file) return null;

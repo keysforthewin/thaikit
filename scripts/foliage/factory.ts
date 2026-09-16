@@ -47,7 +47,12 @@ function branching(a:Recipe,detail:number){
  o.branch.gnarliness={0:umbrella?.035:.012,1:.035,2:.06,3:.03};
  o.branch.force={direction:{x:0,y:1,z:0},strength:narrow?.05:umbrella?.015:.025};
  o.leaves.count=small?4:5;o.leaves.start=.1;o.leaves.size=small?1.25:narrow?1.7:umbrella?4:2.4;o.leaves.sizeVariance=.28;o.leaves.billboard='double';
- const tree=new Tree(o);const g=tree.createGeometry([{sectionStride:2,segmentFactor:.85},{sectionStride:3,segmentFactor:.6,leafStride:2,leafScale:1.12},{sectionStride:5,segmentFactor:.4,leafStride:5,leafScale:1.35,billboard:'single'}][detail]);
+ // Rain trees keep their deterministic skeleton and every existing leaf
+ // placement. Sample fewer branch rings/sides; bark detail belongs in the map.
+ const levels=umbrella
+  ? [{sectionStride:4,segmentFactor:.6},{sectionStride:6,segmentFactor:.4,leafStride:2,leafScale:1.12},{sectionStride:8,segmentFactor:.35,leafStride:5,leafScale:1.35,billboard:'single'}]
+  : [{sectionStride:2,segmentFactor:.85},{sectionStride:3,segmentFactor:.6,leafStride:2,leafScale:1.12},{sectionStride:5,segmentFactor:.4,leafStride:5,leafScale:1.35,billboard:'single'}];
+ const tree=new Tree(o);const g=tree.createGeometry(levels[detail]);
  tree.branchesMesh.geometry.dispose();tree.leavesMesh.geometry.dispose();tree.branchesMesh.material.dispose();tree.leavesMesh.material.dispose();return g;
 }
 function normalisePair(g:{branches:THREE.BufferGeometry;leaves:THREE.BufferGeometry},a:Recipe,potHeight:number){

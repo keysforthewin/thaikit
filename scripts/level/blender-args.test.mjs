@@ -31,6 +31,19 @@ test('spec: CPU off by default, GPU+CPU when asked', () => {
   assert.equal(blenderBakeSpec({ bake, cpu: true }).device, 'GPU+CPU');
 });
 
+test('moon visibility can use a separate sample budget without changing RGB samples or density', () => {
+  const spec = blenderBakeSpec({ bake: { ...bake, settings: { ...bake.settings, lightmap: { size: 4096, texelsPerMeter: 6, samples: 2048, shadowSamples: 512 } } } });
+  const args = buildBlenderArgs(spec, { script: 's', glb: 'g', out: 'o' }, p => p);
+  assert.equal(flag(args, '--samples'), '2048');
+  assert.equal(flag(args, '--shadow-samples'), '512');
+  assert.equal(eqFlag(args, '--texels-per-meter'), '6');
+  const defaults = buildBlenderArgs(blenderBakeSpec({ bake }), { script: 's', glb: 'g', out: 'o' }, p => p);
+  assert.equal(defaults.includes('--shadow-samples'), false);
+  for (const invalid of [0, -1, 1.5, NaN]) {
+    assert.throws(() => buildBlenderArgs({ ...spec, shadowSamples: invalid }, { script: 's', glb: 'g', out: 'o' }, p => p), /positive integer/);
+  }
+});
+
 test('spec: env only when a sky image exists, rotation negated', () => {
   assert.equal(blenderBakeSpec({ bake }).env, null);
   const s = blenderBakeSpec({ bake, hasEnv: true });

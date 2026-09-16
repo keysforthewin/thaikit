@@ -80,7 +80,8 @@ async function main() {
     const errors = [];
     const levelUrl = `/${toRepoRelative(glb)}`;
     const view = (args.cam ? `&cam=${encodeURIComponent(String(args.cam))}${args.look ? `&look=${encodeURIComponent(String(args.look))}` : ''}` : '') + (args['shadow-probe'] ? '&shadowProbe=1' : '') + (args.benchmark ? '&benchmark=1' : '') + (args['atlas-probe'] ? '&atlasProbe=1' : '') + (args['uv-debug'] ? '&uvDebug=1' : '') + (args['coverage-masks'] ? `&coverageMasks=${encodeURIComponent('/'+toRepoRelative(path.resolve(String(args['coverage-masks']))))}` : '');
-    await mcp.call('navigate_page', { pageId, url: `http://127.0.0.1:${port}/render/level-harness.html?level=${encodeURIComponent(levelUrl)}&size=${size}${args['ibl-size'] ? `&iblSize=${Number(args['ibl-size'])}` : ''}${view}`, type: 'url' });
+    const comparison = (args['lod-views'] ? '&captureTiers=1' : '') + (args['show-sky'] ? '&showSky=1' : '') + (args['only-cell'] ? `&onlyCell=${encodeURIComponent(String(args['only-cell']))}` : '');
+    await mcp.call('navigate_page', { pageId, url: `http://127.0.0.1:${port}/render/level-harness.html?level=${encodeURIComponent(levelUrl)}&size=${size}${args['ibl-size'] ? `&iblSize=${Number(args['ibl-size'])}` : ''}${view}${comparison}`, type: 'url' });
     const deadline = Date.now() + Number(args['timeout-ms'] ?? 120_000);
     let result = null;
     while (Date.now() < deadline) {
@@ -90,6 +91,16 @@ async function main() {
     }
     if (!result?.ready) throw new Error(`harness never became ready; console: ${errors.slice(-5).join(' | ')}`);
     if (!result.ok) throw new Error(`runtime failed: ${result.error}\n${result.stack ?? ''}`);
+    if (args['lod-views']) {
+      result.lodViews = [];
+      for (const tier of [0, 1, 2]) {
+        const data = await mcp.evaluate(pageId, `() => window.__tierImages.tier${tier}`);
+        if (!data?.startsWith('data:image/png;base64,')) throw new Error(`Missing LOD${tier} comparison image`);
+        const file = path.resolve(`${args['lod-views']}-lod${tier}.png`);
+        await fs.writeFile(file, Buffer.from(data.split(',')[1], 'base64'));
+        result.lodViews.push(toRepoRelative(file));
+      }
+    }
     // --cam x,y,z [--look x,y,z] frames a spot in metres; --out <png> keeps such a view from
     // overwriting the spawn-view smoke image the gates read.
     const shot = args.out ? path.resolve(String(args.out)) : path.join(buildDirOf(id, cell), withQuality('smoke.png', quality));
@@ -97,7 +108,10 @@ async function main() {
     errors.push(await mcp.call('list_console_messages', { pageId, types: ['error', 'warn'] }));
     // Coverage, not brightness: a night level is dark by design, but a blank
     // frame (SwiftShader silently failing) has nothing in it at all.
-    const blank = Object.entries(result.frames).filter(([, f]) => f.coverage < 0.01).map(([k]) => k);
+    // A single cell at its 140 m transition can occupy less than 1% of the
+    // screen. Whole-level smoke keeps the original 1% foreground requirement.
+    const minimumCoverage = args['only-cell'] ? .0001 : .01;
+    const blank = Object.entries(result.frames).filter(([, f]) => f.coverage < minimumCoverage).map(([k]) => k);
     for (const [tier, f] of Object.entries(result.frames)) log(`${tier}: ${f.calls} draw calls, ${f.triangles.toLocaleString()} triangles, ${(f.coverage * 100).toFixed(1)}% of the frame, mean luma ${f.luma}`);
     log(result.environment
       ? `environment: ${result.environment.source} at ${result.environment.size}² (${result.environment.mb} MB, ${result.environment.ms} ms); level loaded in ${result.loadMs} ms`
