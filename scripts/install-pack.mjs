@@ -311,7 +311,7 @@ async function finishRecord(record, probe, it, { srcDir }) {
     hasRecord: Boolean(a),
   });
   if (probe.supported) {
-    if (sidecar.colliders?.parts?.length) {
+    if (sidecar.colliders?.disabled === true || sidecar.colliders?.parts?.length) {
       record.colliders = sidecar.colliders;
       record.collidersSource = sidecar.colliders.handTuned ? 'hand-tuned' : 'shipped';
     } else {

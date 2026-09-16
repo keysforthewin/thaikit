@@ -15,7 +15,9 @@ import { ManifestExtras } from '@thai-kit/level-schema';
 
 import { ok, fail, parseArgs } from '../lib/out.mjs';
 import { assertCellKey, buildDirOf } from './pipeline/build-dir.mjs';
-import { assertQuality, withQuality } from './pipeline/quality.mjs';
+import { QUALITY_PRESETS, assertQuality, withQuality } from './pipeline/quality.mjs';
+import { auditTextureUsage } from './pipeline/texture-usage.mjs';
+import { readGlbJson } from './unreal/material-audit.mjs';
 
 async function main() {
   const args = parseArgs();
@@ -24,7 +26,7 @@ async function main() {
   const maxDrawCalls = Number(args['max-draw-calls-per-cell'] ?? 24);
   const cell = assertCellKey(args.cell ?? null);
   const quality = assertQuality(args.quality ?? null);
-  const file = path.join(buildDirOf(id, cell), withQuality('level.glb', quality));
+  const file = args.file ? path.resolve(String(args.file)) : path.join(buildDirOf(id, cell), withQuality('level.glb', quality));
   const failures = [];
   const warnings = [];
 
@@ -42,9 +44,14 @@ async function main() {
   const primsUnder = (node) => { let n = 0; let t = 0; node.traverse((x) => { const m = x.getMesh(); if (!m) return; for (const p of m.listPrimitives()) { n += 1; t += (p.getIndices()?.getCount() ?? p.getAttribute('POSITION').getCount()) / 3; } }); return { n, t }; };
 
   const report = { cells: [], textures: [], extensions: root.listExtensionsUsed().map((e) => e.extensionName) };
+  report.textureUsage = auditTextureUsage(await readGlbJson(file));
+  failures.push(...report.textureUsage.failures);
+  const materialImages = new Set(report.textureUsage.materialImages);
+  const materialMaxSize = args['max-texture-size'] == null ? QUALITY_PRESETS[quality]?.textures?.maxSize ?? null : Number(args['max-texture-size']);
+  if (materialMaxSize != null && (!Number.isInteger(materialMaxSize) || materialMaxSize < 4)) throw new Error('--max-texture-size must be an integer >= 4');
   if (manifest) {
     for (const cell of manifest.cells.list) {
-      const cellNode = nodes.get(`cell_${cell.ix}_${cell.iz}`);
+      const cellNode = nodes.get(cell.node ?? `cell_${cell.ix}_${cell.iz}`);
       if (!cellNode) { failures.push(`cell ${cell.key} has no node`); continue; }
       const tiers = ['lod0', 'lod1', 'lod2'].map((name) => cellNode.listChildren().find((c) => c.getName() === name));
       tiers.forEach((tier, i) => { if (!tier) failures.push(`cell ${cell.key} has no lod${i}`); });
@@ -53,14 +60,14 @@ async function main() {
       if (counts[0].n > maxDrawCalls) warnings.push(`cell ${cell.key} is ${counts[0].n} draw calls at lod0 (over ${maxDrawCalls})`);
       if (counts[0].t > 0 && counts[1].t > counts[0].t) failures.push(`cell ${cell.key}: lod1 has more triangles than lod0`);
       if (counts[0].t > 300 && counts[2].t > counts[0].t * 0.6) warnings.push(`cell ${cell.key}: lod2 kept ${Math.round((counts[2].t / counts[0].t) * 100)}% of lod0's triangles`);
-      if (manifest.lightmap) {
+      if (manifest.lightmap && cell.bakeLighting !== false) {
         for (const src of tiers[0]?.listChildren() ?? []) for (const prim of src.getMesh()?.listPrimitives() ?? []) {
           if (!prim.getAttribute('TEXCOORD_1')) failures.push(`cell ${cell.key}: a lod0 primitive has no TEXCOORD_1 but the manifest declares a lightmap`);
         }
       }
     }
-    for (const c of manifest.cells.list) { const n = nodes.get(`cell_${c.ix}_${c.iz}`); if (n && !n.listChildren().length) failures.push(`cell ${c.key} is empty`); }
-    for (const node of scene.listChildren()) { const name = node.getName(); if (name.startsWith('cell_') && !manifest.cells.list.some((c) => `cell_${c.ix}_${c.iz}` === name)) failures.push(`node ${name} is not in the manifest`); }
+    for (const c of manifest.cells.list) { const n = nodes.get(c.node ?? `cell_${c.ix}_${c.iz}`); if (n && !n.listChildren().length) failures.push(`cell ${c.key} is empty`); }
+    for (const node of scene.listChildren()) { const name = node.getName(); if (/^(cell|unbaked)_/.test(name) && !manifest.cells.list.some((c) => (c.node ?? `cell_${c.ix}_${c.iz}`) === name)) failures.push(`node ${name} is not in the manifest`); }
     for (const d of manifest.dynamic) if (!nodes.get(d.node)) failures.push(`dynamic node ${d.node} is missing`);
     for (const l of manifest.lights) { const n = nodes.get(l.node); if (!n) failures.push(`light node ${l.node} is missing`); else if (!n.getExtension('KHR_lights_punctual')) failures.push(`light node ${l.node} has no KHR_lights_punctual`); }
     if (!manifest.spawns.length) warnings.push('the level has no spawn point; a game has nowhere to drop the player');
@@ -83,7 +90,8 @@ async function main() {
         } catch (err) { failures.push(`lightmap atlas ${i}: ${err.message}`); }
       }
       if (manifest.lightmap.atlases) for (const cell of manifest.cells.list) {
-        const node = nodes.get(`cell_${cell.ix}_${cell.iz}`);
+        if (cell.bakeLighting === false) continue;
+        const node = nodes.get(cell.node ?? `cell_${cell.ix}_${cell.iz}`);
         node?.traverse(n => { for (const p of n.getMesh()?.listPrimitives() ?? []) {
           const index=p.getMaterial()?.getExtras()?.tk?.lightmapAtlas;
           if (!Number.isInteger(index) || index<0 || index>=pages.length) failures.push(`${n.getName()}: invalid atlas assignment`);
@@ -95,10 +103,20 @@ async function main() {
     }
   }
 
-  for (const tex of root.listTextures()) {
+  for (const [index, tex] of root.listTextures().entries()) {
     const mime = tex.getMimeType();
-    report.textures.push({ name: tex.getName(), mime, bytes: tex.getImage()?.byteLength ?? 0 });
+    const entry = { name: tex.getName(), mime, bytes: tex.getImage()?.byteLength ?? 0 };
+    report.textures.push(entry);
     if (mime !== 'image/ktx2') failures.push(`texture "${tex.getName() || '?'}" is ${mime}, not image/ktx2`);
+    else {
+      try {
+        const k = readKtx(tex.getImage());
+        entry.width = k.pixelWidth; entry.height = k.pixelHeight;
+        if (materialMaxSize != null && materialImages.has(index) && Math.max(k.pixelWidth, k.pixelHeight) > materialMaxSize) {
+          failures.push(`material image ${index} exceeds ${materialMaxSize}px: ${k.pixelWidth}x${k.pixelHeight}`);
+        }
+      } catch (error) { failures.push(`image ${index}: invalid KTX2: ${error.message}`); }
+    }
   }
   if (root.listTextures().length && !report.extensions.includes('KHR_texture_basisu')) failures.push('KHR_texture_basisu is not declared');
   if (!report.extensions.includes('EXT_meshopt_compression')) warnings.push('EXT_meshopt_compression is not declared; geometry is uncompressed');

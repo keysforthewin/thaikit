@@ -128,6 +128,130 @@ export function partsFromRoot(root, maxTriangles) {
   return { parts, triangles };
 }
 
+/** Explicit physical mesh selection. Never fall back to decorative geometry. */
+export function selectCollisionParts(parts, includeMeshes) {
+  if (!includeMeshes?.length) return parts;
+  const selected = parts.filter((p) => includeMeshes.includes(p.name));
+  if (!selected.length) throw new Error(`No physical meshes matched: ${includeMeshes.join(', ')}`);
+  return selected;
+}
+
+/** Separate disconnected tubes in a merged wood mesh without changing the model. */
+export function connectedGeometryParts(part) {
+  const count = part.tris.length / 9;
+  const parent = Array.from({ length: count }, (_, i) => i);
+  const find = (i) => {
+    while (parent[i] !== i) { parent[i] = parent[parent[i]]; i = parent[i]; }
+    return i;
+  };
+  const vertices = new Map();
+  for (let i = 0; i < count; i++) for (let k = 0; k < 3; k++) {
+    const at = i * 9 + k * 3;
+    const key = Array.from(part.tris.subarray(at, at + 3), n => n.toFixed(5)).join(',');
+    if (vertices.has(key)) parent[find(i)] = find(vertices.get(key));
+    else vertices.set(key, i);
+  }
+  const groups = new Map();
+  for (let i = 0; i < count; i++) {
+    const key = find(i);
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(i);
+  }
+  return [...groups.values()].map((indices, i) => {
+    const tris = new Float64Array(indices.length * 9);
+    indices.forEach((index, j) => tris.set(part.tris.subarray(index * 9, index * 9 + 9), j * 9));
+    const box = new THREE.Box3();
+    for (let j = 0; j < tris.length; j += 3) box.expandByPoint(new THREE.Vector3(...tris.subarray(j, j + 3)));
+    return { name: `${part.name}-${i}`, tris, box };
+  });
+}
+
+export function physicalGeometry(parts, opts = {}) {
+  return selectCollisionParts(parts, opts.includeMeshes).flatMap(p => {
+    if (!opts.trunkOnly || p.name !== 'trunk') return [p];
+    // EZ-Tree emits independent branch tubes. The main trunk has the largest
+    // vertical extent; selecting it leaves the visible branches untouched.
+    return connectedGeometryParts(p).sort((a, b) =>
+      (b.box.max.y - b.box.min.y) - (a.box.max.y - a.box.min.y)).slice(0, 1);
+  });
+}
+
+/** Tight upright cylinders around separately connected stems and pots. */
+export function fitStemCylinders(geometry, maxParts) {
+  const components = geometry.flatMap(p => p.name === 'planter' ? [p] : connectedGeometryParts(p));
+  if (components.length > maxParts) throw new Error(`${components.length} physical stems need a larger part budget (${maxParts})`);
+  const counts = components.map(() => 1);
+  while (counts.reduce((a, b) => a + b, 0) < maxParts) {
+    let best = -1, height = 0.25;
+    components.forEach((p, i) => {
+      const h = (p.box.max.y - p.box.min.y) / counts[i];
+      if (h > height) { height = h; best = i; }
+    });
+    if (best < 0) break;
+    counts[best]++;
+  }
+  const result = [];
+  for (const [i, p] of components.entries()) for (let k = 0; k < counts[i]; k++) {
+    const lo = p.box.min.y + (p.box.max.y - p.box.min.y) * k / counts[i];
+    const hi = p.box.min.y + (p.box.max.y - p.box.min.y) * (k + 1) / counts[i];
+    const points = [];
+    for (let j = 0; j < p.tris.length; j += 9) {
+      const vs = [0, 3, 6].map(a => Array.from(p.tris.subarray(j + a, j + a + 3)));
+      for (const v of vs) if (v[1] >= lo && v[1] <= hi) points.push(v);
+      for (let e = 0; e < 3; e++) for (const y of [lo, hi]) {
+        const a = vs[e], b = vs[(e + 1) % 3];
+        if ((a[1] < y && b[1] > y) || (a[1] > y && b[1] < y)) {
+          const t = (y - a[1]) / (b[1] - a[1]);
+          points.push([a[0] + (b[0] - a[0]) * t, y, a[2] + (b[2] - a[2]) * t]);
+        }
+      }
+    }
+    if (!points.length) continue;
+    const cx = (Math.min(...points.map(v => v[0])) + Math.max(...points.map(v => v[0]))) / 2;
+    const cz = (Math.min(...points.map(v => v[2])) + Math.max(...points.map(v => v[2]))) / 2;
+    const radius = Math.max(0.005, ...points.map(v => Math.hypot(v[0] - cx, v[2] - cz))) + 0.002;
+    result.push({ name: `${p.name}-slice${k}`, type: 'cylinder', offset: [cx, (lo + hi) / 2, cz], scale: [radius, Math.max(0.005, (hi - lo) / 2), radius], isTrigger: false });
+  }
+  return result;
+}
+
+/** Side-on ray checks are the useful clearance measurement for upright stems. */
+export function measureStemClearance(geometry, parts) {
+  const box = new THREE.Box3();
+  for (const p of geometry) box.union(p.box);
+  const center = box.getCenter(new THREE.Vector3());
+  const reach = box.getSize(new THREE.Vector3()).length() + 1;
+  const tris = geometry.flatMap(p => {
+    const out = [];
+    for (let i = 0; i < p.tris.length; i += 9) out.push([0, 3, 6].map(k => new THREE.Vector3(...p.tris.subarray(i + k, i + k + 3))));
+    return out;
+  });
+  let hits = 0, covered = 0;
+  const errors = [], point = new THREE.Vector3();
+  for (let h = 0; h < 64; h++) for (let k = 0; k < 32; k++) {
+    const a = k * Math.PI * 2 / 32, y = box.min.y + (box.max.y - box.min.y) * (h + 0.5) / 64;
+    const origin = new THREE.Vector3(center.x + reach * Math.cos(a), y, center.z + reach * Math.sin(a));
+    const direction = new THREE.Vector3(-Math.cos(a), 0, -Math.sin(a));
+    const ray = new THREE.Ray(origin, direction);
+    let truth = Infinity, proxy = Infinity;
+    for (const tri of tris) if (ray.intersectTriangle(...tri, false, point)) truth = Math.min(truth, point.distanceTo(origin));
+    if (!Number.isFinite(truth)) continue;
+    hits++;
+    for (const p of parts) {
+      if (y < p.offset[1] - p.scale[1] || y > p.offset[1] + p.scale[1]) continue;
+      const dx = origin.x - p.offset[0], dz = origin.z - p.offset[2];
+      const b = dx * direction.x + dz * direction.z, c = dx * dx + dz * dz - p.scale[0] ** 2;
+      const d = b * b - c;
+      if (d >= 0) { const t = -b - Math.sqrt(d); if (t >= 0) proxy = Math.min(proxy, t); }
+    }
+    if (Number.isFinite(proxy)) { covered++; errors.push(Math.abs(truth - proxy)); }
+  }
+  errors.sort((a, b) => a - b);
+  return { direction: 'horizontal', samples: hits, coverage: hits ? covered / hits : 0,
+    p95AbsDelta: +(errors[Math.floor(errors.length * .95)] ?? 0).toFixed(4),
+    maxAbsDelta: +(errors.at(-1) ?? 0).toFixed(4) };
+}
+
 // ---------------------------------------------------------------------------
 // Decoration filter
 // ---------------------------------------------------------------------------
@@ -837,6 +961,7 @@ export function selfCheck(grid, parts, geometryParts) {
     for (const p of parts) {
       if (Math.abs(x - p.offset[0]) > p.scale[0]) continue;
       if (Math.abs(z - p.offset[2]) > p.scale[2]) continue;
+      if (p.type === 'cylinder' && Math.hypot(x - p.offset[0], z - p.offset[2]) > Math.max(p.scale[0], p.scale[2])) continue;
       const t = p.offset[1] + p.scale[1];
       if (Number.isNaN(h) || t > h) h = t;
     }
@@ -954,7 +1079,9 @@ export function deriveOne(asset, opts) {
   const source = readFileSync(bundle);
   const bundleSha256 = crypto.createHash('sha256').update(source).digest('hex');
 
-  const { parts: rawParts, triangles } = loadParts(bundle, opts.maxTriangles);
+  const loaded = loadParts(bundle, opts.maxTriangles);
+  const rawParts = physicalGeometry(loaded.parts, opts);
+  const triangles = rawParts.reduce((n, p) => n + p.tris.length / 9, 0);
   if (!rawParts.length) throw new Error('the factory built no meshes');
 
   return deriveFromParts(rawParts, triangles, {
@@ -1058,12 +1185,13 @@ export function deriveFromParts(rawParts, triangles, opts) {
   }
 
   // --- budget, extents, cylinders, inflation ------------------------------
-  parts = prune(parts, maxParts, notes);
+  parts = opts.fitStems ? fitStemCylinders(rawParts, maxParts) : prune(parts, maxParts, notes);
+  if (opts.fitStems) notes.push('Physical stems/planters only. Down-ray height errors on tapering vertical stems are not walkable branch ledges; branches and leaves are excluded.');
 
 
   for (const p of parts) {
     for (const i of [0, 1, 2]) {
-      if (p.scale[i] >= 0.025) continue;
+      if (p.scale[i] >= (opts.fitStems ? 0.005 : 0.025)) continue;
       if (i === 1 && Math.abs(p.offset[1] - groundY) < 0.02 + p.scale[1]) {
         // Flat and on the ground: grow DOWNWARD, or the player walks above the road.
         const top = p.offset[1] + p.scale[1];
@@ -1076,6 +1204,7 @@ export function deriveFromParts(rawParts, triangles, opts) {
   }
 
   const check = selfCheck(grid, parts, decor.parts);
+  if (opts.fitStems) check.stemClearance = measureStemClearance(rawParts, parts);
   const ledges = ledgeInventory(grid, parts);
 
   for (const p of parts) {
@@ -1124,7 +1253,12 @@ export function measureOne(asset, doc, opts) {
   if (!bundle) throw new Error(`${asset.id}: no bundle resolved (opts.bundle)`);
   if (!existsSync(bundle)) throw new Error(`no bundle at ${toRepoRelative(bundle)}`);
 
-  const { parts: rawParts, triangles } = loadParts(bundle, opts.maxTriangles);
+  const loaded = loadParts(bundle, opts.maxTriangles);
+  const rawParts = physicalGeometry(loaded.parts, {
+    includeMeshes: opts.includeMeshes ?? doc.generator?.params?.includeMeshes,
+    trunkOnly: opts.trunkOnly ?? doc.generator?.params?.trunkOnly,
+  });
+  const triangles = rawParts.reduce((n, p) => n + p.tris.length / 9, 0);
   const bounds = new THREE.Box3();
   for (const p of rawParts) bounds.union(p.box);
   const decor = filterDecoration(rawParts, bounds, opts);
@@ -1138,8 +1272,10 @@ export function measureOne(asset, doc, opts) {
   const grid = voxelise(decor.parts, keptBounds, voxel, opts.maxCells);
 
   const parts = doc.parts.map((p) => ({ ...p }));
+  const check = selfCheck(grid, parts, decor.parts);
+  if (opts.fitStems ?? doc.generator?.params?.fitStems) check.stemClearance = measureStemClearance(rawParts, parts);
   return {
-    record: { parts, selfCheck: selfCheck(grid, parts, decor.parts), ...ledgeInventory(grid, parts), notes: doc.notes ?? [] },
+    record: { parts, selfCheck: check, ...ledgeInventory(grid, parts), notes: doc.notes ?? [] },
     meta: {
       triangles,
       groundY: doc.groundY ?? +keptBounds.min.y.toFixed(4),

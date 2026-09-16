@@ -50,6 +50,15 @@ export function simplifiedCopy(doc, prim, { ratio, sloppy = false, error = slopp
     [result] = MeshoptSimplifier.simplifyWithAttributes(indices, positions, 3,
       attributes, 2, [4096, 4096], null, target, 0.05, ['LockBorder', 'ErrorAbsolute']);
     if (!result.length) result = indices;
+  } else if (prim.getMaterial()?.getAlphaMode() === 'MASK' && prim.getAttribute('TEXCOORD_0')) {
+    // Cutout silhouettes live in UV0. Preserve their borders and never turn a
+    // two-triangle leaf card into half a leaf with the sloppy fallback.
+    const uv0 = prim.getAttribute('TEXCOORD_0');
+    const attributes = new Float32Array(uv0.getCount() * 2);
+    for (let i = 0; i < uv0.getCount(); i++) attributes.set(uv0.getElement(i, []), i * 2);
+    [result] = MeshoptSimplifier.simplifyWithAttributes(indices, positions, 3,
+      attributes, 2, [1, 1], null, target, .01, ['LockBorder']);
+    if (!result.length) result = indices;
   } else {
     if (sloppy) {
       [result] = MeshoptSimplifier.simplifySloppy(indices, positions, 3, null, target, error);
@@ -74,7 +83,7 @@ export function buildLodTiers({ lod1Ratio = 0.4, lod2Ratio = 0.15 } = {}) {
     await MeshoptSimplifier.ready;
     const stats = [];
     for (const cell of doc.getRoot().listNodes()) {
-      if (!cell.getName().startsWith('cell_')) continue;
+      if (!/^(cell|unbaked)_/.test(cell.getName())) continue;
       const lod0 = cell.listChildren().find((n) => n.getName() === 'lod0');
       if (!lod0) continue;
       const tiers = [

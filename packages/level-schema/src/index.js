@@ -12,7 +12,7 @@
 import { z } from 'zod';
 
 export const LEVEL_SCHEMA_VERSION = 1;
-export const MANIFEST_SCHEMA_VERSION = 2;
+export const MANIFEST_SCHEMA_VERSION = 3;
 
 const num = z.number().finite();
 export const Vec3 = z.tuple([num, num, num]);
@@ -376,6 +376,7 @@ export const PlacementExtras = z.object({
   ref: ItemRef,
   version: z.string().nullable().default(null),
   static: z.boolean().nullable().default(null),
+  bakeLighting: z.boolean().default(true),
   physics: z.boolean().nullable().default(null),
   castShadow: z.boolean().default(true),
   receiveShadow: z.boolean().default(true),
@@ -430,6 +431,8 @@ export const Bounds = z.object({ min: Vec3, max: Vec3 });
 
 export const ManifestCell = z.object({
   key: z.string(),
+  node: z.string().optional(),
+  bakeLighting: z.boolean().default(true),
   ix: z.number().int(),
   iz: z.number().int(),
   bounds: Bounds,
@@ -447,7 +450,7 @@ export const ManifestLight = z.object({
 
 /** scene.extras.thaikitManifest on the baked GLB. */
 export const ManifestExtras = z.object({
-  schemaVersion: z.union([z.literal(1), z.literal(MANIFEST_SCHEMA_VERSION)]),
+  schemaVersion: z.union([z.literal(1), z.literal(2), z.literal(MANIFEST_SCHEMA_VERSION)]),
   id: Slug,
   name: z.string(),
   generatedAt: z.string().datetime(),
@@ -602,9 +605,10 @@ export const ManifestExtras = z.object({
     .array(z.object({ name: z.string(), position: Vec3, yawDeg: num.default(0), team: z.string().nullable().default(null) }))
     .default([]),
 }).superRefine((manifest, ctx) => {
-  if (manifest.lightmap && ((manifest.schemaVersion === 2) !== Boolean(manifest.lightmap.atlases))) {
+  if (manifest.lightmap && manifest.schemaVersion < 3 && ((manifest.schemaVersion === 2) !== Boolean(manifest.lightmap.atlases))) {
     ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['lightmap'], message: 'schema 1 uses image; schema 2 uses atlases' });
   }
+  if (manifest.schemaVersion < 3 && manifest.cells.list.some(c => c.bakeLighting === false)) ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['cells'], message: 'unbaked cells require schema 3' });
 });
 
 export { emptyLevelGltf, emptyLevelExtras } from './emptyLevel.js';

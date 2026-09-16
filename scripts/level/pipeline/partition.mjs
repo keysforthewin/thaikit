@@ -51,7 +51,7 @@ const mat4 = {
   },
 };
 
-export const cellName = (ix, iz) => `cell_${ix}_${iz}`;
+export const cellName = (ix, iz, bakeLighting = true) => `${bakeLighting ? 'cell' : 'unbaked'}_${ix}_${iz}`;
 
 function placementMatrix(p) {
   const q = quatFromEuler(p.rotation);
@@ -79,12 +79,13 @@ export function partitionCells({ bake }) {
     const nonCastingMaterials = new Map();
     const stray = [];
 
-    const cellNode = (key, ix, iz) => {
+    const cellNode = (key, ix, iz, bakeLighting = true) => {
+      if (!bakeLighting) key = `unbaked/${key}`;
       if (!cells.has(key)) {
-        const node = doc.createNode(cellName(ix, iz));
+        const node = doc.createNode(cellName(ix, iz, bakeLighting));
         const lod0 = doc.createNode('lod0');
         node.addChild(lod0);
-        node.setExtras({ tk: { kind: 'cell', key, ix, iz } });
+        node.setExtras({ tk: { kind: 'cell', key, ix, iz, bakeLighting, castShadow: bakeLighting } });
         scene.addChild(node);
         cells.set(key, { node, lod0, ix, iz });
       }
@@ -106,7 +107,7 @@ export function partitionCells({ bake }) {
         for (const originalPrim of original.listPrimitives()) {
           const prim = originalPrim.clone();
           const count = prim.getAttribute('POSITION').getCount();
-          prim.setAttribute('_TK_SOURCE', doc.createAccessor().setType('SCALAR')
+          if (p.bakeLighting !== false) prim.setAttribute('_TK_SOURCE', doc.createAccessor().setType('SCALAR')
             .setArray(new Float32Array(count).fill(sourceIndex)).setBuffer(doc.getRoot().listBuffers()[0]));
           own.addPrimitive(prim);
         }
@@ -127,7 +128,7 @@ export function partitionCells({ bake }) {
             prim.setMaterial(nonCastingMaterials.get(material));
           }
         }
-        cellNode(p.cell, p.ix, p.iz).lod0.addChild(node);
+        cellNode(p.cell, p.ix, p.iz, p.bakeLighting !== false).lod0.addChild(node);
         node.setExtras({});
       } else {
         let holder = dynamic.get(p.id);
@@ -149,7 +150,9 @@ export function partitionCells({ bake }) {
         holder.addChild(node);
       }
     }
-    unshareDynamicMaterials({ doc, cells, dynamic });
+    const bakedCells = new Map([...cells].filter(([, c]) => c.node.getExtras().tk.bakeLighting !== false));
+    const liveGroups = new Map([...dynamic, ...[...cells].filter(([, c]) => c.node.getExtras().tk.bakeLighting === false).map(([key, c]) => [key, c.node])]);
+    unshareDynamicMaterials({ doc, cells: bakedCells, dynamic: liveGroups });
     return { cells, dynamic, stray };
   };
 }

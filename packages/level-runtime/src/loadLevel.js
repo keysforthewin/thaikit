@@ -90,7 +90,7 @@ export async function loadLevel(source, opts) {
   const lightmap = lightmaps[0] ?? null; // legacy public handle
   if (manifest.lightmap) {
     try {
-      bindLightmaps(cells.cells.flatMap(c => c.tiers), manifest.lightmap, lightmaps, lightmapIntensity);
+      bindLightmaps(cells.cells.filter(c => c.info.bakeLighting !== false).flatMap(c => c.tiers), manifest.lightmap, lightmaps, lightmapIntensity);
     } catch (error) {
       for (const texture of lightmaps) texture.dispose();
       throw error;

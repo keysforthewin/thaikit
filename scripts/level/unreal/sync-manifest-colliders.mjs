@@ -31,6 +31,10 @@ async function main() {
   const changed = [];
   let missing = 0;
   for (const item of manifest.items ?? []) {
+    // These shapes were fitted to each foliage representation separately.
+    // sync-physical-colliders.mjs owns them; copying the default compound here
+    // would give leaf cards collision and misalign lower-detail trunks.
+    if (item.collisionPolicy) continue;
     let parts;
     try {
       parts = JSON.parse(await fs.readFile(path.join(modelDir(item.ref), 'colliders.json'), 'utf8')).parts;

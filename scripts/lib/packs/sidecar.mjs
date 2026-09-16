@@ -71,6 +71,7 @@ export function slimColliders(doc) {
     groundY: doc.groundY ?? 0,
     coverage: doc.selfCheck?.coverage ?? null,
     handTuned: Boolean(doc.handTuned),
+    ...(doc.disabled === true ? { disabled: true } : {}),
   };
 }
 

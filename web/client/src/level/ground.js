@@ -68,7 +68,7 @@ export function groundExtent(boxes, { cellSize = 24, margin = 8 } = {}) {
   let maxZ = -Infinity;
   let excluded = 0;
   for (const b of boxes) {
-    if (isBillboard(b.billboard)) { excluded += 1; continue; }
+    if (b.bakeLighting === false || isBillboard(b.billboard)) { excluded += 1; continue; }
     if (!Number.isFinite(b.min[0]) || !Number.isFinite(b.max[0])) continue;
     minX = Math.min(minX, b.min[0]); maxX = Math.max(maxX, b.max[0]);
     minZ = Math.min(minZ, b.min[2]); maxZ = Math.max(maxZ, b.max[2]);
@@ -131,7 +131,7 @@ export function docFootprints(doc, byRef) {
       min: [p.position[0] - hw, 0, p.position[2] - hd],
       max: [p.position[0] + hw, 0, p.position[2] + hd],
       // Carried so `groundExtent` can drop backdrop imposters; see there.
-      billboard: p.billboard,
+      billboard: p.billboard, bakeLighting: p.bakeLighting,
     };
   });
 }

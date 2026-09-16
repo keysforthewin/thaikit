@@ -227,6 +227,7 @@ export function PropertiesPanel() {
           <label className="checkline"><input type="checkbox" checked={p.castShadow !== false} onChange={(e) => edit('cast shadow', (x) => { x.castShadow = e.target.checked; })} /> cast shadow</label>
           <label className="checkline"><input type="checkbox" checked={p.receiveShadow !== false} onChange={(e) => edit('receive shadow', (x) => { x.receiveShadow = e.target.checked; })} /> receive shadow</label>
         </div>
+        <label className="checkline" title="Allocate lightmap space for this placement. Turn off for distant scenery and foliage."><input type="checkbox" checked={p.bakeLighting !== false} disabled={!autoStatic} onChange={(e) => edit('bake lighting', (x) => { x.bakeLighting = e.target.checked; })} /> bake lighting</label>
         <div className="row">
           <label className="checkline" title="turn to face the camera every frame">
             <input

@@ -101,6 +101,13 @@ async function run(asset, baseOpts) {
   const opts = { ...baseOpts, bundle: await resolveBundle(qid, baseOpts.from) };
   const file0 = collidersFile(qid);
   const existing = existsSync(file0) ? JSON.parse(readFileSync(file0, 'utf8')) : null;
+  opts.includeMeshes ??= existing?.generator?.params?.includeMeshes;
+  opts.trunkOnly ??= existing?.generator?.params?.trunkOnly;
+  opts.fitStems ??= existing?.generator?.params?.fitStems;
+  if (existing?.disabled && !opts.force && !opts.includeMeshes) {
+    log(`${asset.id}: collision intentionally disabled; preserving the empty compound`);
+    return { id: asset.id, disabled: true, parts: 0 };
+  }
 
   // --measure keeps the parts exactly as they are and only records what the rays
   // say about them, so a hand-tuned compound can carry evidence without losing
@@ -166,6 +173,9 @@ async function writeRecord(asset, existing, { record, meta }, opts, { measuring 
         stepHeight: STEP_HEIGHT,
         cylinders: opts.cylinders,
         yaw: false,
+        ...(opts.includeMeshes ? { includeMeshes: opts.includeMeshes } : {}),
+        ...(opts.trunkOnly ? { trunkOnly: true } : {}),
+        ...(opts.fitStems ? { fitStems: true } : {}),
       },
     },
     yaw: 0,
@@ -227,6 +237,9 @@ async function main() {
 
   const opts = {
     from: args.from ?? 'pack',
+    includeMeshes: args['include-meshes'] ? String(args['include-meshes']).split(',').map(s => s.trim()).filter(Boolean) : undefined,
+    trunkOnly: args['trunk-only'] ? true : undefined,
+    fitStems: args['fit-stems'] ? true : undefined,
     maxParts: args['max-parts'] ? Number(args['max-parts']) : null,
     voxel: args.voxel ?? 'auto',
     maxCells: Number(args['max-cells'] ?? 6e6),

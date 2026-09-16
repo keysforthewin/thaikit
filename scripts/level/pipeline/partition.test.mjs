@@ -4,6 +4,22 @@ import { Document } from '@gltf-transform/core';
 import { join } from '@gltf-transform/functions';
 import { partitionCells } from './partition.mjs';
 
+test('unbaked scenery is spatially grouped apart from bake targets and cannot share their materials', async () => {
+  const doc=new Document(), scene=doc.createScene(), buffer=doc.createBuffer();
+  const pos=doc.createAccessor().setType('VEC3').setArray(new Float32Array([0,0,0,1,0,0,0,1,0])).setBuffer(buffer);
+  const paint=doc.createMaterial('paint'), mesh=doc.createMesh().addPrimitive(doc.createPrimitive().setAttribute('POSITION',pos).setMaterial(paint));
+  const rows=[true,false].map((bakeLighting,i)=>({id:`p${i}`,static:true,bakeLighting,cell:'0_0',ix:0,iz:0}));
+  for(const p of rows)scene.addChild(doc.createNode(p.id).setMesh(mesh).setExtras({tk:{kind:'placement',placement:p.id}}));
+  const {cells}=partitionCells({bake:{placements:rows}})(doc);
+  await doc.transform(join({keepMeshes:false,keepNamed:false}));
+  assert.equal(cells.size,2);
+  const baked=cells.get('0_0'), unbaked=cells.get('unbaked/0_0');
+  assert.equal(unbaked.node.getName(),'unbaked_0_0');
+  assert.equal(unbaked.node.getExtras().tk.castShadow,false);
+  const material=c=>c.lod0.listChildren()[0].getMesh().listPrimitives()[0].getMaterial();
+  assert.notEqual(material(baked),material(unbaked));
+});
+
 test('noncasting instances retain their bake flag after joining without changing a shared casting instance', async () => {
   const doc = new Document();
   const scene = doc.createScene();

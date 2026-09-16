@@ -15,8 +15,9 @@ import { auditAtlasCoverage } from './pipeline/atlas-coverage.mjs';
  * Usage:
  *   node scripts/level/bake-level.mjs --level <id> [--quality low|medium|high] [--baker blender|blender-host|unreal|none] [--cpu] [--samples N] [--noise-threshold T] [--resume-from 2|3|4] [--cell <ix>_<iz>]
  *
- * `--quality` is a preset AND a name: `low` is Cycles at 2048²/8192 samples,
- * `medium` is Cycles at 4096²/8192 samples, and `high` is 4096²/16384 samples.
+ * `--quality` is a preset AND a name: all use 4096² lightmap pages at 12 texels/m,
+ * with low/medium/high using 128/2048/16384 samples. Low caps material maps at 1024;
+ * medium/high retain the level's material resolution.
  * All three disable adaptive sampling; each delivers
  * `<id>_<quality>.glb`,
  * builds `build/level_<quality>.glb` and bakes into `build/lightmap_<quality>/`
@@ -58,6 +59,7 @@ import { readTags, stripEditorExtras, foldBaseColorIntoVertexColor, normaliseAtt
 import { partitionCells } from './pipeline/partition.mjs';
 import { buildLodTiers } from './pipeline/lod.mjs';
 import { compressTextures, addLightmapTexture } from './pipeline/textures.mjs';
+import { pruneUnusedTextures } from './pipeline/texture-usage.mjs';
 import { writeManifest } from './pipeline/manifest.mjs';
 import { prepareSkyImages, addSkyTextures } from './pipeline/sky.mjs';
 import { bakeWithBlender } from './bakers/blender-cycles.mjs';
@@ -109,6 +111,7 @@ async function main() {
   const layoutOnly = Boolean(args['layout-only']);
   if (layoutOnly && !['blender', 'blender-host'].includes(baker)) throw new Error('--layout-only requires Blender');
   const resumeFrom = Number(args['resume-from'] ?? 1);
+  if (args['stage1-only'] && resumeFrom !== 1) throw new Error('--stage1-only requires a fresh stage 1');
   if (layoutOnly && resumeFrom > 2) throw new Error('--layout-only cannot skip the lightmap stage');
   // Overrides for the lightmap -- explicit flags first, then the quality
   // preset; the level's own settings otherwise.
@@ -184,6 +187,7 @@ async function main() {
     const after = countPrims(doc, 'cell_');
     progress('merge', `static geometry is now ${after.prims} draw calls (${after.tris.toLocaleString()} triangles) across ${cells?.size ?? 0} cells`);
     await io.write(stage(1), doc);
+    if (args['stage1-only']) return ok({ level: id, stage1Only: true, file: toRepoRelative(stage(1)), cells: cells.size, dynamic: dynamic.size });
   } else {
     bake = JSON.parse(await fs.readFile(bakeFile, 'utf8'));
     doc = await io.read(stage(Math.min(resumeFrom - 1, 3)));
@@ -261,8 +265,10 @@ async function main() {
   }
 
   // ---- stage 4: textures, compression, manifest ----------------------------
+  const textureCleanup = await pruneUnusedTextures(doc);
+  progress('textures', `removed ${textureCleanup.removed} unused images before encoding; ${textureCleanup.remaining} remain`);
   const tex = bake.settings?.textures ?? {};
-  if (budget.maxSize < (tex.maxSize ?? 2048)) progress('textures', `${quality}: textures capped at ${budget.maxSize}² (the level asks ${tex.maxSize ?? 2048}²) -- this tier is for the geometry, and the KTX2 encode is where a no-lightmap bake spends its time`);
+  if (budget.maxSize < (tex.maxSize ?? 2048)) progress('textures', `${quality}: material textures capped at ${budget.maxSize}² (level ceiling: ${tex.maxSize ?? 2048}²)`);
   const { count } = await compressTextures({
     colorMode: tex.colorMode ?? 'etc1s', dataMode: tex.dataMode ?? 'uastc', maxSize: budget.maxSize,
     onProgress: (m, i, n) => progress('textures', `${m} (${i}/${n})`),
@@ -277,7 +283,7 @@ async function main() {
   // file, so they are folded in here as unreferenced KTX2, the lightmap's
   // arrangement. Both picture modes ship as one KTX2 with faceCount 6.
   const skyIndices = await addSkyTextures(doc, skyImages, {
-    colorMode: tex.colorMode ?? 'etc1s', maxSize: budget.maxSize,
+    colorMode: tex.colorMode ?? 'etc1s', maxSize: tex.maxSize ?? 2048,
     onProgress: (m) => progress('textures', m),
   });
 
@@ -290,6 +296,10 @@ async function main() {
   const manifest = writeManifest({ bake, lodStats, lightmapImage, lightmapStats, skyIndices, generator: { tool: 'thaikit', version: VERSION }, liveLamps, onNote: (m) => progress('manifest', m) })(doc);
   if (manifest.lightmap?.bakedOnlyLamps) progress('manifest', `${manifest.lightmap.bakedOnlyLamps} lamp(s) ship baked-only (--live-lamps ${liveLamps}); ${manifest.lights.length} light(s) stay live`);
   await doc.transform(prune({ propertyTypes: [PropertyType.NODE, PropertyType.MESH, PropertyType.ACCESSOR, PropertyType.MATERIAL], keepLeaves: true, keepAttributes: true }));
+
+  // Also catch textures orphaned by the final transforms, while remapping the
+  // explicit image references used by the runtime's lightmaps and sky.
+  await pruneUnusedTextures(doc);
 
   const outFile = path.join(buildDir, withQuality('level.glb', quality));
   await io.write(outFile, doc);
@@ -305,7 +315,7 @@ async function main() {
 
   // ---- verify ----------------------------------------------------------------
   const verify = await new Promise((resolve) => {
-    const child = spawn(process.execPath, [path.join(here, 'verify-level.mjs'), '--level', id, ...(cell ? ['--cell', cell] : []), ...(quality ? ['--quality', quality] : [])], { stdio: ['ignore', 'pipe', 'inherit'] });
+    const child = spawn(process.execPath, [path.join(here, 'verify-level.mjs'), '--level', id, '--max-texture-size', String(budget.maxSize), ...(cell ? ['--cell', cell] : []), ...(quality ? ['--quality', quality] : [])], { stdio: ['ignore', 'pipe', 'inherit'] });
     let out = '';
     child.stdout.on('data', (d) => { out += d; });
     child.on('close', () => { try { resolve(JSON.parse(out.trim().split('\n').pop())); } catch { resolve({ ok: false, failures: ['verify produced no result'] }); } });

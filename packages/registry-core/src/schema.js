@@ -348,6 +348,18 @@ const TextureMap = z.object({
 
 const Model = ModelStats.extend({
   status: StageState.default('pending'),
+  /** Alternative authoring routes retain their own reproducible provenance. */
+  generator: z.object({
+    tool: z.string(), version: z.string(), seed: z.number().int(),
+    recipe: z.string(), upstream: z.string().nullable().default(null),
+  }).nullable().default(null),
+  representations: z.array(z.object({
+    name: z.string(), options: z.record(z.any()),
+    file: z.string().nullable().default(null),
+    triangles: z.number().int().nonnegative().nullable().default(null),
+    bakeLighting: z.boolean().default(true),
+    billboard: z.enum(['none', 'yaw', 'full']).default('none'),
+  })).default([]),
   /**
    * Authored TypeScript factory: packages/props/src/models/<id>/createObjectModel.ts
    *

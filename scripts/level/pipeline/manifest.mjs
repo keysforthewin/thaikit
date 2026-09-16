@@ -178,18 +178,19 @@ export function writeManifest({ bake, lodStats, lightmapImage, lightmapStats = n
     const cellsByKey = new Map();
     for (const p of bake.placements) {
       if (!p.static) continue;
-      let c = cellsByKey.get(p.cell);
+      const key = p.bakeLighting === false ? `unbaked/${p.cell}` : p.cell;
+      let c = cellsByKey.get(key);
       if (!c) {
-        c = { key: p.cell, ix: p.ix, iz: p.iz, min: [Infinity, Infinity, Infinity], max: [-Infinity, -Infinity, -Infinity] };
-        cellsByKey.set(p.cell, c);
+        c = { key, node: `${p.bakeLighting === false ? 'unbaked' : 'cell'}_${p.ix}_${p.iz}`, bakeLighting: p.bakeLighting !== false, ix: p.ix, iz: p.iz, min: [Infinity, Infinity, Infinity], max: [-Infinity, -Infinity, -Infinity] };
+        cellsByKey.set(key, c);
       }
       for (let i = 0; i < 3; i += 1) { c.min[i] = Math.min(c.min[i], p.bounds.min[i]); c.max[i] = Math.max(c.max[i], p.bounds.max[i]); }
     }
     const statsByCell = new Map(lodStats.map((s) => [s.cell, s]));
     const cells = [...cellsByKey.values()].map((c) => {
-      const s = statsByCell.get(`cell_${c.ix}_${c.iz}`);
+      const s = statsByCell.get(c.node);
       return {
-        key: c.key, ix: c.ix, iz: c.iz,
+        key: c.key, node: c.node, bakeLighting: c.bakeLighting, ix: c.ix, iz: c.iz,
         bounds: { min: c.min.map((n) => +n.toFixed(3)), max: c.max.map((n) => +n.toFixed(3)) },
         drawCalls: s?.drawCalls ?? [0, 0, 0], triangles: s?.triangles ?? [0, 0, 0],
       };
@@ -198,7 +199,7 @@ export function writeManifest({ bake, lodStats, lightmapImage, lightmapStats = n
     const bounds = getBounds(scene);
     const settings = bake.settings ?? {};
     const manifest = ManifestExtras.parse({
-      schemaVersion: Array.isArray(lightmapImage) ? MANIFEST_SCHEMA_VERSION : 1,
+      schemaVersion: cells.some(c => !c.bakeLighting) ? MANIFEST_SCHEMA_VERSION : Array.isArray(lightmapImage) ? 2 : 1,
       id: bake.id, name: bake.name, generatedAt: new Date().toISOString(), generator,
       // An imported (Unreal) raw says so; the editor's raw has no `source`.
       source: bake.source ? { ...bake.source, lightmap: lightmapImage == null ? 'none' : lightmapStats?.source === 'unreal' ? 'adopted' : 'blender' } : null,

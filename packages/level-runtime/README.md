@@ -1,7 +1,7 @@
 # @thai-kit/level-runtime
 
 Load a baked [thaikit](https://github.com/keysforthewin/thaikit) level into a
-three.js game. **One GLB is the whole map** — geometry, LOD tiers, lightmap, sky,
+three.js game. **One GLB is the whole map** — geometry, LOD tiers, lightmaps, sky,
 lights, colliders and spawn points — and `loadLevel()` is the only call you make.
 
 ```sh
@@ -94,3 +94,14 @@ thaikit compounds wherever a `SM_TK_*` Static Mesh was placed, spawns from the
 `spawn_*` cameras. `manifest.source` says it came from Unreal and which lightmap
 it carries; everything else is identical, which is the point. The whole
 procedure is `docs/unreal-level-export.md` in the thaikit repo.
+
+## Scenery without baked lighting
+
+Schema-3 levels can contain cells marked `bakeLighting: false`. These retain
+spatial LOD switching but receive no lightmap binding and cast no shadows.
+Their authored live or unlit materials remain active. Distant tree billboards
+are individual nodes that face the camera during `level.update()`.
+
+The source runtime supports manifest schemas 1, 2 and 3. A game loading a new
+schema-3 level must use a runtime release containing this support; previously
+published runtimes may reject that level.

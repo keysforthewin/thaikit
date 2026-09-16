@@ -105,7 +105,7 @@ async function mergeItem(p, it) {
 
   let colliders = it.colliders ?? null;
   let collidersSource = it.collidersSource ?? (colliders ? 'derived' : null);
-  if (sidecar.colliders?.parts?.length) {
+  if (sidecar.colliders?.disabled === true || sidecar.colliders?.parts?.length) {
     colliders = sidecar.colliders;
     collidersSource = sidecar.colliders.handTuned ? 'hand-tuned' : 'shipped';
   }
@@ -145,6 +145,8 @@ async function mergeItem(p, it) {
     pivot: merged.pivot,
     placement: merged.placement,
     physics: merged.physics,
+    bakeLighting: record?.model?.representations?.length ? !record.model.representations.every(v => v.bakeLighting === false) : true,
+    representations: record?.model?.representations ?? [],
     destructionGroups: merged.destructionGroups,
     budgetClass: merged.budgetClass ?? null,
     budget: merged.budget,

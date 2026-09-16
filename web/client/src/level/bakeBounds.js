@@ -39,7 +39,7 @@ export function bakeBounds(doc, { boxOf, isStatic, groundBox = null }) {
 
   for (const p of doc?.placements ?? []) {
     if (p.billboard && p.billboard !== 'none') { counts.billboard += 1; continue; }
-    if (!isStatic(p)) { counts.dynamic += 1; continue; }
+    if (p.bakeLighting === false || !isStatic(p)) { counts.dynamic += 1; continue; }
     const b = boxOf(p);
     if (!b || !take(b)) { counts.unmeasured += 1; continue; }
     counts.static += 1;

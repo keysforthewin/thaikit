@@ -159,7 +159,7 @@ export default function LevelEditor({ initialId }) {
     const at = [round4(snapTo(position[0], step)), round4(position[1]), round4(snapTo(position[2], step))];
     const id = newPlacementId();
     st.commit(`add ${item.title}`, (d) => {
-      d.placements.push({ id, ref: item.ref, version: item.version ?? null, name: '', position: at, rotation: [0, 0, 0], scale: [1, 1, 1], static: null, physics: null, castShadow: true, receiveShadow: true, tags: [] });
+      d.placements.push({ id, ref: item.ref, version: item.version ?? null, name: '', position: at, rotation: [0, 0, 0], scale: [1, 1, 1], static: null, bakeLighting: item.bakeLighting !== false, physics: null, castShadow: item.bakeLighting !== false, receiveShadow: true, tags: [] });
     });
     st.select(id);
     st.setStatus(on === 'object' ? 'placed on the surface under the crosshair' : on === 'ground' ? 'placed on the ground' : 'placed in front of the camera');
@@ -329,4 +329,3 @@ export default function LevelEditor({ initialId }) {
     </div>
   );
 }
-

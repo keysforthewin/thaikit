@@ -65,11 +65,12 @@ export async function buildExportScene(doc, catalogue, orphans, { onProgress, si
       continue;
     }
     const staticFlag = isStatic(p, item, proto);
+    const bakeLighting = p.bakeLighting ?? item?.bakeLighting ?? source.userData?.foliage?.bakeLighting ?? true;
     const colliders = item?.colliders?.parts ?? [];
     // The geometry is exported at its AUTHORED rotation and the runtime turns
     // the node; there is nothing to bake about facing the camera.
     const billboard = p.billboard ?? 'none';
-    const tk = { kind: 'placement', placement: p.id, asset: p.ref, cell: cellKey(ix, iz), static: staticFlag, billboard };
+    const tk = { kind: 'placement', placement: p.id, asset: p.ref, cell: cellKey(ix, iz), static: staticFlag, bakeLighting, billboard };
 
     expandInstances(source);
     source.traverse((o) => {
@@ -88,7 +89,7 @@ export async function buildExportScene(doc, catalogue, orphans, { onProgress, si
     g.userData = { tk: { ...tk, physics: { enabled: p.physics ?? Boolean(item?.physics?.enabled), massKg: item?.physics?.massKg ?? null } } };
     scene.add(g);
     placements.push({
-      id: p.id, ref: p.ref, static: staticFlag, cell: cellKey(ix, iz), ix, iz,
+      id: p.id, ref: p.ref, static: staticFlag, bakeLighting, cell: cellKey(ix, iz), ix, iz,
       position: p.position, rotation: p.rotation, scale: p.scale,
       bounds: { min: bbox.min.toArray(), max: bbox.max.toArray() },
       physics: { enabled: p.physics ?? Boolean(item?.physics?.enabled), massKg: item?.physics?.massKg ?? null },
@@ -178,7 +179,7 @@ function addGround(doc, scene, placements, cellSize, cell = null) {
   // walk, whatever the full extent's margin would have cut.
   const extent = cell
     ? groundExtent([{ min: [cell.ix * cellSize, 0, cell.iz * cellSize], max: [(cell.ix + 1) * cellSize, 0, (cell.iz + 1) * cellSize] }], { cellSize, margin: 0 })
-    : groundExtent(placements.map((p) => ({ ...p.bounds, billboard: p.billboard })), { cellSize, margin: ground.margin });
+    : groundExtent(placements.map((p) => ({ ...p.bounds, billboard: p.billboard, bakeLighting: p.bakeLighting })), { cellSize, margin: ground.margin });
   if (extent.truncated) {
     console.warn(`[level] the ground wants ${extent.wanted} tiles and is capped at ${extent.tiles.length}; the floor will not cover the whole map`);
   }

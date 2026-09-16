@@ -1,11 +1,11 @@
-/** Fixed atlas resolution and density; quality changes integration samples.
+/** Fixed atlas page resolution; low uses half medium's linear lighting density.
  * Atlas allocation is automatic up to maxAtlases. Explicit CLI overrides win.
  * low=128, medium=2048, high=16384 samples; adaptive sampling is disabled.
  */
 export const QUALITIES = ['low', 'medium', 'high'];
 
 export const QUALITY_PRESETS = {
-  low: { baker: 'blender', lightmap: { size: 4096, samples: 128, noiseThreshold: 0, texelsPerMeter: 12, maxAtlases: 32 } },
+  low: { baker: 'blender', textures: { maxSize: 1024 }, lightmap: { size: 4096, samples: 128, noiseThreshold: 0, texelsPerMeter: 6, maxAtlases: 32 } },
   medium: { baker: 'blender', lightmap: { size: 4096, samples: 2048, noiseThreshold: 0, texelsPerMeter: 12, maxAtlases: 32 } },
   high: { baker: 'blender', lightmap: { size: 4096, samples: 16384, noiseThreshold: 0, texelsPerMeter: 12, maxAtlases: 32 } },
 };

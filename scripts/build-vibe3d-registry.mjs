@@ -286,6 +286,13 @@ async function buildItem(asset, previewTarget) {
       : []),
   ];
 
+  if (asset.model.generator?.recipe) {
+    const recipePath = path.resolve(REPO_ROOT, asset.model.generator.recipe);
+    if (!recipePath.startsWith(`${path.resolve(dir)}${path.sep}`)) throw new Error(`${asset.id}: recipe must live beside its factory`);
+    const content = await fs.readFile(recipePath, 'utf8');
+    files.push({ path: posix(asset.model.generator.recipe), target: `{models}/${asset.id}/${path.basename(recipePath)}`, content, hash: sha256(content) });
+  }
+
   // Part and material names come from the sculpt spec rather than the built
   // scene: thaikit's registry records a node COUNT, and the spec is the thing
   // that named them in the first place. No module evaluation needed.

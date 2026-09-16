@@ -22,7 +22,7 @@ export class CellSet {
     this.frame = 0;
     this.every = 3;
     for (const c of manifest.cells.list) {
-      const node = root.getObjectByName(`cell_${c.ix}_${c.iz}`);
+      const node = root.getObjectByName(c.node ?? `cell_${c.ix}_${c.iz}`);
       if (!node) continue;
       // NOT getObjectByName. Every cell names its tiers 'lod0'/'lod1'/'lod2',
       // and GLTFLoader makes object names unique across the whole file -- so
@@ -48,6 +48,11 @@ export class CellSet {
   #apply(cell) {
     cell.tiers.forEach((t, i) => {
       if (!t) return;
+      if (cell.info.bakeLighting === false) {
+        t.visible = cell.tier === i;
+        t.traverse(o => { if (o.isMesh) { o.layers.set(0); o.castShadow = false; o.receiveShadow = true; } });
+        return;
+      }
       if (i === 2) {
         // Caster tier: always rendered into shadow maps, drawn by the camera only when it is the active tier.
         t.visible = true;

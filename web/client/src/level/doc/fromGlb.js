@@ -39,7 +39,7 @@ export async function parseLevelGlb(arrayBuffer) {
       doc.placements.push({
         id: node.name, ref: tk.ref, version: tk.version ?? null, name: tk.label ?? '',
         position: node.position.toArray(), rotation: [e.x, e.y, e.z], scale: node.scale.toArray(),
-        static: tk.static ?? null, physics: tk.physics ?? null,
+        static: tk.static ?? null, bakeLighting: tk.bakeLighting !== false, physics: tk.physics ?? null,
         castShadow: tk.castShadow !== false, receiveShadow: tk.receiveShadow !== false,
         billboard: tk.billboard ?? 'none', tags: tk.tags ?? [],
       });

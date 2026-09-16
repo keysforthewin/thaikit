@@ -90,7 +90,7 @@ export const slug = (s) => String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').r
  * copy because the browser's version materialises three.js factories.
  */
 function addGroundTiles({ doc, scene, placements, cellSize, y, color, margin, uniqueId }) {
-  const boxes = placements.filter((p) => p.billboard === 'none' && p.static);
+  const boxes = placements.filter((p) => p.billboard === 'none' && p.static && p.bakeLighting !== false);
   if (!boxes.length) return 0;
   const min = [Infinity, Infinity]; const max = [-Infinity, -Infinity];
   for (const p of boxes) {
@@ -571,7 +571,8 @@ export async function convertUnrealLevel({ id, doc, json, bin, kit, extMeshes = 
     if (actorMap && actorMap[name]) actorHits += 1;
     const item = kitItemFor(meshName, kit);
     const dynamic = /^dyn[_-]/i.test(name);
-    const billboard = /^bb[_-]/i.test(name) ? 'yaw' : 'none';
+    const billboard = actorMap?.[name]?.billboard ?? (/^bb[_-]/i.test(name) ? 'yaw' : 'none');
+    const bakeLighting = actorMap?.[name]?.bakeLighting !== false && node.getExtras()?.tk?.bakeLighting !== false;
     // A ladder is an ordinary static body whose compound carries the tag; the
     // runtime lists it and the game's controller does the climbing.
     const tags = /^ladder[_-]/i.test(name) ? ['ladder'] : [];
@@ -599,7 +600,7 @@ export async function convertUnrealLevel({ id, doc, json, bin, kit, extMeshes = 
 
     let colliders = [];
     const ext = !item && extMeshes ? extMeshes[meshName] : null;
-    if (billboard !== 'none') {
+    if (billboard !== 'none' || item?.collisionPolicy === 'none') {
       // A billboard turns every frame and its compound cannot follow: the kit's
       // thin box for a skyline card would ship as a fixed 37 x 83 m wall at
       // the authored yaw. The skill's contract is "dynamic, no collider".
@@ -630,17 +631,17 @@ export async function convertUnrealLevel({ id, doc, json, bin, kit, extMeshes = 
     const rotation = eulerXYZ(q).map((v) => +v.toFixed(6));
     const isStatic = !dynamic && billboard === 'none';
     const row = {
-      id: pid, ref, static: isStatic, cell: `${ix}_${iz}`, ix, iz,
+      id: pid, ref, static: isStatic, bakeLighting, cell: `${ix}_${iz}`, ix, iz,
       position: t.map((v) => +v.toFixed(4)), rotation, scale: s.map((v) => +v.toFixed(4)),
       bounds: { min: b.min.map((v) => +v.toFixed(3)), max: b.max.map((v) => +v.toFixed(3)) },
       physics: { enabled: dynamic && Boolean(item?.physics?.enabled ?? true), massKg: item?.physics?.massKg ?? null },
       billboard, castShadow: billboard === 'none' && actorMap?.[name]?.castShadow !== false, receiveShadow: true,
       destructionGroups: item?.destructionGroups ?? [],
-      colliders: /NO_COLLISION/.test(actorMap?.[name]?.collisionEnabled ?? '') ? [] : colliders, colliderYaw: 0, tags,
+      colliders: (actorMap?.[name]?.exterior === true && item?.collisionPolicy !== 'physical-foliage') || /NO_COLLISION/.test(actorMap?.[name]?.collisionEnabled ?? '') ? [] : colliders, colliderYaw: 0, tags,
       source: { actor: name, mesh: meshName || null, kit: Boolean(item) },
     };
     placements.push(row);
-    node.setExtras({ tk: { kind: 'placement', placement: pid, asset: ref, cell: row.cell, static: isStatic, billboard } });
+    node.setExtras({ tk: { kind: 'placement', placement: pid, asset: ref, cell: row.cell, static: isStatic, bakeLighting, billboard } });
     // The pipeline wants COLOR_0 always applied; Unreal's exporter writes it only
     // when asked, and normaliseAttributes fills white where it is missing.
   }

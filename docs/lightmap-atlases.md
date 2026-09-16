@@ -1,15 +1,32 @@
 # Lightmap atlases
 
-The Cycles baker generates lightmap UVs at 12 texels per metre in world space,
+The Cycles baker generates lightmap UVs at the tier's world-space density,
 allocating 4096² pages until the charts fit. It does not shrink charts to satisfy
 an atlas cap. The default cap is 32 pages. An allocation or coverage failure
 stops before production lighting; the report identifies affected source meshes
 and placement IDs where available.
 
-All quality tiers use the same density and page resolution. Low uses 128
-samples, medium 2048 and high 16384, for both diffuse lighting and moon visibility.
+Medium and high use 12 texels per metre; low uses 6. All use 4096² pages.
+Halving linear density quarters the surface pixel requirement, before chart
+padding, coverage repairs and packing overhead. Low uses 128 samples, medium
+2048 and high 16384, for both diffuse lighting and moon visibility.
 Adaptive sampling is off. More samples reduce integration noise; they cannot
 repair missing UV coverage.
+
+Material texture resolution is independent of lightmap resolution. `low` caps
+material images at 1024 pixels per dimension; `medium` and `high` retain the
+level's configured ceiling (4096 for BangkokSoi). Lower authored ceilings are
+respected. Lighting atlases and sky images keep their existing resolutions.
+
+Before texture encoding, the pipeline removes images with no material users.
+Final cleanup also preserves and remaps images referenced directly by the
+manifest (legacy lightmap, atlas pages, sky and clouds). `verify-level` audits
+the serialized GLB independently and fails on unused images/textures, broken
+material/image references, or missing embedded payloads. It checks low's 1024
+material cap; `--max-texture-size` checks another explicit ceiling. The bake
+passes its effective ceiling, including `--preserve-textures`, to verification.
+`--resume-from 4` reapplies cleanup and texture budgets to saved geometry and
+lighting without rerunning Cycles.
 
 Settings are `lightmap.size`, `texelsPerMeter`, `maxAtlases`, `samples` and
 `noiseThreshold`. CLI overrides are `--lightmap-size`, `--texels-per-meter`,
@@ -18,6 +35,25 @@ counts, not claims about available VRAM: one 4096² page without mipmaps typical
 uses 16 MiB in an 8-bit/pixel GPU format, or 64 MiB as uncompressed RGBA.
 
 ## Validation
+
+`node scripts/level/report-atlas-sizing.mjs --level bangkoksoi --build <directory>`
+measures a freshly prepared `stage1.glb` and matching `bake.json`, medium first
+then low. Run it in the Docker environment. It only lays out and validates UVs;
+it does not render lighting or deliver a game build. The JSON report includes
+eligible surface area, target pixels, actual chart pixels, padded rectangle
+area, page occupancy, page count and input SHA-256. Area lower bounds show how
+much packing overhead remains; the valid page count is not a mathematical
+proof of optimal packing. Generate stage 1 after changing lighting eligibility
+so excluded foliage and exterior scenery are absent from the lightmap cells.
+
+To compare packing efficiency after that preflight, run Blender in Docker with
+`--python-exit-code 1 --python scripts/level/bakers/compare_atlas_packing.py --
+<atlas-layout.json> <output.json>`. The study tries six ordering strategies,
+checks every padded rectangle for bounds and overlap, and records the resulting
+page count and number of mesh pieces split across pages. Matching the rectangle
+area lower bound proves the minimum for those fixed rectangles. It does not
+prove that no better UV unwrap exists, and it does not change the production
+layout. Compare the drawing cost as well as the texture-memory saving.
 
 `lightmap_atlas_test.py` tests metric projection, deterministic allocation,
 budget failures and irregular coverage. `lightmap_layout_blender_test.py` runs
@@ -48,14 +84,15 @@ matches the input geometry, layout, lighting, settings and implementation.
 
 ## Runtime format
 
-New atlas sets use manifest schema version 2. `lightmap.atlases` is an array of
+Atlas sets use manifest schema version 2, or version 3 when unbaked cells are
+present. `lightmap.atlases` is an array of
 `{image, size, range}` entries. Image indices address the embedded GLB images.
 Common channel, intensity, baked-light and moon-mask semantics are unchanged.
 Each static material carries `extras.tk.lightmapAtlas`, the zero-based page index.
 
-The updated runtime accepts schema versions 1 and 2. Version 1 single-image
-lightmaps retain their previous appearance. Older runtimes reject schema 2;
-update the runtime before replacing a level file. `loadLevel()` is unchanged.
+The updated runtime accepts schema versions 1, 2 and 3. Version 1 single-image
+lightmaps retain their previous appearance. Update the runtime to a version
+supporting the exported schema before replacing a level file. `loadLevel()` is unchanged.
 The returned `lightmaps` array exposes all pages; `lightmap` remains an alias for
 the first texture for legacy consumers. One page is sampled per static material,
 and dynamic materials remain independent.
@@ -112,3 +149,16 @@ every covered texel against the decoded KTX2 texture. This check is only for
 bright diagnostic textures, not production lighting that can legitimately be
 black. It reports checked and missing texels per page. A negative test with one
 false covered texel verifies that the GPU gate detects a single missing texel.
+
+## Scenery without lightmaps
+
+A placement with `bakeLighting: false` is grouped under `unbaked_<ix>_<iz>`.
+It keeps spatial LOD switching and separate materials, receives no atlas UVs
+or lightmap binding, and does not create an always-on shadow-caster tier.
+Camera-facing billboards remain individual dynamic nodes with physics off.
+The placement flag survives editable GLBs and Unreal's actor sidecar. Excluded
+scenery does not expand automatic ground generation.
+
+Manifest schema 3 carries each cell's explicit `node` and `bakeLighting` flag.
+The runtime still reads schemas 1 and 2 with their existing baked-cell defaults.
+New exports containing unbaked cells require this updated runtime.

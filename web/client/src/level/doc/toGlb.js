@@ -53,7 +53,7 @@ export async function buildProjectScene(doc, catalogue, orphans, { onProgress } 
     g.scale.fromArray(p.scale);
     g.userData.tk = {
       kind: 'placement', ref: p.ref, version: item?.version ?? p.version ?? null,
-      static: p.static ?? null, physics: p.physics ?? null,
+      static: p.static ?? null, bakeLighting: p.bakeLighting !== false, physics: p.physics ?? null,
       castShadow: p.castShadow !== false, receiveShadow: p.receiveShadow !== false,
       billboard: p.billboard ?? 'none', tags: p.tags ?? [],
       ...(p.name ? { label: p.name } : {}),
