@@ -88,7 +88,14 @@ function cabinAtlas(kind:'albedo'|'orm'|'normal'){
   const region=Math.floor(x/256)+2*Math.floor(y/256),u=(x%256)/255,v=(y%256)/255,grain=noise(x,y),cloud=.5+.5*Math.sin(u*17+Math.sin(v*11))*Math.sin(v*23-u*5),i=(y*w+x)*4;
   let rgb=[255,255,255],rough=.85,metal=0,nx=0,ny=0;
   if(region===0){const phase=u*Math.PI*2*48+(v-.5)*5,groove=Math.pow(Math.max(0,Math.cos(phase)),16),mud=.13+.16*cloud+.04*grain;rgb=[48,51,45].map((c,k)=>c*(1-mud)+[128,116,87][k]*mud);rgb=rgb.map(c=>c*(1-.16*groove));rough=.88+.07*grain;nx=.13*Math.sin(phase)*Math.pow(Math.max(0,Math.cos(phase)),6);ny=.025*(grain-.5);}
-  if(region===1){const radius=Math.hypot(u-.5,v-.5),rust=.04+.10*cloud,edge=Math.exp(-Math.pow((radius-.34)/.015,2));rgb=[151,156,146].map((c,k)=>c*(1-rust)+[130,99,60][k]*rust);rgb=rgb.map(c=>c*(.94+.05*grain-.13*edge));rough=.39+.18*cloud;metal=.72;nx=.009*Math.sin(u*251);ny=.009*Math.sin(v*211);for(let j=0;j<6;j++){const a=j*Math.PI/3,bx=.5+.10/.55*Math.cos(a),by=.5+.10/.55*Math.sin(a),dx=u-bx,dy=v-by,r=Math.hypot(dx,dy),angle=Math.atan2(dy,dx),hex=r*Math.cos(((angle+Math.PI*4)%(Math.PI/3))-Math.PI/6);if(hex<.020){const bevel=Math.min(1,Math.max(0,(hex-.015)/.005));rgb=[168,172,161].map(c=>c*(1-.22*bevel));rough=.34;nx=r?dx/r*.32*bevel:0;ny=r?dy/r*.32*bevel:0;}}}
+  if(region===1){const radius=Math.hypot(u-.5,v-.5),rust=.04+.10*cloud,edge=Math.exp(-Math.pow((radius-.34)/.015,2));rgb=[172,174,163].map((c,k)=>c*(1-rust)+[130,99,60][k]*rust);rgb=rgb.map(c=>c*(.94+.05*grain-.13*edge));rough=.39+.18*cloud;metal=.28;nx=.009*Math.sin(u*251);ny=.009*Math.sin(v*211);for(let j=0;j<6;j++){const a=j*Math.PI/3,bx=.5+.10/.55*Math.cos(a),by=.5+.10/.55*Math.sin(a),dx=u-bx,dy=v-by,r=Math.hypot(dx,dy),angle=Math.atan2(dy,dx),hex=r*Math.cos(((angle+Math.PI*4)%(Math.PI/3))-Math.PI/6);if(hex<.020){const bevel=Math.min(1,Math.max(0,(hex-.015)/.005));rgb=[168,172,161].map(c=>c*(1-.22*bevel));rough=.34;nx=r?dx/r*.32*bevel:0;ny=r?dy/r*.32*bevel:0;}}}
+  if(region===1){
+   const yy=(u-.5)*.55,zz=(v-.5)*.55,r=Math.hypot(yy,zz),angle=Math.atan2(zz,yy),phase=angle*8;
+   const radial=(r-.19)/.030,tangent=Math.sin(phase/2)*.19/.036,edge=radial*radial+tangent*tangent;
+   if(edge<1){rgb=[33,35,31];rough=.9;metal=.02;}
+   if(edge>=1&&edge<1.5){const bevel=1-(edge-1)/.5;nx+=Math.cos(angle)*bevel*.40;ny+=Math.sin(angle)*bevel*.40;rough=.44;}
+   if(r<.066){rgb=[118,125,115].map(c=>c*(.9+.1*grain));rough=.51;metal=.48;}
+  }
   if(region===2){const seam=Math.exp(-Math.pow((Math.min(u,1-u)-.045)/.012,2)),channel=Math.pow(Math.max(0,Math.cos(u*Math.PI*8)),18),shade=.90+.06*grain-.10*seam-.05*channel;rgb=[112,117,107].map(c=>c*shade);rough=.75+.1*grain;nx=.025*Math.sin(u*Math.PI*8);ny=.012*Math.sin(v*83);}
   if(region===3){const worn=.08+.10*cloud;rgb=[255,255,255].map((c,k)=>c*(1-worn)+[197,182,154][k]*worn);rough=.78+.12*grain;nx=.015*(grain-.5);ny=.015*Math.sin(u*97);}
   if(kind==='orm')rgb=[255,255*rough,255*metal];if(kind==='normal'){const n=new THREE.Vector3(nx,ny,1).normalize();rgb=[128+127*n.x,128+127*n.y,128+127*n.z];}
@@ -98,7 +105,7 @@ function cabinAtlas(kind:'albedo'|'orm'|'normal'){
 }
 function cabinUvs(g:THREE.BufferGeometry,wheel=false){const p=g.attributes.position,c=g.attributes.color,uv:number[]=[],seat=new THREE.Color('#70756b');
  for(let i=0;i<p.count;i++){const x=p.getX(i),y=p.getY(i),z=p.getZ(i),isSeat=Math.abs(c.getX(i)-seat.r)+Math.abs(c.getY(i)-seat.g)+Math.abs(c.getZ(i)-seat.b)<.001;let region=3,u=(z+2.2)/3.4,v=x/1.7+.5;
-  if(wheel){region=Math.hypot(y,z)>.275?0:1;if(region===0){u=Math.acos(Math.cos(Math.atan2(y,z)))/Math.PI;v=x/.30+.5;}else{u=y/.55+.5;v=z/.55+.5;}c.setXYZ(i,1,1,1);}
+  if(wheel){const first=i-i%3,meanRadius=([0,1,2].reduce((r,j)=>r+Math.hypot(p.getY(first+j),p.getZ(first+j)),0))/3;region=meanRadius>.275?0:1;if(region===0){u=Math.acos(Math.cos(Math.atan2(y,z)))/Math.PI;v=x/.30+.5;}else{u=y/.55+.5;v=z/.55+.5;}c.setXYZ(i,1,1,1);}
   else if(isSeat){region=2;u=(x-(x>0?.38:-.38))/.55+.5;v=(y-.73)/.73;c.setXYZ(i,1,1,1);}
   u=THREE.MathUtils.clamp(u,.006,.994);v=THREE.MathUtils.clamp(v,.006,.994);uv.push((region%2+u)/2,(Math.floor(region/2)+v)/2);
  }g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));return g;

@@ -38,28 +38,61 @@
   "maxUniqueGeometries": 1,
   "model": {
     "colliders": {
-      "coverage": 1,
+      "coverage": 0.9846,
       "derivedAt": "2026-09-03T06:42:08.670Z",
       "file": "packages/props/src/models/asphalt-road-tile-plain/colliders.json",
-      "handTuned": false,
+      "handTuned": true,
       "ledgesPreserved": "1/1",
-      "maxLedgeError": 0.0625,
+      "maxLedgeError": 0,
       "measurementSkipped": null,
       "overshoot": 0,
-      "p95LedgeError": 0.0625,
+      "p95LedgeError": 0,
       "parts": 1
     },
     "drawCalls": 1,
     "export": "createObjectModel",
-    "fileBytes": 9136,
-    "gpuBytesEstimate": 5592405,
+    "fileBytes": 8443,
+    "generator": null,
+    "gpuBytesEstimate": 16777215,
     "maps": [
       {
-        "bytes": 394914,
+        "bytes": 1069518,
         "file": "packages/props/src/models/asphalt-road-tile-plain/maps/albedo.webp",
         "height": 1024,
         "material": "surface",
         "role": "albedo",
+        "width": 1024
+      },
+      {
+        "bytes": 786702,
+        "file": "packages/props/src/models/asphalt-road-tile-plain/maps/orm.webp",
+        "height": 1024,
+        "material": "surface",
+        "role": "roughness",
+        "width": 1024
+      },
+      {
+        "bytes": 1756052,
+        "file": "packages/props/src/models/asphalt-road-tile-plain/maps/normal.webp",
+        "height": 1024,
+        "material": "surface",
+        "role": "normal",
+        "width": 1024
+      },
+      {
+        "bytes": 786702,
+        "file": "packages/props/src/models/asphalt-road-tile-plain/maps/orm.webp",
+        "height": 1024,
+        "material": "surface",
+        "role": "ao",
+        "width": 1024
+      },
+      {
+        "bytes": 786702,
+        "file": "packages/props/src/models/asphalt-road-tile-plain/maps/orm.webp",
+        "height": 1024,
+        "material": "surface",
+        "role": "metalness",
         "width": 1024
       }
     ],
@@ -75,23 +108,48 @@
       "requestId": null,
       "seed": null
     },
+    "representations": [],
     "review": {
-      "comparisonImage": null,
+      "comparisonImage": "scratch/asphalt-road-tile-plain/quality-above95/round02/surface-comparison.jpg",
       "corrections": {
-        "maxTotal": 10,
-        "perPass": 0,
-        "total": 0
+        "maxTotal": 20,
+        "perPass": 1,
+        "stopLimitsDisabled": false,
+        "total": 3
       },
-      "critique": "",
-      "decision": "",
-      "featureReviews": [],
-      "fidelity": null,
-      "judgedAt": null,
-      "layerScores": {},
-      "passed": false,
-      "passesComplete": [],
-      "score": null,
-      "threshold": 85
+      "critique": "Whole-asset visual estimate 96/100 for the current single-quad material tile at intended ground-tile distance. Measured 2/2 triangles, 1/1 draw, 1/1 material and 1/1 geometry. Three 1024 maps use 16 MiB GPU estimate. Shared ORM supplies three scalar channels; material uses only standard glTF-compatible properties. Source PBR is inference, not calibrated physical measurement. Original failures and three corrections remain recorded; the final correction adds the required createModel forwarding export without changing the rendered artifact.",
+      "decision": "continue",
+      "featureReviews": [
+        {
+          "id": "tile-continuity",
+          "notes": "Normal and ORM boundaries now agree exactly, broad tangent tilt is removed, and rotated 3x3 grazing view has no prior alternating light/dark tile blocks. Mild repeated patch patterns remain present in the reference.",
+          "score": 0.96,
+          "threshold": 0.95
+        }
+      ],
+      "fidelity": 0.96,
+      "judgedAt": "2026-09-26T04:22:12.237Z",
+      "layerScores": {
+        "componentStructure": 1,
+        "formDetail": 0.98,
+        "lightingCamera": 0.95,
+        "materialSurface": 0.96,
+        "silhouetteProportion": 1
+      },
+      "passed": true,
+      "passesComplete": [
+        "blockout",
+        "structural-pass",
+        "form-refinement",
+        "material-pass",
+        "surface-pass",
+        "lighting-pass",
+        "interaction-pass",
+        "optimization-pass"
+      ],
+      "preview": false,
+      "score": 96,
+      "threshold": 96
     },
     "runtime": {
       "destructionGroups": [],
@@ -105,7 +163,7 @@
     "spec": "packages/props/src/models/asphalt-road-tile-plain/object-sculpt-spec.json",
     "state": "scratch/asphalt-road-tile-plain/.img2threejs/state.json",
     "status": "done",
-    "textures": 1,
+    "textures": 3,
     "thumb": "packages/props/src/models/asphalt-road-tile-plain/thumb.webp",
     "triangles": 2,
     "uniqueGeometries": 1,
@@ -113,7 +171,7 @@
   },
   "name": "Plain Asphalt Road Tile",
   "nameTh": "แผ่นถนนยางมะตอยเรียบ",
-  "notes": "One flat quad, 8 x 8 m, lying in the ground plane at y=0 -- two triangles, one geometry, one draw call, one PBR material, and nothing else. The whole surface reads out of the texture; nothing is modelled. This is the base piece of a DECOMPOSED road kit: the carriageway carries no sidewalk at all, and the sidewalk is a separate placeable strip (Concrete Sidewalk Strip, 2.0 m wide and 0.15 m tall). Splitting them is the entire point of this set -- a builder puts a sidewalk down one side, both sides or neither, and nothing inside the road texture has to line up with anything inside the sidewalk texture, which is the alignment problem this replaces. The contract is: 8 x 8 m footprint on the kit's 8 m grid, pivot base-center so tiles snap on 8 m centres, and the asphalt tiles SEAMLESSLY in both axes. That makes the piece fully four-way rotationally symmetric -- it drops in at any of four orientations and any edge mates with any edge of any other asphalt tile in the set, including the lane-marked one, whose asphalt base must be the same tone and grain. Budget overridden explicitly to 2 triangles / 1 draw call / 1 material / 1 unique geometry instead of the hero2x its 8 m footprint would derive: footprint drives the class, but there is no geometry here to spend a class budget on. Quality comes entirely from a high-end tiling PBR texture -- albedo, roughness, normal and AO -- and not from mesh detail; that is the whole bet of this piece. It will be instanced more heavily than anything else in the kit, forty on screen at once being normal, so one shared geometry and one shared material collapse under an InstancedMesh. Manhole covers and drain grates are deliberately NOT in this texture: they are separate small props (Cast Iron Manhole Cover, Kerbside Storm Drain Grate) dropped on top wherever wanted, so the asphalt stays a pure repeat. No destruction groups: a road tile is static level geometry, not a breakable. Note for anyone mixing sets: the kit's older road-straight-tile and road-drain-and-utility-tile bake a 1.25 m FLAT sidewalk band into the road texture and are a different, incompatible family -- do not run them in the same street as this one.",
+  "notes": "One flat quad, 8 x 8 m, lying in the ground plane at y=0 -- two triangles, one geometry, one draw call, one PBR material, and nothing else. The whole surface reads out of the texture; nothing is modelled. This is the base piece of a DECOMPOSED road kit: the carriageway carries no sidewalk at all, and the sidewalk is a separate placeable strip (Concrete Sidewalk Strip, 2.0 m wide and 0.15 m tall). Splitting them is the entire point of this set -- a builder puts a sidewalk down one side, both sides or neither, and nothing inside the road texture has to line up with anything inside the sidewalk texture, which is the alignment problem this replaces. The contract is: 8 x 8 m footprint on the kit's 8 m grid, pivot base-center so tiles snap on 8 m centres, and the asphalt tiles SEAMLESSLY in both axes. That makes the piece fully four-way rotationally symmetric -- it drops in at any of four orientations and any edge mates with any edge of any other asphalt tile in the set, including the lane-marked one, whose asphalt base must be the same tone and grain. Budget overridden explicitly to 2 triangles / 1 draw call / 1 material / 1 unique geometry instead of the hero2x its 8 m footprint would derive: footprint drives the class, but there is no geometry here to spend a class budget on. Quality comes entirely from a high-end tiling PBR texture -- albedo, roughness, normal and AO -- and not from mesh detail; that is the whole bet of this piece. It will be instanced more heavily than anything else in the kit, forty on screen at once being normal, so one shared geometry and one shared material collapse under an InstancedMesh. Manhole covers and drain grates are deliberately NOT in this texture: they are separate small props (Cast Iron Manhole Cover, Kerbside Storm Drain Grate) dropped on top wherever wanted, so the asphalt stays a pure repeat. No destruction groups: a road tile is static level geometry, not a breakable. Note for anyone mixing sets: the kit's older road-straight-tile and road-drain-and-utility-tile bake a 1.25 m FLAT sidewalk band into the road texture and are a different, incompatible family -- do not run them in the same street as this one.\n\n2026-09-26 quality review: retained the exact one-quad 8 m footprint. Added independent tangent-space normal and packed AO/roughness/metalness maps from saved Patina evidence; corrected normal bias and boundary continuity. Three loaded 1024 maps, 16 MiB texture GPU estimate, measured 2 triangles / 1 draw / 1 material / 1 geometry. Collision is a hand-fitted 1 cm slab below ground with top y=0. PBR microfinish is inferred at .807 evidence confidence. All eight img2threejs passes reviewed at 96/100; installed images, source, maps and glTF UV/channel export verified.",
   "physics": {
     "enabled": false,
     "massKg": null
@@ -155,5 +213,5 @@
     "ground"
   ],
   "targetTriangles": 2,
-  "updatedAt": "2026-09-03T06:42:08.786Z"
+  "updatedAt": "2026-09-26T04:24:59.785Z"
 }

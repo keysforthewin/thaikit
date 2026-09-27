@@ -20,14 +20,6 @@ import * as THREE from 'three';
  */
 
 export type ProceduralModelOptions = {
-  /**
-   * Where this prop's shipped files live, with a trailing slash.
-   *
-   * The maps are recorded as bare filenames because the bundle is EVALUATED
-   * rather than imported: it has no import.meta and no currentScript, so it
-   * cannot see its own URL. Every host derives this from the module URL.
-   */
-  baseUrl?: string;
   wireframe?: boolean;
   castShadow?: boolean;
   receiveShadow?: boolean;
@@ -45,345 +37,423 @@ export type ProceduralModelRuntime = {
 };
 
 const CONFIG = {
-    "id": "fire-escape-ladder-segment",
-    "name": "Fire Escape Ladder Segment",
-    "exportName": "FireEscapeLadderSegment",
-    "envelope": "Envelope 0.7 x 3 x 0.26 m, origin back-center on the wall plane at the bottom edge, +Y up, +Z away from the wall.\n * Budget (medium): <=2000 triangles, <=4 draw calls, <=2 materials, <=4 unique geometries.",
-    "materials": [
+  "id": "fire-escape-ladder-segment",
+  "name": "Fire Escape Ladder Segment",
+  "exportName": "FireEscapeLadderSegment",
+  "envelope": "Envelope 0.7 x 3 x 0.26 m, origin back-center on the wall plane at the bottom edge, +Y up, +Z away from the wall.\n * Budget (medium): <=2000 triangles, <=4 draw calls, <=2 materials, <=4 unique geometries.",
+  "materials": [
+    {
+      "id": "steel",
+      "color": 16777215,
+      "roughness": 0.66,
+      "metalness": 0.25,
+      "vertexColors": true
+    }
+  ],
+  "tiles": [
+    {
+      "material": "steel",
+      "kind": "rust",
+      "size": 256,
+      "seed": 17,
+      "ratio": [
+        0.7912251008983205,
+        0.43199134719384696,
+        0.21255721159488317
+      ],
+      "density": 34,
+      "bump": 0.003
+    }
+  ],
+  "geometry": {
+    "components": [
       {
-        "id": "steel",
-        "color": 16777215,
-        "roughness": 0.55,
-        "metalness": 0.25,
-        "vertexColors": true
-      }
-    ],
-    "tiles": [
-      {
+        "id": "frame",
+        "name": "Stiles, brackets and bolts",
         "material": "steel",
-        "kind": "rust",
-        "size": 256,
-        "seed": 17,
-        "ratio": [
-          0.7912251008983205,
-          0.43199134719384696,
-          0.21255721159488317
+        "uv": "height",
+        "uvScale": 1,
+        "collider": {
+          "shape": "box",
+          "localCenter": [
+            0,
+            1.5,
+            0.13
+          ],
+          "halfExtents": [
+            0.35,
+            1.5,
+            0.13
+          ],
+          "notes": "Declared on the asset as box: the ladder envelope from the wall plane to the stile fronts."
+        },
+        "boxes": [
+          [
+            11715271,
+            -0.225,
+            1.5,
+            0.23,
+            0.045,
+            3,
+            0.06
+          ],
+          [
+            11715271,
+            0.225,
+            1.5,
+            0.23,
+            0.045,
+            3,
+            0.06
+          ],
+          [
+            11715271,
+            -0.225,
+            0.3,
+            0.111,
+            0.045,
+            0.04,
+            0.2
+          ],
+          [
+            11715271,
+            0.225,
+            0.3,
+            0.111,
+            0.045,
+            0.04,
+            0.2
+          ],
+          [
+            11715271,
+            -0.27,
+            0.3,
+            0.032,
+            0.14,
+            0.04,
+            0.04
+          ],
+          [
+            11715271,
+            0.27,
+            0.3,
+            0.032,
+            0.14,
+            0.04,
+            0.04
+          ],
+          [
+            13685970,
+            -0.29,
+            0.3,
+            0.006,
+            0.1,
+            0.22,
+            0.012
+          ],
+          [
+            13685970,
+            0.29,
+            0.3,
+            0.006,
+            0.1,
+            0.22,
+            0.012
+          ]
         ],
-        "density": 34,
-        "bump": 0.02
-      }
-    ],
-    "geometry": {
-      "components": [
-        {
-          "id": "frame",
-          "name": "Stiles, brackets and bolts",
-          "material": "steel",
-          "uv": "height",
-          "uvScale": 1,
-          "collider": {
-            "shape": "box",
-            "localCenter": [
-              0,
-              1.5,
-              0.13
+        "cyls": [
+          {
+            "at": [
+              -0.29,
+              0.22999999999999998,
+              0.016
             ],
-            "halfExtents": [
-              0.35,
-              1.5,
-              0.13
-            ],
-            "notes": "Declared on the asset as box: the ladder envelope from the wall plane to the stile fronts."
+            "rt": 0.011,
+            "rb": 0.011,
+            "h": 0.008,
+            "seg": 6,
+            "rx": 1.5707963267948966,
+            "hex": 12895944
           },
-          "boxes": [
-            [
-              11715271,
-              -0.225,
-              1.5,
-              0.23,
-              0.045,
-              3,
-              0.06
-            ],
-            [
-              11715271,
-              0.225,
-              1.5,
-              0.23,
-              0.045,
-              3,
-              0.06
-            ],
-            [
-              11715271,
-              -0.225,
-              0.3,
-              0.111,
-              0.045,
-              0.04,
-              0.2
-            ],
-            [
-              11715271,
-              0.225,
-              0.3,
-              0.111,
-              0.045,
-              0.04,
-              0.2
-            ],
-            [
-              11715271,
-              -0.27,
-              0.3,
-              0.032,
-              0.14,
-              0.04,
-              0.04
-            ],
-            [
-              11715271,
-              0.27,
-              0.3,
-              0.032,
-              0.14,
-              0.04,
-              0.04
-            ],
-            [
-              13685970,
+          {
+            "at": [
               -0.29,
               0.3,
-              0.006,
-              0.1,
-              0.22,
-              0.012
+              0.016
             ],
-            [
-              13685970,
+            "rt": 0.011,
+            "rb": 0.011,
+            "h": 0.008,
+            "seg": 6,
+            "rx": 1.5707963267948966,
+            "hex": 12895944
+          },
+          {
+            "at": [
+              -0.29,
+              0.37,
+              0.016
+            ],
+            "rt": 0.011,
+            "rb": 0.011,
+            "h": 0.008,
+            "seg": 6,
+            "rx": 1.5707963267948966,
+            "hex": 12895944
+          },
+          {
+            "at": [
+              0.29,
+              0.22999999999999998,
+              0.016
+            ],
+            "rt": 0.011,
+            "rb": 0.011,
+            "h": 0.008,
+            "seg": 6,
+            "rx": 1.5707963267948966,
+            "hex": 12895944
+          },
+          {
+            "at": [
               0.29,
               0.3,
-              0.006,
-              0.1,
-              0.22,
-              0.012
-            ]
+              0.016
+            ],
+            "rt": 0.011,
+            "rb": 0.011,
+            "h": 0.008,
+            "seg": 6,
+            "rx": 1.5707963267948966,
+            "hex": 12895944
+          },
+          {
+            "at": [
+              0.29,
+              0.37,
+              0.016
+            ],
+            "rt": 0.011,
+            "rb": 0.011,
+            "h": 0.008,
+            "seg": 6,
+            "rx": 1.5707963267948966,
+            "hex": 12895944
+          },
+          {
+            "at": [
+              -0.29,
+              0.22999999999999998,
+              0.0125
+            ],
+            "rt": 0.016,
+            "rb": 0.016,
+            "h": 0.003,
+            "seg": 12,
+            "rx": 1.5707963267948966,
+            "hex": 8752003
+          },
+          {
+            "at": [
+              -0.29,
+              0.3,
+              0.0125
+            ],
+            "rt": 0.016,
+            "rb": 0.016,
+            "h": 0.003,
+            "seg": 12,
+            "rx": 1.5707963267948966,
+            "hex": 8752003
+          },
+          {
+            "at": [
+              -0.29,
+              0.37,
+              0.0125
+            ],
+            "rt": 0.016,
+            "rb": 0.016,
+            "h": 0.003,
+            "seg": 12,
+            "rx": 1.5707963267948966,
+            "hex": 8752003
+          },
+          {
+            "at": [
+              0.29,
+              0.22999999999999998,
+              0.0125
+            ],
+            "rt": 0.016,
+            "rb": 0.016,
+            "h": 0.003,
+            "seg": 12,
+            "rx": 1.5707963267948966,
+            "hex": 8752003
+          },
+          {
+            "at": [
+              0.29,
+              0.3,
+              0.0125
+            ],
+            "rt": 0.016,
+            "rb": 0.016,
+            "h": 0.003,
+            "seg": 12,
+            "rx": 1.5707963267948966,
+            "hex": 8752003
+          },
+          {
+            "at": [
+              0.29,
+              0.37,
+              0.0125
+            ],
+            "rt": 0.016,
+            "rb": 0.016,
+            "h": 0.003,
+            "seg": 12,
+            "rx": 1.5707963267948966,
+            "hex": 8752003
+          }
+        ]
+      }
+    ],
+    "instanced": [
+      {
+        "id": "rungs",
+        "name": "Rungs",
+        "material": "steel",
+        "uv": "height",
+        "uvScale": 1,
+        "cyls": [
+          {
+            "at": [
+              0,
+              0,
+              0
+            ],
+            "rt": 0.018,
+            "rb": 0.018,
+            "h": 0.48,
+            "seg": 10,
+            "rz": 1.5707963267948966,
+            "open": true,
+            "hex": 11715271
+          },
+          {
+            "at": [
+              -0.18450000000000003,
+              0,
+              0
+            ],
+            "rt": 0.0205,
+            "rb": 0.0205,
+            "h": 0.036,
+            "seg": 10,
+            "rz": 1.5707963267948966,
+            "open": true,
+            "hex": 9196072
+          },
+          {
+            "at": [
+              0.18450000000000003,
+              0,
+              0
+            ],
+            "rt": 0.0205,
+            "rb": 0.0205,
+            "h": 0.036,
+            "seg": 10,
+            "rz": 1.5707963267948966,
+            "open": true,
+            "hex": 9196072
+          },
+          {
+            "at": [
+              -0.2525,
+              0,
+              0
+            ],
+            "rt": 0.014,
+            "rb": 0.014,
+            "h": 0.012,
+            "seg": 10,
+            "rz": 1.5707963267948966,
+            "hex": 11569724
+          },
+          {
+            "at": [
+              0.2525,
+              0,
+              0
+            ],
+            "rt": 0.014,
+            "rb": 0.014,
+            "h": 0.012,
+            "seg": 10,
+            "rz": 1.5707963267948966,
+            "hex": 11569724
+          }
+        ],
+        "placements": [
+          [
+            0,
+            0.15,
+            0.23
           ],
-          "cyls": [
-            {
-              "at": [
-                -0.29,
-                0.22999999999999998,
-                0.016
-              ],
-              "rt": 0.011,
-              "rb": 0.011,
-              "h": 0.008,
-              "seg": 6,
-              "rx": 1.5707963267948966,
-              "hex": 12895944
-            },
-            {
-              "at": [
-                -0.29,
-                0.3,
-                0.016
-              ],
-              "rt": 0.011,
-              "rb": 0.011,
-              "h": 0.008,
-              "seg": 6,
-              "rx": 1.5707963267948966,
-              "hex": 12895944
-            },
-            {
-              "at": [
-                -0.29,
-                0.37,
-                0.016
-              ],
-              "rt": 0.011,
-              "rb": 0.011,
-              "h": 0.008,
-              "seg": 6,
-              "rx": 1.5707963267948966,
-              "hex": 12895944
-            },
-            {
-              "at": [
-                0.29,
-                0.22999999999999998,
-                0.016
-              ],
-              "rt": 0.011,
-              "rb": 0.011,
-              "h": 0.008,
-              "seg": 6,
-              "rx": 1.5707963267948966,
-              "hex": 12895944
-            },
-            {
-              "at": [
-                0.29,
-                0.3,
-                0.016
-              ],
-              "rt": 0.011,
-              "rb": 0.011,
-              "h": 0.008,
-              "seg": 6,
-              "rx": 1.5707963267948966,
-              "hex": 12895944
-            },
-            {
-              "at": [
-                0.29,
-                0.37,
-                0.016
-              ],
-              "rt": 0.011,
-              "rb": 0.011,
-              "h": 0.008,
-              "seg": 6,
-              "rx": 1.5707963267948966,
-              "hex": 12895944
-            }
-          ]
-        }
-      ],
-      "instanced": [
-        {
-          "id": "rungs",
-          "name": "Rungs",
-          "material": "steel",
-          "uv": "height",
-          "uvScale": 1,
-          "cyls": [
-            {
-              "at": [
-                0,
-                0,
-                0
-              ],
-              "rt": 0.018,
-              "rb": 0.018,
-              "h": 0.48,
-              "seg": 8,
-              "rz": 1.5707963267948966,
-              "open": true,
-              "hex": 11715271
-            },
-            {
-              "at": [
-                -0.18450000000000003,
-                0,
-                0
-              ],
-              "rt": 0.0205,
-              "rb": 0.0205,
-              "h": 0.036,
-              "seg": 6,
-              "rz": 1.5707963267948966,
-              "open": true,
-              "hex": 9196072
-            },
-            {
-              "at": [
-                0.18450000000000003,
-                0,
-                0
-              ],
-              "rt": 0.0205,
-              "rb": 0.0205,
-              "h": 0.036,
-              "seg": 6,
-              "rz": 1.5707963267948966,
-              "open": true,
-              "hex": 9196072
-            },
-            {
-              "at": [
-                -0.2525,
-                0,
-                0
-              ],
-              "rt": 0.014,
-              "rb": 0.014,
-              "h": 0.012,
-              "seg": 6,
-              "rz": 1.5707963267948966,
-              "hex": 11569724
-            },
-            {
-              "at": [
-                0.2525,
-                0,
-                0
-              ],
-              "rt": 0.014,
-              "rb": 0.014,
-              "h": 0.012,
-              "seg": 6,
-              "rz": 1.5707963267948966,
-              "hex": 11569724
-            }
+          [
+            0,
+            0.44999999999999996,
+            0.23
           ],
-          "placements": [
-            [
-              0,
-              0.15,
-              0.23
-            ],
-            [
-              0,
-              0.44999999999999996,
-              0.23
-            ],
-            [
-              0,
-              0.75,
-              0.23
-            ],
-            [
-              0,
-              1.0499999999999998,
-              0.23
-            ],
-            [
-              0,
-              1.3499999999999999,
-              0.23
-            ],
-            [
-              0,
-              1.65,
-              0.23
-            ],
-            [
-              0,
-              1.9499999999999997,
-              0.23
-            ],
-            [
-              0,
-              2.25,
-              0.23
-            ],
-            [
-              0,
-              2.55,
-              0.23
-            ],
-            [
-              0,
-              2.8499999999999996,
-              0.23
-            ]
+          [
+            0,
+            0.75,
+            0.23
+          ],
+          [
+            0,
+            1.0499999999999998,
+            0.23
+          ],
+          [
+            0,
+            1.3499999999999999,
+            0.23
+          ],
+          [
+            0,
+            1.65,
+            0.23
+          ],
+          [
+            0,
+            1.9499999999999997,
+            0.23
+          ],
+          [
+            0,
+            2.25,
+            0.23
+          ],
+          [
+            0,
+            2.55,
+            0.23
+          ],
+          [
+            0,
+            2.8499999999999996,
+            0.23
           ]
-        }
-      ]
-    }
-  } as any;
+        ]
+      }
+    ]
+  }
+} as any;
 
 /* ------------------------------------------------------------------ geometry helpers */
 
@@ -1818,7 +1888,8 @@ export function createFireEscapeLadderSegmentModel(options: ProceduralModelOptio
    * are vertex colours. `uv` picks how a post-construction canvas tile repeats over it. */
   for (const c of G.components as any[]) {
     const gs: THREE.BufferGeometry[] = [];
-    for (const b of (c.boxes ?? []) as number[][]) gs.push(tintGeo(rbox(b.slice(1)), b[0]));
+    for(const b of (c.boxes??[]) as number[][]){let g:THREE.BufferGeometry;
+      if(c.id==='frame'&&b[5]===3){const w=b[4]/2,d=b[6]/2,r=.002,pts=[[-w+r,-d],[w-r,-d],[w,-d+r],[w,d-r],[w-r,d],[-w+r,d],[-w,d-r],[-w,-d+r]];const sh=new THREE.Shape(pts.map(p=>new THREE.Vector2(p[0],p[1])));g=new THREE.ExtrudeGeometry(sh,{depth:3,bevelEnabled:false,curveSegments:1});g.rotateX(-Math.PI/2);g.translate(b[1],0,b[3]);}else g=rbox(b.slice(1));gs.push(tintGeo(g,b[0]));}
     for (const b of mirrorX((c.boxesMirrored ?? []) as number[][])) gs.push(tintGeo(rbox(b.slice(1)), b[0]));
     for (const t of (c.tubes ?? []) as any[]) gs.push(tube(t.pts, t.r, t.seg ?? 8, t.hex));
     for (const cy of (c.cyls ?? []) as any[]) {
@@ -2012,6 +2083,7 @@ export function createFireEscapeLadderSegmentModel(options: ProceduralModelOptio
  */
 export function createObjectModel(spec?: unknown, options: ProceduralModelOptions = {}): THREE.Group {
   const root = createFireEscapeLadderSegmentModel(options);
+  applyChippedPaint(root);
   if (spec !== undefined && spec !== null) root.userData.sculptSpec = spec;
 
   const rt = root.userData.sculptRuntime as Record<string, any> | undefined;
@@ -2087,15 +2159,16 @@ export function createObjectModel(spec?: unknown, options: ProceduralModelOption
   return root;
 }
 
-/**
- * The one-argument entry point: vibe3d's contract, and img2threejs's own.
- *
- * `createObjectModel` above keeps thaikit's historical (spec, options) shape so
- * the harness, the level editor and the Node-side gates carry on unchanged.
- * `spec` has never been passed by any caller -- it is inspection data that is
- * already baked into this module -- so this is the honest signature, and it is
- * what a vibe3d consumer installs and calls.
- */
-export function createModel(options: ProceduralModelOptions = {}): THREE.Group {
-  return createObjectModel(undefined, options);
+export function createModel(options: ProceduralModelOptions = {}): THREE.Group { return createObjectModel(undefined, options); }
+
+function applyChippedPaint(root:THREE.Group):void{
+ if(typeof document==='undefined')return;const rt=root.userData.sculptRuntime as any;const tex=new THREE.TextureLoader().load("data:image/webp;base64,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");tex.colorSpace=THREE.SRGBColorSpace;tex.anisotropy=4;
+ for(const id of ['frame','rungs']){const mesh=rt?.meshes?.[id];if(!mesh)continue;const g=mesh.geometry,p=g.getAttribute('position'),n=g.getAttribute('normal'),uv=new Float32Array(p.count*2);
+  for(let i=0;i<p.count;i++){const x=p.getX(i),y=p.getY(i),z=p.getZ(i);let u=.25,v=.5;
+   if(id==='frame'&&Math.abs(Math.abs(x)-.225)<.024&&z>.19){u=Math.abs(n.getZ(i))>.5?(x-Math.sign(x)*.225)/.045+.5:(z-.20)/.06;v=y/3;}
+   else if(id==='frame'&&Math.abs(x)>.235&&z<.041&&y>.185&&y<.415){u=(Math.abs(x)-.24)/.10;v=1-.18*(y-.19)/.22;}
+   else if(id==='rungs'){u=Math.atan2(n.getZ(i),n.getY(i))/(2*Math.PI)+.5;v=(x+.24)/.48;}
+   uv[i*2]=THREE.MathUtils.clamp(u,.015,.985);uv[i*2+1]=THREE.MathUtils.clamp(v,.015,.985);}
+  g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));const m=mesh.material as THREE.MeshStandardMaterial;m.map=tex;m.bumpMap=null;m.needsUpdate=true;
+ }
 }

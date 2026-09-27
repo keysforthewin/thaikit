@@ -386,7 +386,7 @@
     ]
   },
   "qualityTargets": {
-    "targetFidelity": 0.7,
+    "targetFidelity": 0.95,
     "mustMatch": [
       "macro silhouette and proportions",
       "primary material albedo/roughness response",
@@ -410,7 +410,7 @@
     "enabled": true,
     "visualAcceptance": {
       "reviewer": "ai-vision",
-      "threshold": 0.7,
+      "threshold": 0.95,
       "comparisonArtifactRequired": true,
       "layerScoresRequired": true,
       "codePixelDiffIsAcceptanceAuthority": false,
@@ -681,10 +681,10 @@
   "silhouette": {
     "envelope": {
       "w": 4.0,
-      "h": 3.2,
+      "h": 4.3,
       "d": 4.0
     },
-    "description": "A 4.00 x 4.00 m bay: four 150 mm posts at +-1.55 m carrying plates at 1.98-2.12 m and tie beams at 2.12-2.24 m with eight short knee braces and rope lashings, a 24.9 degree gable above them with its ridge along X and 0.45 m of overhang on every side, thatch 180 mm thick from a 2.20 m eave to a 3.13 m apex, a sawn ridge plank capping it at 3.20 m, and a torn fringe hanging up to 0.42 m below the eave line and 0.32 m below the verges. Open on all four sides.",
+    "description": "A 4.00 x 4.00 m bay: four 150 mm posts at +-1.55 m carrying plates at 1.98-2.12 m and tie beams at 2.12-2.24 m with eight short knee braces and rope lashings, a 24.9 degree gable above them with its ridge along X and 0.45 m of overhang on every side, thatch 180 mm thick from a 2.20 m eave to a 3.13 m apex, a sawn ridge plank capping it at 3.20 m, and a torn fringe hanging up to 0.42 m below the eave line and 0.32 m below the verges. Open on all four sides. Height revision 2026-09-27: all historical roof/frame Y coordinates above are raised by 1.10 m; ground posts lengthened by 1.10 m; foot hardware and tarpaulin bottom rails stay grounded. Exact revised construction is in canopyHeightRefinement.geometry.",
     "envelopeDerivation": "x and z span exactly -2.000..+2.000 and nothing crosses it: the thatch owns the module edge, and the frame sits INSIDE it -- post centres at +-1.550, plate and tie-beam ends at +-1.770, ridge beam and ridge plank 20 mm short, and the ROTATED rafter boxes 50 mm short because a box turned about X has an AABB half-depth of L/2 cos(s) + h/2 sin(s). Clean at 0.001 m in check-coplanar. y 0.000 to 3.200 at the top of the ridge plank. Proxy (Meshy v7): w:h:d 1 : 1.146 : 1.216, a SQUARE post grid of 0.769 x 0.765 H under a roof of 0.810 x 1.011 H, ridge along the narrow axis -- so the proxy overhangs its post grid by 0.121 H (0.39 m) at the eaves, and the plate shows the same deep eave and verge with rafter and purlin ends visible under it. The first build put the posts on the cell edge and had no overhang; this build keeps the ROOF on the cell edge (the grid is the contract) and moves the posts IN: post grid / roof span 3.10 / 4.00 = 0.775 against the proxy's 0.765 / 1.011 = 0.757. Eave height: the notes' 2.40 was written for clearance, and clearance is needed under the HEAD FRAME at the post line, not under the eave edge, which a player only meets from outside where the plate's fringe hangs lower still. Eave top 2.20 over a 2.00 run gives 24.9 degrees against the proxy's 39 (the first build's 18.3); thatch top at the post line 3.13 - 0.775 x 0.93 = 2.41, underside 2.23, tie beams 2.12-2.24, plates 1.98-2.12, posts to 1.98: 1.98 m of headroom everywhere inside the frame. Post section from the proxy: 4 of 100 occupancy columns = 0.052 H = 0.166 m, built 0.150.",
     "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate: w:h:d 1 : 1.146 : 1.216, post grid 0.769 x 0.765 H, roof 0.810 x 1.011 H, eave at 0.61 H, pitch 39 degrees. Used for the POST SECTION (0.052 H = 0.166 m), for the post-grid-to-roof ratio (0.757, built 0.775) and for confirming that the post grid is square and the ridge runs across the narrow axis. NOT used for the eave height: the 3.20 m ridge is declared and the eave is set by walk-under clearance under the head frame, so the built pitch is 24.9 degrees against the proxy's 39. The arithmetic is in envelopeDerivation."
   },
@@ -766,7 +766,7 @@
       "material": "timber",
       "parent": null,
       "geometryDescriptor": {
-        "topologyIntent": "Posts 150 mm square at x,z +-1.55, y 0-1.98; plates 120 x 140 mm along Z at x +-1.55, y 1.98-2.12, 3.54 m long so the ends run 0.22 m past the posts; tie beams 3.54 x 0.12 x 0.14 m along X at z +-1.55 ON the plates, y 2.12-2.24 (stacked, so the two never share a top plane); knee braces 80 mm square at 45 degrees, 480 mm long, into the tie and into the plate at every post; king posts 120 mm at x +-1.55 from 2.12 to 2.81; ridge beam 140 mm square at z 0 with its top on 2.95; ridge plank 3.98 x 0.07 x 0.28 m from 3.13 to 3.20; rafters 80 x 100 mm at x +-1.86 and +-0.62, 2.155 m along a 24.9 degree slope from the cell edge to the ridge; rope wrap 180 x 60 x 200 mm at the plate-tie crossing and cord collars 174 and 170 mm square at 1.88 and 1.72 m on every post.",
+        "topologyIntent": "Final frame: 40 boxes. Exact dimensions, transforms and shape profiles: canopyHeightRefinement.geometry.components. Raised envelope 4.3 m; base-center origin.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -776,7 +776,9 @@
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
         "zFightingNote": "The plates and the tie beams are STACKED, not crossed at one height, so their top faces are 0.12 m apart; the braces enter post and beam as solids; the rafters are sunk 110 mm below the thatch underside so the purlins fit between them and nothing shares a plane with the roof; the ridge plank sits ON the thatch apex, overlapping it rather than meeting it. check-coplanar clean at 0.001 m.",
-        "mergeNote": "One merged BufferGeometry with world UVs at 0.60 m."
+        "mergeNote": "One material merge; authored geometry UVs retain reference roof layout or member-aligned frame grain.",
+        "heightRevision": "See canopyHeightRefinement.geometry for exact revised positions and post lengths; elevated assemblies translated +1.10 m, grounded hardware retained.",
+        "originalPlateTopologyIntent": "Posts 150 mm square at x,z +-1.55, y 0-1.98; plates 120 x 140 mm along Z at x +-1.55, y 1.98-2.12, 3.54 m long so the ends run 0.22 m past the posts; tie beams 3.54 x 0.12 x 0.14 m along X at z +-1.55 ON the plates, y 2.12-2.24 (stacked, so the two never share a top plane); knee braces 80 mm square at 45 degrees, 480 mm long, into the tie and into the plate at every post; king posts 120 mm at x +-1.55 from 2.12 to 2.81; ridge beam 140 mm square at z 0 with its top on 2.95; ridge plank 3.98 x 0.07 x 0.28 m from 3.13 to 3.20; rafters 80 x 100 mm at x +-1.86 and +-0.62, 2.155 m along a 24.9 degree slope from the cell edge to the ridge; rope wrap 180 x 60 x 200 mm at the plate-tie crossing and cord collars 174 and 170 mm square at 1.88 and 1.72 m on every post."
       },
       "localFeatures": [
         {
@@ -813,7 +815,7 @@
       "colorMaterialRecipe": {
         "materialId": "timber",
         "baseColor": "#d0cabe",
-        "recipe": "Weathered sawn timber as vertex colours on a white material -- post #bdb9b0, plate, tie and brace #dad4c6, ridge plank #c9c3b8, rafter and purlin #b9b3a6, cord lashing #8d7659 -- with a sawn-grain multiply canvas.",
+        "recipe": "Reference-derived albedo, independent roughness and normal maps assigned after construction. Final runtime recipe is in materials.runtimeMaterialRecipe; source and inference confidence in postConstructionPbrEvidence.",
         "evidenceRef": "region-timber",
         "confidence": 0.88,
         "dominantAlbedo": "rgba(208, 202, 190, 1.0)",
@@ -850,6 +852,20 @@
           "materialState": true
         },
         "sockets": []
+      },
+      "surfaceDetail": {
+        "method": "Post-construction tangent-space reference normal map, independent roughness map and localized reference-albedo wear",
+        "normalStrength": 0.12,
+        "mapFiles": {
+          "albedo": "timber-albedo.webp",
+          "roughness": "timber-roughness.webp",
+          "normal": "timber-normal.webp"
+        },
+        "uvLocality": "Single registered roof face or member-aligned frame grain; source areas and inferred maps in height-material-evidence, height-roof-pbr and height-frame-pbr.",
+        "displacement": 0,
+        "evidenceRefs": [
+          "scratch/nipa-thatch-canopy-module/height-material-views/view-plan.json"
+        ]
       }
     },
     {
@@ -866,7 +882,7 @@
       "material": "thatch",
       "parent": null,
       "geometryDescriptor": {
-        "topologyIntent": "A 48 x 12 height grid over x,z -2.00..2.00, 180 mm thick, top surface 3.13 m at z 0 falling to 2.20 m at |z| 2.00 with a 20 mm mid-slope sag; the eave rows drop a per-column 0-0.42 m (power 1.5, so most blades are short and a few hang long), faded in over the outer third, and the outer two columns at each verge drop a per-row 0-0.32 m. Underside #746a5c, rim strip #9a9082.",
+        "topologyIntent": "Final thatch: 1 sheets. Exact dimensions, transforms and shape profiles: canopyHeightRefinement.geometry.components. Raised envelope 4.3 m; base-center origin.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -876,7 +892,9 @@
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
         "zFightingNote": "The roof is the only thing at its heights; the ridge plank overlaps its apex and the rafters are sunk below its underside. Its edges are the grid's own wound strips, so no separate fascia shares a plane with it.",
-        "mergeNote": "One merged BufferGeometry with world UVs at 1.60 m."
+        "mergeNote": "One material merge; authored geometry UVs retain reference roof layout or member-aligned frame grain.",
+        "heightRevision": "See canopyHeightRefinement.geometry for exact revised positions and post lengths; elevated assemblies translated +1.10 m, grounded hardware retained.",
+        "originalPlateTopologyIntent": "A 48 x 12 height grid over x,z -2.00..2.00, 180 mm thick, top surface 3.13 m at z 0 falling to 2.20 m at |z| 2.00 with a 20 mm mid-slope sag; the eave rows drop a per-column 0-0.42 m (power 1.5, so most blades are short and a few hang long), faded in over the outer third, and the outer two columns at each verge drop a per-row 0-0.32 m. Underside #746a5c, rim strip #9a9082."
       },
       "localFeatures": [
         {
@@ -893,7 +911,7 @@
       "colorMaterialRecipe": {
         "materialId": "thatch",
         "baseColor": "#9a8f78",
-        "recipe": "One grey-straw albedo with a darker underside and a lit rim tone as vertex colours, under a thatch multiply canvas; the course structure is entirely in the canvas, as the registry notes require.",
+        "recipe": "Reference-derived albedo, independent roughness and normal maps assigned after construction. Final runtime recipe is in materials.runtimeMaterialRecipe; source and inference confidence in postConstructionPbrEvidence.",
         "evidenceRef": "region-thatch",
         "confidence": 0.9,
         "dominantAlbedo": "rgba(154, 143, 120, 1.0)",
@@ -916,6 +934,20 @@
           "materialState": true
         },
         "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      },
+      "surfaceDetail": {
+        "method": "Post-construction tangent-space reference normal map, independent roughness map and localized reference-albedo wear",
+        "normalStrength": 0.22,
+        "mapFiles": {
+          "albedo": "thatch-albedo.webp",
+          "roughness": "thatch-roughness.webp",
+          "normal": "thatch-normal.webp"
+        },
+        "uvLocality": "Single registered roof face or member-aligned frame grain; source areas and inferred maps in height-material-evidence, height-roof-pbr and height-frame-pbr.",
+        "displacement": 0,
+        "evidenceRefs": [
+          "scratch/nipa-thatch-canopy-module/height-material-views/view-plan.json"
+        ]
       }
     }
   ],
@@ -926,7 +958,7 @@
       "type": "standard",
       "shaderModel": "MeshStandardMaterial / PBR approximation",
       "baseColor": "#d0cabe",
-      "color": "#d0cabe",
+      "color": 13683390,
       "roughness": {
         "base": 0.88,
         "variation": 0.05,
@@ -960,9 +992,7 @@
       "textureless": {
         "declared": true,
         "evidence": [
-          "Measured on viewEvidence region-timber (0.88) at #7a746d sd 28 (shaded post) and region-beam at #9f9890 sd 19 (sunlit head plate), with the ridge plank at #9b9997 -- a near-neutral silver-brown, R minus B only 13 to 21.",
-          "AUTHORED AS THE INVERSE OF THE HARNESS TRANSFER, not copied. Probed on two renders of the same post pixel: authored luma 147.5 rendered 66 at azimuth 0 and 49 at 180; authored luma 220.5 rendered 180 and 158. The harness key barely reaches a vertical face, so the plate's own value came back BELOW the backdrop's 58 -- the silhouette gate reading a leg as background. Solving for the plate's mean 130 gives authored luma 190, carried here as #d0cabe with post #c4beb2, plate #dad4c6, ridge plank #e8e2d4, rafter #b9b3a6 and cord #8d7659 as vertex colours on it. Measured back at 134 / 111 / 111 / 94 across the four azimuths, the darkest 1.6x the backdrop.",
-          "Textureless as DECLARED: one 512 px sawn-timber multiply canvas after construction (fine longitudinal grain, four knots, three drying splits, cloudy silver weathering, three mould clusters), world UVs at 0.60 m. Deliberately weakly directional, because world UVs put v along a post but ACROSS a beam and a striped tile would read as a plank joint running the wrong way on half the frame."
+          "Skip legacy synthesized canvases. Inspected reference-derived authoredMaps are assigned after material construction; see postConstructionPbrEvidence."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
       },
@@ -971,6 +1001,33 @@
         "pbrReport": "material-evidence/timber.pbr.json",
         "confidence": 0.88,
         "verdict": "pass"
+      },
+      "authoredMaps": {
+        "albedo": {
+          "url": "timber-albedo.webp",
+          "source": "inspected post-region PBR; palette-relative albedo; independent roughness and normal"
+        },
+        "roughness": {
+          "url": "timber-roughness.webp",
+          "source": "inspected post-region PBR; palette-relative albedo; independent roughness and normal"
+        },
+        "normal": {
+          "url": "timber-normal.webp",
+          "source": "inspected post-region PBR; palette-relative albedo; independent roughness and normal"
+        }
+      },
+      "postConstructionPbrEvidence": {
+        "report": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-frame-pbr/timber-region-extraction.json",
+        "sourceLimited": true,
+        "normalStrength": 0.12,
+        "uv": "Per-member longitudinal grain; cylinder metric UVs; independently repeating microfinish."
+      },
+      "runtimeMaterialRecipe": {
+        "id": "timber",
+        "color": 13683390,
+        "roughness": 0.88,
+        "metalness": 0,
+        "vertexColors": true
       }
     },
     {
@@ -979,7 +1036,7 @@
       "type": "standard",
       "shaderModel": "MeshStandardMaterial / PBR approximation",
       "baseColor": "#9a8f78",
-      "color": "#9a8f78",
+      "color": 14211288,
       "roughness": {
         "base": 0.95,
         "variation": 0.05,
@@ -1012,9 +1069,7 @@
       "textureless": {
         "declared": true,
         "evidence": [
-          "Measured on viewEvidence region-thatch (0.90) at #6d6257 sd 52 over the slope and region-thatchbutt (0.86) at #877e74 sd 40 along the exposed butts; the standard deviation of 52 IS the course structure, not noise.",
-          "Authored #9a8f78 and MEASURED BACK at 145-148 on the up-facing slope against the plate's own sunlit 143 -- right first time and left alone, unlike the timber.",
-          "Textureless as DECLARED: one 512 px thatch multiply canvas after construction, world UVs at 1.60 m -- six courses per tile (0.27 m per course against the plate's ~0.25), 170 blade strokes 2-6 px wide in a greyer stem tint, a butt line jittered per column at 0.28 of the course, torn blade tips running past the butt on 45% of stems, 40 blade seams, a pale lit-tip line above each butt and a 0.70 shadow gradient below it, eight thinned gaps, two neutral rot patches. Re-authored at #8b8376 after this build's first render measured 162 on the up-facing slope against the plate's 150 in the same window."
+          "Skip legacy synthesized canvases. Inspected reference-derived authoredMaps are assigned after material construction; see postConstructionPbrEvidence."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
       },
@@ -1023,6 +1078,34 @@
         "pbrReport": "material-evidence/thatch.pbr.json",
         "confidence": 0.9,
         "verdict": "pass"
+      },
+      "authoredMaps": {
+        "albedo": {
+          "url": "thatch-albedo.webp",
+          "source": "reference-derived, de-lit, edge-blended; chroma normalized to authored palette"
+        },
+        "roughness": {
+          "url": "thatch-roughness.webp",
+          "source": "reference-derived, de-lit, edge-blended; chroma normalized to authored palette"
+        },
+        "normal": {
+          "url": "thatch-normal.webp",
+          "source": "reference-derived, de-lit, edge-blended; chroma normalized to authored palette"
+        }
+      },
+      "postConstructionPbrEvidence": {
+        "report": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-roof-pbr/thatch.pbr.json",
+        "mapsResolution": 1024,
+        "sourceLimited": true,
+        "normalStrength": 0.1,
+        "inferenceLimitation": "Normal and roughness are independent estimates from a single crop, not measured physical recovery."
+      },
+      "runtimeMaterialRecipe": {
+        "id": "thatch",
+        "color": 14211288,
+        "roughness": 0.95,
+        "metalness": 0,
+        "vertexColors": true
       }
     }
   ],
@@ -1437,6 +1520,323 @@
       "cameraView": "",
       "notes": "",
       "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-27T13:58:39.672181+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.98,
+        "componentStructure": 0.96,
+        "formDetail": 0.91,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.92
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/repo/scratch/nipa-thatch-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-27T14:44:57.078852+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.96,
+        "formDetail": 0.95,
+        "materialSurface": 0.95,
+        "lightingCamera": 0.95
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "notes": "Reference construction retained; support height intentionally revised +1.10 m. Exact dimensions and 162-sample player walk-through test pass."
+        },
+        {
+          "id": "roof-thatch",
+          "score": 0.95,
+          "notes": "Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades."
+        },
+        {
+          "id": "frame-and-materials",
+          "score": 0.95,
+          "notes": "Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": "Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades. The requested height change is evaluated against the revised dimensions, not against the old short supports."
+    },
+    {
+      "timestamp": "2026-09-27T14:44:57.164850+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.96,
+        "formDetail": 0.95,
+        "materialSurface": 0.95,
+        "lightingCamera": 0.95
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "notes": "Reference construction retained; support height intentionally revised +1.10 m. Exact dimensions and 162-sample player walk-through test pass."
+        },
+        {
+          "id": "roof-thatch",
+          "score": 0.95,
+          "notes": "Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades."
+        },
+        {
+          "id": "frame-and-materials",
+          "score": 0.95,
+          "notes": "Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": "Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades. The requested height change is evaluated against the revised dimensions, not against the old short supports."
+    },
+    {
+      "timestamp": "2026-09-27T14:44:57.250549+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.96,
+        "formDetail": 0.95,
+        "materialSurface": 0.95,
+        "lightingCamera": 0.95
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "notes": "Reference construction retained; support height intentionally revised +1.10 m. Exact dimensions and 162-sample player walk-through test pass."
+        },
+        {
+          "id": "roof-thatch",
+          "score": 0.95,
+          "notes": "Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades."
+        },
+        {
+          "id": "frame-and-materials",
+          "score": 0.95,
+          "notes": "Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": "Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades. The requested height change is evaluated against the revised dimensions, not against the old short supports."
+    },
+    {
+      "timestamp": "2026-09-27T14:44:57.334262+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.96,
+        "formDetail": 0.95,
+        "materialSurface": 0.95,
+        "lightingCamera": 0.95
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "notes": "Reference construction retained; support height intentionally revised +1.10 m. Exact dimensions and 162-sample player walk-through test pass."
+        },
+        {
+          "id": "roof-thatch",
+          "score": 0.95,
+          "notes": "Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades."
+        },
+        {
+          "id": "frame-and-materials",
+          "score": 0.95,
+          "notes": "Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": "Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades. The requested height change is evaluated against the revised dimensions, not against the old short supports."
+    },
+    {
+      "timestamp": "2026-09-27T14:44:57.423261+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.96,
+        "formDetail": 0.95,
+        "materialSurface": 0.95,
+        "lightingCamera": 0.95
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "notes": "Reference construction retained; support height intentionally revised +1.10 m. Exact dimensions and 162-sample player walk-through test pass."
+        },
+        {
+          "id": "roof-thatch",
+          "score": 0.95,
+          "notes": "Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades."
+        },
+        {
+          "id": "frame-and-materials",
+          "score": 0.95,
+          "notes": "Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": "Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades. The requested height change is evaluated against the revised dimensions, not against the old short supports."
+    },
+    {
+      "timestamp": "2026-09-27T14:44:57.504449+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.96,
+        "formDetail": 0.95,
+        "materialSurface": 0.95,
+        "lightingCamera": 0.95
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "notes": "Reference construction retained; support height intentionally revised +1.10 m. Exact dimensions and 162-sample player walk-through test pass."
+        },
+        {
+          "id": "roof-thatch",
+          "score": 0.95,
+          "notes": "Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades."
+        },
+        {
+          "id": "frame-and-materials",
+          "score": 0.95,
+          "notes": "Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": "Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades. The requested height change is evaluated against the revised dimensions, not against the old short supports."
+    },
+    {
+      "timestamp": "2026-09-27T14:44:57.586741+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.96,
+        "formDetail": 0.95,
+        "materialSurface": 0.95,
+        "lightingCamera": 0.95
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "notes": "Reference construction retained; support height intentionally revised +1.10 m. Exact dimensions and 162-sample player walk-through test pass."
+        },
+        {
+          "id": "roof-thatch",
+          "score": 0.95,
+          "notes": "Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades."
+        },
+        {
+          "id": "frame-and-materials",
+          "score": 0.95,
+          "notes": "Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": "Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades. The requested height change is evaluated against the revised dimensions, not against the old short supports."
+    },
+    {
+      "timestamp": "2026-09-27T14:44:57.671659+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.96,
+        "formDetail": 0.95,
+        "materialSurface": 0.95,
+        "lightingCamera": 0.95
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "notes": "Reference construction retained; support height intentionally revised +1.10 m. Exact dimensions and 162-sample player walk-through test pass."
+        },
+        {
+          "id": "roof-thatch",
+          "score": 0.95,
+          "notes": "Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades."
+        },
+        {
+          "id": "frame-and-materials",
+          "score": 0.95,
+          "notes": "Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": "Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades. The requested height change is evaluated against the revised dimensions, not against the old short supports."
     }
   ],
   "reviewHistory": [
@@ -1830,6 +2230,644 @@
         "notes": "",
         "aiVisionNotes": ""
       }
+    },
+    {
+      "timestamp": "2026-09-27T13:52:31.324801+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-spec",
+      "summary": "User height correction: lengthen grounded posts and translate complete roof assembly +1.10 m. Prior whole-asset visual estimate retained pending new browser evidence; target now 0.95.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true
+    },
+    {
+      "timestamp": "2026-09-27T13:58:39.672181+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.98,
+        "componentStructure": 0.96,
+        "formDetail": 0.91,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.92
+      },
+      "featureReviews": [],
+      "action": "refine-spec",
+      "summary": "Whole-asset visual review: correct raised head frame; the fringe remains too tooth-like with deep isolated notches. Reduce isolated fringe extrema while retaining torn palm-leaf silhouette.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "visualEvidence": {
+        "referenceScreenshot": "/repo/scratch/nipa-thatch-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-27T14:04:51.129391+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-spec",
+      "summary": "Full visual fidelity target confirmed by user. Replace synthetic roof finish with de-lit reference-relative albedo and independent inferred roughness/normal maps; source crop checked and extraction confidence >=0.7. Preserve authored palette and raised geometry.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true
+    },
+    {
+      "timestamp": "2026-09-27T14:09:33.826404+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-spec",
+      "summary": "Rejected small-crop tiling candidate: repeated marks and over-strong inferred normals lower fidelity. Use a rectified complete roof face once per slope, mild independent normals, and absolute albedo; retain failed renders as evidence.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true
+    },
+    {
+      "timestamp": "2026-09-27T14:11:31.651053+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Whole-face material preserves reference wear layout, but shader lighting overexposes the inferred albedo. Apply a neutral per-material transfer correction; keep hue, PBR channels and spatial marks unchanged.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true
+    },
+    {
+      "timestamp": "2026-09-27T14:15:56.111892+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-spec",
+      "summary": "Roof projection now retains all admitted material pixels; the old object-background segmentation had incorrectly erased pale fibre and zinc. Next replace blocky frame weathering with an inspected full post crop, orient timber grain along each member, and retain measured palette.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true
+    },
+    {
+      "timestamp": "2026-09-27T14:18:51.167631+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-spec",
+      "summary": "Taper the last 0.35 m of the nipa shell from 180 mm bulk to an 18 mm leaf edge, eliminating the block-like cut rim while keeping the torn silhouette.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true
+    },
+    {
+      "timestamp": "2026-09-27T14:44:57.078852+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.96,
+        "formDetail": 0.95,
+        "materialSurface": 0.95,
+        "lightingCamera": 0.95
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "notes": "Reference construction retained; support height intentionally revised +1.10 m. Exact dimensions and 162-sample player walk-through test pass."
+        },
+        {
+          "id": "roof-thatch",
+          "score": 0.95,
+          "notes": "Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades."
+        },
+        {
+          "id": "frame-and-materials",
+          "score": 0.95,
+          "notes": "Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades."
+        }
+      ],
+      "action": "continue",
+      "summary": "Final blockout review of the taller whole asset, including reference-derived roof materials. Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/turntable.json",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/self-intersection.json",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/attachments.json",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/parts.json",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/material-gate.json",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/coplanar.log",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/final-vision.json",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-runtime.json"
+      ],
+      "outOfSequence": true,
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/clay/clay-000.png",
+      "reviewViewpoints": [
+        "front",
+        "three-quarter",
+        "side",
+        "thickness-axis",
+        "long-axis"
+      ],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": "Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades. The requested height change is evaluated against the revised dimensions, not against the old short supports."
+      }
+    },
+    {
+      "timestamp": "2026-09-27T14:44:57.164850+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.96,
+        "formDetail": 0.95,
+        "materialSurface": 0.95,
+        "lightingCamera": 0.95
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "notes": "Reference construction retained; support height intentionally revised +1.10 m. Exact dimensions and 162-sample player walk-through test pass."
+        },
+        {
+          "id": "roof-thatch",
+          "score": 0.95,
+          "notes": "Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades."
+        },
+        {
+          "id": "frame-and-materials",
+          "score": 0.95,
+          "notes": "Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades."
+        }
+      ],
+      "action": "continue",
+      "summary": "Final structural-pass review of the taller whole asset, including reference-derived roof materials. Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/turntable.json",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/self-intersection.json",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/attachments.json",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/parts.json",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/material-gate.json",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/coplanar.log",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/final-vision.json",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-runtime.json"
+      ],
+      "outOfSequence": true,
+      "reviewViewpoints": [
+        "front",
+        "three-quarter",
+        "side",
+        "thickness-axis",
+        "long-axis"
+      ],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": "Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades. The requested height change is evaluated against the revised dimensions, not against the old short supports."
+      }
+    },
+    {
+      "timestamp": "2026-09-27T14:44:57.250549+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.96,
+        "formDetail": 0.95,
+        "materialSurface": 0.95,
+        "lightingCamera": 0.95
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "notes": "Reference construction retained; support height intentionally revised +1.10 m. Exact dimensions and 162-sample player walk-through test pass."
+        },
+        {
+          "id": "roof-thatch",
+          "score": 0.95,
+          "notes": "Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades."
+        },
+        {
+          "id": "frame-and-materials",
+          "score": 0.95,
+          "notes": "Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades."
+        }
+      ],
+      "action": "continue",
+      "summary": "Final form-refinement review of the taller whole asset, including reference-derived roof materials. Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/turntable.json",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/self-intersection.json",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/attachments.json",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/parts.json",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/material-gate.json",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/coplanar.log",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/final-vision.json",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-runtime.json"
+      ],
+      "outOfSequence": true,
+      "reviewViewpoints": [
+        "front",
+        "three-quarter",
+        "side",
+        "thickness-axis",
+        "long-axis"
+      ],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": "Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades. The requested height change is evaluated against the revised dimensions, not against the old short supports."
+      }
+    },
+    {
+      "timestamp": "2026-09-27T14:44:57.334262+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.96,
+        "formDetail": 0.95,
+        "materialSurface": 0.95,
+        "lightingCamera": 0.95
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "notes": "Reference construction retained; support height intentionally revised +1.10 m. Exact dimensions and 162-sample player walk-through test pass."
+        },
+        {
+          "id": "roof-thatch",
+          "score": 0.95,
+          "notes": "Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades."
+        },
+        {
+          "id": "frame-and-materials",
+          "score": 0.95,
+          "notes": "Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades."
+        }
+      ],
+      "action": "continue",
+      "summary": "Final material-pass review of the taller whole asset, including reference-derived roof materials. Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/turntable.json",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/self-intersection.json",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/attachments.json",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/parts.json",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/material-gate.json",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/coplanar.log",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/final-vision.json",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-runtime.json"
+      ],
+      "outOfSequence": true,
+      "reviewViewpoints": [
+        "front",
+        "three-quarter",
+        "side",
+        "thickness-axis",
+        "long-axis"
+      ],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": "Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades. The requested height change is evaluated against the revised dimensions, not against the old short supports."
+      }
+    },
+    {
+      "timestamp": "2026-09-27T14:44:57.423261+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.96,
+        "formDetail": 0.95,
+        "materialSurface": 0.95,
+        "lightingCamera": 0.95
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "notes": "Reference construction retained; support height intentionally revised +1.10 m. Exact dimensions and 162-sample player walk-through test pass."
+        },
+        {
+          "id": "roof-thatch",
+          "score": 0.95,
+          "notes": "Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades."
+        },
+        {
+          "id": "frame-and-materials",
+          "score": 0.95,
+          "notes": "Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades."
+        }
+      ],
+      "action": "continue",
+      "summary": "Final surface-pass review of the taller whole asset, including reference-derived roof materials. Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/turntable.json",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/self-intersection.json",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/attachments.json",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/parts.json",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/material-gate.json",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/coplanar.log",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/final-vision.json",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-runtime.json"
+      ],
+      "outOfSequence": true,
+      "reviewViewpoints": [
+        "front",
+        "three-quarter",
+        "side",
+        "thickness-axis",
+        "long-axis"
+      ],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": "Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades. The requested height change is evaluated against the revised dimensions, not against the old short supports."
+      }
+    },
+    {
+      "timestamp": "2026-09-27T14:44:57.504449+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.96,
+        "formDetail": 0.95,
+        "materialSurface": 0.95,
+        "lightingCamera": 0.95
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "notes": "Reference construction retained; support height intentionally revised +1.10 m. Exact dimensions and 162-sample player walk-through test pass."
+        },
+        {
+          "id": "roof-thatch",
+          "score": 0.95,
+          "notes": "Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades."
+        },
+        {
+          "id": "frame-and-materials",
+          "score": 0.95,
+          "notes": "Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades."
+        }
+      ],
+      "action": "continue",
+      "summary": "Final lighting-pass review of the taller whole asset, including reference-derived roof materials. Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/turntable.json",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/self-intersection.json",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/attachments.json",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/parts.json",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/material-gate.json",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/coplanar.log",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/final-vision.json",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-runtime.json"
+      ],
+      "outOfSequence": true,
+      "reviewViewpoints": [
+        "front",
+        "three-quarter",
+        "side",
+        "thickness-axis",
+        "long-axis"
+      ],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": "Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades. The requested height change is evaluated against the revised dimensions, not against the old short supports."
+      }
+    },
+    {
+      "timestamp": "2026-09-27T14:44:57.586741+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.96,
+        "formDetail": 0.95,
+        "materialSurface": 0.95,
+        "lightingCamera": 0.95
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "notes": "Reference construction retained; support height intentionally revised +1.10 m. Exact dimensions and 162-sample player walk-through test pass."
+        },
+        {
+          "id": "roof-thatch",
+          "score": 0.95,
+          "notes": "Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades."
+        },
+        {
+          "id": "frame-and-materials",
+          "score": 0.95,
+          "notes": "Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades."
+        }
+      ],
+      "action": "continue",
+      "summary": "Final interaction-pass review of the taller whole asset, including reference-derived roof materials. Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/turntable.json",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/self-intersection.json",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/attachments.json",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/parts.json",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/material-gate.json",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/coplanar.log",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/final-vision.json",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-runtime.json"
+      ],
+      "outOfSequence": true,
+      "reviewViewpoints": [
+        "front",
+        "three-quarter",
+        "side",
+        "thickness-axis",
+        "long-axis"
+      ],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": "Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades. The requested height change is evaluated against the revised dimensions, not against the old short supports."
+      }
+    },
+    {
+      "timestamp": "2026-09-27T14:44:57.671659+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.96,
+        "formDetail": 0.95,
+        "materialSurface": 0.95,
+        "lightingCamera": 0.95
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "notes": "Reference construction retained; support height intentionally revised +1.10 m. Exact dimensions and 162-sample player walk-through test pass."
+        },
+        {
+          "id": "roof-thatch",
+          "score": 0.95,
+          "notes": "Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades."
+        },
+        {
+          "id": "frame-and-materials",
+          "score": 0.95,
+          "notes": "Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades."
+        }
+      ],
+      "action": "continue",
+      "summary": "Final optimization-pass review of the taller whole asset, including reference-derived roof materials. Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/turntable.json",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/self-intersection.json",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/attachments.json",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/parts.json",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/material-gate.json",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/coplanar.log",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/final-vision.json",
+        "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-runtime.json"
+      ],
+      "outOfSequence": true,
+      "reviewViewpoints": [
+        "front",
+        "three-quarter",
+        "side",
+        "thickness-axis",
+        "long-axis"
+      ],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-review/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": "Matched overlapping desaturated nipa leaf texture, localized dark organic wear, uneven tapered fringe, exposed purlins and aged timber. Minor approximation: individual free leaf tips are represented by the rim profile and normal texture rather than separate blades. The requested height change is evaluated against the revised dimensions, not against the old short supports."
+      }
     }
   ],
   "lodPlan": [
@@ -2041,6 +3079,1339 @@
       "maskWarnings": [],
       "renderHash": "e65026f737aaa9c4",
       "passId": "blockout"
+    },
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.29,
+        "aspectRatioDelta": 0.0296,
+        "scaleDelta": 0.2975,
+        "bilateralSymmetryError": 0.0516,
+        "colorDelta": {
+          "checked": 2,
+          "maxDeltaE": 33.17,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 33.17
+            },
+            {
+              "componentId": null,
+              "deltaE": 11.54
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.290 is below threshold 0.85",
+        "scale delta 0.297 exceeds threshold 0.08",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "maskWarnings": [],
+      "renderHash": "bec26f6d77df7d12",
+      "passId": "blockout"
     }
-  ]
+  ],
+  "canopyHeightRefinement": {
+    "date": "2026-09-27",
+    "deltaMeters": 1.1,
+    "previousHeightMeters": 3.2,
+    "heightMeters": 4.3,
+    "geometry": {
+      "components": [
+        {
+          "id": "frame",
+          "name": "Timber post-and-plate frame, rafters and ridge",
+          "material": "timber",
+          "uv": "grain",
+          "uvScale": 0.6,
+          "boxes": [
+            [
+              12433840,
+              -1.55,
+              1.54,
+              -1.55,
+              0.15,
+              3.08,
+              0.15
+            ],
+            [
+              12433840,
+              -1.55,
+              1.54,
+              1.55,
+              0.15,
+              3.08,
+              0.15
+            ],
+            [
+              12433840,
+              1.55,
+              1.54,
+              -1.55,
+              0.15,
+              3.08,
+              0.15
+            ],
+            [
+              12433840,
+              1.55,
+              1.54,
+              1.55,
+              0.15,
+              3.08,
+              0.15
+            ],
+            [
+              14341318,
+              -1.55,
+              3.1500000000000004,
+              0,
+              0.12,
+              0.14,
+              3.54
+            ],
+            [
+              14341318,
+              1.55,
+              3.1500000000000004,
+              0,
+              0.12,
+              0.14,
+              3.54
+            ],
+            [
+              14341318,
+              0,
+              3.2800000000000002,
+              -1.55,
+              3.54,
+              0.12,
+              0.13999999999999999
+            ],
+            [
+              14341318,
+              0,
+              3.2800000000000002,
+              1.55,
+              3.54,
+              0.12,
+              0.13999999999999999
+            ],
+            [
+              14341318,
+              -1.55,
+              3.0502943725152285,
+              -1.3802943725152286,
+              0.08,
+              0.08,
+              0.48,
+              -0.7853981633974483,
+              0,
+              0
+            ],
+            [
+              14341318,
+              -1.3802943725152286,
+              2.910294372515229,
+              -1.55,
+              0.48,
+              0.08,
+              0.08,
+              0,
+              0,
+              0.7853981633974483
+            ],
+            [
+              14341318,
+              -1.55,
+              3.0502943725152285,
+              1.3802943725152286,
+              0.08,
+              0.08,
+              0.48,
+              0.7853981633974483,
+              0,
+              0
+            ],
+            [
+              14341318,
+              -1.3802943725152286,
+              2.910294372515229,
+              1.55,
+              0.48,
+              0.08,
+              0.08,
+              0,
+              0,
+              0.7853981633974483
+            ],
+            [
+              14341318,
+              1.55,
+              3.0502943725152285,
+              -1.3802943725152286,
+              0.08,
+              0.08,
+              0.48,
+              -0.7853981633974483,
+              0,
+              0
+            ],
+            [
+              14341318,
+              1.3802943725152286,
+              2.910294372515229,
+              -1.55,
+              0.48,
+              0.08,
+              0.08,
+              0,
+              0,
+              -0.7853981633974483
+            ],
+            [
+              14341318,
+              1.55,
+              3.0502943725152285,
+              1.3802943725152286,
+              0.08,
+              0.08,
+              0.48,
+              0.7853981633974483,
+              0,
+              0
+            ],
+            [
+              14341318,
+              1.3802943725152286,
+              2.910294372515229,
+              1.55,
+              0.48,
+              0.08,
+              0.08,
+              0,
+              0,
+              -0.7853981633974483
+            ],
+            [
+              12433840,
+              -1.55,
+              3.5650000000000004,
+              0,
+              0.12,
+              0.69,
+              0.12
+            ],
+            [
+              12433840,
+              1.55,
+              3.5650000000000004,
+              0,
+              0.12,
+              0.69,
+              0.12
+            ],
+            [
+              14341318,
+              0,
+              3.9800000000000004,
+              0,
+              3.98,
+              0.14,
+              0.14
+            ],
+            [
+              13222840,
+              0,
+              4.265000000000001,
+              0,
+              3.98,
+              0.07,
+              0.28
+            ],
+            [
+              12170150,
+              -1.86,
+              3.4750000000000005,
+              -1,
+              0.08,
+              0.1,
+              2.1556518310921153,
+              -0.43525767285813866,
+              0,
+              0
+            ],
+            [
+              12170150,
+              -1.86,
+              3.4750000000000005,
+              1,
+              0.08,
+              0.1,
+              2.1556518310921153,
+              0.43525767285813866,
+              0,
+              0
+            ],
+            [
+              12170150,
+              -0.62,
+              3.4750000000000005,
+              -1,
+              0.08,
+              0.1,
+              2.1556518310921153,
+              -0.43525767285813866,
+              0,
+              0
+            ],
+            [
+              12170150,
+              -0.62,
+              3.4750000000000005,
+              1,
+              0.08,
+              0.1,
+              2.1556518310921153,
+              0.43525767285813866,
+              0,
+              0
+            ],
+            [
+              12170150,
+              0.62,
+              3.4750000000000005,
+              -1,
+              0.08,
+              0.1,
+              2.1556518310921153,
+              -0.43525767285813866,
+              0,
+              0
+            ],
+            [
+              12170150,
+              0.62,
+              3.4750000000000005,
+              1,
+              0.08,
+              0.1,
+              2.1556518310921153,
+              0.43525767285813866,
+              0,
+              0
+            ],
+            [
+              12170150,
+              1.86,
+              3.4750000000000005,
+              -1,
+              0.08,
+              0.1,
+              2.1556518310921153,
+              -0.43525767285813866,
+              0,
+              0
+            ],
+            [
+              12170150,
+              1.86,
+              3.4750000000000005,
+              1,
+              0.08,
+              0.1,
+              2.1556518310921153,
+              0.43525767285813866,
+              0,
+              0
+            ],
+            [
+              9270873,
+              -1.55,
+              3.225,
+              -1.55,
+              0.18,
+              0.06,
+              0.2
+            ],
+            [
+              9270873,
+              -1.55,
+              2.98,
+              -1.55,
+              0.174,
+              0.08,
+              0.174
+            ],
+            [
+              9270873,
+              -1.55,
+              2.8200000000000003,
+              -1.55,
+              0.16999999999999998,
+              0.05,
+              0.16999999999999998
+            ],
+            [
+              9270873,
+              -1.55,
+              3.225,
+              1.55,
+              0.18,
+              0.06,
+              0.2
+            ],
+            [
+              9270873,
+              -1.55,
+              2.98,
+              1.55,
+              0.174,
+              0.08,
+              0.174
+            ],
+            [
+              9270873,
+              -1.55,
+              2.8200000000000003,
+              1.55,
+              0.16999999999999998,
+              0.05,
+              0.16999999999999998
+            ],
+            [
+              9270873,
+              1.55,
+              3.225,
+              -1.55,
+              0.18,
+              0.06,
+              0.2
+            ],
+            [
+              9270873,
+              1.55,
+              2.98,
+              -1.55,
+              0.174,
+              0.08,
+              0.174
+            ],
+            [
+              9270873,
+              1.55,
+              2.8200000000000003,
+              -1.55,
+              0.16999999999999998,
+              0.05,
+              0.16999999999999998
+            ],
+            [
+              9270873,
+              1.55,
+              3.225,
+              1.55,
+              0.18,
+              0.06,
+              0.2
+            ],
+            [
+              9270873,
+              1.55,
+              2.98,
+              1.55,
+              0.174,
+              0.08,
+              0.174
+            ],
+            [
+              9270873,
+              1.55,
+              2.8200000000000003,
+              1.55,
+              0.16999999999999998,
+              0.05,
+              0.16999999999999998
+            ]
+          ]
+        },
+        {
+          "id": "thatch",
+          "name": "Nipa palm thatch roof",
+          "material": "thatch",
+          "uv": "canopy-roof",
+          "uvScale": 1.6,
+          "sheets": [
+            {
+              "hex": 16777215,
+              "hexUnder": 7629404,
+              "hexRim": 10129538,
+              "x0": -2,
+              "x1": 2,
+              "z0": -2,
+              "z1": 2,
+              "nx": 48,
+              "nz": 12,
+              "t": 0.18,
+              "heights": [
+                [
+                  3.1590147060523113,
+                  3.065544644084863,
+                  3.155275394601647,
+                  3.0315692628831687,
+                  3.0606606139054455,
+                  3.170473189454348,
+                  3.1802692856451404,
+                  3.244918800314461,
+                  3.2296519072830776,
+                  3.0767486529421806,
+                  3.2311177726114035,
+                  3.2551919985583027,
+                  3.16124008477691,
+                  3.1288024425805423,
+                  3.189277920241997,
+                  3.0597107096907656,
+                  3.136193386503469,
+                  3.1497955862733997,
+                  3.0564488675726365,
+                  3.1622895384774505,
+                  3.017810028189418,
+                  3.1228304703049607,
+                  3.0719061815892874,
+                  3.0893132688252503,
+                  3.1146371247546822,
+                  3.105335004358292,
+                  2.989035638773113,
+                  3.1207467793449544,
+                  3.1731922863227804,
+                  3.234674405469758,
+                  3.199345443611354,
+                  3.0885579626424864,
+                  3.206268890013252,
+                  3.1515818528719155,
+                  3.008124383408349,
+                  3.135032728248442,
+                  3.0502301593779384,
+                  3.173483603768379,
+                  3.1894099341174984,
+                  3.1706343002955175,
+                  3.0310899777244757,
+                  3.114011574557863,
+                  3.1699873086353882,
+                  3.153061357438057,
+                  3.252381655979669,
+                  3.2784727460055585,
+                  3.27711249257901,
+                  3.186682361439698,
+                  2.9164589929069145
+                ],
+                [
+                  3.400350949117768,
+                  3.3606376204453885,
+                  3.431918233234839,
+                  3.3590115694301095,
+                  3.3788093151850185,
+                  3.4213863133238456,
+                  3.4065328179509877,
+                  3.433674549920575,
+                  3.4437296771099386,
+                  3.3565668093751775,
+                  3.443176267018742,
+                  3.437907092860389,
+                  3.4066225235145633,
+                  3.3885594923635276,
+                  3.438760780533441,
+                  3.360176621163643,
+                  3.4094335077746756,
+                  3.4186512348413918,
+                  3.3553582890863582,
+                  3.4425954132285868,
+                  3.3390532946690064,
+                  3.421828437870205,
+                  3.3738904070740445,
+                  3.3935409520010023,
+                  3.394343259593448,
+                  3.409322264349859,
+                  3.3390686736698427,
+                  3.412310379513944,
+                  3.406133237050081,
+                  3.433724284814022,
+                  3.4287301363266023,
+                  3.367220219828604,
+                  3.4361445120901455,
+                  3.416467483326788,
+                  3.3394112232973057,
+                  3.4322423502898567,
+                  3.3529743312221703,
+                  3.4286233269962985,
+                  3.4099583613930524,
+                  3.4272892599741334,
+                  3.353697813977966,
+                  3.402463287375566,
+                  3.418076267638153,
+                  3.394451698629994,
+                  3.441449658300945,
+                  3.43801523087133,
+                  3.442522717658071,
+                  3.4231913965667764,
+                  3.3373107099458004
+                ],
+                [
+                  3.445942817857714,
+                  3.519219382917472,
+                  3.5926601401983276,
+                  3.5925522901039417,
+                  3.592581576710088,
+                  3.5926445604351454,
+                  3.5926225878088545,
+                  3.5926627382999334,
+                  3.5926776127484388,
+                  3.592548673594985,
+                  3.5926767940944577,
+                  3.5926689994581285,
+                  3.592622720509392,
+                  3.5925960000491095,
+                  3.5926702623097158,
+                  3.5925540135532517,
+                  3.592626878770132,
+                  3.592640514461059,
+                  3.5925468858430785,
+                  3.592675934843289,
+                  3.5925227660288512,
+                  3.5926452144655396,
+                  3.5925743002187995,
+                  3.592603369072242,
+                  3.592604555917793,
+                  3.5926267142088526,
+                  3.5925227887788527,
+                  3.592631134497557,
+                  3.592621996712847,
+                  3.592662811872261,
+                  3.592655424078641,
+                  3.592564433077904,
+                  3.592666392090125,
+                  3.59263728405941,
+                  3.592523295509071,
+                  3.5926606196614266,
+                  3.5925433592781904,
+                  3.592655266076673,
+                  3.59262765518081,
+                  3.5926532926047465,
+                  3.5925444295189535,
+                  3.5926165677932103,
+                  3.592639663917859,
+                  3.5926047163305688,
+                  3.5926742399395497,
+                  3.5926691594256006,
+                  3.5926758273054626,
+                  3.519311918089249,
+                  3.4458495630660395
+                ],
+                [
+                  3.6960963675379754,
+                  3.7205481837689875,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.7205481837689875,
+                  3.6960963675379754
+                ],
+                [
+                  3.7883138889690895,
+                  3.8454966904467005,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.8454966904467005,
+                  3.7883138889690895
+                ],
+                [
+                  4.06419920757413,
+                  4.064599603787066,
+                  4.065000000000001,
+                  4.065000000000001,
+                  4.065000000000001,
+                  4.065000000000001,
+                  4.065000000000001,
+                  4.065000000000001,
+                  4.065000000000001,
+                  4.065000000000001,
+                  4.065000000000001,
+                  4.065000000000001,
+                  4.065000000000001,
+                  4.065000000000001,
+                  4.065000000000001,
+                  4.065000000000001,
+                  4.065000000000001,
+                  4.065000000000001,
+                  4.065000000000001,
+                  4.065000000000001,
+                  4.065000000000001,
+                  4.065000000000001,
+                  4.065000000000001,
+                  4.065000000000001,
+                  4.065000000000001,
+                  4.065000000000001,
+                  4.065000000000001,
+                  4.065000000000001,
+                  4.065000000000001,
+                  4.065000000000001,
+                  4.065000000000001,
+                  4.065000000000001,
+                  4.065000000000001,
+                  4.065000000000001,
+                  4.065000000000001,
+                  4.065000000000001,
+                  4.065000000000001,
+                  4.065000000000001,
+                  4.065000000000001,
+                  4.065000000000001,
+                  4.065000000000001,
+                  4.065000000000001,
+                  4.065000000000001,
+                  4.065000000000001,
+                  4.065000000000001,
+                  4.065000000000001,
+                  4.065000000000001,
+                  4.064599603787066,
+                  4.06419920757413
+                ],
+                [
+                  4.01544557593763,
+                  4.122722787968815,
+                  4.23,
+                  4.23,
+                  4.23,
+                  4.23,
+                  4.23,
+                  4.23,
+                  4.23,
+                  4.23,
+                  4.23,
+                  4.23,
+                  4.23,
+                  4.23,
+                  4.23,
+                  4.23,
+                  4.23,
+                  4.23,
+                  4.23,
+                  4.23,
+                  4.23,
+                  4.23,
+                  4.23,
+                  4.23,
+                  4.23,
+                  4.23,
+                  4.23,
+                  4.23,
+                  4.23,
+                  4.23,
+                  4.23,
+                  4.23,
+                  4.23,
+                  4.23,
+                  4.23,
+                  4.23,
+                  4.23,
+                  4.23,
+                  4.23,
+                  4.23,
+                  4.23,
+                  4.23,
+                  4.23,
+                  4.23,
+                  4.23,
+                  4.23,
+                  4.23,
+                  4.122722787968815,
+                  4.01544557593763
+                ],
+                [
+                  3.9867458301782612,
+                  4.025872915089131,
+                  4.065,
+                  4.065,
+                  4.065,
+                  4.065,
+                  4.065,
+                  4.065,
+                  4.065,
+                  4.065,
+                  4.065,
+                  4.065,
+                  4.065,
+                  4.065,
+                  4.065,
+                  4.065,
+                  4.065,
+                  4.065,
+                  4.065,
+                  4.065,
+                  4.065,
+                  4.065,
+                  4.065,
+                  4.065,
+                  4.065,
+                  4.065,
+                  4.065,
+                  4.065,
+                  4.065,
+                  4.065,
+                  4.065,
+                  4.065,
+                  4.065,
+                  4.065,
+                  4.065,
+                  4.065,
+                  4.065,
+                  4.065,
+                  4.065,
+                  4.065,
+                  4.065,
+                  4.065,
+                  4.065,
+                  4.065,
+                  4.065,
+                  4.065,
+                  4.065,
+                  4.025872915089131,
+                  3.9867458301782612
+                ],
+                [
+                  3.8051152101775663,
+                  3.853897351050939,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.9026794919243115,
+                  3.853897351050939,
+                  3.8051152101775663
+                ],
+                [
+                  3.5633837477862835,
+                  3.654191873893142,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.745,
+                  3.654191873893142,
+                  3.5633837477862835
+                ],
+                [
+                  3.364902954628916,
+                  3.4786994513030733,
+                  3.5926601401983276,
+                  3.5925522901039417,
+                  3.592581576710088,
+                  3.5926445604351454,
+                  3.5926225878088545,
+                  3.5926627382999334,
+                  3.5926776127484388,
+                  3.592548673594985,
+                  3.5926767940944577,
+                  3.5926689994581285,
+                  3.592622720509392,
+                  3.5925960000491095,
+                  3.5926702623097158,
+                  3.5925540135532517,
+                  3.592626878770132,
+                  3.592640514461059,
+                  3.5925468858430785,
+                  3.592675934843289,
+                  3.5925227660288512,
+                  3.5926452144655396,
+                  3.5925743002187995,
+                  3.592603369072242,
+                  3.592604555917793,
+                  3.5926267142088526,
+                  3.5925227887788527,
+                  3.592631134497557,
+                  3.592621996712847,
+                  3.592662811872261,
+                  3.592655424078641,
+                  3.592564433077904,
+                  3.592666392090125,
+                  3.59263728405941,
+                  3.592523295509071,
+                  3.5926606196614266,
+                  3.5925433592781904,
+                  3.592655266076673,
+                  3.59262765518081,
+                  3.5926532926047465,
+                  3.5925444295189535,
+                  3.5926165677932103,
+                  3.592639663917859,
+                  3.5926047163305688,
+                  3.5926742399395497,
+                  3.5926691594256006,
+                  3.5926758273054626,
+                  3.47879198647485,
+                  3.3648096998372417
+                ],
+                [
+                  3.305080779591429,
+                  3.3130025356822195,
+                  3.431918233234839,
+                  3.35901156943011,
+                  3.3788093151850185,
+                  3.4213863133238456,
+                  3.4065328179509877,
+                  3.433674549920575,
+                  3.4437296771099386,
+                  3.3565668093751775,
+                  3.443176267018742,
+                  3.437907092860389,
+                  3.4066225235145633,
+                  3.3885594923635276,
+                  3.438760780533441,
+                  3.360176621163643,
+                  3.4094335077746756,
+                  3.4186512348413918,
+                  3.3553582890863582,
+                  3.4425954132285868,
+                  3.3390532946690064,
+                  3.421828437870205,
+                  3.3738904070740445,
+                  3.3935409520010023,
+                  3.3943432595934486,
+                  3.409322264349859,
+                  3.3390686736698427,
+                  3.4123103795139444,
+                  3.406133237050081,
+                  3.433724284814022,
+                  3.4287301363266023,
+                  3.367220219828604,
+                  3.436144512090146,
+                  3.416467483326788,
+                  3.3394112232973057,
+                  3.4322423502898567,
+                  3.3529743312221703,
+                  3.4286233269962985,
+                  3.4099583613930524,
+                  3.4272892599741334,
+                  3.353697813977966,
+                  3.402463287375566,
+                  3.418076267638153,
+                  3.394451698629994,
+                  3.441449658300945,
+                  3.43801523087133,
+                  3.442522717658071,
+                  3.3755563118036074,
+                  3.2420405404194614
+                ],
+                [
+                  3.0455837545166093,
+                  3.0088291683170114,
+                  3.145350186342273,
+                  3.0315692628831687,
+                  3.0606606139054455,
+                  3.170473189454348,
+                  3.1802692856451404,
+                  3.244918800314461,
+                  3.2296519072830776,
+                  3.0767486529421806,
+                  3.2311177726114035,
+                  3.2551919985583027,
+                  3.16124008477691,
+                  3.1288024425805423,
+                  3.189277920241997,
+                  3.0597107096907656,
+                  3.136193386503469,
+                  3.1497955862733997,
+                  3.0564488675726365,
+                  3.1622895384774505,
+                  3.017810028189418,
+                  3.1228304703049607,
+                  3.0719061815892874,
+                  3.0893132688252503,
+                  3.1146371247546822,
+                  3.105335004358292,
+                  2.989035638773113,
+                  3.1207467793449544,
+                  3.1731922863227804,
+                  3.234674405469758,
+                  3.199345443611354,
+                  3.0885579626424864,
+                  3.206268890013252,
+                  3.1515818528719155,
+                  3.008124383408349,
+                  3.135032728248442,
+                  3.0502301593779384,
+                  3.173483603768379,
+                  3.1894099341174984,
+                  3.1706343002955175,
+                  3.0310899777244757,
+                  3.114011574557863,
+                  3.1699873086353882,
+                  3.153061357438057,
+                  3.252381655979669,
+                  3.2784727460055585,
+                  3.267187284319636,
+                  3.129966885671847,
+                  2.803028041371213
+                ]
+              ],
+              "edgeThickness": 0.018,
+              "edgeWidth": 0.35
+            }
+          ],
+          "roofKind": "gable"
+        }
+      ],
+      "instanced": [
+        {
+          "id": "purlins",
+          "name": "Roof purlins",
+          "material": "timber",
+          "uv": "grain",
+          "uvScale": 0.6,
+          "boxes": [
+            [
+              12170150,
+              0,
+              0,
+              0,
+              3.92,
+              0.06,
+              0.06
+            ]
+          ],
+          "placements": [
+            [
+              0,
+              3.829,
+              -0.4
+            ],
+            [
+              0,
+              3.829,
+              0.4
+            ],
+            [
+              0,
+              3.5965000000000003,
+              -0.9
+            ],
+            [
+              0,
+              3.5965000000000003,
+              0.9
+            ],
+            [
+              0,
+              3.3640000000000003,
+              -1.4
+            ],
+            [
+              0,
+              3.3640000000000003,
+              1.4
+            ],
+            [
+              0,
+              3.1408,
+              -1.88
+            ],
+            [
+              0,
+              3.1408,
+              1.88
+            ]
+          ]
+        }
+      ]
+    },
+    "postShapes": [
+      {
+        "type": "box",
+        "x": -1.55,
+        "z": -1.55,
+        "height": 3.08,
+        "width": 0.15,
+        "depth": 0.15
+      },
+      {
+        "type": "box",
+        "x": -1.55,
+        "z": 1.55,
+        "height": 3.08,
+        "width": 0.15,
+        "depth": 0.15
+      },
+      {
+        "type": "box",
+        "x": 1.55,
+        "z": -1.55,
+        "height": 3.08,
+        "width": 0.15,
+        "depth": 0.15
+      },
+      {
+        "type": "box",
+        "x": 1.55,
+        "z": 1.55,
+        "height": 3.08,
+        "width": 0.15,
+        "depth": 0.15
+      }
+    ],
+    "referencePolicy": "Existing plate remains authoritative for roof form and material; user explicitly overrides its vertical clearance. Preserve roof pitch, thickness, width and depth. No new Meshy request needed for this existing-model refinement.",
+    "surfaceRefinement": "Nipa eave fringe: retain 65 percent of each original tip height plus 17.5 percent of each neighbour to remove isolated triangular teeth without flattening the torn silhouette.",
+    "roofProjection": {
+      "kind": "gable",
+      "evidence": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-material-evidence/roof-projection.json",
+      "normalStrength": 0.1,
+      "unseenSlopeConfidence": 0.75,
+      "maps": "Absolute de-lit roof albedo, independent roughness and normal; no repeated macro marks. Roof geometry remains procedural.",
+      "neutralAlbedoTransfer": "#d8d8d8"
+    },
+    "fringeNormals": "Position-welded angle-weighted normals on the soft thatch shell. Geometry/UVs unchanged; remove opposed shading normals at acute torn rim seams.",
+    "frameProjection": {
+      "evidence": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-material-evidence/post-projection.json",
+      "confidence": 0.82
+    },
+    "nipa-thatch-formCorrection": "Taper the last 0.35 m of the nipa shell from 180 mm bulk to an 18 mm leaf edge, eliminating the block-like cut rim while keeping the torn silhouette.",
+    "qualityScope": "Whole-asset visual fidelity, including roof materials, per user clarification. Height and upright support proportions intentionally supersede reference plate; compare material, construction and local shapes independently of the approved 1.10 m lift.",
+    "rawPhotoDiagnosticApplicability": "Raw global silhouette overlap is not an acceptance gate for the intentional 1.10 m height edit. Original photo comparison retained as a diagnostic; dimensional/runtime measurements, full turntable, component checks, material crop comparisons and AI visual review are the acceptance evidence."
+  },
+  "materialPipeline": {
+    "schemaVersion": 1,
+    "status": "proceed",
+    "analysisArtifact": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-material-views/region-analysis.json",
+    "targetThreshold": 0.7,
+    "unresolvedNotObservedMaterials": [],
+    "regions": [
+      {
+        "regionId": "roof",
+        "specMaterialId": "thatch",
+        "componentId": "thatch",
+        "status": "proceed",
+        "confidence": 0.86,
+        "sourceEvidence": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-roof-pbr/thatch-region-extraction.json",
+        "comparison": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-material-views/roof-comparison.json",
+        "profileId": "dielectric.opaque-matte",
+        "profileUse": "Material-family label only; final fitted runtime parameters are retained and reference region evidence supplies the specific finish."
+      },
+      {
+        "regionId": "frame",
+        "specMaterialId": "timber",
+        "componentId": "frame",
+        "status": "proceed",
+        "confidence": 0.82,
+        "sourceEvidence": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-frame-pbr/timber-region-extraction.json",
+        "comparison": "/home/mulligan/code/thaikit/scratch/nipa-thatch-canopy-module/height-material-views/frame-comparison.json",
+        "profileId": "wood.unfinished",
+        "profileUse": "Material-family label only; final fitted runtime parameters are retained and reference region evidence supplies the specific finish."
+      }
+    ],
+    "controlledViewsRequired": [
+      "albedo-unlit",
+      "neutral-studio",
+      "grazing",
+      "environment-reflection",
+      "reference-beauty"
+    ],
+    "route": "Manual reference-region assignment and post-construction PBR maps; no automatic profile substitution.",
+    "registry": "/home/mulligan/.codex/skills/img2threejs/docs/materials/material-reference.json"
+  },
+  "materialGate": {
+    "schemaVersion": 1,
+    "kind": "img2threejs.material-gate",
+    "passed": true,
+    "failures": [],
+    "warnings": [],
+    "comparisonCount": 2,
+    "compatibility": {
+      "schemaVersion": 1,
+      "passed": true,
+      "failures": [],
+      "warnings": [],
+      "checked": {
+        "materialCount": 2,
+        "componentCount": 2,
+        "repetitionSystemCount": 1,
+        "referencedMaterialCount": 2,
+        "riggedComponentCount": 0,
+        "lodPresent": true,
+        "collisionPresent": false
+      },
+      "invariant": "material IDs and UV/map contracts survive geometry, skinning, collision and LOD changes"
+    },
+    "requiredEvidence": [
+      "materialPipeline.status=proceed",
+      "all material regions status=proceed",
+      "per-region crop comparison passed",
+      "multi-angle controlled view plan and screenshot readback",
+      "geometry/UV/skinning/collision/LOD material ID compatibility passed"
+    ]
+  }
 }

@@ -19,14 +19,6 @@ import * as THREE from 'three';
  */
 
 export type ProceduralModelOptions = {
-  /**
-   * Where this prop's shipped files live, with a trailing slash.
-   *
-   * The maps are recorded as bare filenames because the bundle is EVALUATED
-   * rather than imported: it has no import.meta and no currentScript, so it
-   * cannot see its own URL. Every host derives this from the module URL.
-   */
-  baseUrl?: string;
   wireframe?: boolean;
   castShadow?: boolean;
   receiveShadow?: boolean;
@@ -44,514 +36,514 @@ export type ProceduralModelRuntime = {
 };
 
 const CONFIG = {
-    "id": "low-rise-condominium",
-    "name": "Low-Rise Condominium",
-    "exportName": "LowRiseCondominium",
-    "envelope": "Envelope 21.80 x 21.00 x 16.55 m, origin base-center, +Y up.\n * Budget (hero4x): <=32000 triangles, <=24 draw calls, <=16 materials, <=32 unique geometries.",
-    "materials": [
-      {
-        "id": "white",
-        "color": 15527148,
-        "roughness": 0.88,
-        "metalness": 0,
-        "vertexColors": true
-      },
-      {
-        "id": "fin",
-        "color": 4479580,
-        "roughness": 0.62,
-        "metalness": 0.2
-      },
-      {
-        "id": "glass",
-        "color": 5008232,
-        "roughness": 0.12,
-        "metalness": 0,
-        "opacity": 0.92,
-        "envMapIntensity": 1
-      },
-      {
-        "id": "balglass",
-        "color": 13030608,
-        "roughness": 0.25,
-        "metalness": 0,
-        "opacity": 0.62
-      },
-      {
-        "id": "alu",
-        "color": 10133665,
-        "roughness": 0.45,
-        "metalness": 0.3
-      },
-      {
-        "id": "timber",
-        "color": 11770751,
-        "roughness": 0.8,
-        "metalness": 0
-      },
-      {
-        "id": "steel",
-        "color": 9407104,
-        "roughness": 0.38,
-        "metalness": 0.35
-      },
-      {
-        "id": "deck",
-        "color": 11906984,
-        "roughness": 0.95,
-        "metalness": 0
-      },
-      {
-        "id": "plinth",
-        "color": 13618629,
-        "roughness": 0.9,
-        "metalness": 0
-      },
-      {
-        "id": "plant",
-        "color": 16777215,
-        "roughness": 0.85,
-        "metalness": 0
-      },
-      {
-        "id": "sign",
-        "color": 16777215,
-        "roughness": 0.8,
-        "metalness": 0
-      }
+  "id": "low-rise-condominium",
+  "name": "Low-Rise Condominium",
+  "exportName": "LowRiseCondominium",
+  "envelope": "Envelope 21.80 x 21.00 x 16.55 m, origin base-center, +Y up.\n * Budget (hero4x): <=32000 triangles, <=24 draw calls, <=16 materials, <=32 unique geometries.",
+  "materials": [
+    {
+      "id": "white",
+      "color": 15527148,
+      "roughness": 0.88,
+      "metalness": 0,
+      "vertexColors": true
+    },
+    {
+      "id": "fin",
+      "color": 4278861,
+      "roughness": 0.7,
+      "metalness": 0.18
+    },
+    {
+      "id": "glass",
+      "color": 5008232,
+      "roughness": 0.12,
+      "metalness": 0,
+      "opacity": 0.92,
+      "envMapIntensity": 1
+    },
+    {
+      "id": "balglass",
+      "color": 7505800,
+      "roughness": 0.24,
+      "metalness": 0,
+      "opacity": 0.7
+    },
+    {
+      "id": "alu",
+      "color": 10133665,
+      "roughness": 0.45,
+      "metalness": 0.3
+    },
+    {
+      "id": "timber",
+      "color": 11770751,
+      "roughness": 0.8,
+      "metalness": 0
+    },
+    {
+      "id": "steel",
+      "color": 9407104,
+      "roughness": 0.38,
+      "metalness": 0.35
+    },
+    {
+      "id": "deck",
+      "color": 11906984,
+      "roughness": 0.95,
+      "metalness": 0
+    },
+    {
+      "id": "plinth",
+      "color": 13618629,
+      "roughness": 0.9,
+      "metalness": 0
+    },
+    {
+      "id": "plant",
+      "color": 16777215,
+      "roughness": 0.85,
+      "metalness": 0
+    },
+    {
+      "id": "sign",
+      "color": 16777215,
+      "roughness": 0.8,
+      "metalness": 0
+    }
+  ],
+  "geometry": {
+    "hx": 10.25,
+    "hz": 7,
+    "t": 0.3,
+    "groundTop": 3.05,
+    "roofY": 17.75,
+    "band": 0.45,
+    "holeH": 2.4,
+    "recess": 0.85,
+    "levels": [
+      3.5,
+      6.35,
+      9.2,
+      12.05,
+      14.9
     ],
-    "geometry": {
-      "hx": 10.25,
-      "hz": 7,
-      "t": 0.3,
-      "groundTop": 3.05,
-      "roofY": 17.75,
-      "band": 0.45,
-      "holeH": 2.4,
-      "recess": 1.5,
-      "levels": [
-        3.5,
-        6.35,
-        9.2,
-        12.05,
-        14.9
+    "bays": [
+      [
+        -9.8,
+        -7.3
       ],
-      "bays": [
+      [
+        -7,
+        -4.5
+      ],
+      [
+        -2.65,
+        -0.15
+      ],
+      [
+        0.15,
+        2.65
+      ],
+      [
+        4.5,
+        7
+      ],
+      [
+        7.3,
+        9.8
+      ]
+    ],
+    "balcony": [
+      false,
+      true,
+      true,
+      false,
+      true,
+      false
+    ],
+    "fins": {
+      "narrow": [
         [
-          -9.8,
-          -7.3
+          -7.3,
+          -7
         ],
         [
-          -7,
-          -4.5
+          -0.15,
+          0.15
         ],
         [
-          -2.65,
-          -0.15
-        ],
-        [
-          0.15,
-          2.65
-        ],
-        [
-          4.5,
-          7
-        ],
-        [
-          7.3,
-          9.8
+          7,
+          7.3
         ]
       ],
-      "balcony": [
-        false,
-        true,
-        true,
-        false,
-        true,
-        false
-      ],
-      "fins": {
-        "narrow": [
-          [
-            -7.3,
-            -7
-          ],
-          [
-            -0.15,
-            0.15
-          ],
-          [
-            7,
-            7.3
-          ]
-        ],
-        "corner": [
-          [
-            -10.2,
-            -9.75
-          ],
-          [
-            9.75,
-            10.2
-          ]
-        ],
-        "narrowD": 0.3,
-        "cornerD": 0.5,
-        "y1": 17.4
-      },
-      "louvre": {
-        "front": [
-          [
-            -4.5,
-            -2.65
-          ],
-          [
-            2.65,
-            4.5
-          ]
-        ],
-        "d": 0.6,
-        "slatW": 0.06,
-        "slatD": 0.12,
-        "pitch": 0.11,
-        "side": [
-          [
-            -3,
-            -1.2
-          ],
-          [
-            0.2,
-            2
-          ]
-        ],
-        "sideD": 0.55,
-        "y0": 2.9
-      },
-      "sideGap": {
-        "z0": -1.2,
-        "z1": 0.2,
-        "ledgeD": 0.3,
-        "ledgeH": 0.12
-      },
-      "sideWin": {
-        "z0": 2,
-        "z1": 2.45,
-        "y0": 0.7,
-        "y1": 2.3
-      },
-      "coping": {
-        "y0": 17.4,
-        "y1": 18.5,
-        "out": 0.35
-      },
-      "deck": {
-        "y": 17.85
-      },
-      "screen": {
-        "x0": -8.7,
-        "x1": 8.7,
-        "z0": -6.5,
-        "z1": 2.5,
-        "y1": 21,
-        "battenW": 0.075,
-        "battenD": 0.05,
-        "pitch": 0.12,
-        "rails": [
-          17.95,
-          19.45,
-          20.92
-        ],
-        "postPitch": 2.9,
-        "partitions": [
-          -2.2,
-          3.3
-        ]
-      },
-      "roofbox": {
-        "x0": -5.9,
-        "x1": -2.35,
-        "z0": -0.1,
-        "z1": 2.3,
-        "y1": 20.7
-      },
-      "portal": {
-        "x0": -2.5,
-        "x1": 2.5,
-        "surround": 0.4,
-        "recess": 1,
-        "doorZ": 6.05
-      },
-      "groundGlazing": [
+      "corner": [
         [
-          -9.8,
-          -7.3
-        ],
-        [
-          4.5,
-          9.8
-        ]
-      ],
-      "groundWin": {
-        "y0": 0.45,
-        "y1": 2.75
-      },
-      "canopy": {
-        "y0": 2.4,
-        "y1": 2.6,
-        "out": 2.5,
-        "x0": -2.8,
-        "x1": 2.8,
-        "postX": 2.35,
-        "postS": 0.15
-      },
-      "step": {
-        "x0": -3,
-        "x1": 3,
-        "z1": 9.6,
-        "h": 0.15
-      },
-      "planter": {
-        "spans": [
-          [
-            -10.25,
-            -3
-          ],
-          [
-            3,
-            10.25
-          ]
-        ],
-        "d": 1.2,
-        "h": 0.5
-      },
-      "sideGround": {
-        "z0": 0.6,
-        "z1": 5.2,
-        "y0": 0.6,
-        "y1": 2.7
-      },
-      "sign": {
-        "x0": -6.6,
-        "x1": -4.9,
-        "y0": 1.65,
-        "y1": 2.25,
-        "line1": "BAAN JAI",
-        "line2": "CONDO",
-        "ink": "#3a4440",
-        "ground": "#e6e6e4"
-      },
-      "bushes": [
-        [
-          -9.75,
-          7.48,
-          0.58,
-          0.3,
-          0.52,
-          0
-        ],
-        [
-          -9.05,
-          7.6,
-          0.58,
-          0.32999999999999996,
-          0.52,
-          1
-        ],
-        [
-          -8.35,
-          7.72,
-          0.58,
-          0.36,
-          0.52,
-          2
-        ],
-        [
-          -7.65,
-          7.48,
-          0.58,
-          0.3,
-          0.52,
-          3
-        ],
-        [
-          -6.95,
-          7.6,
-          0.58,
-          0.32999999999999996,
-          0.52,
-          0
-        ],
-        [
-          -6.25,
-          7.72,
-          0.58,
-          0.36,
-          0.52,
-          1
-        ],
-        [
-          -5.55,
-          7.48,
-          0.58,
-          0.3,
-          0.52,
-          2
-        ],
-        [
-          -4.85,
-          7.6,
-          0.58,
-          0.32999999999999996,
-          0.52,
-          3
-        ],
-        [
-          -4.15,
-          7.72,
-          0.58,
-          0.36,
-          0.52,
-          0
-        ],
-        [
-          -3.45,
-          7.48,
-          0.58,
-          0.3,
-          0.52,
-          1
-        ],
-        [
-          3.45,
-          7.48,
-          0.58,
-          0.32999999999999996,
-          0.52,
-          2
-        ],
-        [
-          4.15,
-          7.72,
-          0.58,
-          0.36,
-          0.52,
-          3
-        ],
-        [
-          4.85,
-          7.6,
-          0.58,
-          0.3,
-          0.52,
-          0
-        ],
-        [
-          5.55,
-          7.48,
-          0.58,
-          0.32999999999999996,
-          0.52,
-          1
-        ],
-        [
-          6.25,
-          7.72,
-          0.58,
-          0.36,
-          0.52,
-          2
-        ],
-        [
-          6.95,
-          7.6,
-          0.58,
-          0.3,
-          0.52,
-          3
-        ],
-        [
-          7.65,
-          7.48,
-          0.58,
-          0.32999999999999996,
-          0.52,
-          0
-        ],
-        [
-          8.35,
-          7.72,
-          0.58,
-          0.36,
-          0.52,
-          1
-        ],
-        [
-          9.05,
-          7.6,
-          0.58,
-          0.3,
-          0.52,
-          2
+          -10.2,
+          -9.75
         ],
         [
           9.75,
-          7.48,
-          0.58,
-          0.32999999999999996,
-          0.52,
-          3
+          10.2
         ]
       ],
-      "bushTints": [
-        6253124,
-        7305808,
-        8358492,
-        5661240
-      ],
-      "palms": [
+      "narrowD": 0.3,
+      "cornerD": 0.5,
+      "y1": 17.4
+    },
+    "louvre": {
+      "front": [
         [
-          -8.2,
-          7.4,
-          0.3,
-          0
+          -4.5,
+          -2.65
         ],
         [
-          -6,
-          7.45,
-          1.4,
-          1
-        ],
-        [
-          -4,
-          7.35,
-          2.6,
-          0
-        ],
-        [
-          4,
-          7.4,
-          0.9,
-          1
-        ],
-        [
-          6.2,
-          7.35,
-          2,
-          0
-        ],
-        [
-          8.4,
-          7.45,
-          3.3,
-          1
+          2.65,
+          4.5
         ]
       ],
-      "palmTints": [
-        9083486,
-        8031314
+      "d": 0.6,
+      "slatW": 0.06,
+      "slatD": 0.12,
+      "pitch": 0.11,
+      "side": [
+        [
+          -3,
+          -1.2
+        ],
+        [
+          0.2,
+          2
+        ]
+      ],
+      "sideD": 0.55,
+      "y0": 2.9
+    },
+    "sideGap": {
+      "z0": -1.2,
+      "z1": 0.2,
+      "ledgeD": 0.3,
+      "ledgeH": 0.12
+    },
+    "sideWin": {
+      "z0": 2,
+      "z1": 2.45,
+      "y0": 0.7,
+      "y1": 2.3
+    },
+    "coping": {
+      "y0": 17.4,
+      "y1": 18.5,
+      "out": 0.35
+    },
+    "deck": {
+      "y": 17.85
+    },
+    "screen": {
+      "x0": -8.7,
+      "x1": 8.7,
+      "z0": -6.5,
+      "z1": 2.5,
+      "y1": 21,
+      "battenW": 0.075,
+      "battenD": 0.05,
+      "pitch": 0.12,
+      "rails": [
+        17.95,
+        19.45,
+        20.92
+      ],
+      "postPitch": 2.9,
+      "partitions": [
+        -2.2,
+        3.3
       ]
-    }
-  } as any;
+    },
+    "roofbox": {
+      "x0": -5.9,
+      "x1": -2.35,
+      "z0": -0.1,
+      "z1": 2.3,
+      "y1": 20.7
+    },
+    "portal": {
+      "x0": -2.5,
+      "x1": 2.5,
+      "surround": 0.4,
+      "recess": 1,
+      "doorZ": 6.05
+    },
+    "groundGlazing": [
+      [
+        -9.8,
+        -7.3
+      ],
+      [
+        4.5,
+        9.8
+      ]
+    ],
+    "groundWin": {
+      "y0": 0.45,
+      "y1": 2.75
+    },
+    "canopy": {
+      "y0": 2.4,
+      "y1": 2.6,
+      "out": 2.5,
+      "x0": -2.8,
+      "x1": 2.8,
+      "postX": 2.35,
+      "postS": 0.15
+    },
+    "step": {
+      "x0": -3,
+      "x1": 3,
+      "z1": 9.6,
+      "h": 0.15
+    },
+    "planter": {
+      "spans": [
+        [
+          -10.25,
+          -3
+        ],
+        [
+          3,
+          10.25
+        ]
+      ],
+      "d": 1.2,
+      "h": 0.5
+    },
+    "sideGround": {
+      "z0": 0.6,
+      "z1": 5.2,
+      "y0": 0.6,
+      "y1": 2.7
+    },
+    "sign": {
+      "x0": -6.6,
+      "x1": -4.9,
+      "y0": 1.65,
+      "y1": 2.25,
+      "line1": "BAAN JAI",
+      "line2": "CONDO",
+      "ink": "#3a4440",
+      "ground": "#e6e6e4"
+    },
+    "bushes": [
+      [
+        -9.75,
+        7.48,
+        0.58,
+        0.3,
+        0.52,
+        0
+      ],
+      [
+        -9.05,
+        7.6,
+        0.58,
+        0.32999999999999996,
+        0.52,
+        1
+      ],
+      [
+        -8.35,
+        7.72,
+        0.58,
+        0.36,
+        0.52,
+        2
+      ],
+      [
+        -7.65,
+        7.48,
+        0.58,
+        0.3,
+        0.52,
+        3
+      ],
+      [
+        -6.95,
+        7.6,
+        0.58,
+        0.32999999999999996,
+        0.52,
+        0
+      ],
+      [
+        -6.25,
+        7.72,
+        0.58,
+        0.36,
+        0.52,
+        1
+      ],
+      [
+        -5.55,
+        7.48,
+        0.58,
+        0.3,
+        0.52,
+        2
+      ],
+      [
+        -4.85,
+        7.6,
+        0.58,
+        0.32999999999999996,
+        0.52,
+        3
+      ],
+      [
+        -4.15,
+        7.72,
+        0.58,
+        0.36,
+        0.52,
+        0
+      ],
+      [
+        -3.45,
+        7.48,
+        0.58,
+        0.3,
+        0.52,
+        1
+      ],
+      [
+        3.45,
+        7.48,
+        0.58,
+        0.32999999999999996,
+        0.52,
+        2
+      ],
+      [
+        4.15,
+        7.72,
+        0.58,
+        0.36,
+        0.52,
+        3
+      ],
+      [
+        4.85,
+        7.6,
+        0.58,
+        0.3,
+        0.52,
+        0
+      ],
+      [
+        5.55,
+        7.48,
+        0.58,
+        0.32999999999999996,
+        0.52,
+        1
+      ],
+      [
+        6.25,
+        7.72,
+        0.58,
+        0.36,
+        0.52,
+        2
+      ],
+      [
+        6.95,
+        7.6,
+        0.58,
+        0.3,
+        0.52,
+        3
+      ],
+      [
+        7.65,
+        7.48,
+        0.58,
+        0.32999999999999996,
+        0.52,
+        0
+      ],
+      [
+        8.35,
+        7.72,
+        0.58,
+        0.36,
+        0.52,
+        1
+      ],
+      [
+        9.05,
+        7.6,
+        0.58,
+        0.3,
+        0.52,
+        2
+      ],
+      [
+        9.75,
+        7.48,
+        0.58,
+        0.32999999999999996,
+        0.52,
+        3
+      ]
+    ],
+    "bushTints": [
+      6253124,
+      7305808,
+      8358492,
+      5661240
+    ],
+    "palms": [
+      [
+        -8.2,
+        7.4,
+        0.3,
+        0
+      ],
+      [
+        -6,
+        7.45,
+        1.4,
+        1
+      ],
+      [
+        -4,
+        7.35,
+        2.6,
+        0
+      ],
+      [
+        4,
+        7.4,
+        0.9,
+        1
+      ],
+      [
+        6.2,
+        7.35,
+        2,
+        0
+      ],
+      [
+        8.4,
+        7.45,
+        3.3,
+        1
+      ]
+    ],
+    "palmTints": [
+      9083486,
+      8031314
+    ]
+  }
+} as any;
 
 /* ------------------------------------------------------------------ geometry helpers */
 
@@ -1034,7 +1026,7 @@ function buildMaterials(options: ProceduralModelOptions): Record<string, THREE.M
       vertexColors: s.vertexColors === true,
     });
     if (s.envMapIntensity !== undefined) m.envMapIntensity = s.envMapIntensity;
-    if (s.opacity !== undefined) { m.transparent = true; m.opacity = s.opacity; m.depthWrite = true; }
+    if (s.opacity !== undefined) { m.transparent = true; m.opacity = s.opacity; m.depthWrite = s.id !== 'balglass'; }
     m.name = s.id;
     map[s.id] = m;
   }
@@ -1183,7 +1175,7 @@ export function createLowRiseCondominiumModel(options: ProceduralModelOptions = 
     parts.push(sideWall(innerX));
     // body between the facades and side walls: its +Z/-Z faces are the recess back walls, tinted
     // 0.70 linear (the plate's recess glazing surround reads ~0.78 sRGB of the lit render)
-    parts.push(tintGeo(boxAt(0, (G.groundTop + G.roofY) / 2, 0, innerX * 2, G.roofY - G.groundTop, zBack * 2), 0.70));
+    parts.push(tintGeo(boxAt(0, (G.groundTop + G.roofY) / 2, 0, innerX * 2, G.roofY - G.groundTop, zBack * 2), 0.36));
     // ground floor: notched plan (the portal recess), inset 0.30 on -X, +X and -Z, flush on +Z
     {
       const P = G.portal, zFront = zFace - 0.4, zRear = -zFace + 0.3;
@@ -1377,7 +1369,7 @@ export function createLowRiseCondominiumModel(options: ProceduralModelOptions = 
     }
   }
   {
-    const inst = addInst('glass', 'Tinted glazing', unit.clone(), 'glass', glassM);
+    const inst = addInst('glass', 'Tinted glazing', unit.clone(), 'glass', glassM);for(let i=0;i<glassM.length;i++){const tone=.78+.20*((i*37%17)/16);inst.setColorAt(i,new THREE.Color().setRGB(tone,tone,tone));}
     // The plate's panes are dark teal with pale curtain folds and a bright reflection band. One
     // 256^2 canvas on the shared glass material; mean luma ~105 and the teal ground at saturation 0.29, so no pane is read as backdrop.
     // Under Node there is no document and the pane ships in its authored flat tone.
@@ -1385,8 +1377,8 @@ export function createLowRiseCondominiumModel(options: ProceduralModelOptions = 
       const c = document.createElement('canvas');
       c.width = 256; c.height = 256;
       const ctx = c.getContext('2d')!;
-      ctx.fillStyle = '#4c6b68'; ctx.fillRect(0, 0, 256, 256);
-      for (let x = 0; x < 256; x += 18) { ctx.fillStyle = (x / 18) % 2 === 0 ? 'rgba(176, 188, 184, 0.30)' : 'rgba(140, 152, 148, 0.22)'; ctx.fillRect(x + 2, 8, 14, 248); }
+      ctx.fillStyle = '#3d4e50'; ctx.fillRect(0, 0, 256, 256);
+      for (let x = 0; x < 256; x += 18) { ctx.fillStyle = (x / 18) % 2 === 0 ? 'rgba(176, 188, 184, 0.09)' : 'rgba(140, 152, 148, 0.06)'; ctx.fillRect(x + 2, 8, 14, 248); }
       const gr = ctx.createLinearGradient(0, 0, 0, 256);
       gr.addColorStop(0, 'rgba(215, 226, 228, 0.42)'); gr.addColorStop(0.30, 'rgba(215, 226, 228, 0.08)'); gr.addColorStop(1, 'rgba(50, 68, 66, 0.30)');
       ctx.fillStyle = gr; ctx.fillRect(0, 0, 256, 256);
@@ -1412,7 +1404,7 @@ export function createLowRiseCondominiumModel(options: ProceduralModelOptions = 
     const runZ = (x: number) => { for (let z = S.z0 + 0.12; z <= S.z1 - 0.12; z += S.pitch) mats.push(new THREE.Matrix4().compose(new THREE.Vector3(x, yc, z), q90, new THREE.Vector3(1, 1, 1))); };
     runX(S.z1); runX(S.z0); runZ(S.x0); runZ(S.x1);
     for (const px of S.partitions as number[]) runZ(px);
-    addInst('battens', 'Timber screen battens', batten, 'timber', mats);
+    const screen=addInst('battens', 'Timber screen battens', batten, 'timber', mats);for(let i=0;i<mats.length;i++){const k=.80+.20*((i*23%29)/28);screen.setColorAt(i,new THREE.Color().setRGB(k,k*.97,k*.91));}
     // steel: three rails per run, posts at the corners, partitions and every 2.9 m, the canopy
     // posts and its edge trim
     const parts: THREE.BufferGeometry[] = [];
@@ -1556,15 +1548,4 @@ export function createObjectModel(spec?: unknown, options: ProceduralModelOption
   return root;
 }
 
-/**
- * The one-argument entry point: vibe3d's contract, and img2threejs's own.
- *
- * `createObjectModel` above keeps thaikit's historical (spec, options) shape so
- * the harness, the level editor and the Node-side gates carry on unchanged.
- * `spec` has never been passed by any caller -- it is inspection data that is
- * already baked into this module -- so this is the honest signature, and it is
- * what a vibe3d consumer installs and calls.
- */
-export function createModel(options: ProceduralModelOptions = {}): THREE.Group {
-  return createObjectModel(undefined, options);
-}
+export function createModel(options: ProceduralModelOptions = {}): THREE.Group { return createObjectModel(undefined, options); }

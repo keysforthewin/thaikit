@@ -40,40 +40,40 @@
   },
   "sourceImage": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
   "referenceCamera": {
-    "solved": false,
-    "fovDegrees": 40.0,
+    "solved": true,
+    "fovDegrees": 12,
     "aspect": 1.0,
     "orientation": {
-      "yaw": 0.0,
-      "pitch": 0.0,
-      "roll": 0.0
+      "yaw": 0,
+      "pitch": 4,
+      "roll": 0
     },
     "positionHint": [
       0.0,
       0.0,
       3.0
     ],
-    "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
+    "note": "Reference-object alpha mask retains source RGB; original full photograph remains vision authority.",
+    "fitMethod": "Measured cast-disc perimeter with fixed 12 degree long lens; exclude wall cast shadow from object mask."
   },
   "suitability": "conditional",
   "scores": {
-    "object_isolation": 0,
-    "silhouette_readability": 0,
-    "depth_inference": 0,
-    "primitive_decomposition": 0,
-    "material_procedurality": 0,
-    "occlusion_risk": 0,
-    "interaction_fit": 0
+    "object_isolation": 3,
+    "silhouette_readability": 3,
+    "depth_inference": 2,
+    "primitive_decomposition": 3,
+    "material_procedurality": 3,
+    "occlusion_risk": 1,
+    "interaction_fit": 3
   },
   "preSpecAssessment": {
     "objectClass": {
-      "primaryType": "cast oval bulkhead light: a round backplate, a ribbed frosted dome and a bronze strap guard",
+      "primaryType": "Round enamelled bulkhead luminaire with a welded four-bar guard and vertically fluted pressed-glass diffuser",
       "primaryDomain": "object",
       "formLanguage": [
-        "geometric",
-        "surface-of-revolution",
-        "domed-shell",
-        "banded-guard"
+        "circular flange",
+        "domed glass",
+        "bowed welded cage"
       ],
       "structureKind": [
         "wall-fitting",
@@ -83,36 +83,37 @@
         "none - screwed to a wall, rigid body"
       ],
       "materialFamilies": [
-        "cream-enamelled-cast",
-        "frosted-glass",
-        "bronze-strap"
+        "cream enamel",
+        "oxidized steel",
+        "pressed glass",
+        "plated screws"
       ],
-      "notes": "The cheapest and most repeated exterior fitting there is - over a shophouse door, a stairwell landing and every apartment corridor - so it is placed by the dozen and has to be ONE draw call. Its axis is the wall NORMAL, not vertical."
+      "notes": "Static wall fitting; two draw calls separate opaque cast/guard/hardware from glass."
     },
     "complexity": {
       "tier": "moderate",
       "scores": {
         "silhouetteComplexity": 1,
-        "componentCount": 0,
-        "hierarchyDepth": 0,
+        "componentCount": 1,
+        "hierarchyDepth": 1,
         "repetitionDensity": 1,
-        "materialLayerCount": 1,
+        "materialLayerCount": 2,
         "localDetailDensity": 2,
-        "occlusionRisk": 0,
+        "occlusionRisk": 1,
         "actionReadinessNeed": 0
       },
       "estimatedCounts": {
         "macroComponents": 1,
-        "mesoComponents": 0,
-        "microFeatureGroups": 5,
-        "materialLayers": 1,
+        "mesoComponents": 1,
+        "microFeatureGroups": 7,
+        "materialLayers": 2,
         "repetitionSystems": 0
       },
       "reasoning": [
-        "ONE component, because the small class allows exactly one draw call. Backplate, dome and strap guard are one lathed surface.",
-        "The fitting is a surface of revolution about the WALL NORMAL, so the lathe is authored along +Y and the component is rotated +90 degrees about X to lay that axis into +Z.",
-        "The strap guard's CIRCUMFERENTIAL bands are built as proud rings in the lathe profile; its VERTICAL straps are not, because a lathe cannot make them and a second part is not available.",
-        "Every colour - cream backplate, bronze rings, frosted dome - is a vertex-colour band along the fitting's own axis, because one material is the entire allowance."
+        "Circular cast backplate with rolled outer bead and recessed annulus.",
+        "Four round-section guard bars form one closed welded network with four junctions; not flat overlapping straps.",
+        "Glass is a separate shallow ellipsoid with vertical parallel fluting; chrome screw pair at 3 and 9 oclock.",
+        "Shared opaque submission uses vertex colors; glass gets independent roughness and normal response within the resolved medium budget."
       ]
     },
     "specDepthDecision": {
@@ -125,7 +126,7 @@
       "needsMaterialLocalOverrides": true,
       "needsMultipleReviewViews": true,
       "needsActionReadyHierarchy": false,
-      "rationale": "Moderate. The medium class allows only TWO draw calls and TWO materials, so all sub-structure is carried as lathe profile detail, vertex-colour regions and localFeatures."
+      "rationale": "Two render components, seven explicit local features; no invented articulation."
     },
     "unknownsToResolveBeforeImplementation": [],
     "detailInventory": {
@@ -140,8 +141,8 @@
           "mapsTo": {
             "ref": "backplate"
           },
-          "description": "A flat cream annulus from r 0.092 to r 0.120 at depth 0.018, with a bead rolling to r 0.130 at the wall -- the declared 0.26 m width. The back is a closed cast disc.",
-          "realization": "unreported"
+          "description": "Closed cream casting, radius 0.13 m; rolled outer bead and recessed annulus with small edge chips.",
+          "realization": "geometry"
         },
         {
           "id": "bezel-lip",
@@ -150,8 +151,8 @@
           "mapsTo": {
             "ref": "bezel"
           },
-          "description": "A raised lip at r 0.085 / depth 0.036 where the throat meets the glass, rolling back down to r 0.079. Without it the cream runs into the glass as a plain cone.",
-          "realization": "unreported"
+          "description": "Inner rounded lip around glass at radius 0.080 m, z 0.030 m; overlap glass seat by at least 1 mm.",
+          "realization": "geometry"
         },
         {
           "id": "frosted-dome",
@@ -160,8 +161,8 @@
           "mapsTo": {
             "ref": "fluted-dome"
           },
-          "description": "A fluted frosted-glass ellipsoid, r 0.079 at depth 0.031 to a closed nose at 0.1064 -- the fitting's projection. Fourteen flutes 0.8 mm deep.",
-          "realization": "unreported"
+          "description": "Smooth pressed-glass ellipsoid radius .084 m, base .030 m and crown .100 m; vertical fluting and reference-derived lower insect/dirt mask.",
+          "realization": "geometry"
         },
         {
           "id": "cross-basket-guard",
@@ -170,8 +171,8 @@
           "mapsTo": {
             "ref": "cross-basket-guard"
           },
-          "description": "Four bronze hoops arcing over the dome -- two vertical at x +-0.60 R, two horizontal at y +-0.29 R -- standing 1-5 mm proud of the glass and bolted into the throat. This is what makes the fitting a bulkhead rather than a plain dome light.",
-          "realization": "unreported"
+          "description": "Four bowed round-section bars form one closed welded cage with four junctions. Bars clear the glass and embed at all eight feet. Glass has vertical fluting; cast body has two concentric mouldings and seated cross-head screws.",
+          "realization": "geometry"
         },
         {
           "id": "fixing-bosses",
@@ -180,8 +181,8 @@
           "mapsTo": {
             "ref": "fixing-bosses"
           },
-          "description": "Two chrome bosses at 3 and 9 o'clock on the flange at r 0.113, 4 mm proud as low truncated cones.",
-          "realization": "unreported"
+          "description": "Two cream seats and chrome screw heads at x +/-0.116 m, y 0, on cast flange; cross recesses.",
+          "realization": "geometry"
         },
         {
           "id": "cream-cast",
@@ -190,8 +191,8 @@
           "mapsTo": {
             "ref": "backplate"
           },
-          "description": "The casting is cream, measured on the plate at 222,194,144 and 227,198,140 -> #dfc48c.",
-          "realization": "unreported"
+          "description": "Closed cream casting, radius 0.13 m; rolled outer bead and recessed annulus with small edge chips.",
+          "realization": "vertex-color"
         },
         {
           "id": "bronze-straps",
@@ -200,8 +201,18 @@
           "mapsTo": {
             "ref": "cross-basket-guard"
           },
-          "description": "The guard is bronze against the cream and the glass, measured at 95,54,32 and 100,49,18 -> #613319. Its luma of 62 sits in the hole-gate band and is carried by chroma (saturation 0.74).",
-          "realization": "unreported"
+          "description": "Reference rust brown palette retained without lifting its value to evade a hole test. Use unlit geometry masks to test holes.",
+          "realization": "vertex-color"
+        },
+        {
+          "id": "welded-crossings",
+          "kind": "ridge",
+          "identityDefining": true,
+          "mapsTo": {
+            "ref": "weld-junctions"
+          },
+          "description": "Four continuous rounded crossings, no loose ends, internal faces, duplicate coincident faces or disconnected flat strips.",
+          "realization": "geometry"
         }
       ]
     },
@@ -232,23 +243,22 @@
     },
     "sourceImage": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
     "resolvedUnknowns": [
-      "Radially symmetric about the wall normal, so the single view shows the whole form. Confidence 0.9.",
-      "The declared 0.26 x 0.28 m face is slightly OVAL; a lathe gives a circle, so the fitting is built round at 0.26 m. The 7% shortfall on height is inside the asset's 10% tolerance and a true oval would need a non-uniform scale that would also squash the dome. Confidence 0.85.",
-      "The guard's vertical straps are NOT built - see the assumptions. Confidence 0.9.",
-      "The dome's vertical ribbing is not built: it is a moulded texture at 0.2 m and would need a canvas this class cannot carry. Confidence 0.85."
+      "Rear housing is hidden: conservative closed disc, confidence 0.6.",
+      "Projection depth remains declared 0.106 m; front dimensions remain 0.26 m square.",
+      "Guard feet embed in cast bezel; exact rear fastening is unobserved, confidence 0.65."
     ],
     "unknownsNote": "All intake unknowns are RESOLVED; each has a chosen answer and a stated confidence in resolvedUnknowns and in spec.assumptions. Nothing here blocks implementation, and the ones a second view would settle are not resolvable from a single plate by any amount of further analysis."
   },
   "qualityContract": {
     "qualityBar": "moderate",
     "definitionOfDone": [
-      "The rendered model matches the reference silhouette, primary proportions, visible component hierarchy, material response, and most recognizable local features for the selected fidelity tier."
+      "95/100 whole-asset visual fidelity, closed welded rounded cage, smooth glass with vertical fluting, cream stepped casting and chrome fixings; all deterministic gates and runtime budget pass."
     ],
     "minimumSpecDepth": {
       "macroComponents": 1,
-      "mesoComponents": 0,
-      "microFeatureGroups": 5,
-      "materialLayers": 1,
+      "mesoComponents": 1,
+      "microFeatureGroups": 7,
+      "materialLayers": 2,
       "repetitionSystems": 0,
       "reviewViewpoints": 4
     },
@@ -337,10 +347,10 @@
       }
     ],
     "visualDeltaChecks": [
-      "bbox about 0.26 x 0.26 x 0.19 m projecting along +Z from z=0",
-      "two guard rings visibly proud of the dome",
-      "three colour regions readable",
-      "turntable hole gate at all four azimuths"
+      "0.26 x 0.26 x 0.106 m envelope",
+      "Four connected rounded guard bars and four welded crossings",
+      "Vertical parallel glass fluting; cream, rust brown and gray-green regions",
+      "Four cardinal views and hero reveal no holes or floating cage ends"
     ],
     "antiShallowSpecRules": [
       "Every identity-defining detail in the inventory maps to a named localFeature, a vertexPaint region or a repetitionSystem - never to prose alone.",
@@ -348,15 +358,15 @@
       "Every geometric figure is measured off the plate, measured off the proxy band table, or derived from the declared envelope, and says which."
     ],
     "mustNotDo": [
-      "Do not add a second component or a second material - the class allows one of each.",
-      "Do not build the dome smooth; the two proud guard rings are what make it a bulkhead.",
-      "Do not step the profile sharply - a lathe corner sharper than 70 degrees shades as a dark ring the gate reads as a hole, and on a 0.26 m prop that is a large fraction of the silhouette.",
-      "Do not leave the back open; it mounts flush to a wall."
+      "Do not use flat disconnected straps",
+      "Do not leave the rear open",
+      "Do not bake illumination into base color",
+      "Do not lighten rust to satisfy a luma mask; diagnose holes in clay"
     ],
-    "depthRationale": "ONE component, ONE material, ONE geometry: the depth is distributed inside the merge rather than across components. Five micro-feature groups -- backplate, bezel, fluted dome, four-hoop guard, two fixing bosses -- are separate authored solids that share one submission through mergeGeos and are separated by vertex colour, not by material."
+    "depthRationale": "Two components and two material layers within the resolved medium class; local features express housing/cage detail without additional draw calls."
   },
   "qualityTargets": {
-    "targetFidelity": 0.7,
+    "targetFidelity": 0.95,
     "mustMatch": [
       "macro silhouette and proportions",
       "primary material albedo/roughness response",
@@ -380,7 +390,7 @@
     "enabled": true,
     "visualAcceptance": {
       "reviewer": "ai-vision",
-      "threshold": 0.7,
+      "threshold": 0.95,
       "comparisonArtifactRequired": true,
       "layerScoresRequired": true,
       "codePixelDiffIsAcceptanceAuthority": false,
@@ -491,7 +501,7 @@
       "evidenceRefs": [
         "full-object"
       ],
-      "criteria": "The guard must be a CROSS-BASKET of four hoops arcing over the dome -- two vertical, two horizontal -- reading as a grid over the glass from the front and as bars standing off the dome from the side. Circumferential bands on a lathe do NOT satisfy this: that is what the first build shipped and it rendered as a stack of pale discs. The dome must read as fluted pressed glass, and the cream annulus must be 0.40 of the fitting's radius with a raised bezel at the glass."
+      "criteria": "Four bowed round-section bars form one closed welded cage with four junctions. Bars clear the glass and embed at all eight feet. Glass has vertical fluting; cast body has two concentric mouldings and seated cross-head screws."
     },
     {
       "id": "three-colour-read",
@@ -508,7 +518,7 @@
       "evidenceRefs": [
         "full-object"
       ],
-      "criteria": "Cream casting, bronze guard and frosted glass must read as three distinct regions on ONE material, near the plate-measured 222,194,144 / 97,51,25 / 150,146,135. The bronze's luma of 62 sits in the harness backdrop's hole-gate band and is carried by CHROMA instead (saturation 0.74); holeviz per azimuth is the check that it is not being read as background."
+      "criteria": "Warm cream enamel, brown oxidized guard, gray-green frosted glass and plated fixings remain distinct. Two PBR materials with independent albedo and roughness/metalness atlas channels; glass relief is a separate normal texture."
     },
     {
       "id": "wall-mount",
@@ -556,26 +566,24 @@
     "nextRequiredEvidence": []
   },
   "lookDevTargets": {
-    "keyLightIntent": "Hemisphere light plus three directionals, ACES tone mapping, no environment map.",
-    "materialSeparation": "cream cast 214 / bronze guard 145 / frosted dome 132 in measured plate luma, all on one material.",
-    "holeGateFloor": "No surface may render at or near the ~58 backdrop luma at any turntable azimuth, including the back-lit 180 frame which renders at ~0.55 of painted luma.",
-    "notes": "Metalness is held below 1.0 on every metal because there is no environment map to reflect."
+    "keyLightIntent": "Neutral studio and reference-matched soft key with stable PMREM environment; grazing and unlit captures also checked.",
+    "materialSeparation": "Two render materials: cream enamel/oxidized cage/plated fixings in one atlas; pressed glass independent.",
+    "notes": "Hole detection uses neutral unlit masks, never albedo lightening."
   },
   "actionReadiness": {
     "explodable": true,
     "clickable": true,
     "parts": [
-      "bulkhead"
+      "bulkhead",
+      "diffuser"
     ],
     "articulated": false,
-    "notes": "Explodable and clickable as one named part - which is all a one-draw-call prop can be. Not articulated and not breakable."
+    "notes": "Two clickable render parts; one root pivot, no sockets, no articulated or breakable elements."
   },
   "assumptions": [
-    "Radially symmetric about the wall normal, so nothing is hidden by the single face-on view.",
-    "Built ROUND at 0.26 m where the declared face is a slightly oval 0.26 x 0.28: a lathe gives a circle, and a true oval would need a non-uniform scale that would squash the dome as well. The 7% shortfall is inside the asset's tolerance.",
-    "The guard's VERTICAL straps are not built. A lathe cannot make them and the small class has one draw call, so the guard is carried by its two circumferential rings plus their bronze colour. The asset notes ask for thick flat bands rather than a wire cage; this is that met as far as the ceiling allows.",
-    "The dome's moulded vertical ribbing is not built: it would need a canvas this class cannot carry.",
-    "Cream enamelled cast, bronze and frosted glass share ONE material because the class allows one; they are separated by vertex colour and the roughness and metalness are a single compromise across all three."
+    "Single plate hides rear. Closed conservative casting at confidence 0.6; no invented rear details.",
+    "Guard joins explicitly welded per user direction.",
+    "Two materials separate glass from opaque housing and cage."
   ],
   "coordinateFrame": {
     "up": "+Y",
@@ -621,86 +629,33 @@
   "componentTree": [
     {
       "id": "bulkhead",
-      "name": "Cast backplate, fluted glass dome and bronze cross-basket guard",
+      "name": "Cast housing, welded guard and fixings",
       "level": "macro",
       "role": "body",
       "importance": 1.0,
       "confidence": 0.9,
       "primitive": "lathe",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "An ASSEMBLED SOLID merged into one mesh, not a surface of revolution. The backplate and the glass dome are lathes about the wall normal, but the GUARD IS NOT: it is four hoops arcing over the dome, two in vertical planes and two in horizontal ones, and no lathe can express them. The first build declared the whole fitting one lathe, so the only guard available was two circumferential bands and the prop rendered as a stack of pale discs. Everything is merged into a single BufferGeometry with per-part vertex colours, so the assembly still costs ONE draw call, ONE material and ONE geometry.",
+      "topologyRationale": "Closed cast housing plus a topologically welded cage, with a separate glass insert. Opaque pieces batch without additional submissions.",
       "geometryDescriptor": {
-        "topologyIntent": "Authored in metres in the shipped frame: origin back-center on the wall plane, +Z out of the wall, +Y up. Backplate and throat are a 10-point lathe profile [r, depth] at 28 segments, laid down with rx = PI/2 so its axis is the wall normal. The glass is a ribbedDome -- an ellipsoid of revolution sampled as 1 + amp*cos(14*theta) per sector, 56 segments, so the flutes cost the segments the dome already pays for. The guard is four swept tubes; the two chrome fixing bosses are truncated cones.",
+        "topologyIntent": "Conforming rectangular union grid with analytic rounded cross section; closed indexed top/bottom surfaces share boundary vertices, four junctions welded.",
         "edgeTreatment": {
           "type": "none",
           "bevelRadius": 0.0,
           "segments": 1
         },
         "deformationStack": [],
-        "uvStrategy": "generated procedural coordinates",
-        "normalStrategy": "vertex normals from generated geometry",
-        "latheProfile": {
-          "points": [
-            [
-              0.0,
-              0.0
-            ],
-            [
-              0.128,
-              0.0
-            ],
-            [
-              0.13,
-              0.004
-            ],
-            [
-              0.13,
-              0.011
-            ],
-            [
-              0.126,
-              0.016
-            ],
-            [
-              0.12,
-              0.018
-            ],
-            [
-              0.092,
-              0.018
-            ],
-            [
-              0.091,
-              0.026
-            ],
-            [
-              0.089,
-              0.033
-            ],
-            [
-              0.085,
-              0.036
-            ],
-            [
-              0.08,
-              0.034
-            ],
-            [
-              0.079,
-              0.031
-            ]
-          ],
-          "segments": 28
-        }
+        "uvStrategy": "Planar front UV for sparse wear; constant atlas region for solid guard",
+        "normalStrategy": "Smooth shared vertex normals on cast and welded guard"
       },
       "parent": null,
       "attachment": null,
       "dimensions": {
-        "width": 1,
-        "height": 1,
-        "depth": 1,
+        "width": 0.26,
+        "height": 0.26,
+        "depth": 0.106,
         "units": "meters",
-        "confidence": 0.9
+        "confidence": 0.95
       },
       "transform": {
         "position": [
@@ -709,7 +664,7 @@
           0
         ],
         "rotation": [
-          1.5708,
+          0,
           0,
           0
         ],
@@ -730,8 +685,8 @@
           ],
           "axis": [
             0,
-            1,
-            0
+            0,
+            1
           ],
           "confidence": 0.95
         },
@@ -754,6 +709,19 @@
           "detachableFragments": [],
           "breakImpulse": 0.0,
           "debrisMaterial": "bulkhead-shell"
+        },
+        "collider": {
+          "shape": "box",
+          "center": [
+            0,
+            0,
+            0.053
+          ],
+          "halfExtents": [
+            0.13,
+            0.13,
+            0.053
+          ]
         }
       },
       "material": "bulkhead-shell",
@@ -766,23 +734,27 @@
       "localFeatures": [
         {
           "id": "backplate",
-          "description": "A flat cream annulus from r 0.092 to r 0.120 at depth 0.018, with a 10 mm bead rolling to r 0.130 at the wall. The profile starts at r 0 so the back is a closed cast disc, which is why azimuth 180 measures an interior hole fraction of exactly 0.0."
+          "description": "Closed cream casting, radius 0.13 m; rolled outer bead and recessed annulus with small edge chips."
         },
         {
           "id": "bezel",
-          "description": "The throat rises into a raised lip at r 0.085 / depth 0.036 before rolling back down to meet the glass at r 0.079. The plate has a distinct bezel there; without it the cream runs into the glass as a plain cone. It rolls back OUTSIDE the dome surface (r 0.080 against the dome's 0.0789 at that depth), so it overlaps the glass edge rather than sharing a plane with it."
-        },
-        {
-          "id": "fluted-dome",
-          "description": "Frosted pressed glass: an ellipsoid of revolution, r 0.079 at depth 0.031 to a closed nose at 0.1064, carrying 14 flutes at 4 sectors each and 0.8 mm deep. Amplitude is what decides whether flutes read as glass or as a cut gem -- 1.8 mm on a 79 mm radius is a 20% modulation and faceted the dome; 0.5 mm vanished. Glass diameter is 0.60 of the flange, measured on the plate as 250 px of 419."
+          "description": "Two rolled concentric mouldings: outer bead at radius .126 and narrow inner register at radius .105; inner lip at .088 overlaps diffuser seat."
         },
         {
           "id": "cross-basket-guard",
-          "description": "FOUR bronze hoops arcing over the dome: two in vertical planes at x +-0.60 of the glass radius and two in horizontal planes at y +-0.29, measured off the plate crop. Each rides an ellipsoid whose clearance tapers from 5 mm at the crown to 1 mm at the feet, and each foot is buried in the throat cone at r 0.091 / depth 0.021. Bar radius 0.0042: the plate measures 7 mm across, and the asset notes require thick flat bands rather than wire."
+          "description": "One watertight welded cage: two vertical bars at x +/-0.0474 m, horizontal bars at y +0.008 and -0.041 m, bowed over glass; rounded 7 mm section; every crossing joined by shared topology."
         },
         {
           "id": "fixing-bosses",
-          "description": "Two chrome bosses at 3 and 9 o'clock, at r 0.113 (measured +-0.88 R on the plate), as truncated cones 4 mm proud of the flange front with their rims seated in the casting. As flat-ended cylinders they read as bolts sticking out sideways and opened a background sliver under each rim."
+          "description": "One closed welded four-bar cage; vertical bars bow from x +/-0.043 near feet to +/-0.056 near center, with a slight measured +X offset. Rounded 7.2 mm cross sections."
+        },
+        {
+          "id": "weld-junctions",
+          "description": "Four continuous rounded crossings, no loose ends, internal faces, duplicate coincident faces or disconnected flat strips."
+        },
+        {
+          "id": "cast-wear",
+          "description": "Sparse dark chips concentrated at rim and fixing seats, cream midtones preserved."
         }
       ],
       "surfaceDetail": {
@@ -799,28 +771,228 @@
         "full-object"
       ],
       "details": [],
-      "fidelityTier": "blockout",
-      "notes": "Colour is carried per PART as a vertex hex through the merge -- cream #dfc48c, frosted glass #b8b4a8, bronze #613319, chrome #b8bcc0 -- not as axis bands. The first build had to use axis bands because it was one lathe and a band along the depth axis was the only separation available; with the guard as real geometry each part simply carries its own measured tone. The dome's flute striping multiplies INTO its tone rather than replacing it, or the crest-to-valley attribute would overwrite the glass colour.",
+      "fidelityTier": "final",
+      "notes": "Opaque assembly batched with named geometry ranges; no motion mechanisms.",
       "colorMaterialRecipe": {
         "materialRef": "bulkhead-shell",
-        "recipe": "One surface carrying three colours: cream enamelled cast at the wall, bronze guard rings, frosted glass between and in front.",
-        "dominantAlbedo": "rgba(231, 214, 170, 1)",
-        "secondaryAlbedo": "rgba(160, 144, 116, 1)",
-        "materialClass": "ceramic",
-        "materialClassConfidence": 0.8,
-        "measuredFrom": "material-crops/bulkhead-shell.png",
-        "authoredAlbedo": "#C9CEC9"
-      }
+        "recipe": "White PBR base multiplied by per-part vertex colors: cream e4c083, rust 834d29, plated c4c6bd. Independent RGB albedo and G roughness/B metalness atlas; sparse reference wear.",
+        "dominantAlbedo": "rgba(241, 216, 162, 1)",
+        "secondaryAlbedo": "rgba(131, 77, 41, 1)",
+        "materialClass": "metal",
+        "materialClassConfidence": 0.9,
+        "measuredFrom": "repair95/accepted/crops/cream-ref.png",
+        "componentId": "bulkhead"
+      },
+      "uvContract": {
+        "method": "planar-XY",
+        "orientation": "U +X; V +Y",
+        "maps": "bulkhead: cream wear planar and guard/fastener atlas cells; diffuser: separate planar dirt mask and normal relief"
+      },
+      "materialRegions": [
+        {
+          "regionId": "cream",
+          "materialId": "bulkhead-shell",
+          "profileId": "coating.painted-metal",
+          "crop": {
+            "path": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/material-evidence/00-cream.png",
+            "bbox": {
+              "x": 461,
+              "y": 179,
+              "width": 84,
+              "height": 34
+            },
+            "sourceWidth": 1024,
+            "sourceHeight": 1024,
+            "loaderWarnings": [],
+            "coverage": 0.0027
+          }
+        },
+        {
+          "regionId": "guard",
+          "materialId": "bulkhead-shell",
+          "profileId": "metal.brass",
+          "crop": {
+            "path": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/material-evidence/01-guard.png",
+            "bbox": {
+              "x": 417,
+              "y": 463,
+              "width": 116,
+              "height": 12
+            },
+            "sourceWidth": 1024,
+            "sourceHeight": 1024,
+            "loaderWarnings": [],
+            "coverage": 0.0013
+          }
+        }
+      ]
+    },
+    {
+      "id": "diffuser",
+      "name": "Pressed fluted glass diffuser",
+      "level": "meso",
+      "role": "insert",
+      "importance": 1.0,
+      "confidence": 0.9,
+      "primitive": "lathe",
+      "topologyClass": "continuous-sculpt",
+      "topologyRationale": "Continuous dome of pressed glass",
+      "geometryDescriptor": {
+        "topologyIntent": "Closed smooth ellipsoid radius .084, rise .070 from .030; seven rings, 48 sectors, analytic ellipsoid normals; vertical flute normal texture.",
+        "edgeTreatment": {
+          "type": "none",
+          "bevelRadius": 0.0,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "Planar front UV for sparse wear; constant atlas region for solid guard",
+        "normalStrategy": "Smooth shared vertex normals on cast and welded guard"
+      },
+      "parent": "bulkhead",
+      "attachment": {
+        "parent": "bulkhead",
+        "parentSocket": "glass-seat",
+        "localStart": [
+          0,
+          0,
+          0.03
+        ],
+        "localEnd": [
+          0,
+          0,
+          0.1
+        ],
+        "contactType": "embed",
+        "embedDepth": 0.002,
+        "overlap": 0.002,
+        "gapTolerance": 0.0005,
+        "notes": "Stationary glass seat, geometric anchor only, not an exported runtime socket."
+      },
+      "dimensions": {
+        "width": 0.168,
+        "height": 0.168,
+        "depth": 0.07,
+        "units": "meters",
+        "confidence": 0.85
+      },
+      "transform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "actionProfile": {
+        "animationRole": "static",
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "sockets": [],
+        "constraints": [],
+        "destruction": {
+          "breakable": false,
+          "fractureGroup": null,
+          "seamRefs": [],
+          "detachableFragments": [],
+          "breakImpulse": 0.0,
+          "debrisMaterial": "bulkhead-shell"
+        },
+        "collider": {
+          "shape": "none"
+        }
+      },
+      "material": "bulkhead-glass",
+      "materialLayers": [
+        "bulkhead-glass"
+      ],
+      "deformations": [],
+      "joints": [],
+      "seams": [],
+      "localFeatures": [
+        {
+          "id": "fluted-dome",
+          "description": "Smooth gray-green pressed glass dome radius 0.079 m, base z 0.030 m and crown z 0.100 m; parallel vertical flutes with 7 mm pitch and normal relief."
+        }
+      ],
+      "surfaceDetail": {
+        "macroRoughness": 0.0,
+        "microRoughness": 0.0,
+        "bumpAmplitude": 0.0,
+        "normalPattern": "",
+        "displacementPattern": "",
+        "occlusionPattern": "",
+        "edgeWearPattern": "",
+        "notes": ""
+      },
+      "evidenceRefs": [
+        "full-object"
+      ],
+      "details": [],
+      "fidelityTier": "final",
+      "notes": "Opaque assembly batched with named geometry ranges; no motion mechanisms.",
+      "colorMaterialRecipe": {
+        "materialRef": "bulkhead-glass",
+        "recipe": "Reference-measured gray-green pressed glass, diffuse value adjusted to close the measured 19 RGB-level deficit; independent flute normal, source-derived dirt mask and .40 roughness.",
+        "dominantAlbedo": "rgba(150, 148, 136, 1)",
+        "secondaryAlbedo": "rgba(131, 77, 41, 1)",
+        "materialClass": "glass",
+        "materialClassConfidence": 0.9,
+        "measuredFrom": "repair95/accepted/crops/glass-ref.png",
+        "componentId": "diffuser",
+        "authoredAlbedo": "#9b988b"
+      },
+      "uvContract": {
+        "method": "planar-XY",
+        "orientation": "U +X; V +Y",
+        "maps": "bulkhead: cream wear planar and guard/fastener atlas cells; diffuser: separate planar dirt mask and normal relief"
+      },
+      "materialRegions": [
+        {
+          "regionId": "glass",
+          "materialId": "bulkhead-glass",
+          "profileId": "glass.frosted",
+          "crop": {
+            "path": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/material-evidence/02-glass.png",
+            "bbox": {
+              "x": 425,
+              "y": 523,
+              "width": 155,
+              "height": 65
+            },
+            "sourceWidth": 1024,
+            "sourceHeight": 1024,
+            "loaderWarnings": [],
+            "coverage": 0.0096
+          }
+        }
+      ]
     }
   ],
   "materials": [
     {
       "id": "bulkhead-shell",
-      "name": "Bulkhead shell: cream cast, bronze guard and frosted glass",
+      "name": "Cream enamel, oxidized guard and plated fixings",
       "type": "standard",
       "shaderModel": "MeshStandardMaterial / PBR approximation",
-      "baseColor": "#C9CEC9",
-      "color": "#C9CEC9",
+      "baseColor": "#ffffff",
+      "color": "#ffffff",
       "albedo": {
         "dominant": "#C9CEC9",
         "secondary": [
@@ -844,20 +1016,18 @@
       "textureless": {
         "declared": true,
         "evidence": [
-          "probe band 0, the cream backplate and upper cast: mean #e7d6aa, luma 214, saturation 0.27",
-          "probe bands 2-3, the guard and dome: mean #a09074 / #948262, luma 145 / 132, saturation 0.27-0.33",
-          "probe band 4, the lower cast: mean #9a988d, luma 152, saturation 0.08",
-          "THREE substances share ONE material here because the small class allows exactly one. That is a budget decision, not a claim that cream enamel, bronze and frosted glass are the same thing: the three are separated by vertex colour, and the shared roughness 0.45 and metalness 0.10 are a compromise between them, closest to the cast and the bronze because those carry most of the silhouette."
+          "Verified cream annulus and guard crops in repair95/material-evidence; solid albedo plus sparse local wear.",
+          "Only identity wear is carried by a compact reference-derived detail map assigned after construction; no generic synthesized PBR canvases."
         ]
       },
       "roughness": {
-        "base": 0.45,
+        "base": 0.59,
         "variation": 0.08,
         "map": "none",
         "localResponse": "no map; a single authored scalar - this surface has no resolvable roughness structure at prop distance"
       },
       "metalness": {
-        "base": 0.1,
+        "base": 0.08,
         "variation": 0.0
       },
       "ambientOcclusion": {
@@ -877,22 +1047,310 @@
       },
       "localOverrides": [
         {
-          "id": "creamBand",
-          "description": "The cast backplate as a vertex-colour band over the fitting's first 32 mm of depth, authored at #E7D6AA - the measured value, which needs no lift because it is luma 214.",
-          "measuredFrom": "probe band 0"
+          "id": "cream-cast",
+          "description": "Cream e4c083; atlas roughness .59, dielectric paint."
         },
         {
-          "id": "bronzeBands",
-          "description": "Two bronze bands over the proud guard rings at depth 0.058-0.094 and 0.134-0.161, authored at #A8794A against the measured #a09074/#948262. Lifted a little in saturation so the guard stays legible against the cream at a metre.",
-          "measuredFrom": "probe bands 2-3"
+          "id": "oxidized-guard",
+          "description": "Brown 834d29; atlas roughness .68, metalness .086."
+        },
+        {
+          "id": "plated-fixings",
+          "description": "Pale c4c6bd; atlas roughness .26, metalness .59, dark cross recess mask."
         }
       ],
       "shaderNotes": [
-        "MeshStandardMaterial is sufficient: no clearcoat, sheen or transmission is observed.",
-        "Never alias albedo into roughness; both are authored scalars, not maps.",
-        "Metalness is authored BELOW a physical raw-metal 1.0 on purpose - see notes."
+        "Standard PBR; texture channels independent."
       ],
-      "notes": "Metalness 0.10 and roughness 0.45 are ONE compromise across three real substances, which is what a one-material ceiling forces. The albedo lives on vertexPaint.baseColor rather than here, because the generator clones a painted component's material and forces its colour to white."
+      "notes": "Vertex colors distinguish opaque parts; glass now independent.",
+      "referenceMaterialId": "metal.brass",
+      "materialFamily": "metal",
+      "materialSubtype": "brass-bronze",
+      "materialFinish": "polished-or-aged",
+      "materialReference": {
+        "registry": "/home/mulligan/.codex/skills/img2threejs/docs/materials/material-reference.json",
+        "profileId": "metal.brass",
+        "method": "inferred-material-id",
+        "confidence": 0.88,
+        "sourceRefs": [
+          "three.mesh-standard",
+          "gltf.2",
+          "khronos.gltf-pbr",
+          "adobe.pbr-guide-2",
+          "google.filament-pbr"
+        ],
+        "requiredMaps": [
+          "map",
+          "roughnessMap"
+        ],
+        "optionalMaps": [
+          "normalMap",
+          "aoMap",
+          "metalnessMap"
+        ],
+        "validationViews": [
+          "albedo-unlit",
+          "environment-reflection",
+          "grazing",
+          "reference-beauty"
+        ]
+      },
+      "clearcoat": {
+        "base": 0.75,
+        "variation": 0.0
+      },
+      "clearcoatRoughness": {
+        "base": 0.12,
+        "variation": 0.0
+      },
+      "ior": {
+        "base": 1.5,
+        "variation": 0.0
+      },
+      "textureAnalysis": {
+        "finishClass": "painted-metal",
+        "recipe": {
+          "metalness": 0.0,
+          "roughness": 0.5,
+          "clearcoat": 1.0,
+          "clearcoatRoughness": 0.05,
+          "transmission": 0.0,
+          "ior": 1.5,
+          "envMapIntensity": 1.0,
+          "anisotropy": 0.0,
+          "procedural": "flat-clearcoat"
+        },
+        "palette": [
+          "#AC7450",
+          "#BC8867",
+          "#9B6441",
+          "#7D411D",
+          "#602F10"
+        ],
+        "paletteHueRisk": [],
+        "gradientAxis": "vertical",
+        "stats": {
+          "meanLum": 106.0,
+          "meanSaturation": 0.633,
+          "gradientStrength": 0.352,
+          "mottle": 0.014,
+          "streakRatio": 1.74,
+          "hueSpread": 0.0,
+          "specularFraction": 0.0
+        }
+      },
+      "materialEvidence": {
+        "componentId": "bulkhead",
+        "regionId": "guard",
+        "crop": {
+          "path": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/material-evidence/01-guard.png",
+          "bbox": {
+            "x": 417,
+            "y": 463,
+            "width": 116,
+            "height": 12
+          },
+          "sourceWidth": 1024,
+          "sourceHeight": 1024,
+          "loaderWarnings": [],
+          "coverage": 0.0013
+        },
+        "observations": [
+          "chromatic base-colour response",
+          "strong image-space gradient; verify it is material pattern, not lighting",
+          "single-image PBR inference requires controlled render validation"
+        ],
+        "hypothesis": {
+          "componentId": "bulkhead",
+          "regionId": "guard",
+          "materialId": "metal.brass",
+          "family": "metal",
+          "subtype": "brass-bronze",
+          "finish": "polished-or-aged",
+          "aliases": [],
+          "confidence": 0.88,
+          "confidenceScope": "semantic material identity; not extracted PBR map reliability",
+          "identityAuthority": "inferred",
+          "alternatives": [],
+          "source": "vision"
+        },
+        "alternatives": []
+      },
+      "needsEnvironment": true
+    },
+    {
+      "id": "bulkhead-glass",
+      "name": "Vertically fluted pressed glass",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#9b988b",
+      "color": "#9b988b",
+      "albedo": {
+        "dominant": "#C9CEC9",
+        "secondary": [
+          "#E7D6AA",
+          "#A09074",
+          "#948262"
+        ],
+        "samplingNotes": "Mean of a crop taken on the part itself; see material-crops/."
+      },
+      "colorVariation": {
+        "palette": [
+          "#C9CEC9",
+          "#E7D6AA",
+          "#A09074",
+          "#948262"
+        ],
+        "pattern": "mottled",
+        "amplitude": 0.1,
+        "heightCorrelation": 0.2
+      },
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Verified central diffuser region, gray-green monochromatic glass; separate procedural flute normal map assigned after construction.",
+          "Only identity wear is carried by a compact reference-derived detail map assigned after construction; no generic synthesized PBR canvases."
+        ]
+      },
+      "roughness": {
+        "base": 0.4,
+        "variation": 0.08,
+        "map": "none",
+        "localResponse": "no map; a single authored scalar - this surface has no resolvable roughness structure at prop distance"
+      },
+      "metalness": {
+        "base": 0,
+        "variation": 0.0
+      },
+      "ambientOcclusion": {
+        "cavityStrength": 0.2,
+        "contactShadowBias": 0.3,
+        "notes": "Darken seams, joints and recessed features."
+      },
+      "wear": {
+        "edgeWear": 0.0,
+        "scratches": [],
+        "chips": []
+      },
+      "dirt": {
+        "amount": 0.0,
+        "cavityBias": 0.0,
+        "color": "#2F2A22"
+      },
+      "localOverrides": [],
+      "shaderNotes": [
+        "Standard PBR; texture channels independent."
+      ],
+      "notes": "Opaque frosted-glass approximation suitable for this unlit wall fitting; standard PBR maps, no runtime shader injection. Interior bulb unobserved.",
+      "referenceMaterialId": "glass.frosted",
+      "materialFamily": "glass",
+      "materialSubtype": "frosted",
+      "materialFinish": "rough-transmissive",
+      "materialReference": {
+        "registry": "/home/mulligan/.codex/skills/img2threejs/docs/materials/material-reference.json",
+        "profileId": "glass.frosted",
+        "method": "inferred-material-id",
+        "confidence": 0.92,
+        "sourceRefs": [
+          "three.mesh-physical",
+          "three.pmrem",
+          "khronos.transmission",
+          "khronos.volume",
+          "google.filament-pbr"
+        ],
+        "requiredMaps": [
+          "roughnessMap",
+          "normalMap",
+          "thicknessMap"
+        ],
+        "optionalMaps": [
+          "transmissionMap",
+          "map"
+        ],
+        "validationViews": [
+          "neutral-studio",
+          "grazing",
+          "backlight-transmission",
+          "reference-beauty"
+        ]
+      },
+      "transmission": 0,
+      "ior": {
+        "base": 1.5,
+        "variation": 0.0
+      },
+      "textureAnalysis": {
+        "finishClass": "brushed-steel",
+        "recipe": {
+          "metalness": 1.0,
+          "roughness": 0.35,
+          "clearcoat": 0.0,
+          "clearcoatRoughness": 0.0,
+          "transmission": 0.0,
+          "ior": 1.5,
+          "envMapIntensity": 1.0,
+          "anisotropy": 1.0,
+          "procedural": "brushed"
+        },
+        "palette": [
+          "#919184",
+          "#989689",
+          "#9A978C",
+          "#959286",
+          "#939285"
+        ],
+        "paletteHueRisk": [],
+        "gradientAxis": "horizontal",
+        "stats": {
+          "meanLum": 147.6,
+          "meanSaturation": 0.096,
+          "gradientStrength": 0.043,
+          "mottle": 0.007,
+          "streakRatio": 5.92,
+          "hueSpread": 0.0,
+          "specularFraction": 0.0
+        }
+      },
+      "materialEvidence": {
+        "componentId": "diffuser",
+        "regionId": "glass",
+        "crop": {
+          "path": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/material-evidence/02-glass.png",
+          "bbox": {
+            "x": 425,
+            "y": 523,
+            "width": 155,
+            "height": 65
+          },
+          "sourceWidth": 1024,
+          "sourceHeight": 1024,
+          "loaderWarnings": [],
+          "coverage": 0.0096
+        },
+        "observations": [
+          "near-neutral colour response",
+          "directional surface frequency",
+          "single-image PBR inference requires controlled render validation"
+        ],
+        "hypothesis": {
+          "componentId": "diffuser",
+          "regionId": "glass",
+          "materialId": "glass.frosted",
+          "family": "glass",
+          "subtype": "frosted",
+          "finish": "rough-transmissive",
+          "aliases": [],
+          "confidence": 0.92,
+          "confidenceScope": "semantic material identity; not extracted PBR map reliability",
+          "identityAuthority": "inferred",
+          "alternatives": [],
+          "source": "vision"
+        },
+        "alternatives": []
+      },
+      "needsEnvironment": true,
+      "clearcoat": 0.5,
+      "clearcoatRoughness": 0.28
     }
   ],
   "repetitionSystems": [],
@@ -1370,6 +1828,629 @@
       "cameraView": "",
       "notes": "",
       "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-27T13:02:38.323786+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": 0.82,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/cmp.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-27T13:14:46.616294+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.79,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/structure/aligned-0.png",
+      "comparisonImage": "",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-27T13:20:47.752542+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.96,
+        "formDetail": 0.9,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.89
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/solid-audit/aligned-0.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/solid-audit/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-27T13:33:37.965701+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finish/aligned-0.png",
+      "comparisonImage": "",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-27T13:33:38.006847+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/clearance/aligned-0.png",
+      "comparisonImage": "",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-27T13:33:38.047426+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/final/aligned-0.png",
+      "comparisonImage": "",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-27T13:40:20.160708+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.97,
+        "formDetail": 0.95,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.94
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "threshold": 0.85,
+          "notes": "Circular flange, shallow dome and wall-normal projection match reference. Calibrated silhouette IoU .973; rear closed."
+        },
+        {
+          "id": "dome-and-guard",
+          "score": 0.96,
+          "threshold": 0.88,
+          "notes": "One connected watertight rounded cage with four welded crossings; no self intersections and >1 mm sampled glass clearance. Smooth vertically fluted glass; two moulded cast registers."
+        },
+        {
+          "id": "three-colour-read",
+          "score": 0.95,
+          "threshold": 0.8,
+          "notes": "Cream paint, brown guard, gray-green frosted glass and plated screw heads distinct; source-derived chips/insect stain; all three material crop checks and material gate pass."
+        },
+        {
+          "id": "wall-mount",
+          "score": 0.98,
+          "threshold": 0.75,
+          "notes": "Closed planar rear at z=0, back-center root pivot; no extraneous mechanisms or sockets."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/accepted/aligned-0.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/accepted/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-27T13:40:33.619363+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.97,
+        "formDetail": 0.95,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.94
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "threshold": 0.85,
+          "notes": "Circular flange, shallow dome and wall-normal projection match reference. Calibrated silhouette IoU .973; rear closed."
+        },
+        {
+          "id": "dome-and-guard",
+          "score": 0.96,
+          "threshold": 0.88,
+          "notes": "One connected watertight rounded cage with four welded crossings; no self intersections and >1 mm sampled glass clearance. Smooth vertically fluted glass; two moulded cast registers."
+        },
+        {
+          "id": "three-colour-read",
+          "score": 0.95,
+          "threshold": 0.8,
+          "notes": "Cream paint, brown guard, gray-green frosted glass and plated screw heads distinct; source-derived chips/insect stain; all three material crop checks and material gate pass."
+        },
+        {
+          "id": "wall-mount",
+          "score": 0.98,
+          "threshold": 0.75,
+          "notes": "Closed planar rear at z=0, back-center root pivot; no extraneous mechanisms or sockets."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/accepted/aligned-0.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/accepted/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-27T13:40:46.737260+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.97,
+        "formDetail": 0.95,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.94
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "threshold": 0.85,
+          "notes": "Circular flange, shallow dome and wall-normal projection match reference. Calibrated silhouette IoU .973; rear closed."
+        },
+        {
+          "id": "dome-and-guard",
+          "score": 0.96,
+          "threshold": 0.88,
+          "notes": "One connected watertight rounded cage with four welded crossings; no self intersections and >1 mm sampled glass clearance. Smooth vertically fluted glass; two moulded cast registers."
+        },
+        {
+          "id": "three-colour-read",
+          "score": 0.95,
+          "threshold": 0.8,
+          "notes": "Cream paint, brown guard, gray-green frosted glass and plated screw heads distinct; source-derived chips/insect stain; all three material crop checks and material gate pass."
+        },
+        {
+          "id": "wall-mount",
+          "score": 0.98,
+          "threshold": 0.75,
+          "notes": "Closed planar rear at z=0, back-center root pivot; no extraneous mechanisms or sockets."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/accepted/aligned-0.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/accepted/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-27T13:43:42.288364+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {},
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/accepted/long-axis.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/accepted/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-27T13:45:38.795599+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.97,
+        "formDetail": 0.95,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.94
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "threshold": 0.85,
+          "notes": "Circular flange, shallow dome and wall-normal projection match reference. Calibrated silhouette IoU .973; rear closed."
+        },
+        {
+          "id": "dome-and-guard",
+          "score": 0.96,
+          "threshold": 0.88,
+          "notes": "One connected watertight rounded cage with four welded crossings; no self intersections and no significant sampled glass penetration. Smooth vertically fluted glass; two moulded cast registers."
+        },
+        {
+          "id": "three-colour-read",
+          "score": 0.95,
+          "threshold": 0.8,
+          "notes": "Cream paint, brown guard, gray-green frosted glass and plated screw heads distinct; source-derived chips/insect stain; all three material crop checks and material gate pass."
+        },
+        {
+          "id": "wall-mount",
+          "score": 0.98,
+          "threshold": 0.75,
+          "notes": "Closed planar rear at z=0, back-center root pivot; no extraneous mechanisms or sockets."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/aligned-0.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-27T13:45:51.696016+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.97,
+        "formDetail": 0.95,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.94
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "threshold": 0.85,
+          "notes": "Circular flange, shallow dome and wall-normal projection match reference. Calibrated silhouette IoU .973; rear closed."
+        },
+        {
+          "id": "dome-and-guard",
+          "score": 0.96,
+          "threshold": 0.88,
+          "notes": "One connected watertight rounded cage with four welded crossings; no self intersections and no significant sampled glass penetration. Smooth vertically fluted glass; two moulded cast registers."
+        },
+        {
+          "id": "three-colour-read",
+          "score": 0.95,
+          "threshold": 0.8,
+          "notes": "Cream paint, brown guard, gray-green frosted glass and plated screw heads distinct; source-derived chips/insect stain; all three material crop checks and material gate pass."
+        },
+        {
+          "id": "wall-mount",
+          "score": 0.98,
+          "threshold": 0.75,
+          "notes": "Closed planar rear at z=0, back-center root pivot; no extraneous mechanisms or sockets."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/aligned-0.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-27T13:46:04.608887+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.97,
+        "formDetail": 0.95,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.94
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "threshold": 0.85,
+          "notes": "Circular flange, shallow dome and wall-normal projection match reference. Calibrated silhouette IoU .973; rear closed."
+        },
+        {
+          "id": "dome-and-guard",
+          "score": 0.96,
+          "threshold": 0.88,
+          "notes": "One connected watertight rounded cage with four welded crossings; no self intersections and no significant sampled glass penetration. Smooth vertically fluted glass; two moulded cast registers."
+        },
+        {
+          "id": "three-colour-read",
+          "score": 0.95,
+          "threshold": 0.8,
+          "notes": "Cream paint, brown guard, gray-green frosted glass and plated screw heads distinct; source-derived chips/insect stain; all three material crop checks and material gate pass."
+        },
+        {
+          "id": "wall-mount",
+          "score": 0.98,
+          "threshold": 0.75,
+          "notes": "Closed planar rear at z=0, back-center root pivot; no extraneous mechanisms or sockets."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/aligned-0.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-27T13:46:17.669044+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.97,
+        "formDetail": 0.95,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.94
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "threshold": 0.85,
+          "notes": "Circular flange, shallow dome and wall-normal projection match reference. Calibrated silhouette IoU .973; rear closed."
+        },
+        {
+          "id": "dome-and-guard",
+          "score": 0.96,
+          "threshold": 0.88,
+          "notes": "One connected watertight rounded cage with four welded crossings; no self intersections and no significant sampled glass penetration. Smooth vertically fluted glass; two moulded cast registers."
+        },
+        {
+          "id": "three-colour-read",
+          "score": 0.95,
+          "threshold": 0.8,
+          "notes": "Cream paint, brown guard, gray-green frosted glass and plated screw heads distinct; source-derived chips/insect stain; all three material crop checks and material gate pass."
+        },
+        {
+          "id": "wall-mount",
+          "score": 0.98,
+          "threshold": 0.75,
+          "notes": "Closed planar rear at z=0, back-center root pivot; no extraneous mechanisms or sockets."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/aligned-0.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-27T13:46:30.860181+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.97,
+        "formDetail": 0.95,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.94
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "threshold": 0.85,
+          "notes": "Circular flange, shallow dome and wall-normal projection match reference. Calibrated silhouette IoU .973; rear closed."
+        },
+        {
+          "id": "dome-and-guard",
+          "score": 0.96,
+          "threshold": 0.88,
+          "notes": "One connected watertight rounded cage with four welded crossings; no self intersections and no significant sampled glass penetration. Smooth vertically fluted glass; two moulded cast registers."
+        },
+        {
+          "id": "three-colour-read",
+          "score": 0.95,
+          "threshold": 0.8,
+          "notes": "Cream paint, brown guard, gray-green frosted glass and plated screw heads distinct; source-derived chips/insect stain; all three material crop checks and material gate pass."
+        },
+        {
+          "id": "wall-mount",
+          "score": 0.98,
+          "threshold": 0.75,
+          "notes": "Closed planar rear at z=0, back-center root pivot; no extraneous mechanisms or sockets."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/aligned-0.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-27T13:46:44.087427+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.97,
+        "formDetail": 0.95,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.94
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "threshold": 0.85,
+          "notes": "Circular flange, shallow dome and wall-normal projection match reference. Calibrated silhouette IoU .973; rear closed."
+        },
+        {
+          "id": "dome-and-guard",
+          "score": 0.96,
+          "threshold": 0.88,
+          "notes": "One connected watertight rounded cage with four welded crossings; no self intersections and no significant sampled glass penetration. Smooth vertically fluted glass; two moulded cast registers."
+        },
+        {
+          "id": "three-colour-read",
+          "score": 0.95,
+          "threshold": 0.8,
+          "notes": "Cream paint, brown guard, gray-green frosted glass and plated screw heads distinct; source-derived chips/insect stain; all three material crop checks and material gate pass."
+        },
+        {
+          "id": "wall-mount",
+          "score": 0.98,
+          "threshold": 0.75,
+          "notes": "Closed planar rear at z=0, back-center root pivot; no extraneous mechanisms or sockets."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/aligned-0.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-27T13:46:57.478243+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.97,
+        "formDetail": 0.95,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.94
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "threshold": 0.85,
+          "notes": "Circular flange, shallow dome and wall-normal projection match reference. Calibrated silhouette IoU .973; rear closed."
+        },
+        {
+          "id": "dome-and-guard",
+          "score": 0.96,
+          "threshold": 0.88,
+          "notes": "One connected watertight rounded cage with four welded crossings; no self intersections and no significant sampled glass penetration. Smooth vertically fluted glass; two moulded cast registers."
+        },
+        {
+          "id": "three-colour-read",
+          "score": 0.95,
+          "threshold": 0.8,
+          "notes": "Cream paint, brown guard, gray-green frosted glass and plated screw heads distinct; source-derived chips/insect stain; all three material crop checks and material gate pass."
+        },
+        {
+          "id": "wall-mount",
+          "score": 0.98,
+          "threshold": 0.75,
+          "notes": "Closed planar rear at z=0, back-center root pivot; no extraneous mechanisms or sockets."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/aligned-0.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-27T13:47:10.374675+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.97,
+        "formDetail": 0.95,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.94
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "threshold": 0.85,
+          "notes": "Circular flange, shallow dome and wall-normal projection match reference. Calibrated silhouette IoU .973; rear closed."
+        },
+        {
+          "id": "dome-and-guard",
+          "score": 0.96,
+          "threshold": 0.88,
+          "notes": "One connected watertight rounded cage with four welded crossings; no self intersections and no significant sampled glass penetration. Smooth vertically fluted glass; two moulded cast registers."
+        },
+        {
+          "id": "three-colour-read",
+          "score": 0.95,
+          "threshold": 0.8,
+          "notes": "Cream paint, brown guard, gray-green frosted glass and plated screw heads distinct; source-derived chips/insect stain; all three material crop checks and material gate pass."
+        },
+        {
+          "id": "wall-mount",
+          "score": 0.98,
+          "threshold": 0.75,
+          "notes": "Closed planar rear at z=0, back-center root pivot; no extraneous mechanisms or sockets."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/aligned-0.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
     }
   ],
   "reviewHistory": [
@@ -1820,6 +2901,1000 @@
         "notes": "",
         "aiVisionNotes": ""
       }
+    },
+    {
+      "timestamp": "2026-09-27T13:02:38.323786+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": 0.82,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-spec",
+      "summary": "User requests solid welded guard and95 target. Existing flat straps have disconnected segment ends and intersecting crossings; glass is faceted and shares a rusty material with the casting. Replace guard with one closed connected beveled solid, improve diffuser smoothness and separate glass shading within current2-material budget.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/cmp.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-27T13:14:46.616294+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.92,
+        "formDetail": 0.79,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Whole-asset estimate 86: guard topology is connected and closed, but cap triangulation creates long warped faces and folded highlights. Cast annulus and glass response still too generic. Current 2304 triangles exceeds 2000. Replace extruded cap triangulation with a conforming rounded grid surface; retain historical reviews.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [
+        "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/structure/intersection.json"
+      ],
+      "outOfSequence": true,
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/structure/aligned-0.png",
+        "comparisonImage": "",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-27T13:20:47.752542+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.96,
+        "formDetail": 0.9,
+        "materialSurface": 0.85,
+        "lightingCamera": 0.89
+      },
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Whole-asset estimate 91: one closed connected rounded guard, matching four-bar layout and restored cast bead; camera-calibrated silhouette IoU 0.973. Fine wear, plated fixings, wider diffuser and bowed vertical bars still needed for 95. Two crossing vertices need geometric tolerance audit; all cast, glass and hardware solids pass self-intersection. 3008 triangles within documented 3500 ceiling.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/solid-audit/aligned-0.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/solid-audit/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-27T13:33:37.965701+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Material detail improved, but the larger diffuser intersects the guard near upper bends. Re-profile cage clearance before acceptance.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finish/aligned-0.png",
+        "comparisonImage": "",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-27T13:33:38.006847+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Round welded guard and reference wear read correctly. Add the second cast register and seated cross-head fixings; verify dark regions using unlit silhouettes.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/clearance/aligned-0.png",
+        "comparisonImage": "",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-27T13:33:38.047426+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Whole-asset estimate 94. Geometry trio and material gates pass. Independent analytic clearance test found guard underside/triangle chords entering the ideal diffuser by up to 6 mm near outer bends; refine sampling and clearance rather than relying on front views.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/final/aligned-0.png",
+        "comparisonImage": "",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-27T13:40:20.160708+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.97,
+        "formDetail": 0.95,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.94
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "threshold": 0.85,
+          "notes": "Circular flange, shallow dome and wall-normal projection match reference. Calibrated silhouette IoU .973; rear closed."
+        },
+        {
+          "id": "dome-and-guard",
+          "score": 0.96,
+          "threshold": 0.88,
+          "notes": "One connected watertight rounded cage with four welded crossings; no self intersections and >1 mm sampled glass clearance. Smooth vertically fluted glass; two moulded cast registers."
+        },
+        {
+          "id": "three-colour-read",
+          "score": 0.95,
+          "threshold": 0.8,
+          "notes": "Cream paint, brown guard, gray-green frosted glass and plated screw heads distinct; source-derived chips/insect stain; all three material crop checks and material gate pass."
+        },
+        {
+          "id": "wall-mount",
+          "score": 0.98,
+          "threshold": 0.75,
+          "notes": "Closed planar rear at z=0, back-center root pivot; no extraneous mechanisms or sockets."
+        }
+      ],
+      "action": "continue",
+      "summary": "Final whole-asset visual estimate 95/100 for the procedural game prop, based on the same reference/render pair and full turntable. Rounded guard is genuinely welded: one component, zero boundary/non-manifold edges, four crossings; no self-intersection or sampled glass penetration. Remaining approximation is subtle glass scattering/reflectance and hidden rear detail, not a structural defect. Circular proportions and wall-normal depth verified in map-free clay.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [
+        "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/accepted/gates.json",
+        "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/accepted/material-gate.json",
+        "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/clearance-audit.json",
+        "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/accepted/guardTopology.json"
+      ],
+      "outOfSequence": true,
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/renders/clay-000.png",
+      "reviewViewpoints": [
+        "front",
+        "right",
+        "rear",
+        "left",
+        "hero",
+        "unlit",
+        "grazing",
+        "reference",
+        "long-axis",
+        "thickness-axis"
+      ],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/accepted/aligned-0.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/accepted/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-27T13:40:33.619363+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.97,
+        "formDetail": 0.95,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.94
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "threshold": 0.85,
+          "notes": "Circular flange, shallow dome and wall-normal projection match reference. Calibrated silhouette IoU .973; rear closed."
+        },
+        {
+          "id": "dome-and-guard",
+          "score": 0.96,
+          "threshold": 0.88,
+          "notes": "One connected watertight rounded cage with four welded crossings; no self intersections and >1 mm sampled glass clearance. Smooth vertically fluted glass; two moulded cast registers."
+        },
+        {
+          "id": "three-colour-read",
+          "score": 0.95,
+          "threshold": 0.8,
+          "notes": "Cream paint, brown guard, gray-green frosted glass and plated screw heads distinct; source-derived chips/insect stain; all three material crop checks and material gate pass."
+        },
+        {
+          "id": "wall-mount",
+          "score": 0.98,
+          "threshold": 0.75,
+          "notes": "Closed planar rear at z=0, back-center root pivot; no extraneous mechanisms or sockets."
+        }
+      ],
+      "action": "continue",
+      "summary": "Final whole-asset visual estimate 95/100 for the procedural game prop, based on the same reference/render pair and full turntable. Rounded guard is genuinely welded: one component, zero boundary/non-manifold edges, four crossings; no self-intersection or sampled glass penetration. Remaining approximation is subtle glass scattering/reflectance and hidden rear detail, not a structural defect. Welded cage, closed casting, glass insert and seated hardware verified.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [
+        "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/accepted/gates.json",
+        "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/accepted/material-gate.json",
+        "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/clearance-audit.json",
+        "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/accepted/guardTopology.json"
+      ],
+      "outOfSequence": true,
+      "reviewViewpoints": [
+        "front",
+        "right",
+        "rear",
+        "left",
+        "hero",
+        "unlit",
+        "grazing",
+        "reference",
+        "long-axis",
+        "thickness-axis"
+      ],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/accepted/aligned-0.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/accepted/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-27T13:40:46.737260+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.97,
+        "formDetail": 0.95,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.94
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "threshold": 0.85,
+          "notes": "Circular flange, shallow dome and wall-normal projection match reference. Calibrated silhouette IoU .973; rear closed."
+        },
+        {
+          "id": "dome-and-guard",
+          "score": 0.96,
+          "threshold": 0.88,
+          "notes": "One connected watertight rounded cage with four welded crossings; no self intersections and >1 mm sampled glass clearance. Smooth vertically fluted glass; two moulded cast registers."
+        },
+        {
+          "id": "three-colour-read",
+          "score": 0.95,
+          "threshold": 0.8,
+          "notes": "Cream paint, brown guard, gray-green frosted glass and plated screw heads distinct; source-derived chips/insect stain; all three material crop checks and material gate pass."
+        },
+        {
+          "id": "wall-mount",
+          "score": 0.98,
+          "threshold": 0.75,
+          "notes": "Closed planar rear at z=0, back-center root pivot; no extraneous mechanisms or sockets."
+        }
+      ],
+      "action": "continue",
+      "summary": "Final whole-asset visual estimate 95/100 for the procedural game prop, based on the same reference/render pair and full turntable. Rounded guard is genuinely welded: one component, zero boundary/non-manifold edges, four crossings; no self-intersection or sampled glass penetration. Remaining approximation is subtle glass scattering/reflectance and hidden rear detail, not a structural defect. Bowed bars retain round sections, moulded rims and smooth flutes; 8017 guard/glass samples clear.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [
+        "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/accepted/gates.json",
+        "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/accepted/material-gate.json",
+        "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/clearance-audit.json",
+        "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/accepted/guardTopology.json"
+      ],
+      "outOfSequence": true,
+      "reviewViewpoints": [
+        "front",
+        "right",
+        "rear",
+        "left",
+        "hero",
+        "unlit",
+        "grazing",
+        "reference",
+        "long-axis",
+        "thickness-axis"
+      ],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/accepted/aligned-0.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/accepted/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-27T13:43:42.288364+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Explicit top-axis review exposed a short vertical guard foot that stopped above the casting. Extend both vertical ends by 3 mm into the seat, retain welded topology and recheck clearance. Central glass crop is 19 RGB levels darker than the reference; adjust its diffuse value from measured material evidence.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/accepted/long-axis.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/accepted/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-27T13:45:38.795599+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.97,
+        "formDetail": 0.95,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.94
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "threshold": 0.85,
+          "notes": "Circular flange, shallow dome and wall-normal projection match reference. Calibrated silhouette IoU .973; rear closed."
+        },
+        {
+          "id": "dome-and-guard",
+          "score": 0.96,
+          "threshold": 0.88,
+          "notes": "One connected watertight rounded cage with four welded crossings; no self intersections and no significant sampled glass penetration. Smooth vertically fluted glass; two moulded cast registers."
+        },
+        {
+          "id": "three-colour-read",
+          "score": 0.95,
+          "threshold": 0.8,
+          "notes": "Cream paint, brown guard, gray-green frosted glass and plated screw heads distinct; source-derived chips/insect stain; all three material crop checks and material gate pass."
+        },
+        {
+          "id": "wall-mount",
+          "score": 0.98,
+          "threshold": 0.75,
+          "notes": "Closed planar rear at z=0, back-center root pivot; no extraneous mechanisms or sockets."
+        }
+      ],
+      "action": "continue",
+      "summary": "Final whole-asset visual estimate 95/100 for the procedural game prop, based on the same reference/render pair and full turntable. Rounded guard is genuinely welded: one component, zero boundary/non-manifold edges, four crossings; no self-intersection or sampled glass penetration. Remaining approximation is subtle glass scattering/reflectance and hidden rear detail, not a structural defect. Circular proportions and wall-normal depth verified in map-free clay.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [
+        "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/gates.json",
+        "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/material-gate.json",
+        "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/clearance-audit.json",
+        "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/guardTopology.json"
+      ],
+      "outOfSequence": true,
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/renders/clay-000.png",
+      "reviewViewpoints": [
+        "front",
+        "right",
+        "rear",
+        "left",
+        "hero",
+        "unlit",
+        "grazing",
+        "reference",
+        "long-axis",
+        "thickness-axis"
+      ],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/aligned-0.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-27T13:45:51.696016+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.97,
+        "formDetail": 0.95,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.94
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "threshold": 0.85,
+          "notes": "Circular flange, shallow dome and wall-normal projection match reference. Calibrated silhouette IoU .973; rear closed."
+        },
+        {
+          "id": "dome-and-guard",
+          "score": 0.96,
+          "threshold": 0.88,
+          "notes": "One connected watertight rounded cage with four welded crossings; no self intersections and no significant sampled glass penetration. Smooth vertically fluted glass; two moulded cast registers."
+        },
+        {
+          "id": "three-colour-read",
+          "score": 0.95,
+          "threshold": 0.8,
+          "notes": "Cream paint, brown guard, gray-green frosted glass and plated screw heads distinct; source-derived chips/insect stain; all three material crop checks and material gate pass."
+        },
+        {
+          "id": "wall-mount",
+          "score": 0.98,
+          "threshold": 0.75,
+          "notes": "Closed planar rear at z=0, back-center root pivot; no extraneous mechanisms or sockets."
+        }
+      ],
+      "action": "continue",
+      "summary": "Final whole-asset visual estimate 95/100 for the procedural game prop, based on the same reference/render pair and full turntable. Rounded guard is genuinely welded: one component, zero boundary/non-manifold edges, four crossings; no self-intersection or sampled glass penetration. Remaining approximation is subtle glass scattering/reflectance and hidden rear detail, not a structural defect. Welded cage, closed casting, glass insert and seated hardware verified.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [
+        "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/gates.json",
+        "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/material-gate.json",
+        "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/clearance-audit.json",
+        "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/guardTopology.json"
+      ],
+      "outOfSequence": true,
+      "reviewViewpoints": [
+        "front",
+        "right",
+        "rear",
+        "left",
+        "hero",
+        "unlit",
+        "grazing",
+        "reference",
+        "long-axis",
+        "thickness-axis"
+      ],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/aligned-0.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-27T13:46:04.608887+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.97,
+        "formDetail": 0.95,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.94
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "threshold": 0.85,
+          "notes": "Circular flange, shallow dome and wall-normal projection match reference. Calibrated silhouette IoU .973; rear closed."
+        },
+        {
+          "id": "dome-and-guard",
+          "score": 0.96,
+          "threshold": 0.88,
+          "notes": "One connected watertight rounded cage with four welded crossings; no self intersections and no significant sampled glass penetration. Smooth vertically fluted glass; two moulded cast registers."
+        },
+        {
+          "id": "three-colour-read",
+          "score": 0.95,
+          "threshold": 0.8,
+          "notes": "Cream paint, brown guard, gray-green frosted glass and plated screw heads distinct; source-derived chips/insect stain; all three material crop checks and material gate pass."
+        },
+        {
+          "id": "wall-mount",
+          "score": 0.98,
+          "threshold": 0.75,
+          "notes": "Closed planar rear at z=0, back-center root pivot; no extraneous mechanisms or sockets."
+        }
+      ],
+      "action": "continue",
+      "summary": "Final whole-asset visual estimate 95/100 for the procedural game prop, based on the same reference/render pair and full turntable. Rounded guard is genuinely welded: one component, zero boundary/non-manifold edges, four crossings; no self-intersection or sampled glass penetration. Remaining approximation is subtle glass scattering/reflectance and hidden rear detail, not a structural defect. Bowed bars retain round sections, moulded rims and smooth flutes; Full-radius guard/glass sampling and top-axis seating verified.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [
+        "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/gates.json",
+        "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/material-gate.json",
+        "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/clearance-audit.json",
+        "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/guardTopology.json"
+      ],
+      "outOfSequence": true,
+      "reviewViewpoints": [
+        "front",
+        "right",
+        "rear",
+        "left",
+        "hero",
+        "unlit",
+        "grazing",
+        "reference",
+        "long-axis",
+        "thickness-axis"
+      ],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/aligned-0.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-27T13:46:17.669044+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.97,
+        "formDetail": 0.95,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.94
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "threshold": 0.85,
+          "notes": "Circular flange, shallow dome and wall-normal projection match reference. Calibrated silhouette IoU .973; rear closed."
+        },
+        {
+          "id": "dome-and-guard",
+          "score": 0.96,
+          "threshold": 0.88,
+          "notes": "One connected watertight rounded cage with four welded crossings; no self intersections and no significant sampled glass penetration. Smooth vertically fluted glass; two moulded cast registers."
+        },
+        {
+          "id": "three-colour-read",
+          "score": 0.95,
+          "threshold": 0.8,
+          "notes": "Cream paint, brown guard, gray-green frosted glass and plated screw heads distinct; source-derived chips/insect stain; all three material crop checks and material gate pass."
+        },
+        {
+          "id": "wall-mount",
+          "score": 0.98,
+          "threshold": 0.75,
+          "notes": "Closed planar rear at z=0, back-center root pivot; no extraneous mechanisms or sockets."
+        }
+      ],
+      "action": "continue",
+      "summary": "Final whole-asset visual estimate 95/100 for the procedural game prop, based on the same reference/render pair and full turntable. Rounded guard is genuinely welded: one component, zero boundary/non-manifold edges, four crossings; no self-intersection or sampled glass penetration. Remaining approximation is subtle glass scattering/reflectance and hidden rear detail, not a structural defect. Three verified crops have extraction confidence .751/.803/.716; independent albedo, roughness/metalness channels and flute normals. Material gate passes.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [
+        "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/gates.json",
+        "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/material-gate.json",
+        "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/clearance-audit.json",
+        "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/guardTopology.json"
+      ],
+      "outOfSequence": true,
+      "reviewViewpoints": [
+        "front",
+        "right",
+        "rear",
+        "left",
+        "hero",
+        "unlit",
+        "grazing",
+        "reference",
+        "long-axis",
+        "thickness-axis"
+      ],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/aligned-0.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-27T13:46:30.860181+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.97,
+        "formDetail": 0.95,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.94
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "threshold": 0.85,
+          "notes": "Circular flange, shallow dome and wall-normal projection match reference. Calibrated silhouette IoU .973; rear closed."
+        },
+        {
+          "id": "dome-and-guard",
+          "score": 0.96,
+          "threshold": 0.88,
+          "notes": "One connected watertight rounded cage with four welded crossings; no self intersections and no significant sampled glass penetration. Smooth vertically fluted glass; two moulded cast registers."
+        },
+        {
+          "id": "three-colour-read",
+          "score": 0.95,
+          "threshold": 0.8,
+          "notes": "Cream paint, brown guard, gray-green frosted glass and plated screw heads distinct; source-derived chips/insect stain; all three material crop checks and material gate pass."
+        },
+        {
+          "id": "wall-mount",
+          "score": 0.98,
+          "threshold": 0.75,
+          "notes": "Closed planar rear at z=0, back-center root pivot; no extraneous mechanisms or sockets."
+        }
+      ],
+      "action": "continue",
+      "summary": "Final whole-asset visual estimate 95/100 for the procedural game prop, based on the same reference/render pair and full turntable. Rounded guard is genuinely welded: one component, zero boundary/non-manifold edges, four crossings; no self-intersection or sampled glass penetration. Remaining approximation is subtle glass scattering/reflectance and hidden rear detail, not a structural defect. Reference-derived sparse enamel chips and lower glass staining preserve observed identity without baked broad lighting.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [
+        "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/gates.json",
+        "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/material-gate.json",
+        "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/clearance-audit.json",
+        "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/guardTopology.json"
+      ],
+      "outOfSequence": true,
+      "reviewViewpoints": [
+        "front",
+        "right",
+        "rear",
+        "left",
+        "hero",
+        "unlit",
+        "grazing",
+        "reference",
+        "long-axis",
+        "thickness-axis"
+      ],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/aligned-0.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-27T13:46:44.087427+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.97,
+        "formDetail": 0.95,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.94
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "threshold": 0.85,
+          "notes": "Circular flange, shallow dome and wall-normal projection match reference. Calibrated silhouette IoU .973; rear closed."
+        },
+        {
+          "id": "dome-and-guard",
+          "score": 0.96,
+          "threshold": 0.88,
+          "notes": "One connected watertight rounded cage with four welded crossings; no self intersections and no significant sampled glass penetration. Smooth vertically fluted glass; two moulded cast registers."
+        },
+        {
+          "id": "three-colour-read",
+          "score": 0.95,
+          "threshold": 0.8,
+          "notes": "Cream paint, brown guard, gray-green frosted glass and plated screw heads distinct; source-derived chips/insect stain; all three material crop checks and material gate pass."
+        },
+        {
+          "id": "wall-mount",
+          "score": 0.98,
+          "threshold": 0.75,
+          "notes": "Closed planar rear at z=0, back-center root pivot; no extraneous mechanisms or sockets."
+        }
+      ],
+      "action": "continue",
+      "summary": "Final whole-asset visual estimate 95/100 for the procedural game prop, based on the same reference/render pair and full turntable. Rounded guard is genuinely welded: one component, zero boundary/non-manifold edges, four crossings; no self-intersection or sampled glass penetration. Remaining approximation is subtle glass scattering/reflectance and hidden rear detail, not a structural defect. Neutral, grazing, reference and unlit captures checked; standard turntable also remains readable.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [
+        "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/gates.json",
+        "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/material-gate.json",
+        "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/clearance-audit.json",
+        "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/guardTopology.json"
+      ],
+      "outOfSequence": true,
+      "reviewViewpoints": [
+        "front",
+        "right",
+        "rear",
+        "left",
+        "hero",
+        "unlit",
+        "grazing",
+        "reference",
+        "long-axis",
+        "thickness-axis"
+      ],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/aligned-0.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-27T13:46:57.478243+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.97,
+        "formDetail": 0.95,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.94
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "threshold": 0.85,
+          "notes": "Circular flange, shallow dome and wall-normal projection match reference. Calibrated silhouette IoU .973; rear closed."
+        },
+        {
+          "id": "dome-and-guard",
+          "score": 0.96,
+          "threshold": 0.88,
+          "notes": "One connected watertight rounded cage with four welded crossings; no self intersections and no significant sampled glass penetration. Smooth vertically fluted glass; two moulded cast registers."
+        },
+        {
+          "id": "three-colour-read",
+          "score": 0.95,
+          "threshold": 0.8,
+          "notes": "Cream paint, brown guard, gray-green frosted glass and plated screw heads distinct; source-derived chips/insect stain; all three material crop checks and material gate pass."
+        },
+        {
+          "id": "wall-mount",
+          "score": 0.98,
+          "threshold": 0.75,
+          "notes": "Closed planar rear at z=0, back-center root pivot; no extraneous mechanisms or sockets."
+        }
+      ],
+      "action": "continue",
+      "summary": "Final whole-asset visual estimate 95/100 for the procedural game prop, based on the same reference/render pair and full turntable. Rounded guard is genuinely welded: one component, zero boundary/non-manifold edges, four crossings; no self-intersection or sampled glass penetration. Remaining approximation is subtle glass scattering/reflectance and hidden rear detail, not a structural defect. Two named clickable parts, one root pivot, zero sockets/destruction groups; wall-mount box proxy and retained four-box compound verified.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [
+        "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/gates.json",
+        "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/material-gate.json",
+        "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/clearance-audit.json",
+        "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/guardTopology.json"
+      ],
+      "outOfSequence": true,
+      "reviewViewpoints": [
+        "front",
+        "right",
+        "rear",
+        "left",
+        "hero",
+        "unlit",
+        "grazing",
+        "reference",
+        "long-axis",
+        "thickness-axis"
+      ],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/aligned-0.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-27T13:47:10.374675+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.97,
+        "formDetail": 0.95,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.94
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "threshold": 0.85,
+          "notes": "Circular flange, shallow dome and wall-normal projection match reference. Calibrated silhouette IoU .973; rear closed."
+        },
+        {
+          "id": "dome-and-guard",
+          "score": 0.96,
+          "threshold": 0.88,
+          "notes": "One connected watertight rounded cage with four welded crossings; no self intersections and no significant sampled glass penetration. Smooth vertically fluted glass; two moulded cast registers."
+        },
+        {
+          "id": "three-colour-read",
+          "score": 0.95,
+          "threshold": 0.8,
+          "notes": "Cream paint, brown guard, gray-green frosted glass and plated screw heads distinct; source-derived chips/insect stain; all three material crop checks and material gate pass."
+        },
+        {
+          "id": "wall-mount",
+          "score": 0.98,
+          "threshold": 0.75,
+          "notes": "Closed planar rear at z=0, back-center root pivot; no extraneous mechanisms or sockets."
+        }
+      ],
+      "action": "continue",
+      "summary": "Final whole-asset visual estimate 95/100 for the procedural game prop, based on the same reference/render pair and full turntable. Rounded guard is genuinely welded: one component, zero boundary/non-manifold edges, four crossings; no self-intersection or sampled glass penetration. Remaining approximation is subtle glass scattering/reflectance and hidden rear detail, not a structural defect. 3492/3500 triangles, 2/2 draw calls, 2/2 materials, 2/4 geometries. Factory about 46 ms; four textures about 1 MB. Standard PBR and imports only three.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [
+        "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/gates.json",
+        "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/material-gate.json",
+        "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/clearance-audit.json",
+        "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/guardTopology.json"
+      ],
+      "outOfSequence": true,
+      "reviewViewpoints": [
+        "front",
+        "right",
+        "rear",
+        "left",
+        "hero",
+        "unlit",
+        "grazing",
+        "reference",
+        "long-axis",
+        "thickness-axis"
+      ],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/aligned-0.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/finished/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
     }
   ],
   "lodPlan": [
@@ -1836,50 +3911,29 @@
   ],
   "performanceBudget": {
     "qualityPriority": "real-time-prop",
-    "targetTriangles": 2000,
-    "maxDrawCalls": 1,
-    "maxMaterials": 1,
-    "maxUniqueGeometries": 2,
-    "textureSize": 0,
+    "targetTriangles": 3500,
+    "maxDrawCalls": 2,
+    "maxMaterials": 2,
+    "maxUniqueGeometries": 4,
+    "textureSize": 512,
     "fpsTarget": 60,
-    "optimizationPolicy": "budgetClass stays SMALL -- ONE draw call, ONE material, TWO unique geometries -- and only targetTriangles is overridden, 800 -> 2000, recorded on the asset. The guard cage is this fitting's identity and cannot exist inside 800 triangles. The build measures 1912 triangles at 1 draw call, 1 material and 1 geometry, so it passes the SMALL ceiling on the three axes that actually cost a low-end GPU -- a CPU submission, a shader switch and VRAM -- and buys only triangles, the cheapest axis and the one a distant LOD tier drops anyway. It is placed by the dozen down a corridor or a shophouse row, which is what those three ceilings are protecting."
+    "optimizationPolicy": "Repair: rounded welded cage and smooth cast/glass profiles require a 3500 triangle ceiling instead of 2000; keep medium 2 draw calls, 2 materials, 4 geometries. User requested connected solid guard and a 95 quality target."
   },
   "lightingFromPhoto": [
     {
       "role": "key",
-      "observation": "A soft key from the upper front-left; the cream backplate's upper arc is the brightest region and the dome carries a broad specular sheen.",
-      "confidence": 0.8,
-      "appliesTo": "review harness parity - the harness key sits at (3, 5, 4)."
-    },
-    {
-      "role": "fill",
-      "observation": "Shadow sides lifted rather than black.",
-      "confidence": 0.75,
-      "appliesTo": "the harness fill at (-4, 2, 3), intensity 0.9."
-    },
-    {
-      "role": "rim",
-      "observation": "No separate rim in the plate.",
-      "confidence": 0.85,
-      "appliesTo": "review only; the harness rim at (0, 3, -5) is a harness convention the model must not depend on."
+      "observation": "Soft upper-front key with broad glass reflections; controlled reference render uses key (-3,5,4), fill and stable generated PMREM environment.",
+      "confidence": 0.85
     },
     {
       "role": "environment",
-      "observation": "A pale blue-grey backdrop at luma ~191; foreground coverage is 62.9%, the highest in this lighting set - the plate is a face-on view of a wall fitting that nearly fills the frame. The review harness approximates it with a HemisphereLight(0xffffff, 0x404040, 1.6) and NO environment map, which is why every metal here is authored below metalness 1.0: a raw metal has no diffuse term and nothing to reflect, and it renders DARKER than the 58 backdrop, which the turntable gate reads as a hole punched through the model.",
-      "confidence": 0.9,
-      "appliesTo": "material authoring."
-    },
-    {
-      "role": "exposure-and-tone",
-      "observation": "The review harness applies ACES filmic tone mapping, which rolls off highlights, so a painted luma reads lower than its raw value. Albedo is therefore verified in the render and corrected against the measurement rather than copied through from the crop.",
-      "confidence": 0.85,
-      "appliesTo": "all materials."
+      "observation": "Blue-gray wall backdrop is excluded from geometric silhouette scoring, retained in visual reference.",
+      "confidence": 0.95
     },
     {
       "role": "contact-shadow",
-      "observation": "Ambient occlusion is authored per material (cavityStrength 0.2, contactShadowBias 0.3) to darken joints and seams. The prop's ground shadow is the level bake's job, not the factory's - the factory sets castShadow/receiveShadow and nothing else.",
-      "confidence": 0.8,
-      "appliesTo": "all materials."
+      "observation": "Contact shadow belongs to placement/rendering; factory casts and receives shadows without built-in scene lights. ACES filmic tone mapping, exposure 1.0, linear working colors and sRGB output.",
+      "confidence": 0.9
     }
   ],
   "proceduralStrategy": [
@@ -1916,5 +3970,897 @@
     "actionProfile.destruction.fractureGroup marks detachable or breakable component sets",
     "component seams and sockets define plausible break points instead of random explosions"
   ],
-  "risks": []
+  "risks": [],
+  "localSpecSearch": {
+    "collection": "core_3d",
+    "query": "Bulkhead Wall Pack Light welded round bar protective cage pressed fluted glass enamel wall light",
+    "index": {
+      "status": "hit",
+      "reason": "current",
+      "fingerprint": "62f2831e1d52eeb6dbb94a87c44fa25b1f4926626a7b1f8c2bcadc63e04e9471"
+    },
+    "matches": [
+      {
+        "record_id": "core.shader-mapping-cylindergeometry-barrels-round-components",
+        "file_path": "docs/raw/img2threejs-skill-dataset.json",
+        "heading": null,
+        "key_path": "categories.rendering_shader_mapping[4]",
+        "score": 4.490198196253,
+        "snippets": [
+          "... part. Ánh xạ tới mọi bộ phận có tiết diện tròn dạng nòng. Recognition cues: Long uniform-cross-section round part (barrel, suppressor, muzzle brake body, cleaning rod, magazine tube) Dấu hiệu nhận diện: Bộ phận tròn có tiết ..."
+        ],
+        "source_refs": [
+          {
+            "path": "docs/raw/img2threejs-skill-dataset.json",
+            "heading": null,
+            "key_path": "categories.rendering_shader_mapping[4]"
+          }
+        ],
+        "evidence_refs": [
+          {
+            "kind": "source",
+            "ref": "docs/raw/img2threejs-skill-dataset.json",
+            "note": "img2threejs NotebookLM research distillation"
+          }
+        ]
+      },
+      {
+        "record_id": "core.pbr-opacity-alpha",
+        "file_path": "docs/raw/img2threejs-skill-dataset.json",
+        "heading": null,
+        "key_path": "categories.material_pbr[8]",
+        "score": 3.086972024081,
+        "snippets": [
+          "... làm kênh dữ liệu, không phải độ trong suốt. Recognition cues: Standard opacity: soft edge fade or full transparency in glass/plastic parts; CS2-specific: alpha channel of the base color texture instead encodes a Wearness Mask, not visual ..."
+        ],
+        "source_refs": [
+          {
+            "path": "docs/raw/img2threejs-skill-dataset.json",
+            "heading": null,
+            "key_path": "categories.material_pbr[8]"
+          }
+        ],
+        "evidence_refs": [
+          {
+            "kind": "source",
+            "ref": "docs/raw/img2threejs-skill-dataset.json",
+            "note": "img2threejs NotebookLM research distillation"
+          }
+        ]
+      },
+      {
+        "record_id": "core.pbr-ambient-occlusion-ao",
+        "file_path": "docs/raw/img2threejs-skill-dataset.json",
+        "heading": null,
+        "key_path": "categories.material_pbr[3]",
+        "score": 3.027858022833,
+        "snippets": [
+          "Baked grayscale map darkening indirect light in crevices, seams, and recesses. Bản đồ grayscale được nướng sẵn làm tối ánh sáng gián tiếp tại các khe, rãnh và chỗ lõm. Recognition cues: Soft, contact-shadow-like darkening in grooves, screw ..."
+        ],
+        "source_refs": [
+          {
+            "path": "docs/raw/img2threejs-skill-dataset.json",
+            "heading": null,
+            "key_path": "categories.material_pbr[3]"
+          }
+        ],
+        "evidence_refs": [
+          {
+            "kind": "source",
+            "ref": "docs/raw/img2threejs-skill-dataset.json",
+            "note": "img2threejs NotebookLM research distillation"
+          }
+        ]
+      }
+    ]
+  },
+  "repair95": {
+    "guard": {
+      "verticalX": [
+        -0.0474,
+        0.0474
+      ],
+      "horizontalY": [
+        0.008,
+        -0.041
+      ],
+      "barWidth": 0.0072,
+      "crossingCount": 4,
+      "construction": "Conforming rectangular union grid with analytic rounded cross section; closed indexed top/bottom surfaces share boundary vertices, four junctions welded.",
+      "bowedVertical": true,
+      "junctionConstruction": "Rounded union graph at crossings; normal-offset tube sections away from junctions",
+      "clearance": "Actual diffuser mesh ray audit: 8423 hits, minimum clearance 1.175 mm, zero penetrations. Ideal ellipsoid audit: 8472 samples, 0.06 mm worst deviation below tessellation tolerance. Rounded outer bends use a 10 mm radial clearance correction."
+    },
+    "glass": {
+      "radius": 0.084,
+      "baseZ": 0.03,
+      "height": 0.07,
+      "flutePitch": 0.007,
+      "profileRings": 7,
+      "baseColor": "#9b988b",
+      "roughness": 0.4
+    },
+    "projectionRoute": "Flat paint and monochromatic glass do not require photo projection; resolved edge chips may use de-lit crop if later needed.",
+    "validationBundleSha256": "056acfc25f47a1016cedb3c03573b289c96197a591f98a3b59d70bdc8db27c48"
+  },
+  "materialAnalysis": {
+    "artifact": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/material-analysis.json",
+    "status": "proceed",
+    "regions": [
+      "cream",
+      "guard",
+      "glass"
+    ],
+    "extractionConfidence": [
+      0.751,
+      0.803,
+      0.716
+    ],
+    "implementation": "Separate source-derived sparse chip and insect masks after de-lighting, vertex-color palette, independent roughness/metalness atlas and independently generated vertical flute normal."
+  },
+  "tier1Results": [
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.891,
+        "aspectRatioDelta": 0.005,
+        "scaleDelta": 0.1125,
+        "bilateralSymmetryError": 0.0203,
+        "colorDelta": {
+          "checked": 2,
+          "maxDeltaE": 13.93,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 13.93
+            },
+            {
+              "componentId": null,
+              "deltaE": 13.93
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "scale delta 0.113 exceeds threshold 0.08"
+      ],
+      "maskWarnings": [],
+      "renderHash": "d72253177341ca0c",
+      "passId": "structural-pass"
+    },
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.8037,
+        "aspectRatioDelta": 0.0006,
+        "scaleDelta": 0.2094,
+        "bilateralSymmetryError": 0.0147,
+        "colorDelta": {
+          "checked": 2,
+          "maxDeltaE": 14.12,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 14.12
+            },
+            {
+              "componentId": null,
+              "deltaE": 14.12
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.804 is below threshold 0.85",
+        "scale delta 0.209 exceeds threshold 0.08"
+      ],
+      "maskWarnings": [],
+      "renderHash": "69c82b4c04c81fa2",
+      "passId": "structural-pass"
+    },
+    {
+      "passed": true,
+      "checks": {
+        "silhouetteIoU": 0.9731,
+        "aspectRatioDelta": 0.0,
+        "scaleDelta": 0.0,
+        "bilateralSymmetryError": 0.0373,
+        "colorDelta": {
+          "checked": 2,
+          "maxDeltaE": 14.21,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 14.21
+            },
+            {
+              "componentId": null,
+              "deltaE": 14.21
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [],
+      "maskWarnings": [],
+      "renderHash": "ab589409a9ddb07a",
+      "passId": "structural-pass"
+    },
+    {
+      "passed": true,
+      "checks": {
+        "silhouetteIoU": 0.9839,
+        "aspectRatioDelta": 0.0,
+        "scaleDelta": 0.0,
+        "bilateralSymmetryError": 0.0294,
+        "colorDelta": {
+          "checked": 2,
+          "maxDeltaE": 13.9,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 13.9
+            },
+            {
+              "componentId": null,
+              "deltaE": 13.9
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [],
+      "maskWarnings": [],
+      "renderHash": "c080e8edbb695d33",
+      "passId": "structural-pass"
+    },
+    {
+      "passed": true,
+      "checks": {
+        "silhouetteIoU": 0.9841,
+        "aspectRatioDelta": 0.0,
+        "scaleDelta": 0.0,
+        "bilateralSymmetryError": 0.0291,
+        "colorDelta": {
+          "checked": 2,
+          "maxDeltaE": 13.73,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 13.73
+            },
+            {
+              "componentId": null,
+              "deltaE": 13.73
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [],
+      "maskWarnings": [],
+      "renderHash": "bd1c3185d7278e90",
+      "passId": "structural-pass"
+    },
+    {
+      "passed": true,
+      "checks": {
+        "silhouetteIoU": 0.9841,
+        "aspectRatioDelta": 0.0,
+        "scaleDelta": 0.0,
+        "bilateralSymmetryError": 0.0291,
+        "colorDelta": {
+          "checked": 2,
+          "maxDeltaE": 13.73,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 13.73
+            },
+            {
+              "componentId": null,
+              "deltaE": 13.73
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [],
+      "maskWarnings": [],
+      "renderHash": "bd1c3185d7278e90",
+      "passId": "structural-pass"
+    },
+    {
+      "passed": true,
+      "checks": {
+        "silhouetteIoU": 0.9841,
+        "aspectRatioDelta": 0.0,
+        "scaleDelta": 0.0,
+        "bilateralSymmetryError": 0.0291,
+        "colorDelta": {
+          "checked": 2,
+          "maxDeltaE": 13.73,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 13.73
+            },
+            {
+              "componentId": null,
+              "deltaE": 13.73
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [],
+      "maskWarnings": [],
+      "renderHash": "bd1c3185d7278e90",
+      "passId": "structural-pass"
+    },
+    {
+      "passed": true,
+      "checks": {
+        "silhouetteIoU": 0.9837,
+        "aspectRatioDelta": 0.0054,
+        "scaleDelta": 0.0054,
+        "bilateralSymmetryError": 0.0295,
+        "colorDelta": {
+          "checked": 2,
+          "maxDeltaE": 20.69,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 17.48
+            },
+            {
+              "componentId": null,
+              "deltaE": 20.69
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [],
+      "maskWarnings": [],
+      "renderHash": "6b1e5a861a6c0747",
+      "passId": "structural-pass"
+    },
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.9837,
+        "aspectRatioDelta": 0.0054,
+        "scaleDelta": 0.0054,
+        "bilateralSymmetryError": 0.0295,
+        "colorDelta": {
+          "checked": 2,
+          "maxDeltaE": 20.69,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 17.48
+            },
+            {
+              "componentId": null,
+              "deltaE": 20.69
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "maskWarnings": [],
+      "renderHash": "6b1e5a861a6c0747",
+      "passId": "blockout"
+    },
+    {
+      "passed": true,
+      "checks": {
+        "silhouetteIoU": 0.9837,
+        "aspectRatioDelta": 0.0054,
+        "scaleDelta": 0.0054,
+        "bilateralSymmetryError": 0.0295,
+        "colorDelta": {
+          "checked": 2,
+          "maxDeltaE": 20.69,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 17.48
+            },
+            {
+              "componentId": null,
+              "deltaE": 20.69
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [],
+      "maskWarnings": [],
+      "renderHash": "6b1e5a861a6c0747",
+      "passId": "blockout",
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/renders/clay-000.png"
+    },
+    {
+      "passed": true,
+      "checks": {
+        "silhouetteIoU": 0.9837,
+        "aspectRatioDelta": 0.0054,
+        "scaleDelta": 0.0054,
+        "bilateralSymmetryError": 0.0295,
+        "colorDelta": {
+          "checked": 2,
+          "maxDeltaE": 20.69,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 17.48
+            },
+            {
+              "componentId": null,
+              "deltaE": 20.69
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [],
+      "maskWarnings": [],
+      "renderHash": "6b1e5a861a6c0747",
+      "passId": "blockout",
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/renders/clay-000.png"
+    },
+    {
+      "passed": true,
+      "checks": {
+        "silhouetteIoU": 0.9837,
+        "aspectRatioDelta": 0.0054,
+        "scaleDelta": 0.0054,
+        "bilateralSymmetryError": 0.0295,
+        "colorDelta": {
+          "checked": 2,
+          "maxDeltaE": 20.69,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 17.48
+            },
+            {
+              "componentId": null,
+              "deltaE": 20.69
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [],
+      "maskWarnings": [],
+      "renderHash": "6b1e5a861a6c0747",
+      "passId": "blockout",
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/renders/clay-000.png"
+    },
+    {
+      "passed": true,
+      "checks": {
+        "silhouetteIoU": 0.9837,
+        "aspectRatioDelta": 0.0054,
+        "scaleDelta": 0.0054,
+        "bilateralSymmetryError": 0.0295,
+        "colorDelta": {
+          "checked": 2,
+          "maxDeltaE": 20.69,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 17.48
+            },
+            {
+              "componentId": null,
+              "deltaE": 20.69
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [],
+      "maskWarnings": [],
+      "renderHash": "6b1e5a861a6c0747",
+      "passId": "structural-pass"
+    },
+    {
+      "passed": true,
+      "checks": {
+        "silhouetteIoU": 0.9837,
+        "aspectRatioDelta": 0.0054,
+        "scaleDelta": 0.0054,
+        "bilateralSymmetryError": 0.0295,
+        "colorDelta": {
+          "checked": 2,
+          "maxDeltaE": 20.69,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 17.48
+            },
+            {
+              "componentId": null,
+              "deltaE": 20.69
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [],
+      "maskWarnings": [],
+      "renderHash": "6b1e5a861a6c0747",
+      "passId": "form-refinement"
+    },
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.9837,
+        "aspectRatioDelta": 0.0054,
+        "scaleDelta": 0.0054,
+        "bilateralSymmetryError": 0.0295,
+        "colorDelta": {
+          "checked": 2,
+          "maxDeltaE": 20.69,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 17.48
+            },
+            {
+              "componentId": null,
+              "deltaE": 20.69
+            }
+          ],
+          "gated": true
+        }
+      },
+      "failures": [
+        "max per-part color delta-E 20.69 exceeds threshold 20.0"
+      ],
+      "maskWarnings": [],
+      "renderHash": "6b1e5a861a6c0747",
+      "passId": "material-pass"
+    },
+    {
+      "passed": true,
+      "checks": {
+        "silhouetteIoU": 0.9772,
+        "aspectRatioDelta": 0.0054,
+        "scaleDelta": 0.0054,
+        "bilateralSymmetryError": 0.0348,
+        "colorDelta": {
+          "checked": 2,
+          "maxDeltaE": 17.97,
+          "perComponent": [
+            {
+              "componentId": "bulkhead",
+              "deltaE": 17.97
+            },
+            {
+              "componentId": "diffuser",
+              "deltaE": 17.08
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [],
+      "maskWarnings": [],
+      "renderHash": "223d63c583bb3843",
+      "passId": "structural-pass"
+    },
+    {
+      "passed": true,
+      "checks": {
+        "silhouetteIoU": 0.9772,
+        "aspectRatioDelta": 0.0054,
+        "scaleDelta": 0.0054,
+        "bilateralSymmetryError": 0.0348,
+        "colorDelta": {
+          "checked": 2,
+          "maxDeltaE": 17.97,
+          "perComponent": [
+            {
+              "componentId": "bulkhead",
+              "deltaE": 17.97
+            },
+            {
+              "componentId": "diffuser",
+              "deltaE": 17.08
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [],
+      "maskWarnings": [],
+      "renderHash": "223d63c583bb3843",
+      "passId": "blockout",
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/renders/clay-000.png"
+    },
+    {
+      "passed": true,
+      "checks": {
+        "silhouetteIoU": 0.9772,
+        "aspectRatioDelta": 0.0054,
+        "scaleDelta": 0.0054,
+        "bilateralSymmetryError": 0.0348,
+        "colorDelta": {
+          "checked": 2,
+          "maxDeltaE": 17.97,
+          "perComponent": [
+            {
+              "componentId": "bulkhead",
+              "deltaE": 17.97
+            },
+            {
+              "componentId": "diffuser",
+              "deltaE": 17.08
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [],
+      "maskWarnings": [],
+      "renderHash": "223d63c583bb3843",
+      "passId": "structural-pass"
+    },
+    {
+      "passed": true,
+      "checks": {
+        "silhouetteIoU": 0.9772,
+        "aspectRatioDelta": 0.0054,
+        "scaleDelta": 0.0054,
+        "bilateralSymmetryError": 0.0348,
+        "colorDelta": {
+          "checked": 2,
+          "maxDeltaE": 17.97,
+          "perComponent": [
+            {
+              "componentId": "bulkhead",
+              "deltaE": 17.97
+            },
+            {
+              "componentId": "diffuser",
+              "deltaE": 17.08
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [],
+      "maskWarnings": [],
+      "renderHash": "223d63c583bb3843",
+      "passId": "form-refinement"
+    },
+    {
+      "passed": true,
+      "checks": {
+        "silhouetteIoU": 0.9772,
+        "aspectRatioDelta": 0.0054,
+        "scaleDelta": 0.0054,
+        "bilateralSymmetryError": 0.0348,
+        "colorDelta": {
+          "checked": 2,
+          "maxDeltaE": 17.97,
+          "perComponent": [
+            {
+              "componentId": "bulkhead",
+              "deltaE": 17.97
+            },
+            {
+              "componentId": "diffuser",
+              "deltaE": 17.08
+            }
+          ],
+          "gated": true
+        }
+      },
+      "failures": [],
+      "maskWarnings": [],
+      "renderHash": "223d63c583bb3843",
+      "passId": "material-pass"
+    },
+    {
+      "passed": true,
+      "checks": {
+        "silhouetteIoU": 0.9772,
+        "aspectRatioDelta": 0.0054,
+        "scaleDelta": 0.0054,
+        "bilateralSymmetryError": 0.0348,
+        "colorDelta": {
+          "checked": 2,
+          "maxDeltaE": 17.97,
+          "perComponent": [
+            {
+              "componentId": "bulkhead",
+              "deltaE": 17.97
+            },
+            {
+              "componentId": "diffuser",
+              "deltaE": 17.08
+            }
+          ],
+          "gated": true
+        }
+      },
+      "failures": [],
+      "maskWarnings": [],
+      "renderHash": "223d63c583bb3843",
+      "passId": "surface-pass"
+    },
+    {
+      "passed": true,
+      "checks": {
+        "silhouetteIoU": 0.9772,
+        "aspectRatioDelta": 0.0054,
+        "scaleDelta": 0.0054,
+        "bilateralSymmetryError": 0.0348,
+        "colorDelta": {
+          "checked": 2,
+          "maxDeltaE": 17.97,
+          "perComponent": [
+            {
+              "componentId": "bulkhead",
+              "deltaE": 17.97
+            },
+            {
+              "componentId": "diffuser",
+              "deltaE": 17.08
+            }
+          ],
+          "gated": true
+        }
+      },
+      "failures": [],
+      "maskWarnings": [],
+      "renderHash": "223d63c583bb3843",
+      "passId": "lighting-pass"
+    },
+    {
+      "passed": true,
+      "checks": {
+        "silhouetteIoU": 0.9772,
+        "aspectRatioDelta": 0.0054,
+        "scaleDelta": 0.0054,
+        "bilateralSymmetryError": 0.0348,
+        "colorDelta": {
+          "checked": 2,
+          "maxDeltaE": 17.97,
+          "perComponent": [
+            {
+              "componentId": "bulkhead",
+              "deltaE": 17.97
+            },
+            {
+              "componentId": "diffuser",
+              "deltaE": 17.08
+            }
+          ],
+          "gated": true
+        }
+      },
+      "failures": [],
+      "maskWarnings": [],
+      "renderHash": "223d63c583bb3843",
+      "passId": "interaction-pass"
+    },
+    {
+      "passed": true,
+      "checks": {
+        "silhouetteIoU": 0.9772,
+        "aspectRatioDelta": 0.0054,
+        "scaleDelta": 0.0054,
+        "bilateralSymmetryError": 0.0348,
+        "colorDelta": {
+          "checked": 2,
+          "maxDeltaE": 17.97,
+          "perComponent": [
+            {
+              "componentId": "bulkhead",
+              "deltaE": 17.97
+            },
+            {
+              "componentId": "diffuser",
+              "deltaE": 17.08
+            }
+          ],
+          "gated": true
+        }
+      },
+      "failures": [],
+      "maskWarnings": [],
+      "renderHash": "223d63c583bb3843",
+      "passId": "optimization-pass"
+    }
+  ],
+  "materialPipeline": {
+    "schemaVersion": 1,
+    "status": "proceed",
+    "registry": "/home/mulligan/.codex/skills/img2threejs/docs/materials/material-reference.json",
+    "analysisArtifact": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/material-analysis.json",
+    "targetThreshold": 0.7,
+    "unresolvedNotObservedMaterials": [],
+    "regions": [
+      {
+        "componentId": "bulkhead",
+        "regionId": "cream",
+        "specMaterialId": "bulkhead-shell",
+        "profileId": "coating.painted-metal",
+        "status": "proceed"
+      },
+      {
+        "componentId": "bulkhead",
+        "regionId": "guard",
+        "specMaterialId": "bulkhead-shell",
+        "profileId": "metal.brass",
+        "status": "proceed"
+      },
+      {
+        "componentId": "diffuser",
+        "regionId": "glass",
+        "specMaterialId": "bulkhead-glass",
+        "profileId": "glass.frosted",
+        "status": "proceed"
+      }
+    ],
+    "controlledViewsRequired": [
+      "albedo-unlit",
+      "backlight-transmission",
+      "environment-reflection",
+      "grazing",
+      "neutral-studio",
+      "reference-beauty"
+    ]
+  },
+  "materialAnalysisHistory": [
+    {
+      "analysisArtifact": "/home/mulligan/code/thaikit/scratch/bulkhead-wall-pack-light/repair95/material-analysis.json",
+      "status": "proceed",
+      "unresolvedNotObservedMaterials": [],
+      "regions": 3
+    }
+  ],
+  "materialGate": {
+    "schemaVersion": 1,
+    "kind": "img2threejs.material-gate",
+    "passed": true,
+    "failures": [],
+    "warnings": [],
+    "comparisonCount": 3,
+    "compatibility": {
+      "schemaVersion": 1,
+      "passed": true,
+      "failures": [],
+      "warnings": [],
+      "checked": {
+        "materialCount": 2,
+        "componentCount": 2,
+        "repetitionSystemCount": 0,
+        "referencedMaterialCount": 2,
+        "riggedComponentCount": 0,
+        "lodPresent": true,
+        "collisionPresent": false
+      },
+      "invariant": "material IDs and UV/map contracts survive geometry, skinning, collision and LOD changes"
+    },
+    "requiredEvidence": [
+      "materialPipeline.status=proceed",
+      "all material regions status=proceed",
+      "per-region crop comparison passed",
+      "multi-angle controlled view plan and screenshot readback",
+      "geometry/UV/skinning/collision/LOD material ID compatibility passed"
+    ]
+  }
 }

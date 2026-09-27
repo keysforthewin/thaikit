@@ -24,6 +24,35 @@ test('Unreal export still supplies usable UV charts on untextured geometry', () 
   assert.ok(Array.from(mesh.geometry.attributes.uv.array).some(v => v !== 0));
 });
 
+test('Unreal export preserves AO UV1 while merging a piece with only UV0', () => {
+  const geometry = new THREE.BoxGeometry(); geometry.clearGroups();
+  const uv1 = geometry.attributes.uv.clone();
+  for (let i = 0; i < uv1.count; i++) uv1.setXY(i, .125 + uv1.getX(i) * .25, .625 + uv1.getY(i) * .125);
+  geometry.setAttribute('uv1', uv1);
+  geometry.setAttribute('uv2', uv1.clone()); // Unused lightmap probe should still disappear.
+  const ao = new THREE.DataTexture(new Uint8Array([192, 192, 192, 255]), 1, 1);
+  ao.channel = 1;
+  const coated = new THREE.MeshStandardMaterial({ aoMap: ao });
+  const plainGeometry = new THREE.BoxGeometry(); plainGeometry.clearGroups();
+  const root = new THREE.Group();
+  root.add(new THREE.Mesh(geometry, coated), new THREE.Mesh(plainGeometry, new THREE.MeshStandardMaterial()));
+  const mesh = flattenPrototype(root, 'SM_Ao');
+  const actual = mesh.geometry.attributes.uv1;
+  assert.ok(actual, 'material-consumed UV channel is present');
+  assert.deepEqual(Array.from(actual.array.slice(0, uv1.array.length)), Array.from(uv1.array));
+  assert.ok(Array.from(actual.array.slice(uv1.array.length)).every(v => v === 0), 'unmapped pieces have harmless padding');
+  assert.equal(mesh.geometry.attributes.uv2, undefined);
+  assert.equal(mesh.material[0].aoMap.channel, 1);
+  assert.equal(plainGeometry.attributes.uv1, undefined, 'source geometry remains unchanged');
+});
+
+test('Unreal export rejects an AO material whose authored UV channel is missing', () => {
+  const geometry = new THREE.BoxGeometry(); geometry.clearGroups();
+  const ao = new THREE.Texture(); ao.channel = 1;
+  const root = new THREE.Group(); root.add(new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({ aoMap: ao })));
+  assert.throws(() => flattenPrototype(root, 'SM_BadAo'), /requires missing uv1/);
+});
+
 for (const [id, materialCount] of [['honda-wave',4],['tuk-tuk',4],['toyota-hilux',4],['toyota-fortuner',4],['songthaew',6],['toyota-commuter-van',4],['isuzu-d-max',4]]) test(`${id} keeps every authored surface lookup through Unreal flattening`, async () => {
   const { build } = await import('esbuild');
   const { createRequire } = await import('node:module');

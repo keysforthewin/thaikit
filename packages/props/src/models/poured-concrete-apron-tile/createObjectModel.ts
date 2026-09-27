@@ -3,12 +3,11 @@ import * as THREE from 'three';
 /**
  * Poured Concrete Apron Tile — a flat ground tile.
  *
- * Four triangles (a deck and its underside), one geometry, one material. Everything a player sees on this
- * prop is in the albedo: every stone, joint, rut and stain is painted, never
- * built. Nothing stands proud of the ground plane, which is the point -- a
+ * Four triangles (a deck and its underside), one geometry, one material. Concrete colour, broom grain and shallow sawcuts use
+ * independent albedo, normal and packed AO/roughness maps, with no displacement. Nothing stands proud of the ground plane, which is the point -- a
  * ground tile must not catch a player's feet.
  */
-export type ProceduralModelOptions = {
+export interface ProceduralModelOptions {
   /**
    * Where this prop's shipped files live, with a trailing slash.
    *
@@ -41,6 +40,9 @@ export function createObjectModel(
   const geometry = mergeQuads(top, under);
 
   const material = new THREE.MeshStandardMaterial({
+    name: 'concrete-surface',
+    normalScale: new THREE.Vector2(0.2, 0.2),
+    aoMapIntensity: 0.4,
     roughness: 1,
     metalness: 0,
     // Left white on purpose: the albedo map carries the colour, and tinting it
@@ -53,15 +55,22 @@ export function createObjectModel(
   // runtime with no DOM, where ImageLoader throws.
   const base = options.baseUrl;
   if (base) {
-    const albedo = new THREE.TextureLoader().load(new URL('maps/albedo.webp', base).href);
-    albedo.colorSpace = THREE.SRGBColorSpace;
-    // The tile is authored at exactly its own footprint, so it never repeats
-    // within itself. Repeat wrapping is still correct: a level builder that
-    // scales a tile should get more ground, not a stretched one.
-    albedo.wrapS = THREE.RepeatWrapping;
-    albedo.wrapT = THREE.RepeatWrapping;
-    albedo.anisotropy = Math.max(1, Math.round(options.textureAnisotropy ?? 8));
-    material.map = albedo;
+    const loader = new THREE.TextureLoader();
+    const load = (file: string, colorSpace: typeof THREE.SRGBColorSpace | typeof THREE.NoColorSpace) => {
+      const texture = loader.load(new URL(file, base).href);
+      texture.colorSpace = colorSpace;
+      texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+      texture.anisotropy = Math.max(1, Math.round(options.textureAnisotropy ?? 8));
+      return texture;
+    };
+    material.map = load('maps/albedo.webp', THREE.SRGBColorSpace);
+    material.normalMap = load('maps/normal.webp', THREE.NoColorSpace);
+    const orm = load('maps/orm.webp', THREE.NoColorSpace);
+    // Standard glTF packing: AO in red, roughness in green, metalness in blue.
+    // One shared data texture avoids three duplicate image allocations.
+    material.aoMap = orm;
+    material.roughnessMap = orm;
+    material.metalnessMap = orm;
     material.needsUpdate = true;
   }
 

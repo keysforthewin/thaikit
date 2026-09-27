@@ -106,12 +106,13 @@ const dashes = (x, keep = [0, 1, 2, 3]) => keep.flatMap((i) => vseg(x, 0.5 + 2 *
 const edges = (z0 = 0, z1 = 8) => [...vseg(0.6, z0, z1), ...vseg(7.4, z0, z1)];
 
 /** A stroked polyline in metres, drawn wrapped. */
-function poly(points, { width = W, colour = PAINT, opacity = OP, dash = null, wrap = true } = {}) {
+function poly(points, { width = W, colour = PAINT, opacity = OP, dash = null, wrap = true, wrapX = wrap, wrapZ = wrap } = {}) {
   const d = points.map(([x, z], i) => `${i ? 'L' : 'M'}${m2px(x).toFixed(2)} ${m2px(z).toFixed(2)}`).join(' ');
   const da = dash ? ` stroke-dasharray="${m2px(dash.on)} ${m2px(dash.gap)}" stroke-dashoffset="${m2px(dash.phase)}"` : '';
-  const offs = wrap ? [-PX, 0, PX] : [0];
+  const offsetsX = wrapX ? [-PX, 0, PX] : [0];
+  const offsetsZ = wrapZ ? [-PX, 0, PX] : [0];
   const out = [];
-  for (const ox of offs) for (const oz of offs) {
+  for (const ox of offsetsX) for (const oz of offsetsZ) {
     out.push(`<path d="${d}" transform="translate(${ox} ${oz})" fill="none" stroke="${colour}" stroke-width="${m2px(width)}" stroke-linecap="butt" opacity="${opacity}"${da}/>`);
   }
   return out;
@@ -167,6 +168,19 @@ function dashedArc(cx, cz, r, a0, a1) {
   const cycle = 2 * U;
   const phase = (((s0 - 0.5 * U) % cycle) + cycle) % cycle;
   return poly(pts, { wrap: false, dash: { on: U, gap: U, phase } });
+}
+/**
+ * A whole N-to-E quarter arc, cropped by the SVG viewport after stroking.
+ * Cutting its centreline at an internal quadrant boundary would leave a butt
+ * cap across the diagonal stroke, opening a gap between neighboring tiles.
+ * Keeping the complete circular path also anchors every dash to the block's
+ * N port without sampled-endpoint or polyline-length phase drift.
+ */
+function wideQuarterArc(cx, cz, r, dashed = false) {
+  const radius = m2px(r);
+  const d = `M${m2px(cx - r)} ${m2px(cz)} A${radius} ${radius} 0 0 0 ${m2px(cx)} ${m2px(cz + r)}`;
+  const pattern = dashed ? ` stroke-dasharray="${m2px(U)} ${m2px(U)}" stroke-dashoffset="${m2px(-0.5 * U)}"` : '';
+  return [`<path d="${d}" fill="none" stroke="${PAINT}" stroke-width="${m2px(W)}" stroke-linecap="butt" opacity="${OP}"${pattern}/>`];
 }
 /** Angle (degrees, z down) of point p about centre c. */
 const ang = ([cx, cz], [x, z]) => (Math.atan2(z - cz, x - cx) * 180) / Math.PI;
@@ -240,13 +254,12 @@ const ROAD_RECIPES = {
   },
   // The 2 x 2 wide curve: every arc centred on the block's NE corner, swept from
   // the N port (angle 180 about that corner) to the E port (angle 90). Each
-  // quadrant gives that corner in its own tile-local frame; clipArc keeps the
-  // part inside and carries the arc length from the N port, so the dash phase is
-  // the block's, not the tile's.
-  'road-wide-curve-entry': () => [...arc(16, 0, 15.4, 180, 90), ...dashedArc(16, 0, 12, 180, 90), ...arc(16, 0, 8.6, 180, 90)],
-  'road-wide-curve-inner': () => [...arc(8, 0, 8.6, 180, 90)],
-  'road-wide-curve-outer': () => [...arc(16, -8, 15.4, 180, 90), ...dashedArc(16, -8, 12, 180, 90)],
-  'road-wide-curve-exit': () => [...arc(8, -8, 15.4, 180, 90), ...dashedArc(8, -8, 12, 180, 90), ...arc(8, -8, 8.6, 180, 90)],
+  // quadrant gives that corner in its own tile-local frame. Crop the complete
+  // strokes, retaining their width at internal cuts and the block's dash phase.
+  'road-wide-curve-entry': () => [...wideQuarterArc(16, 0, 15.4), ...wideQuarterArc(16, 0, 12, true), ...wideQuarterArc(16, 0, 8.6)],
+  'road-wide-curve-inner': () => [...wideQuarterArc(8, 0, 8.6)],
+  'road-wide-curve-outer': () => [...wideQuarterArc(16, -8, 15.4), ...wideQuarterArc(16, -8, 12, true)],
+  'road-wide-curve-exit': () => [...wideQuarterArc(8, -8, 15.4), ...wideQuarterArc(8, -8, 12, true), ...wideQuarterArc(8, -8, 8.6)],
   // The 3 x 3 cul-de-sac: bulb of radius 5.5 about the block centre.
   'road-cul-de-sac-approach': () => {
     const zm = 12 - Math.sqrt(5.5 ** 2 - 3.4 ** 2); // 7.68
@@ -263,7 +276,9 @@ const ROAD_RECIPES = {
   // Parking: plain on all four edges, bays open to the W edge.
   'road-parallel-parking-strip': () => [...vseg(2.4, 0, 8), ...hseg(0, 0, 2.4)],
   'road-perpendicular-parking-bays': () => [...vseg(5.0, 0, 8), ...[0, 1, 2].flatMap((i) => hseg((8 / 3) * i, 0, 5.0))],
-  'road-angled-parking-bays': () => [0, 1, 2].flatMap((i) => poly([[0, (8 / 3) * i], [5.0, (8 / 3) * i + 5.0 / Math.tan(Math.PI / 3)]])),
+  // Repeat along the row only. Wrapping x would copy the open-end stroke's
+  // small negative-x shoulder onto the otherwise bare far-E edge.
+  'road-angled-parking-bays': () => [0, 1, 2].flatMap((i) => poly([[0, (8 / 3) * i], [5.0, (8 / 3) * i + 5.0 / Math.tan(Math.PI / 3)]], { wrapX: false })),
   'road-motorcycle-parking-bays': () => [...vseg(2.2, 0, 8), ...[0, 1, 2, 3, 4, 5, 6, 7].flatMap((i) => hseg(i, 0, 2.2))],
 };
 Object.assign(RECIPES, ROAD_RECIPES);

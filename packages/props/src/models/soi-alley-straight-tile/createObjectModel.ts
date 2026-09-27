@@ -4,12 +4,12 @@ import * as THREE from 'three';
  * Soi Alley Straight Tile — a flat street tile.
  *
  * Two triangles, one geometry, one material. Everything a player sees on this
- * prop is in the maps: the carriageway, the sidewalk bands, the paint, the slab
- * coursing and the drain lids are painted, never built. Nothing stands proud of
+ * prop is in the maps: the shared paving, moss joints, oil stains, slab
+ * courses and the drain lids are painted, never built. Nothing stands proud of
  * the ground plane, which is the point -- a road tile must not catch a player's
  * feet, and there is no kerb here to step up onto.
  */
-export type ProceduralModelOptions = {
+export interface ProceduralModelOptions {
   /**
    * Where this prop's shipped files live, with a trailing slash.
    *
@@ -22,8 +22,6 @@ export type ProceduralModelOptions = {
   textureAnisotropy?: number;
   receiveShadow?: boolean;
 };
-
-const MAPS = ["albedo","roughness","normal","ao"] as const;
 
 function loadMap(
   base: string,
@@ -59,6 +57,9 @@ export function createObjectModel(
 
   const anisotropy = Math.max(1, Math.round(options.textureAnisotropy ?? 8));
   const material = new THREE.MeshStandardMaterial({
+    name: 'weathered-alley-surface',
+    normalScale: new THREE.Vector2(0.18, 0.18),
+    aoMapIntensity: 0.4,
     roughness: 1,
     metalness: 0,
     // Left white on purpose: the albedo map carries the colour, and tinting it
@@ -69,10 +70,11 @@ export function createObjectModel(
   const base = options.baseUrl;
   if (base) {
     material.map = loadMap(base, 'maps/albedo.webp', THREE.SRGBColorSpace, anisotropy);
-    material.roughnessMap = loadMap(base, 'maps/roughness.webp', THREE.NoColorSpace, anisotropy);
     material.normalMap = loadMap(base, 'maps/normal.webp', THREE.NoColorSpace, anisotropy);
-    material.aoMap = loadMap(base, 'maps/ao.webp', THREE.NoColorSpace, anisotropy);
-    material.aoMapIntensity = 0.85;
+    const orm = loadMap(base, 'maps/orm.webp', THREE.NoColorSpace, anisotropy);
+    material.roughnessMap = orm;
+    material.aoMap = orm;
+    material.metalnessMap = orm;
     material.needsUpdate = true;
   }
 
@@ -96,15 +98,7 @@ export function createObjectModel(
 
 export default createObjectModel;
 
-/**
- * The one-argument entry point: vibe3d's contract, and img2threejs's own.
- *
- * `createObjectModel` above keeps thaikit's historical (spec, options) shape so
- * the harness, the level editor and the Node-side gates carry on unchanged.
- * `spec` has never been passed by any caller -- it is inspection data that is
- * already baked into this module -- so this is the honest signature, and it is
- * what a vibe3d consumer installs and calls.
- */
+/** Standard one-argument pack entry. */
 export function createModel(options: ProceduralModelOptions = {}): THREE.Group {
   return createObjectModel(undefined, options);
 }

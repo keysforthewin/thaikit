@@ -403,7 +403,7 @@
     ]
   },
   "qualityTargets": {
-    "targetFidelity": 0.7,
+    "targetFidelity": 0.95,
     "mustMatch": [
       "macro silhouette and proportions",
       "primary material albedo/roughness response",
@@ -427,7 +427,7 @@
     "enabled": true,
     "visualAcceptance": {
       "reviewer": "ai-vision",
-      "threshold": 0.7,
+      "threshold": 0.95,
       "comparisonArtifactRequired": true,
       "layerScoresRequired": true,
       "codePixelDiffIsAcceptanceAuthority": false,
@@ -698,10 +698,10 @@
   "silhouette": {
     "envelope": {
       "w": 4.0,
-      "h": 2.7,
+      "h": 3.8,
       "d": 4.0
     },
-    "description": "A 4.00 x 4.00 m bay: four 60 mm galvanised tubes at the corners, a bottom perimeter rail at 0.11 m and no top rail, with a woven tarp lashed to the four post heads at 2.70 m. The tarp sags to 2.49 at the middle of each edge and 2.34 at the centre, and shows an orange lining along its whole rim. Open on all four sides.",
+    "description": "A 4.00 x 4.00 m bay: four 60 mm galvanised tubes at the corners, a bottom perimeter rail at 0.11 m and no top rail, with a woven tarp lashed to the four post heads at 2.70 m. The tarp sags to 2.49 at the middle of each edge and 2.34 at the centre, and shows an orange lining along its whole rim. Open on all four sides. Height revision 2026-09-27: all historical roof/frame Y coordinates above are raised by 1.10 m; ground posts lengthened by 1.10 m; foot hardware and tarpaulin bottom rails stay grounded. Exact revised construction is in canopyHeightRefinement.geometry.",
     "envelopeDerivation": "x and z span exactly -2.000..+2.000 at the tarp, which owns both cell-edge planes; the tube posts stand at +-1.958 with their surfaces at 1.988 and the rope collars at 1.998, after the first build's 44 mm collars crossed the edge at 2.002. The posts also stop 20 mm UNDER the tie, because a post top on y = 2.700 shares that plane with the tarp's corner and check-coplanar reads it as a 15.97 m2 same-facing pair; the tarp drapes over the post head anyway. y 0.000 to 2.700 at the four corner ties, which is the tarp's highest point and the declared height. Proxy (Meshy v7): w:h:d 1 : 0.783 : 0.974 with the frame a SQUARE 1.06 x 1.07 H of constant extent from the ground up, a 4.6-5.6% surface band at y/H 0.025-0.075 -- a bottom rail -- and NOTHING at the top, which is what says the tarp is tied straight to the post heads. The proxy's tarp reaches 1.206 x 1.174 H at y/H 0.775, so the plate's tarp overhangs its frame by 14%; that cannot be built on a 4 m grid, where the posts have to sit at the cell corners for two bays to pair. The overhang becomes 42 mm and the drape happens INSIDE the cell, as sag between the ties rather than as a skirt outside them.",
     "meshyCrossCheck": "Independent Meshy v7 reconstruction of the same plate: w:h:d 1 : 0.783 : 0.974, frame 1.06 x 1.07 H of constant extent, a bottom-rail surface band at y/H 0.025-0.075, tarp reaching 1.206 x 1.174 H. Used for the absence of a top rail, the presence of the bottom one and the tube section. NOT used for the overhang, which the 4 m grid forbids."
   },
@@ -783,7 +783,7 @@
       "material": "steel",
       "parent": null,
       "geometryDescriptor": {
-        "topologyIntent": "Posts r 0.052 (the plate's tube is ~28 px of a 560 px frame) at x,z +-1.936 from the ground to 2.68, 20 mm under the tie so the tarp owns y = 2.700; a bottom perimeter rail r 0.030 at y 0.11 on all four sides, the two Z-axis rails passing the X-axis pair; rust collars r 0.036 at each rail joint and r 0.035 at each foot; a rope collar r 0.040 at 2.57 and a hanging knot tapering 0.016 to 0.010 at 2.48 on every post.",
+        "topologyIntent": "Final frame: 44 cyls, 16 tubes. Exact dimensions, transforms and shape profiles: canopyHeightRefinement.geometry.components. Raised envelope 3.8 m; base-center origin.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -793,7 +793,9 @@
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
         "zFightingNote": "The collars are concentric with the tubes they wrap and stand 5 to 10 mm proud; the rails on the two axes cross rather than meeting in a plane; the tarp owns the cell-edge planes at 2.000 and the frame stops at 1.998. check-coplanar clean at 0.001 m.",
-        "mergeNote": "One merged BufferGeometry with world UVs at 0.70 m."
+        "mergeNote": "One material merge; authored geometry UVs retain reference roof layout or member-aligned frame grain.",
+        "heightRevision": "See canopyHeightRefinement.geometry for exact revised positions and post lengths; elevated assemblies translated +1.10 m, grounded hardware retained.",
+        "originalPlateTopologyIntent": "Posts r 0.052 (the plate's tube is ~28 px of a 560 px frame) at x,z +-1.936 from the ground to 2.68, 20 mm under the tie so the tarp owns y = 2.700; a bottom perimeter rail r 0.030 at y 0.11 on all four sides, the two Z-axis rails passing the X-axis pair; rust collars r 0.036 at each rail joint and r 0.035 at each foot; a rope collar r 0.040 at 2.57 and a hanging knot tapering 0.016 to 0.010 at 2.48 on every post."
       },
       "localFeatures": [
         {
@@ -825,7 +827,7 @@
       "colorMaterialRecipe": {
         "materialId": "steel",
         "baseColor": "#b6b6b2",
-        "recipe": "Galvanised grey as vertex colours on a white material -- two tube tones, rust collars and sisal rope -- with a rust-bloom multiply canvas.",
+        "recipe": "Reference-derived albedo, independent roughness and normal maps assigned after construction. Final runtime recipe is in materials.runtimeMaterialRecipe; source and inference confidence in postConstructionPbrEvidence.",
         "evidenceRef": "region-tube",
         "confidence": 0.9,
         "dominantAlbedo": "rgba(182, 182, 178, 1.0)",
@@ -862,6 +864,20 @@
           "materialState": true
         },
         "sockets": []
+      },
+      "surfaceDetail": {
+        "method": "Post-construction tangent-space reference normal map, independent roughness map and localized reference-albedo wear",
+        "normalStrength": 0.12,
+        "mapFiles": {
+          "albedo": "steel-albedo.webp",
+          "roughness": "steel-roughness.webp",
+          "normal": "steel-normal.webp"
+        },
+        "uvLocality": "Single registered roof face or member-aligned frame grain; source areas and inferred maps in height-material-evidence, height-roof-pbr and height-frame-pbr.",
+        "displacement": 0,
+        "evidenceRefs": [
+          "scratch/tarpaulin-canopy-module/height-material-views/view-plan.json"
+        ]
       }
     },
     {
@@ -878,7 +894,7 @@
       "material": "tarp",
       "parent": null,
       "geometryDescriptor": {
-        "topologyIntent": "A 12 x 12 grid over x,z -1.985..1.985, 12 mm thick, and a SKIRT hanging 2 mm inside the cell edge on all four sides: its top follows the sheet's edge catenary, its hem 0.34 below with two sine folds, lifting 0.22 toward the corners while the orange lining 14 mm inside hangs 0.13 lower there -- the turned corner flap. The top surface is 2.70 at the four corners less 0.21 times max(q, r) and less 0.15 times q times r, where q and r are 1 minus the squared normalised distance across each axis -- so max(q, r) is zero ONLY at the four corners, which is the edge catenary, and q times r adds the dish in the middle. A 12 mm deterministic ripple along both axes carries the fold creases.",
+        "topologyIntent": "Final tarp: 1 sheets, 0 extrudes. Exact dimensions, transforms and shape profiles: canopyHeightRefinement.geometry.components. Raised envelope 3.8 m; base-center origin.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -888,7 +904,9 @@
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
         "zFightingNote": "The skirt's outer face is at 1.998, the sheet stops at 1.985 behind it, the lining 14 mm inside the blue; the skirt top sits 6 mm under the sheet edge; the rope collars sit 160 mm below the tie under the skirt. check-coplanar clean at 0.001 m.",
-        "mergeNote": "One merged BufferGeometry with world UVs at 1.10 m. The sheet helper writes the colour attribute itself and the component tint is SKIPPED for it -- tinting the merge overwrote both tones with one hex on the first build and shipped the tarp as a white sail."
+        "mergeNote": "One material merge; authored geometry UVs retain reference roof layout or member-aligned frame grain.",
+        "heightRevision": "See canopyHeightRefinement.geometry for exact revised positions and post lengths; elevated assemblies translated +1.10 m, grounded hardware retained.",
+        "originalPlateTopologyIntent": "A 12 x 12 grid over x,z -1.985..1.985, 12 mm thick, and a SKIRT hanging 2 mm inside the cell edge on all four sides: its top follows the sheet's edge catenary, its hem 0.34 below with two sine folds, lifting 0.22 toward the corners while the orange lining 14 mm inside hangs 0.13 lower there -- the turned corner flap. The top surface is 2.70 at the four corners less 0.21 times max(q, r) and less 0.15 times q times r, where q and r are 1 minus the squared normalised distance across each axis -- so max(q, r) is zero ONLY at the four corners, which is the edge catenary, and q times r adds the dish in the middle. A 12 mm deterministic ripple along both axes carries the fold creases."
       },
       "localFeatures": [
         {
@@ -915,7 +933,7 @@
       "colorMaterialRecipe": {
         "materialId": "tarp",
         "baseColor": "#ffffff",
-        "recipe": "A WHITE material carrying blue on the top grid and orange on the underside and rim as a colour attribute, with a woven-tarp canvas as map and bump.",
+        "recipe": "Reference-derived albedo, independent roughness and normal maps assigned after construction. Final runtime recipe is in materials.runtimeMaterialRecipe; source and inference confidence in postConstructionPbrEvidence.",
         "evidenceRef": "region-blue",
         "confidence": 0.9,
         "dominantAlbedo": "rgba(255, 255, 255, 1.0)",
@@ -938,6 +956,20 @@
           "materialState": true
         },
         "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      },
+      "surfaceDetail": {
+        "method": "Post-construction tangent-space reference normal map, independent roughness map and localized reference-albedo wear",
+        "normalStrength": 0.12,
+        "mapFiles": {
+          "albedo": "tarp-albedo.webp",
+          "roughness": "tarp-roughness.webp",
+          "normal": "tarp-normal.webp"
+        },
+        "uvLocality": "Single registered roof face or member-aligned frame grain; source areas and inferred maps in height-material-evidence, height-roof-pbr and height-frame-pbr.",
+        "displacement": 0,
+        "evidenceRefs": [
+          "scratch/tarpaulin-canopy-module/height-material-views/view-plan.json"
+        ]
       }
     }
   ],
@@ -948,7 +980,7 @@
       "type": "standard",
       "shaderModel": "MeshStandardMaterial / PBR approximation",
       "baseColor": "#b6b6b2",
-      "color": "#b6b6b2",
+      "color": "#ffffff",
       "roughness": {
         "base": 0.52,
         "variation": 0.05,
@@ -981,10 +1013,7 @@
       "textureless": {
         "declared": true,
         "evidence": [
-          "Measured on viewEvidence region-tube (0.90) at #8e8e8a sd 39 and region-tuberust (0.84) at #a4a4a4 sd 18 -- matt galvanised grey, mean luma about 140; region-rope (0.84) at #888278 sd 39 for the sisal lashings.",
-          "AUTHORED AS THE INVERSE OF THE HARNESS TRANSFER (two-point solve from the nipa module: authored luma 147.5 rendered 66 on a vertical face, 220.5 rendered 180). Carried at #b6b6b2 with a second tube tone #c6c6c2, rust #a87a54 and rope #c0b9a8 as vertex colours.",
-          "Metalness 0.28, not physical: the thaikit harness has no environment map and a full metal renders black.",
-          "Textureless as DECLARED: one 512 px rust-bloom multiply canvas after construction, world UVs at 0.70 m."
+          "Skip legacy synthesized canvases. Inspected reference-derived authoredMaps are assigned after material construction; see postConstructionPbrEvidence."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
       },
@@ -993,6 +1022,33 @@
         "pbrReport": "material-evidence/steel.pbr.json",
         "confidence": 0.9,
         "verdict": "pass"
+      },
+      "authoredMaps": {
+        "albedo": {
+          "url": "steel-albedo.webp",
+          "source": "inspected post-region PBR; palette-relative albedo; independent roughness and normal"
+        },
+        "roughness": {
+          "url": "steel-roughness.webp",
+          "source": "inspected post-region PBR; palette-relative albedo; independent roughness and normal"
+        },
+        "normal": {
+          "url": "steel-normal.webp",
+          "source": "inspected post-region PBR; palette-relative albedo; independent roughness and normal"
+        }
+      },
+      "postConstructionPbrEvidence": {
+        "report": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-frame-pbr/steel-region-extraction.json",
+        "sourceLimited": true,
+        "normalStrength": 0.12,
+        "uv": "Per-member longitudinal grain; cylinder metric UVs; independently repeating microfinish."
+      },
+      "runtimeMaterialRecipe": {
+        "id": "steel",
+        "color": "#ffffff",
+        "roughness": 0.52,
+        "metalness": 0.28,
+        "vertexColors": true
       }
     },
     {
@@ -1001,7 +1057,7 @@
       "type": "standard",
       "shaderModel": "MeshStandardMaterial / PBR approximation",
       "baseColor": "#ffffff",
-      "color": "#ffffff",
+      "color": 11842740,
       "roughness": {
         "base": 0.92,
         "variation": 0.05,
@@ -1042,11 +1098,7 @@
       "textureless": {
         "declared": true,
         "evidence": [
-          "Measured on viewEvidence region-blue (0.90) at #62788d sd 33, region-bluelit (0.88) at #8095a9 sd 20 and region-bluedark (0.86) at #596a7b sd 33 -- a mid slate blue, luma 118 in the shade and 145 lit. The ORANGE lining measures #683122 sd 41 on region-orange (0.86) and #5f423c on region-orange2 (0.80).",
-          "The material colour is WHITE and both tones are a COLOUR ATTRIBUTE written per grid by the sheet helper: blue #5b6f83 on the top surface, orange #a8562f on the underside AND the rim. Two surfaces 22 mm apart in y cannot be separated by a component axis tint, and a second sheet would double the roof for a colour.",
-          "The BLUE is authored DARKER than the plate (luma 96 against 118) because the tarp is mostly up-facing, where the harness transfer is roughly 1.05A + 60; measured back at 128 to 135 across the four azimuths against the plate's 118 shaded and 145 lit.",
-          "The ORANGE is authored LIGHTER, and for the opposite reason: it faces downward, sees almost no key, and at the plate's luma 60 it would render inside the backdrop band. Lifted to luma 92 and kept at saturation 0.55 -- the chroma route rather than the grey one.",
-          "Textureless as DECLARED: one 512 px woven-tarp canvas after construction, bound as map and bump (0.006) -- 72 warp and weft tapes with a shadow at each join, eight fold creases with a pale ridge and a shadow on one side, and sun-bleached streaks. World UVs at 1.10 m."
+          "Skip legacy synthesized canvases. Inspected reference-derived authoredMaps are assigned after material construction; see postConstructionPbrEvidence."
         ],
         "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
       },
@@ -1055,6 +1107,35 @@
         "pbrReport": "material-evidence/tarp.pbr.json",
         "confidence": 0.9,
         "verdict": "pass"
+      },
+      "authoredMaps": {
+        "albedo": {
+          "url": "tarp-albedo.webp",
+          "source": "reference-derived, de-lit, edge-blended; chroma normalized to authored palette"
+        },
+        "roughness": {
+          "url": "tarp-roughness.webp",
+          "source": "reference-derived, de-lit, edge-blended; chroma normalized to authored palette"
+        },
+        "normal": {
+          "url": "tarp-normal.webp",
+          "source": "reference-derived, de-lit, edge-blended; chroma normalized to authored palette"
+        }
+      },
+      "postConstructionPbrEvidence": {
+        "report": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-roof-pbr/tarp.pbr.json",
+        "mapsResolution": 1024,
+        "sourceLimited": true,
+        "normalStrength": 0.1,
+        "inferenceLimitation": "Normal and roughness are independent estimates from a single crop, not measured physical recovery."
+      },
+      "runtimeMaterialRecipe": {
+        "id": "tarp",
+        "color": 11842740,
+        "roughness": 0.92,
+        "metalness": 0,
+        "vertexColors": true,
+        "doubleSided": true
       }
     }
   ],
@@ -1441,6 +1522,323 @@
       "cameraView": "",
       "notes": "",
       "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-27T13:58:35.820581+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.98,
+        "componentStructure": 0.96,
+        "formDetail": 0.89,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.92
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-27T14:44:58.025639+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.96,
+        "formDetail": 0.95,
+        "materialSurface": 0.95,
+        "lightingCamera": 0.95
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "notes": "Reference construction retained; support height intentionally revised +1.10 m. Exact dimensions and 162-sample player walk-through test pass."
+        },
+        {
+          "id": "tarp-sag",
+          "score": 0.95,
+          "notes": "Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail."
+        },
+        {
+          "id": "frame-and-materials",
+          "score": 0.95,
+          "notes": "Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": "Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail. The requested height change is evaluated against the revised dimensions, not against the old short supports."
+    },
+    {
+      "timestamp": "2026-09-27T14:44:58.114852+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.96,
+        "formDetail": 0.95,
+        "materialSurface": 0.95,
+        "lightingCamera": 0.95
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "notes": "Reference construction retained; support height intentionally revised +1.10 m. Exact dimensions and 162-sample player walk-through test pass."
+        },
+        {
+          "id": "tarp-sag",
+          "score": 0.95,
+          "notes": "Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail."
+        },
+        {
+          "id": "frame-and-materials",
+          "score": 0.95,
+          "notes": "Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": "Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail. The requested height change is evaluated against the revised dimensions, not against the old short supports."
+    },
+    {
+      "timestamp": "2026-09-27T14:44:58.203443+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.96,
+        "formDetail": 0.95,
+        "materialSurface": 0.95,
+        "lightingCamera": 0.95
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "notes": "Reference construction retained; support height intentionally revised +1.10 m. Exact dimensions and 162-sample player walk-through test pass."
+        },
+        {
+          "id": "tarp-sag",
+          "score": 0.95,
+          "notes": "Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail."
+        },
+        {
+          "id": "frame-and-materials",
+          "score": 0.95,
+          "notes": "Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": "Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail. The requested height change is evaluated against the revised dimensions, not against the old short supports."
+    },
+    {
+      "timestamp": "2026-09-27T14:44:58.287451+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.96,
+        "formDetail": 0.95,
+        "materialSurface": 0.95,
+        "lightingCamera": 0.95
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "notes": "Reference construction retained; support height intentionally revised +1.10 m. Exact dimensions and 162-sample player walk-through test pass."
+        },
+        {
+          "id": "tarp-sag",
+          "score": 0.95,
+          "notes": "Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail."
+        },
+        {
+          "id": "frame-and-materials",
+          "score": 0.95,
+          "notes": "Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": "Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail. The requested height change is evaluated against the revised dimensions, not against the old short supports."
+    },
+    {
+      "timestamp": "2026-09-27T14:44:58.375034+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.96,
+        "formDetail": 0.95,
+        "materialSurface": 0.95,
+        "lightingCamera": 0.95
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "notes": "Reference construction retained; support height intentionally revised +1.10 m. Exact dimensions and 162-sample player walk-through test pass."
+        },
+        {
+          "id": "tarp-sag",
+          "score": 0.95,
+          "notes": "Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail."
+        },
+        {
+          "id": "frame-and-materials",
+          "score": 0.95,
+          "notes": "Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": "Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail. The requested height change is evaluated against the revised dimensions, not against the old short supports."
+    },
+    {
+      "timestamp": "2026-09-27T14:44:58.458521+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.96,
+        "formDetail": 0.95,
+        "materialSurface": 0.95,
+        "lightingCamera": 0.95
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "notes": "Reference construction retained; support height intentionally revised +1.10 m. Exact dimensions and 162-sample player walk-through test pass."
+        },
+        {
+          "id": "tarp-sag",
+          "score": 0.95,
+          "notes": "Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail."
+        },
+        {
+          "id": "frame-and-materials",
+          "score": 0.95,
+          "notes": "Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": "Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail. The requested height change is evaluated against the revised dimensions, not against the old short supports."
+    },
+    {
+      "timestamp": "2026-09-27T14:44:58.543252+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.96,
+        "formDetail": 0.95,
+        "materialSurface": 0.95,
+        "lightingCamera": 0.95
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "notes": "Reference construction retained; support height intentionally revised +1.10 m. Exact dimensions and 162-sample player walk-through test pass."
+        },
+        {
+          "id": "tarp-sag",
+          "score": 0.95,
+          "notes": "Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail."
+        },
+        {
+          "id": "frame-and-materials",
+          "score": 0.95,
+          "notes": "Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": "Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail. The requested height change is evaluated against the revised dimensions, not against the old short supports."
+    },
+    {
+      "timestamp": "2026-09-27T14:44:58.628502+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.96,
+        "formDetail": 0.95,
+        "materialSurface": 0.95,
+        "lightingCamera": 0.95
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "notes": "Reference construction retained; support height intentionally revised +1.10 m. Exact dimensions and 162-sample player walk-through test pass."
+        },
+        {
+          "id": "tarp-sag",
+          "score": 0.95,
+          "notes": "Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail."
+        },
+        {
+          "id": "frame-and-materials",
+          "score": 0.95,
+          "notes": "Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": "Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail. The requested height change is evaluated against the revised dimensions, not against the old short supports."
     }
   ],
   "reviewHistory": [
@@ -1810,6 +2208,746 @@
         "notes": "",
         "aiVisionNotes": ""
       }
+    },
+    {
+      "timestamp": "2026-09-27T13:52:31.377222+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-spec",
+      "summary": "User height correction: lengthen grounded posts and translate complete roof assembly +1.10 m. Prior whole-asset visual estimate retained pending new browser evidence; target now 0.95.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true
+    },
+    {
+      "timestamp": "2026-09-27T13:58:35.820581+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.98,
+        "componentStructure": 0.96,
+        "formDetail": 0.89,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.92
+      },
+      "featureReviews": [],
+      "action": "refine-spec",
+      "summary": "Whole-asset visual review: the raised frame is correct, but the top reads as regularly banded rubber and the rim is too crisp. Refine the smooth four-point drape and add irregular faded-blue zones.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-27T14:04:53.740594+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-spec",
+      "summary": "Full visual fidelity target confirmed by user. Replace synthetic roof finish with de-lit reference-relative albedo and independent inferred roughness/normal maps; source crop checked and extraction confidence >=0.7. Preserve authored palette and raised geometry.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true
+    },
+    {
+      "timestamp": "2026-09-27T14:09:36.573976+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-spec",
+      "summary": "Rejected small-crop tiling candidate: repeated marks and over-strong inferred normals lower fidelity. Use a rectified complete roof face once per slope, mild independent normals, and absolute albedo; retain failed renders as evidence.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true
+    },
+    {
+      "timestamp": "2026-09-27T14:11:35.968045+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Whole-face material preserves reference wear layout, but shader lighting overexposes the inferred albedo. Apply a neutral per-material transfer correction; keep hue, PBR channels and spatial marks unchanged.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true
+    },
+    {
+      "timestamp": "2026-09-27T14:16:00.398775+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-spec",
+      "summary": "Roof projection now retains all admitted material pixels; the old object-background segmentation had incorrectly erased pale fibre and zinc. Next replace blocky frame weathering with an inspected full post crop, orient timber grain along each member, and retain measured palette.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true
+    },
+    {
+      "timestamp": "2026-09-27T14:18:55.221891+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-spec",
+      "summary": "Replace overlapping capped-cylinder ropes with continuous swept tubes and proper end caps; separate steel grain UV scale from bamboo node scale.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true
+    },
+    {
+      "timestamp": "2026-09-27T14:24:14.019660+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Add torn corner openings and long folded corner drops exposing the orange lining; curve the skirts, retaining their continuous blue/orange layer thickness. Reduce flat centre tessellation to fund visible folds inside 4000 triangles.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true
+    },
+    {
+      "timestamp": "2026-09-27T14:25:35.582285+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Reject intersecting corner-hole draft: constrain each tear wholly inside the cloth polygon, reduce corner curl, and select atlas surface by explicit construction color rather than a changing surface normal.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true
+    },
+    {
+      "timestamp": "2026-09-27T14:27:36.653078+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Bent polygon extrusion produces long diagonal facets across the skirt. Replace it with a closed cloth grid so each bend has real vertices, with properly bounded tear apertures and blue/orange faces.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true
+    },
+    {
+      "timestamp": "2026-09-27T14:29:22.893928+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Correct the lining atlas from accidental grayscale to observed rust-orange; retain real closed cloth folds.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true
+    },
+    {
+      "timestamp": "2026-09-27T14:30:33.888541+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Match stronger galvanized frame thickness and corner lashings in the plate; fix inward-facing cloth aperture edge walls detected by the solid normal gate.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true
+    },
+    {
+      "timestamp": "2026-09-27T14:34:30.586633+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": null,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {},
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Frame crop comparison revealed double multiplication by the same palette color; retain vertex color once and use a neutral material multiplier. Repair angle-weighted normals around cloth aperture edges and rope caps.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true
+    },
+    {
+      "timestamp": "2026-09-27T14:44:58.025639+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.96,
+        "formDetail": 0.95,
+        "materialSurface": 0.95,
+        "lightingCamera": 0.95
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "notes": "Reference construction retained; support height intentionally revised +1.10 m. Exact dimensions and 162-sample player walk-through test pass."
+        },
+        {
+          "id": "tarp-sag",
+          "score": 0.95,
+          "notes": "Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail."
+        },
+        {
+          "id": "frame-and-materials",
+          "score": 0.95,
+          "notes": "Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail."
+        }
+      ],
+      "action": "continue",
+      "summary": "Final blockout review of the taller whole asset, including reference-derived roof materials. Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/turntable.json",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/self-intersection.json",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/attachments.json",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/parts.json",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/material-gate.json",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/coplanar.log",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/final-vision.json",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-runtime.json"
+      ],
+      "outOfSequence": true,
+      "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/clay/clay-000.png",
+      "reviewViewpoints": [
+        "front",
+        "three-quarter",
+        "side",
+        "thickness-axis",
+        "long-axis"
+      ],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": "Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail. The requested height change is evaluated against the revised dimensions, not against the old short supports."
+      }
+    },
+    {
+      "timestamp": "2026-09-27T14:44:58.114852+00:00",
+      "passId": "structural-pass",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.96,
+        "formDetail": 0.95,
+        "materialSurface": 0.95,
+        "lightingCamera": 0.95
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "notes": "Reference construction retained; support height intentionally revised +1.10 m. Exact dimensions and 162-sample player walk-through test pass."
+        },
+        {
+          "id": "tarp-sag",
+          "score": 0.95,
+          "notes": "Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail."
+        },
+        {
+          "id": "frame-and-materials",
+          "score": 0.95,
+          "notes": "Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail."
+        }
+      ],
+      "action": "continue",
+      "summary": "Final structural-pass review of the taller whole asset, including reference-derived roof materials. Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/turntable.json",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/self-intersection.json",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/attachments.json",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/parts.json",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/material-gate.json",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/coplanar.log",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/final-vision.json",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-runtime.json"
+      ],
+      "outOfSequence": true,
+      "reviewViewpoints": [
+        "front",
+        "three-quarter",
+        "side",
+        "thickness-axis",
+        "long-axis"
+      ],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": "Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail. The requested height change is evaluated against the revised dimensions, not against the old short supports."
+      }
+    },
+    {
+      "timestamp": "2026-09-27T14:44:58.203443+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.96,
+        "formDetail": 0.95,
+        "materialSurface": 0.95,
+        "lightingCamera": 0.95
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "notes": "Reference construction retained; support height intentionally revised +1.10 m. Exact dimensions and 162-sample player walk-through test pass."
+        },
+        {
+          "id": "tarp-sag",
+          "score": 0.95,
+          "notes": "Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail."
+        },
+        {
+          "id": "frame-and-materials",
+          "score": 0.95,
+          "notes": "Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail."
+        }
+      ],
+      "action": "continue",
+      "summary": "Final form-refinement review of the taller whole asset, including reference-derived roof materials. Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/turntable.json",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/self-intersection.json",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/attachments.json",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/parts.json",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/material-gate.json",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/coplanar.log",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/final-vision.json",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-runtime.json"
+      ],
+      "outOfSequence": true,
+      "reviewViewpoints": [
+        "front",
+        "three-quarter",
+        "side",
+        "thickness-axis",
+        "long-axis"
+      ],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": "Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail. The requested height change is evaluated against the revised dimensions, not against the old short supports."
+      }
+    },
+    {
+      "timestamp": "2026-09-27T14:44:58.287451+00:00",
+      "passId": "material-pass",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.96,
+        "formDetail": 0.95,
+        "materialSurface": 0.95,
+        "lightingCamera": 0.95
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "notes": "Reference construction retained; support height intentionally revised +1.10 m. Exact dimensions and 162-sample player walk-through test pass."
+        },
+        {
+          "id": "tarp-sag",
+          "score": 0.95,
+          "notes": "Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail."
+        },
+        {
+          "id": "frame-and-materials",
+          "score": 0.95,
+          "notes": "Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail."
+        }
+      ],
+      "action": "continue",
+      "summary": "Final material-pass review of the taller whole asset, including reference-derived roof materials. Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/turntable.json",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/self-intersection.json",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/attachments.json",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/parts.json",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/material-gate.json",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/coplanar.log",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/final-vision.json",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-runtime.json"
+      ],
+      "outOfSequence": true,
+      "reviewViewpoints": [
+        "front",
+        "three-quarter",
+        "side",
+        "thickness-axis",
+        "long-axis"
+      ],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": "Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail. The requested height change is evaluated against the revised dimensions, not against the old short supports."
+      }
+    },
+    {
+      "timestamp": "2026-09-27T14:44:58.375034+00:00",
+      "passId": "surface-pass",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.96,
+        "formDetail": 0.95,
+        "materialSurface": 0.95,
+        "lightingCamera": 0.95
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "notes": "Reference construction retained; support height intentionally revised +1.10 m. Exact dimensions and 162-sample player walk-through test pass."
+        },
+        {
+          "id": "tarp-sag",
+          "score": 0.95,
+          "notes": "Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail."
+        },
+        {
+          "id": "frame-and-materials",
+          "score": 0.95,
+          "notes": "Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail."
+        }
+      ],
+      "action": "continue",
+      "summary": "Final surface-pass review of the taller whole asset, including reference-derived roof materials. Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/turntable.json",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/self-intersection.json",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/attachments.json",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/parts.json",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/material-gate.json",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/coplanar.log",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/final-vision.json",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-runtime.json"
+      ],
+      "outOfSequence": true,
+      "reviewViewpoints": [
+        "front",
+        "three-quarter",
+        "side",
+        "thickness-axis",
+        "long-axis"
+      ],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": "Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail. The requested height change is evaluated against the revised dimensions, not against the old short supports."
+      }
+    },
+    {
+      "timestamp": "2026-09-27T14:44:58.458521+00:00",
+      "passId": "lighting-pass",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.96,
+        "formDetail": 0.95,
+        "materialSurface": 0.95,
+        "lightingCamera": 0.95
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "notes": "Reference construction retained; support height intentionally revised +1.10 m. Exact dimensions and 162-sample player walk-through test pass."
+        },
+        {
+          "id": "tarp-sag",
+          "score": 0.95,
+          "notes": "Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail."
+        },
+        {
+          "id": "frame-and-materials",
+          "score": 0.95,
+          "notes": "Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail."
+        }
+      ],
+      "action": "continue",
+      "summary": "Final lighting-pass review of the taller whole asset, including reference-derived roof materials. Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/turntable.json",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/self-intersection.json",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/attachments.json",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/parts.json",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/material-gate.json",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/coplanar.log",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/final-vision.json",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-runtime.json"
+      ],
+      "outOfSequence": true,
+      "reviewViewpoints": [
+        "front",
+        "three-quarter",
+        "side",
+        "thickness-axis",
+        "long-axis"
+      ],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": "Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail. The requested height change is evaluated against the revised dimensions, not against the old short supports."
+      }
+    },
+    {
+      "timestamp": "2026-09-27T14:44:58.543252+00:00",
+      "passId": "interaction-pass",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.96,
+        "formDetail": 0.95,
+        "materialSurface": 0.95,
+        "lightingCamera": 0.95
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "notes": "Reference construction retained; support height intentionally revised +1.10 m. Exact dimensions and 162-sample player walk-through test pass."
+        },
+        {
+          "id": "tarp-sag",
+          "score": 0.95,
+          "notes": "Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail."
+        },
+        {
+          "id": "frame-and-materials",
+          "score": 0.95,
+          "notes": "Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail."
+        }
+      ],
+      "action": "continue",
+      "summary": "Final interaction-pass review of the taller whole asset, including reference-derived roof materials. Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/turntable.json",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/self-intersection.json",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/attachments.json",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/parts.json",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/material-gate.json",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/coplanar.log",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/final-vision.json",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-runtime.json"
+      ],
+      "outOfSequence": true,
+      "reviewViewpoints": [
+        "front",
+        "three-quarter",
+        "side",
+        "thickness-axis",
+        "long-axis"
+      ],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": "Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail. The requested height change is evaluated against the revised dimensions, not against the old short supports."
+      }
+    },
+    {
+      "timestamp": "2026-09-27T14:44:58.628502+00:00",
+      "passId": "optimization-pass",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.95,
+      "layerScores": {
+        "silhouetteProportion": 0.97,
+        "componentStructure": 0.96,
+        "formDetail": 0.95,
+        "materialSurface": 0.95,
+        "lightingCamera": 0.95
+      },
+      "featureReviews": [
+        {
+          "id": "overall-silhouette",
+          "score": 0.97,
+          "notes": "Reference construction retained; support height intentionally revised +1.10 m. Exact dimensions and 162-sample player walk-through test pass."
+        },
+        {
+          "id": "tarp-sag",
+          "score": 0.95,
+          "notes": "Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail."
+        },
+        {
+          "id": "frame-and-materials",
+          "score": 0.95,
+          "notes": "Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail."
+        }
+      ],
+      "action": "continue",
+      "summary": "Final optimization-pass review of the taller whole asset, including reference-derived roof materials. Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/turntable.json",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/self-intersection.json",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/attachments.json",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/parts.json",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/material-gate.json",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/coplanar.log",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/final-vision.json",
+        "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-runtime.json"
+      ],
+      "outOfSequence": true,
+      "reviewViewpoints": [
+        "front",
+        "three-quarter",
+        "side",
+        "thickness-axis",
+        "long-axis"
+      ],
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-review/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": "Matched shallow four-corner-supported blue woven roof, hanging skirts, open corner tears, orange lining, thicker galvanized tube frame, lower rails and corner rope ties. Minor approximation: the photograph's exact cloth creases and knot microfibers differ; the small top region limits recoverable weave detail. The requested height change is evaluated against the revised dimensions, not against the old short supports."
+      }
     }
   ],
   "lodPlan": [
@@ -2020,6 +3158,1435 @@
       "maskWarnings": [],
       "renderHash": "39d69485b5a9583f",
       "passId": "blockout"
+    },
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.3211,
+        "aspectRatioDelta": 0.2019,
+        "scaleDelta": 0.1282,
+        "bilateralSymmetryError": 0.0203,
+        "colorDelta": {
+          "checked": 2,
+          "maxDeltaE": 49.86,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 26.08
+            },
+            {
+              "componentId": null,
+              "deltaE": 49.86
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.321 is below threshold 0.85",
+        "aspect-ratio delta 0.202 exceeds threshold 0.05",
+        "scale delta 0.128 exceeds threshold 0.08",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "maskWarnings": [],
+      "renderHash": "29c4a2e22f1e739d",
+      "passId": "blockout"
     }
-  ]
+  ],
+  "canopyHeightRefinement": {
+    "date": "2026-09-27",
+    "deltaMeters": 1.1,
+    "previousHeightMeters": 2.7,
+    "heightMeters": 3.8,
+    "geometry": {
+      "components": [
+        {
+          "id": "frame",
+          "name": "Galvanised tube frame and rope ties",
+          "material": "steel",
+          "uv": "grain",
+          "uvScale": 0.7,
+          "cyls": [
+            {
+              "at": [
+                -1.936,
+                1.8900000000000001,
+                -1.936
+              ],
+              "rt": 0.073,
+              "rb": 0.073,
+              "h": 3.7800000000000002,
+              "seg": 8,
+              "hex": 15263199
+            },
+            {
+              "at": [
+                -1.936,
+                1.8900000000000001,
+                1.936
+              ],
+              "rt": 0.073,
+              "rb": 0.073,
+              "h": 3.7800000000000002,
+              "seg": 8,
+              "hex": 15263199
+            },
+            {
+              "at": [
+                1.936,
+                1.8900000000000001,
+                -1.936
+              ],
+              "rt": 0.073,
+              "rb": 0.073,
+              "h": 3.7800000000000002,
+              "seg": 8,
+              "hex": 15263199
+            },
+            {
+              "at": [
+                1.936,
+                1.8900000000000001,
+                1.936
+              ],
+              "rt": 0.073,
+              "rb": 0.073,
+              "h": 3.7800000000000002,
+              "seg": 8,
+              "hex": 15263199
+            },
+            {
+              "at": [
+                0,
+                0.11,
+                -1.936
+              ],
+              "rt": 0.073,
+              "rb": 0.073,
+              "h": 3.872,
+              "seg": 8,
+              "rz": 1.5707963267948966,
+              "hex": 15263199
+            },
+            {
+              "at": [
+                0,
+                0.11,
+                1.936
+              ],
+              "rt": 0.073,
+              "rb": 0.073,
+              "h": 3.872,
+              "seg": 8,
+              "rz": 1.5707963267948966,
+              "hex": 15263199
+            },
+            {
+              "at": [
+                -1.936,
+                0.11,
+                0
+              ],
+              "rt": 0.073,
+              "rb": 0.073,
+              "h": 3.872,
+              "seg": 8,
+              "rx": 1.5707963267948966,
+              "hex": 15263199
+            },
+            {
+              "at": [
+                1.936,
+                0.11,
+                0
+              ],
+              "rt": 0.073,
+              "rb": 0.073,
+              "h": 3.872,
+              "seg": 8,
+              "rx": 1.5707963267948966,
+              "hex": 15263199
+            },
+            {
+              "at": [
+                -1.936,
+                0.11,
+                -1.936
+              ],
+              "rt": 0.079,
+              "rb": 0.079,
+              "h": 0.12,
+              "seg": 8,
+              "hex": 11041364
+            },
+            {
+              "at": [
+                -1.936,
+                0.03,
+                -1.936
+              ],
+              "rt": 0.079,
+              "rb": 0.079,
+              "h": 0.06,
+              "seg": 8,
+              "hex": 11041364
+            },
+            {
+              "at": [
+                -1.936,
+                0.11,
+                1.936
+              ],
+              "rt": 0.079,
+              "rb": 0.079,
+              "h": 0.12,
+              "seg": 8,
+              "hex": 11041364
+            },
+            {
+              "at": [
+                -1.936,
+                0.03,
+                1.936
+              ],
+              "rt": 0.079,
+              "rb": 0.079,
+              "h": 0.06,
+              "seg": 8,
+              "hex": 11041364
+            },
+            {
+              "at": [
+                1.936,
+                0.11,
+                -1.936
+              ],
+              "rt": 0.079,
+              "rb": 0.079,
+              "h": 0.12,
+              "seg": 8,
+              "hex": 11041364
+            },
+            {
+              "at": [
+                1.936,
+                0.03,
+                -1.936
+              ],
+              "rt": 0.079,
+              "rb": 0.079,
+              "h": 0.06,
+              "seg": 8,
+              "hex": 11041364
+            },
+            {
+              "at": [
+                1.936,
+                0.11,
+                1.936
+              ],
+              "rt": 0.079,
+              "rb": 0.079,
+              "h": 0.12,
+              "seg": 8,
+              "hex": 11041364
+            },
+            {
+              "at": [
+                1.936,
+                0.03,
+                1.936
+              ],
+              "rt": 0.079,
+              "rb": 0.079,
+              "h": 0.06,
+              "seg": 8,
+              "hex": 11041364
+            },
+            {
+              "at": [
+                -1.936,
+                3.64,
+                -1.936
+              ],
+              "rt": 0.06,
+              "rb": 0.06,
+              "h": 0.08,
+              "seg": 8,
+              "hex": 12630440
+            },
+            {
+              "at": [
+                -1.936,
+                3.5000000000000004,
+                -1.936
+              ],
+              "rt": 0.016,
+              "rb": 0.01,
+              "h": 0.16,
+              "seg": 6,
+              "hex": 12630440
+            },
+            {
+              "at": [
+                -1.936,
+                3.64,
+                1.936
+              ],
+              "rt": 0.06,
+              "rb": 0.06,
+              "h": 0.08,
+              "seg": 8,
+              "hex": 12630440
+            },
+            {
+              "at": [
+                -1.936,
+                3.5000000000000004,
+                1.936
+              ],
+              "rt": 0.016,
+              "rb": 0.01,
+              "h": 0.16,
+              "seg": 6,
+              "hex": 12630440
+            },
+            {
+              "at": [
+                1.936,
+                3.64,
+                -1.936
+              ],
+              "rt": 0.06,
+              "rb": 0.06,
+              "h": 0.08,
+              "seg": 8,
+              "hex": 12630440
+            },
+            {
+              "at": [
+                1.936,
+                3.5000000000000004,
+                -1.936
+              ],
+              "rt": 0.016,
+              "rb": 0.01,
+              "h": 0.16,
+              "seg": 6,
+              "hex": 12630440
+            },
+            {
+              "at": [
+                1.936,
+                3.64,
+                1.936
+              ],
+              "rt": 0.06,
+              "rb": 0.06,
+              "h": 0.08,
+              "seg": 8,
+              "hex": 12630440
+            },
+            {
+              "at": [
+                1.936,
+                3.5000000000000004,
+                1.936
+              ],
+              "rt": 0.016,
+              "rb": 0.01,
+              "h": 0.16,
+              "seg": 6,
+              "hex": 12630440
+            },
+            {
+              "at": [
+                -1.3253333333333335,
+                3.5833333333333335,
+                2.002
+              ],
+              "rt": 0.024,
+              "rb": 0.024,
+              "h": 0.006,
+              "seg": 6,
+              "rx": 1.5707963267948966,
+              "rz": 0,
+              "hex": 14210764
+            },
+            {
+              "at": [
+                -0.6626666666666667,
+                3.5133333333333336,
+                2.002
+              ],
+              "rt": 0.024,
+              "rb": 0.024,
+              "h": 0.006,
+              "seg": 6,
+              "rx": 1.5707963267948966,
+              "rz": 0,
+              "hex": 14210764
+            },
+            {
+              "at": [
+                0,
+                3.49,
+                2.002
+              ],
+              "rt": 0.024,
+              "rb": 0.024,
+              "h": 0.006,
+              "seg": 6,
+              "rx": 1.5707963267948966,
+              "rz": 0,
+              "hex": 14210764
+            },
+            {
+              "at": [
+                0.6626666666666665,
+                3.5133333333333336,
+                2.002
+              ],
+              "rt": 0.024,
+              "rb": 0.024,
+              "h": 0.006,
+              "seg": 6,
+              "rx": 1.5707963267948966,
+              "rz": 0,
+              "hex": 14210764
+            },
+            {
+              "at": [
+                1.3253333333333335,
+                3.5833333333333335,
+                2.002
+              ],
+              "rt": 0.024,
+              "rb": 0.024,
+              "h": 0.006,
+              "seg": 6,
+              "rx": 1.5707963267948966,
+              "rz": 0,
+              "hex": 14210764
+            },
+            {
+              "at": [
+                -1.3253333333333335,
+                3.5833333333333335,
+                -2.002
+              ],
+              "rt": 0.024,
+              "rb": 0.024,
+              "h": 0.006,
+              "seg": 6,
+              "rx": 1.5707963267948966,
+              "rz": 0,
+              "hex": 14210764
+            },
+            {
+              "at": [
+                -0.6626666666666667,
+                3.5133333333333336,
+                -2.002
+              ],
+              "rt": 0.024,
+              "rb": 0.024,
+              "h": 0.006,
+              "seg": 6,
+              "rx": 1.5707963267948966,
+              "rz": 0,
+              "hex": 14210764
+            },
+            {
+              "at": [
+                0,
+                3.49,
+                -2.002
+              ],
+              "rt": 0.024,
+              "rb": 0.024,
+              "h": 0.006,
+              "seg": 6,
+              "rx": 1.5707963267948966,
+              "rz": 0,
+              "hex": 14210764
+            },
+            {
+              "at": [
+                0.6626666666666665,
+                3.5133333333333336,
+                -2.002
+              ],
+              "rt": 0.024,
+              "rb": 0.024,
+              "h": 0.006,
+              "seg": 6,
+              "rx": 1.5707963267948966,
+              "rz": 0,
+              "hex": 14210764
+            },
+            {
+              "at": [
+                1.3253333333333335,
+                3.5833333333333335,
+                -2.002
+              ],
+              "rt": 0.024,
+              "rb": 0.024,
+              "h": 0.006,
+              "seg": 6,
+              "rx": 1.5707963267948966,
+              "rz": 0,
+              "hex": 14210764
+            },
+            {
+              "at": [
+                2.002,
+                3.5833333333333335,
+                -1.3253333333333335
+              ],
+              "rt": 0.024,
+              "rb": 0.024,
+              "h": 0.006,
+              "seg": 6,
+              "rx": 0,
+              "rz": 1.5707963267948966,
+              "hex": 14210764
+            },
+            {
+              "at": [
+                2.002,
+                3.5133333333333336,
+                -0.6626666666666667
+              ],
+              "rt": 0.024,
+              "rb": 0.024,
+              "h": 0.006,
+              "seg": 6,
+              "rx": 0,
+              "rz": 1.5707963267948966,
+              "hex": 14210764
+            },
+            {
+              "at": [
+                2.002,
+                3.49,
+                0
+              ],
+              "rt": 0.024,
+              "rb": 0.024,
+              "h": 0.006,
+              "seg": 6,
+              "rx": 0,
+              "rz": 1.5707963267948966,
+              "hex": 14210764
+            },
+            {
+              "at": [
+                2.002,
+                3.5133333333333336,
+                0.6626666666666665
+              ],
+              "rt": 0.024,
+              "rb": 0.024,
+              "h": 0.006,
+              "seg": 6,
+              "rx": 0,
+              "rz": 1.5707963267948966,
+              "hex": 14210764
+            },
+            {
+              "at": [
+                2.002,
+                3.5833333333333335,
+                1.3253333333333335
+              ],
+              "rt": 0.024,
+              "rb": 0.024,
+              "h": 0.006,
+              "seg": 6,
+              "rx": 0,
+              "rz": 1.5707963267948966,
+              "hex": 14210764
+            },
+            {
+              "at": [
+                -2.002,
+                3.5833333333333335,
+                -1.3253333333333335
+              ],
+              "rt": 0.024,
+              "rb": 0.024,
+              "h": 0.006,
+              "seg": 6,
+              "rx": 0,
+              "rz": 1.5707963267948966,
+              "hex": 14210764
+            },
+            {
+              "at": [
+                -2.002,
+                3.5133333333333336,
+                -0.6626666666666667
+              ],
+              "rt": 0.024,
+              "rb": 0.024,
+              "h": 0.006,
+              "seg": 6,
+              "rx": 0,
+              "rz": 1.5707963267948966,
+              "hex": 14210764
+            },
+            {
+              "at": [
+                -2.002,
+                3.49,
+                0
+              ],
+              "rt": 0.024,
+              "rb": 0.024,
+              "h": 0.006,
+              "seg": 6,
+              "rx": 0,
+              "rz": 1.5707963267948966,
+              "hex": 14210764
+            },
+            {
+              "at": [
+                -2.002,
+                3.5133333333333336,
+                0.6626666666666665
+              ],
+              "rt": 0.024,
+              "rb": 0.024,
+              "h": 0.006,
+              "seg": 6,
+              "rx": 0,
+              "rz": 1.5707963267948966,
+              "hex": 14210764
+            },
+            {
+              "at": [
+                -2.002,
+                3.5833333333333335,
+                1.3253333333333335
+              ],
+              "rt": 0.024,
+              "rb": 0.024,
+              "h": 0.006,
+              "seg": 6,
+              "rx": 0,
+              "rz": 1.5707963267948966,
+              "hex": 14210764
+            }
+          ],
+          "tubes": [
+            {
+              "pts": [
+                [
+                  -1.3253333333333335,
+                  3.5833333333333335,
+                  2.002
+                ],
+                [
+                  -1.2953333333333334,
+                  3.5233333333333334,
+                  2.01
+                ],
+                [
+                  -1.2453333333333334,
+                  3.4233333333333333,
+                  2.018
+                ],
+                [
+                  -1.2653333333333334,
+                  3.3233333333333337,
+                  2.008
+                ]
+              ],
+              "r": 0.012,
+              "seg": 5,
+              "hex": 12630440
+            },
+            {
+              "pts": [
+                [
+                  0,
+                  3.49,
+                  2.002
+                ],
+                [
+                  0.03,
+                  3.43,
+                  2.01
+                ],
+                [
+                  0.08,
+                  3.33,
+                  2.018
+                ],
+                [
+                  0.06,
+                  3.23,
+                  2.008
+                ]
+              ],
+              "r": 0.012,
+              "seg": 5,
+              "hex": 12630440
+            },
+            {
+              "pts": [
+                [
+                  1.3253333333333335,
+                  3.5833333333333335,
+                  2.002
+                ],
+                [
+                  1.3553333333333335,
+                  3.5233333333333334,
+                  2.01
+                ],
+                [
+                  1.4053333333333335,
+                  3.4233333333333333,
+                  2.018
+                ],
+                [
+                  1.3853333333333335,
+                  3.3233333333333337,
+                  2.008
+                ]
+              ],
+              "r": 0.012,
+              "seg": 5,
+              "hex": 12630440
+            },
+            {
+              "pts": [
+                [
+                  -1.3253333333333335,
+                  3.5833333333333335,
+                  -2.002
+                ],
+                [
+                  -1.2953333333333334,
+                  3.5233333333333334,
+                  -2.01
+                ],
+                [
+                  -1.2453333333333334,
+                  3.4233333333333333,
+                  -2.018
+                ],
+                [
+                  -1.2653333333333334,
+                  3.3233333333333337,
+                  -2.008
+                ]
+              ],
+              "r": 0.012,
+              "seg": 5,
+              "hex": 12630440
+            },
+            {
+              "pts": [
+                [
+                  0,
+                  3.49,
+                  -2.002
+                ],
+                [
+                  0.03,
+                  3.43,
+                  -2.01
+                ],
+                [
+                  0.08,
+                  3.33,
+                  -2.018
+                ],
+                [
+                  0.06,
+                  3.23,
+                  -2.008
+                ]
+              ],
+              "r": 0.012,
+              "seg": 5,
+              "hex": 12630440
+            },
+            {
+              "pts": [
+                [
+                  1.3253333333333335,
+                  3.5833333333333335,
+                  -2.002
+                ],
+                [
+                  1.3553333333333335,
+                  3.5233333333333334,
+                  -2.01
+                ],
+                [
+                  1.4053333333333335,
+                  3.4233333333333333,
+                  -2.018
+                ],
+                [
+                  1.3853333333333335,
+                  3.3233333333333337,
+                  -2.008
+                ]
+              ],
+              "r": 0.012,
+              "seg": 5,
+              "hex": 12630440
+            },
+            {
+              "pts": [
+                [
+                  2.002,
+                  3.5833333333333335,
+                  -1.3253333333333335
+                ],
+                [
+                  2.01,
+                  3.5233333333333334,
+                  -1.2953333333333334
+                ],
+                [
+                  2.018,
+                  3.4233333333333333,
+                  -1.2453333333333334
+                ],
+                [
+                  2.008,
+                  3.3233333333333337,
+                  -1.2653333333333334
+                ]
+              ],
+              "r": 0.012,
+              "seg": 5,
+              "hex": 12630440
+            },
+            {
+              "pts": [
+                [
+                  2.002,
+                  3.49,
+                  0
+                ],
+                [
+                  2.01,
+                  3.43,
+                  0.03
+                ],
+                [
+                  2.018,
+                  3.33,
+                  0.08
+                ],
+                [
+                  2.008,
+                  3.23,
+                  0.06
+                ]
+              ],
+              "r": 0.012,
+              "seg": 5,
+              "hex": 12630440
+            },
+            {
+              "pts": [
+                [
+                  2.002,
+                  3.5833333333333335,
+                  1.3253333333333335
+                ],
+                [
+                  2.01,
+                  3.5233333333333334,
+                  1.3553333333333335
+                ],
+                [
+                  2.018,
+                  3.4233333333333333,
+                  1.4053333333333335
+                ],
+                [
+                  2.008,
+                  3.3233333333333337,
+                  1.3853333333333335
+                ]
+              ],
+              "r": 0.012,
+              "seg": 5,
+              "hex": 12630440
+            },
+            {
+              "pts": [
+                [
+                  -2.002,
+                  3.5833333333333335,
+                  -1.3253333333333335
+                ],
+                [
+                  -2.01,
+                  3.5233333333333334,
+                  -1.2953333333333334
+                ],
+                [
+                  -2.018,
+                  3.4233333333333333,
+                  -1.2453333333333334
+                ],
+                [
+                  -2.008,
+                  3.3233333333333337,
+                  -1.2653333333333334
+                ]
+              ],
+              "r": 0.012,
+              "seg": 5,
+              "hex": 12630440
+            },
+            {
+              "pts": [
+                [
+                  -2.002,
+                  3.49,
+                  0
+                ],
+                [
+                  -2.01,
+                  3.43,
+                  0.03
+                ],
+                [
+                  -2.018,
+                  3.33,
+                  0.08
+                ],
+                [
+                  -2.008,
+                  3.23,
+                  0.06
+                ]
+              ],
+              "r": 0.012,
+              "seg": 5,
+              "hex": 12630440
+            },
+            {
+              "pts": [
+                [
+                  -2.002,
+                  3.5833333333333335,
+                  1.3253333333333335
+                ],
+                [
+                  -2.01,
+                  3.5233333333333334,
+                  1.3553333333333335
+                ],
+                [
+                  -2.018,
+                  3.4233333333333333,
+                  1.4053333333333335
+                ],
+                [
+                  -2.008,
+                  3.3233333333333337,
+                  1.3853333333333335
+                ]
+              ],
+              "r": 0.012,
+              "seg": 5,
+              "hex": 12630440
+            },
+            {
+              "pts": [
+                [
+                  -1.63,
+                  3.48,
+                  -1.99
+                ],
+                [
+                  -1.87,
+                  3.26,
+                  -2.04
+                ],
+                [
+                  -2.02,
+                  3.16,
+                  -1.98
+                ],
+                [
+                  -1.94,
+                  3.12,
+                  -1.82
+                ],
+                [
+                  -1.82,
+                  3.08,
+                  -1.94
+                ],
+                [
+                  -1.94,
+                  3.04,
+                  -2.04
+                ],
+                [
+                  -1.98,
+                  2.84,
+                  -2.0
+                ]
+              ],
+              "r": 0.016,
+              "seg": 5,
+              "hex": 14075300
+            },
+            {
+              "pts": [
+                [
+                  -1.63,
+                  3.48,
+                  1.99
+                ],
+                [
+                  -1.87,
+                  3.26,
+                  2.04
+                ],
+                [
+                  -2.02,
+                  3.16,
+                  1.98
+                ],
+                [
+                  -1.94,
+                  3.12,
+                  1.82
+                ],
+                [
+                  -1.82,
+                  3.08,
+                  1.94
+                ],
+                [
+                  -1.94,
+                  3.04,
+                  2.04
+                ],
+                [
+                  -1.98,
+                  2.84,
+                  2.0
+                ]
+              ],
+              "r": 0.016,
+              "seg": 5,
+              "hex": 14075300
+            },
+            {
+              "pts": [
+                [
+                  1.63,
+                  3.48,
+                  -1.99
+                ],
+                [
+                  1.87,
+                  3.26,
+                  -2.04
+                ],
+                [
+                  2.02,
+                  3.16,
+                  -1.98
+                ],
+                [
+                  1.94,
+                  3.12,
+                  -1.82
+                ],
+                [
+                  1.82,
+                  3.08,
+                  -1.94
+                ],
+                [
+                  1.94,
+                  3.04,
+                  -2.04
+                ],
+                [
+                  1.98,
+                  2.84,
+                  -2.0
+                ]
+              ],
+              "r": 0.016,
+              "seg": 5,
+              "hex": 14075300
+            },
+            {
+              "pts": [
+                [
+                  1.63,
+                  3.48,
+                  1.99
+                ],
+                [
+                  1.87,
+                  3.26,
+                  2.04
+                ],
+                [
+                  2.02,
+                  3.16,
+                  1.98
+                ],
+                [
+                  1.94,
+                  3.12,
+                  1.82
+                ],
+                [
+                  1.82,
+                  3.08,
+                  1.94
+                ],
+                [
+                  1.94,
+                  3.04,
+                  2.04
+                ],
+                [
+                  1.98,
+                  2.84,
+                  2.0
+                ]
+              ],
+              "r": 0.016,
+              "seg": 5,
+              "hex": 14075300
+            }
+          ]
+        },
+        {
+          "id": "tarp",
+          "name": "Woven tarpaulin, blue over an orange lining, with its skirt",
+          "material": "tarp",
+          "uv": "canopy-roof",
+          "uvScale": 1.1,
+          "sheets": [
+            {
+              "hex": 16777215,
+              "hexTop": 5992323,
+              "hexUnder": 11032111,
+              "x0": -1.985,
+              "x1": 1.985,
+              "z0": -1.985,
+              "z1": 1.985,
+              "nx": 10,
+              "nz": 10,
+              "t": 0.012,
+              "heights": [
+                [
+                  3.8,
+                  3.778666666666666,
+                  3.7619999999999996,
+                  3.75,
+                  3.7426666666666666,
+                  3.7399999999999998,
+                  3.7426666666666666,
+                  3.75,
+                  3.7619999999999996,
+                  3.7786666666666666,
+                  3.8
+                ],
+                [
+                  3.778666666666666,
+                  3.757345304303225,
+                  3.7402898859725506,
+                  3.7287995281857396,
+                  3.7232344316758788,
+                  3.717970813892337,
+                  3.7189952269670354,
+                  3.729526474004019,
+                  3.741746930288545,
+                  3.7569272543916314,
+                  3.778666666666666
+                ],
+                [
+                  3.7619999999999996,
+                  3.741232343747633,
+                  3.7258496538533086,
+                  3.710619726248585,
+                  3.7036283810173085,
+                  3.7029706794618438,
+                  3.7040308120672636,
+                  3.713110341770947,
+                  3.7248186942367276,
+                  3.739462669689101,
+                  3.7619999999999996
+                ],
+                [
+                  3.75,
+                  3.729404778623187,
+                  3.713305036394906,
+                  3.6962220726374095,
+                  3.6908459173501784,
+                  3.696829030060747,
+                  3.693591336814824,
+                  3.6965669068472167,
+                  3.7120769768220496,
+                  3.729098967009219,
+                  3.75
+                ],
+                [
+                  3.7426666666666666,
+                  3.71968199412576,
+                  3.704413974057953,
+                  3.693401044112897,
+                  3.685438290580556,
+                  3.6863510771833043,
+                  3.6840871478731936,
+                  3.6883628734559393,
+                  3.7067161796889563,
+                  3.7232739393391037,
+                  3.7426666666666666
+                ],
+                [
+                  3.7399999999999998,
+                  3.7162601958060444,
+                  3.703959102759055,
+                  3.6954923317900965,
+                  3.6784229032531326,
+                  3.6744453755823883,
+                  3.685361551858999,
+                  3.6914848549695023,
+                  3.7025568569131515,
+                  3.7189361885727616,
+                  3.7399999999999998
+                ],
+                [
+                  3.7426666666666666,
+                  3.7215873365567016,
+                  3.7053565326961584,
+                  3.6939784445729105,
+                  3.680777014439233,
+                  3.67945814972154,
+                  3.6918379202237364,
+                  3.6939973594718247,
+                  3.7008867574706215,
+                  3.721323960838331,
+                  3.7426666666666666
+                ],
+                [
+                  3.75,
+                  3.7292604856750033,
+                  3.709075106236414,
+                  3.6998640702787946,
+                  3.695316808234228,
+                  3.689075368218844,
+                  3.693074627834516,
+                  3.6996787189957647,
+                  3.7100444862165505,
+                  3.7294421867397993,
+                  3.75
+                ],
+                [
+                  3.7619999999999996,
+                  3.7405991786210624,
+                  3.7223583531355264,
+                  3.713244582835847,
+                  3.70832437646124,
+                  3.6989367762880176,
+                  3.701508846319098,
+                  3.7139421751541253,
+                  3.72486520555481,
+                  3.7402601098654014,
+                  3.7619999999999996
+                ],
+                [
+                  3.7786666666666666,
+                  3.7577560458235864,
+                  3.7411693208786807,
+                  3.7283246449383807,
+                  3.721559951472841,
+                  3.717830631735816,
+                  3.7206546630635513,
+                  3.730165703290516,
+                  3.7408925642458355,
+                  3.7564750916492184,
+                  3.7786666666666666
+                ],
+                [
+                  3.8,
+                  3.778666666666666,
+                  3.7619999999999996,
+                  3.75,
+                  3.7426666666666666,
+                  3.7399999999999998,
+                  3.7426666666666666,
+                  3.75,
+                  3.7619999999999996,
+                  3.7786666666666666,
+                  3.8
+                ]
+              ]
+            }
+          ],
+          "extrudes": [],
+          "roofKind": "tarp",
+          "clothSkirt": true
+        }
+      ]
+    },
+    "postShapes": [
+      {
+        "type": "cylinder",
+        "x": -1.936,
+        "z": -1.936,
+        "height": 3.7800000000000002,
+        "radius": 0.052
+      },
+      {
+        "type": "cylinder",
+        "x": -1.936,
+        "z": 1.936,
+        "height": 3.7800000000000002,
+        "radius": 0.052
+      },
+      {
+        "type": "cylinder",
+        "x": 1.936,
+        "z": -1.936,
+        "height": 3.7800000000000002,
+        "radius": 0.052
+      },
+      {
+        "type": "cylinder",
+        "x": 1.936,
+        "z": 1.936,
+        "height": 3.7800000000000002,
+        "radius": 0.052
+      }
+    ],
+    "referencePolicy": "Existing plate remains authoritative for roof form and material; user explicitly overrides its vertical clearance. Preserve roof pitch, thickness, width and depth. No new Meshy request needed for this existing-model refinement.",
+    "surfaceRefinement": "Smooth q+r-q*r corner-supported sag with 18 mm irregular cross-folds and non-repeating faded-blue vertex zones; hem and tie points unchanged.",
+    "tarpDrape": "Reference top is shallow: 60 mm edge sag plus 60 mm central sag, 10 mm irregular folds. Hem translated to follow the raised edge; tie corners stay at 3.80 m.",
+    "roofProjection": {
+      "kind": "tarp",
+      "evidence": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-material-evidence/roof-projection.json",
+      "normalStrength": 0.1,
+      "unseenSlopeConfidence": 0.75,
+      "maps": "Absolute de-lit roof albedo, independent roughness and normal; no repeated macro marks. Roof geometry remains procedural.",
+      "neutralAlbedoTransfer": "#b4b4b4"
+    },
+    "frameProjection": {
+      "evidence": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-material-evidence/post-projection.json",
+      "confidence": 0.815
+    },
+    "tarpaulin-formCorrection": "Replace overlapping capped-cylinder ropes with continuous swept tubes and proper end caps; separate steel grain UV scale from bamboo node scale.",
+    "tarpaulin-detailCorrection": "Add torn corner openings and long folded corner drops exposing the orange lining; curve the skirts, retaining their continuous blue/orange layer thickness. Reduce flat centre tessellation to fund visible folds inside 4000 triangles.",
+    "lastCorrection": "Reject intersecting corner-hole draft: constrain each tear wholly inside the cloth polygon, reduce corner curl, and select atlas surface by explicit construction color rather than a changing surface normal.",
+    "clothConstruction": "Closed curved cloth grids with separate blue and orange surface regions, narrow tear apertures and proper edge walls; replaces invalid bent polygon extrusion.",
+    "cornerTies": "Four reference-style corner rope ties; enlarged 146 mm galvanised posts and lower rails; cloth edge winding corrected.",
+    "materialCalibration": [
+      {
+        "id": "steel",
+        "color": "#ffffff",
+        "roughness": 0.52,
+        "metalness": 0.28,
+        "vertexColors": true
+      },
+      {
+        "id": "tarp",
+        "color": 11842740,
+        "roughness": 0.92,
+        "metalness": 0,
+        "vertexColors": true,
+        "doubleSided": true
+      }
+    ],
+    "frameValueCorrection": "Remove duplicated material/vertex tint from frame. Observed post pixels are pale galvanized steel and sun-bleached timber; use the vertex tint once with palette-relative reference maps.",
+    "tieCorrection": "Open the corner tie into a descending helix so the rope never intersects its own return.",
+    "qualityScope": "Whole-asset visual fidelity, including roof materials, per user clarification. Height and upright support proportions intentionally supersede reference plate; compare material, construction and local shapes independently of the approved 1.10 m lift.",
+    "rawPhotoDiagnosticApplicability": "Raw global silhouette overlap is not an acceptance gate for the intentional 1.10 m height edit. Original photo comparison retained as a diagnostic; dimensional/runtime measurements, full turntable, component checks, material crop comparisons and AI visual review are the acceptance evidence."
+  },
+  "materialPipeline": {
+    "schemaVersion": 1,
+    "status": "proceed",
+    "analysisArtifact": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-material-views/region-analysis.json",
+    "targetThreshold": 0.7,
+    "unresolvedNotObservedMaterials": [],
+    "regions": [
+      {
+        "regionId": "roof",
+        "specMaterialId": "tarp",
+        "componentId": "tarp",
+        "status": "proceed",
+        "confidence": 0.86,
+        "sourceEvidence": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-roof-pbr/tarp-region-extraction.json",
+        "comparison": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-material-views/roof-comparison.json",
+        "profileId": "fabric.woven-matte",
+        "profileUse": "Material-family label only; final fitted runtime parameters are retained and reference region evidence supplies the specific finish."
+      },
+      {
+        "regionId": "frame",
+        "specMaterialId": "steel",
+        "componentId": "frame",
+        "status": "proceed",
+        "confidence": 0.815,
+        "sourceEvidence": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-frame-pbr/steel-region-extraction.json",
+        "comparison": "/home/mulligan/code/thaikit/scratch/tarpaulin-canopy-module/height-material-views/frame-comparison.json",
+        "profileId": "metal.galvanized-steel",
+        "profileUse": "Material-family label only; final fitted runtime parameters are retained and reference region evidence supplies the specific finish."
+      }
+    ],
+    "controlledViewsRequired": [
+      "albedo-unlit",
+      "neutral-studio",
+      "grazing",
+      "environment-reflection",
+      "reference-beauty"
+    ],
+    "route": "Manual reference-region assignment and post-construction PBR maps; no automatic profile substitution.",
+    "registry": "/home/mulligan/.codex/skills/img2threejs/docs/materials/material-reference.json"
+  },
+  "materialGate": {
+    "schemaVersion": 1,
+    "kind": "img2threejs.material-gate",
+    "passed": true,
+    "failures": [],
+    "warnings": [],
+    "comparisonCount": 2,
+    "compatibility": {
+      "schemaVersion": 1,
+      "passed": true,
+      "failures": [],
+      "warnings": [],
+      "checked": {
+        "materialCount": 2,
+        "componentCount": 2,
+        "repetitionSystemCount": 0,
+        "referencedMaterialCount": 2,
+        "riggedComponentCount": 0,
+        "lodPresent": true,
+        "collisionPresent": false
+      },
+      "invariant": "material IDs and UV/map contracts survive geometry, skinning, collision and LOD changes"
+    },
+    "requiredEvidence": [
+      "materialPipeline.status=proceed",
+      "all material regions status=proceed",
+      "per-region crop comparison passed",
+      "multi-angle controlled view plan and screenshot readback",
+      "geometry/UV/skinning/collision/LOD material ID compatibility passed"
+    ]
+  }
 }

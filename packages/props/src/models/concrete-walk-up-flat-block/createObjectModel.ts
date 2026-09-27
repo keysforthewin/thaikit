@@ -19,14 +19,6 @@ import * as THREE from 'three';
  */
 
 export type ProceduralModelOptions = {
-  /**
-   * Where this prop's shipped files live, with a trailing slash.
-   *
-   * The maps are recorded as bare filenames because the bundle is EVALUATED
-   * rather than imported: it has no import.meta and no currentScript, so it
-   * cannot see its own URL. Every host derives this from the module URL.
-   */
-  baseUrl?: string;
   wireframe?: boolean;
   castShadow?: boolean;
   receiveShadow?: boolean;
@@ -904,7 +896,7 @@ export function createConcreteWalkUpFlatBlockModel(options: ProceduralModelOptio
       // 512 px = one 5.27 m tile (two floor pitches): panel grooves at floor level and one vertical
       // per tile, rain streaks hanging from the grooves, soft mottling. Multiplier space over white.
       const [c, ctx] = canvas(512, 512);
-      ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, 512, 512);
+      ctx.fillStyle = '#dadad6'; ctx.fillRect(0, 0, 512, 512);
       for (let i = 0; i < 120; i++) {
         const x = rnd() * 512, y = rnd() * 512, r = 40 + rnd() * 90;
         const g = ctx.createRadialGradient(x, y, 0, x, y, r);
@@ -1001,33 +993,33 @@ export function createConcreteWalkUpFlatBlockModel(options: ProceduralModelOptio
   {
     const prof = [[-hz + R.gutter, R.eaveY], [R.ridgeZ, R.ridgeY], [zS - R.gutter, R.eaveY],
                   [zS - R.gutter, R.eaveY - R.sheetT], [R.ridgeZ, R.ridgeY - R.sheetT], [-hz + R.gutter, R.eaveY - R.sheetT]];
-    const g = yzExtrude(prof, -R.xEnd, 2 * R.xEnd);
-    planarUV(g, R.tileM);
+    // Closed physical corrugation: the six-point roof section sweeps over 130 four-step ribs.
+    const positions:number[]=[],indices:number[]=[],count=520;
+    for(let i=0;i<=count;i++){const x=-R.xEnd+2*R.xEnd*i/count,wave=.026*Math.sin(i*Math.PI/2);for(const [z,y] of prof)positions.push(x,y+wave,z);}
+    for(let i=0;i<count;i++)for(let j=0;j<6;j++){const k=(j+1)%6,a=i*6+j,b=i*6+k,c=(i+1)*6+k,d=(i+1)*6+j;indices.push(a,b,c,a,c,d);}
+    for(let j=1;j<5;j++){indices.push(0,j+1,j,count*6,count*6+j,count*6+j+1);}
+    const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));g.setIndex(indices);g.computeVertexNormals();
+    // Analytic rib normals keep the thin sheet's top and underside independent.
+    {const normals:number[]=[];for(let i=0;i<=count;i++)for(let j=0;j<6;j++){const top=j<3,k=top?j:5-j;let dz=0;if(k===0)dz=(R.ridgeY-R.eaveY)/(R.ridgeZ+hz-R.gutter);if(k===2)dz=(R.eaveY-R.ridgeY)/(zS-R.gutter-R.ridgeZ);const dx=.026*(count*Math.PI/(4*R.xEnd))*Math.cos(i*Math.PI/2),n=new THREE.Vector3(-dx,1,-dz).normalize().multiplyScalar(top?1:-1);normals.push(n.x,n.y,n.z);}g.setAttribute('normal',new THREE.Float32BufferAttribute(normals,3));}
+
+    {const p=g.getAttribute('position'),uv=new Float32Array(p.count*2);for(let i=0;i<p.count;i++){uv[i*2]=(p.getX(i)+R.xEnd)/(2*R.xEnd);uv[i*2+1]=(p.getZ(i)+hz)/(zS+hz);}g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));}
     add('roof', 'Corrugated roof sheet', g, 'roof');
     if (inBrowser) {
       // 512 px = 3.2 m: 32 corrugations at a 0.10 m pitch running down the slope, lichen freckles
       // and three rust blooms per tile
       const [c, ctx] = canvas(512, 512);
-      ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, 512, 512);
-      for (let i = 0; i < 32; i++) {
-        const x = i * 16;
-        const gg = ctx.createLinearGradient(x, 0, x + 16, 0);
-        gg.addColorStop(0, 'rgba(30, 30, 28, 0.62)'); gg.addColorStop(0.3, 'rgba(30, 30, 28, 0.0)');
-        gg.addColorStop(0.6, 'rgba(30, 30, 28, 0.10)'); gg.addColorStop(1, 'rgba(30, 30, 28, 0.62)');
-        ctx.fillStyle = gg; ctx.fillRect(x, 0, 16, 512);
-      }
-      for (let i = 0; i < 3; i++) {
-        const x = rnd() * 512, y = rnd() * 512, rx = 30 + rnd() * 60, ry = 60 + rnd() * 160;
-        const gg = ctx.createRadialGradient(x, y, 0, x, y, 1);
-        gg.addColorStop(0, 'rgba(150, 70, 30, 0.75)'); gg.addColorStop(0.6, 'rgba(150, 70, 30, 0.45)'); gg.addColorStop(1, 'rgba(150, 70, 30, 0)');
-        ctx.save(); ctx.translate(x, y); ctx.scale(rx, ry); ctx.fillStyle = gg; ctx.fillRect(-1, -1, 2, 2); ctx.restore();
+      ctx.fillStyle = '#dadad6'; ctx.fillRect(0, 0, 512, 512);
+      // Three sparse runoff patches, placed independently across the full roof.
+      for (const [x,y,rx,ry] of [[102,340,11,63],[286,174,14,80],[437,385,9,44]]) {
+        ctx.save();ctx.translate(x,y);ctx.scale(rx,ry);
+        const gg=ctx.createRadialGradient(0,0,0,0,0,1);gg.addColorStop(0,'rgba(139,66,29,.75)');gg.addColorStop(.45,'rgba(151,91,52,.48)');gg.addColorStop(1,'rgba(151,91,52,0)');ctx.fillStyle=gg;ctx.fillRect(-1,-1,2,2);ctx.restore();
       }
       for (let i = 0; i < 400; i++) {
         const x = rnd() * 512, y = rnd() * 512;
         ctx.fillStyle = rnd() < 0.7 ? 'rgba(40, 40, 36, ' + (0.08 + rnd() * 0.2).toFixed(2) + ')' : 'rgba(90, 105, 55, ' + (0.15 + rnd() * 0.25).toFixed(2) + ')';
         ctx.fillRect(x, y, 2 + rnd() * 5, 2 + rnd() * 10);
       }
-      bind('roof', c, 0.02);
+      bind('roof', c, 0.002);
     }
   }
 
@@ -1102,7 +1094,7 @@ export function createConcreteWalkUpFlatBlockModel(options: ProceduralModelOptio
   /* ---------------------------------------------------------------- plants on four copings, laundry on two bays */
   {
     const leaf = (x: number, y: number, z: number, w: number, h: number, d: number, tone: number[]) => {
-      const g = boxAt(x, y, z, w, h, d);
+      const g = new THREE.IcosahedronGeometry(1,1);g.scale(w/2,h/2,d/2);g.translate(x,y,z);
       const c = new Float32Array(g.getAttribute('position').count * 3);
       for (let i = 0; i < c.length; i += 3) { c[i] = tone[0]; c[i + 1] = tone[1]; c[i + 2] = tone[2]; }
       g.setAttribute('color', new THREE.BufferAttribute(c, 3));
@@ -1203,15 +1195,4 @@ export function createObjectModel(spec?: unknown, options: ProceduralModelOption
   return root;
 }
 
-/**
- * The one-argument entry point: vibe3d's contract, and img2threejs's own.
- *
- * `createObjectModel` above keeps thaikit's historical (spec, options) shape so
- * the harness, the level editor and the Node-side gates carry on unchanged.
- * `spec` has never been passed by any caller -- it is inspection data that is
- * already baked into this module -- so this is the honest signature, and it is
- * what a vibe3d consumer installs and calls.
- */
-export function createModel(options: ProceduralModelOptions = {}): THREE.Group {
-  return createObjectModel(undefined, options);
-}
+export function createModel(options: ProceduralModelOptions = {}): THREE.Group { return createObjectModel(undefined, options); }

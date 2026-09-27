@@ -21,3 +21,36 @@ test('preview review retains failed verdict and explicitly unlimited correction 
     const accepted=await readSkillReview({specPath,statePath});assert.equal(accepted.score,94);assert.equal(accepted.passed,true);
   } finally {await fs.rm(dir,{recursive:true,force:true});}
 });
+
+test('refining an accepted pass reopens it without losing earlier reviews or correction counts', async () => {
+  const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'thaikit-review-'));
+  try {
+    const specPath = path.join(dir, 'spec.json');
+    const statePath = path.join(dir, 'state.json');
+    const history = [
+      { passId: 'blockout', action: 'continue', estimatedFidelity: .9 },
+      { passId: 'optimization-pass', action: 'continue', estimatedFidelity: .9 },
+      { passId: 'optimization-pass', action: 'refine-code', estimatedFidelity: .95 },
+    ];
+    await fs.writeFile(specPath, JSON.stringify({ reviewHistory: history }));
+    await fs.writeFile(statePath, JSON.stringify({
+      status: 'active', currentPass: 'optimization-pass',
+      loops: { total: 8, maxTotal: 10, perPass: { blockout: 6, 'optimization-pass': 2 } },
+    }));
+    const draft = await readSkillReview({ specPath, statePath });
+    assert.deepEqual(draft.passesComplete, ['blockout']);
+    assert.equal(draft.score, 95);
+    assert.equal(draft.passed, false);
+    assert.equal(draft.corrections.perPass, 2);
+    assert.equal(draft.corrections.total, 8);
+    assert.deepEqual(JSON.parse(await fs.readFile(specPath, 'utf8')).reviewHistory, history);
+
+    history.push({ passId: 'optimization-pass', action: 'continue', estimatedFidelity: .95 });
+    await fs.writeFile(specPath, JSON.stringify({ reviewHistory: history }));
+    const accepted = await readSkillReview({ specPath, statePath });
+    assert.deepEqual(accepted.passesComplete, ['blockout', 'optimization-pass']);
+    assert.equal(accepted.passed, true);
+  } finally {
+    await fs.rm(dir, { recursive: true, force: true });
+  }
+});

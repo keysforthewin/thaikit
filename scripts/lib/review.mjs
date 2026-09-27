@@ -58,16 +58,15 @@ export async function readSkillReview({ specPath, statePath }) {
   const history = Array.isArray(spec?.reviewHistory) ? spec.reviewHistory : [];
   const last = history[history.length - 1] ?? null;
 
-  // A pass counts as complete when its review said `continue` -- that is the
-  // literal thing that unlocks the next one. The state file's own passHistory is
-  // rewritten per pass and holds only the current one, so it cannot answer this.
-  const passesComplete = [
-    ...new Set(
-      history
-        .filter((entry) => entry?.action === 'continue' && typeof entry.passId === 'string')
-        .map((entry) => entry.passId),
-    ),
-  ];
+  // A correction request reopens a previously accepted pass. Keep its old
+  // reviews as evidence, but show only the latest verdict for each pass.
+  const latestByPass = new Map();
+  for (const entry of history) {
+    if (typeof entry?.passId === 'string') latestByPass.set(entry.passId, entry);
+  }
+  const passesComplete = [...latestByPass.values()]
+    .filter((entry) => entry.action === 'continue')
+    .map((entry) => entry.passId);
 
   const unscored = /^UNSCORED\b/.test(last?.summary ?? "");
   const fidelity = unscored ? null : isNumber(last?.estimatedFidelity)
@@ -82,9 +81,10 @@ export async function readSkillReview({ specPath, statePath }) {
       : 0.85;
 
   const loops = state?.loops ?? {};
-  const perPass = loops.perPass && typeof loops.perPass === 'object'
-    ? Object.values(loops.perPass).reduce((a, n) => a + (isNumber(n) ? n : 0), 0)
-    : 0;
+  const counts = loops.perPass && typeof loops.perPass === 'object' ? loops.perPass : {};
+  const currentPass = last?.passId ?? state?.currentPass ?? spec?.sculptPipeline?.currentPass
+    ?? (Object.keys(counts).length === 1 ? Object.keys(counts)[0] : null);
+  const perPass = isNumber(counts[currentPass]) ? counts[currentPass] : 0;
 
   return {
     fidelity,

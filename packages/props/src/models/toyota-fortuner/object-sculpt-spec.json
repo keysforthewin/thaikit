@@ -814,8 +814,10 @@
       "Quality contract has named all required macro feature groups before code generation.",
       "AI vision comparison score meets selfCorrectLoop.visualAcceptance.threshold.",
       "browser render screenshot from your agent's browser/screenshot tool",
-      "single side-by-side full reference/render comparison sheet",
-      "all critical semantic feature scores at or above their thresholds",
+      "side-by-side reference/render comparison sheet for AI vision review",
+      "banded interior difference vs the reference baseline (forge/stage4_review/interior_difference.py --from/--to per region)",
+      "AI vision score at or above the visual acceptance threshold",
+      "all critical semantic feature scores from the shared image pair at or above their thresholds",
       "self-correction review appended with action=continue before the next pass"
     ]
   },
@@ -1893,7 +1895,8 @@
       },
       "roughness": {
         "base": 0.35,
-        "variation": 0.08
+        "variation": 0.08,
+        "map": "paintAtlas(true)"
       },
       "metalness": {
         "base": 0,
@@ -1931,11 +1934,73 @@
         "Use displacement geometry when the observed relief changes the close-up silhouette; texture-only relief is insufficient there."
       ],
       "notes": "Independent UV0 albedo/ORM atlas; no baked lighting; fine procedural dirt density and painted seam approximations. Hidden-side wear uncertain.",
-      "textureless": {
-        "declared": false,
-        "evidence": [
-          "reference.png lower door and hatch dust; body panel boundaries visible in plate"
-        ]
+      "textureResolution": 1536,
+      "textureProjection": {
+        "mode": "procedural world-position atlas",
+        "texelDensityIntent": "Independent planar side, rear and roof regions use the authored atlas; see source implementation. Extracted maps remain evidence, not runtime bindings."
+      },
+      "surfaceFrequencyBands": [
+        {
+          "id": "macro",
+          "frequency": 1.5,
+          "amplitude": 0.3,
+          "notes": "Lower-body dirt envelope and broad paint weathering."
+        },
+        {
+          "id": "meso",
+          "frequency": 29,
+          "amplitude": 0.1,
+          "notes": "Dust clumps, panel gaps and wear breakup."
+        },
+        {
+          "id": "micro",
+          "frequency": 114,
+          "amplitude": 0.04,
+          "notes": "Fine deterministic grain in authored atlas."
+        }
+      ],
+      "referencePbr": {
+        "confidence": 0.803,
+        "estimatedFidelity": 0.803,
+        "targetThreshold": 0.7,
+        "sourceImage": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/material-crops/paint.png",
+        "maps": {
+          "albedo": {
+            "path": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/material-evidence/paint/paint_albedo.png",
+            "url": "paint_albedo.png",
+            "channel": "albedo",
+            "source": "reference-pixel-extraction"
+          },
+          "roughness": {
+            "path": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/material-evidence/paint/paint_roughness.png",
+            "url": "paint_roughness.png",
+            "channel": "roughness",
+            "source": "reference-pixel-extraction"
+          },
+          "height": {
+            "path": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/material-evidence/paint/paint_height.png",
+            "url": "paint_height.png",
+            "channel": "height",
+            "source": "reference-pixel-extraction"
+          },
+          "normal": {
+            "path": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/material-evidence/paint/paint_normal.png",
+            "url": "paint_normal.png",
+            "channel": "normal",
+            "source": "reference-pixel-extraction"
+          },
+          "ao": {
+            "path": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/material-evidence/paint/paint_ao.png",
+            "url": "paint_ao.png",
+            "channel": "ao",
+            "source": "reference-pixel-extraction"
+          }
+        },
+        "verdict": "pass",
+        "usable": true,
+        "method": "Existing accepted extraction report; source pixel maps are evidence and the independent authored runtime maps remain in source.",
+        "report": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/material-evidence/paint/report.json",
+        "limitations": []
       }
     },
     {
@@ -3591,6 +3656,63 @@
       "cameraView": "",
       "notes": "",
       "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-26T00:38:34.917044+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.85,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.92,
+        "formDetail": 0.85,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "silhouetteProportion",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.85,
+          "notes": "Rounded wider lamps, corrected charcoal paint and continuous analytic roof normals remove the strongest previous block and highlight artifacts. Existing separate wheel and roof-rail structure is preserved. Nose proportions, roof shoulders and rear-side wear remain approximate under the 14000-triangle budget."
+        },
+        {
+          "id": "componentStructure",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.85,
+          "notes": "Rounded wider lamps, corrected charcoal paint and continuous analytic roof normals remove the strongest previous block and highlight artifacts. Existing separate wheel and roof-rail structure is preserved. Nose proportions, roof shoulders and rear-side wear remain approximate under the 14000-triangle budget."
+        },
+        {
+          "id": "formDetail",
+          "tier": "important",
+          "score": 0.85,
+          "threshold": 0.8,
+          "notes": "Rounded wider lamps, corrected charcoal paint and continuous analytic roof normals remove the strongest previous block and highlight artifacts. Existing separate wheel and roof-rail structure is preserved. Nose proportions, roof shoulders and rear-side wear remain approximate under the 14000-triangle budget."
+        },
+        {
+          "id": "materialSurface",
+          "tier": "important",
+          "score": 0.88,
+          "threshold": 0.8,
+          "notes": "Rounded wider lamps, corrected charcoal paint and continuous analytic roof normals remove the strongest previous block and highlight artifacts. Existing separate wheel and roof-rail structure is preserved. Nose proportions, roof shoulders and rear-side wear remain approximate under the 14000-triangle budget."
+        },
+        {
+          "id": "lightingCamera",
+          "tier": "important",
+          "score": 0.82,
+          "threshold": 0.8,
+          "notes": "Rounded wider lamps, corrected charcoal paint and continuous analytic roof normals remove the strongest previous block and highlight artifacts. Existing separate wheel and roof-rail structure is preserved. Nose proportions, roof shoulders and rear-side wear remain approximate under the 14000-triangle budget."
+        }
+      ],
+      "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/reference.png",
+      "renderScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/renders/beauty-hero.png",
+      "comparisonImage": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/quality-upgrade-20260925/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
     }
   ],
   "reviewHistory": [
@@ -5117,6 +5239,73 @@
         "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/reference.png",
         "renderScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/iteration40/camera-fit-beauty.png",
         "comparisonImage": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/iteration40/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-26T00:38:34.917044+00:00",
+      "passId": "blockout",
+      "estimatedFidelity": 0.9,
+      "aiVisionScore": 0.9,
+      "visualAcceptanceThreshold": 0.85,
+      "layerScores": {
+        "silhouetteProportion": 0.9,
+        "componentStructure": 0.92,
+        "formDetail": 0.85,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.82
+      },
+      "featureReviews": [
+        {
+          "id": "silhouetteProportion",
+          "tier": "critical",
+          "score": 0.9,
+          "threshold": 0.85,
+          "notes": "Rounded wider lamps, corrected charcoal paint and continuous analytic roof normals remove the strongest previous block and highlight artifacts. Existing separate wheel and roof-rail structure is preserved. Nose proportions, roof shoulders and rear-side wear remain approximate under the 14000-triangle budget."
+        },
+        {
+          "id": "componentStructure",
+          "tier": "critical",
+          "score": 0.92,
+          "threshold": 0.85,
+          "notes": "Rounded wider lamps, corrected charcoal paint and continuous analytic roof normals remove the strongest previous block and highlight artifacts. Existing separate wheel and roof-rail structure is preserved. Nose proportions, roof shoulders and rear-side wear remain approximate under the 14000-triangle budget."
+        },
+        {
+          "id": "formDetail",
+          "tier": "important",
+          "score": 0.85,
+          "threshold": 0.8,
+          "notes": "Rounded wider lamps, corrected charcoal paint and continuous analytic roof normals remove the strongest previous block and highlight artifacts. Existing separate wheel and roof-rail structure is preserved. Nose proportions, roof shoulders and rear-side wear remain approximate under the 14000-triangle budget."
+        },
+        {
+          "id": "materialSurface",
+          "tier": "important",
+          "score": 0.88,
+          "threshold": 0.8,
+          "notes": "Rounded wider lamps, corrected charcoal paint and continuous analytic roof normals remove the strongest previous block and highlight artifacts. Existing separate wheel and roof-rail structure is preserved. Nose proportions, roof shoulders and rear-side wear remain approximate under the 14000-triangle budget."
+        },
+        {
+          "id": "lightingCamera",
+          "tier": "important",
+          "score": 0.82,
+          "threshold": 0.8,
+          "notes": "Rounded wider lamps, corrected charcoal paint and continuous analytic roof normals remove the strongest previous block and highlight artifacts. Existing separate wheel and roof-rail structure is preserved. Nose proportions, roof shoulders and rear-side wear remain approximate under the 14000-triangle budget."
+        }
+      ],
+      "action": "refine-code",
+      "summary": "Whole-asset visual estimate: 90/100. Rounded wider lamps, corrected charcoal paint and continuous analytic roof normals remove the strongest previous block and highlight artifacts. Existing separate wheel and roof-rail structure is preserved. Nose proportions, roof shoulders and rear-side wear remain approximate under the 14000-triangle budget. Failed automated checks: turntable, intersection, tier1. This remains a usable preview, not full pipeline acceptance. Hidden-region confidence 0.6.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "visualEvidence": {
+        "referenceScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/reference.png",
+        "renderScreenshot": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/renders/beauty-hero.png",
+        "comparisonImage": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/quality-upgrade-20260925/comparison.png",
         "cameraView": "",
         "notes": "",
         "aiVisionNotes": ""
@@ -6840,6 +7029,92 @@
       "renderHash": "f994723620fc4253",
       "passId": "blockout",
       "mapStrippedRender": "/home/mulligan/code/thaikit/scratch/toyota-fortuner/camera-fit-alpha.png"
+    },
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.2666,
+        "aspectRatioDelta": 0.1049,
+        "scaleDelta": 0.5314,
+        "bilateralSymmetryError": 0.1328,
+        "colorDelta": {
+          "checked": 4,
+          "maxDeltaE": 11.83,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 8.35
+            },
+            {
+              "componentId": null,
+              "deltaE": 11.83
+            },
+            {
+              "componentId": null,
+              "deltaE": 7.19
+            },
+            {
+              "componentId": null,
+              "deltaE": 6.66
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.267 is below threshold 0.85",
+        "aspect-ratio delta 0.105 exceeds threshold 0.05",
+        "scale delta 0.531 exceeds threshold 0.08",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "maskWarnings": [
+        "render: 25.1% of foreground cells lie outside the largest connected blob and were excluded from the bounding box; if the subject really has separated parts in this projection, they are not being measured"
+      ],
+      "renderHash": "3ea5606e04ddbb63",
+      "passId": "blockout"
+    },
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.2666,
+        "aspectRatioDelta": 0.1049,
+        "scaleDelta": 0.5314,
+        "bilateralSymmetryError": 0.1328,
+        "colorDelta": {
+          "checked": 4,
+          "maxDeltaE": 11.5,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 8.2
+            },
+            {
+              "componentId": null,
+              "deltaE": 11.5
+            },
+            {
+              "componentId": null,
+              "deltaE": 6.7
+            },
+            {
+              "componentId": null,
+              "deltaE": 6.15
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.267 is below threshold 0.85",
+        "aspect-ratio delta 0.105 exceeds threshold 0.05",
+        "scale delta 0.531 exceeds threshold 0.08",
+        "blockout requires --map-stripped-render evidence"
+      ],
+      "maskWarnings": [
+        "render: 25.0% of foreground cells lie outside the largest connected blob and were excluded from the bounding box; if the subject really has separated parts in this projection, they are not being measured"
+      ],
+      "renderHash": "c30a1f8e4fe9c009",
+      "passId": "blockout"
     }
   ],
   "selectedBestDraft": {
@@ -7009,10 +7284,17 @@
         "mirrors": "Rounded single-shell housings with gray outer mirror faces replace paired boxes.",
         "budget": "Thirty wheel segments retain ten spokes while allocating geometry to visible rear glazing and mirrors."
       }
+    },
+    {
+      "date": "2026-09-25",
+      "pass": "blockout",
+      "change": "Rounded and widened front lamp housings replace six-face rectangular blocks. Smooth analytic normals over the central crowned roof remove triangulation highlights; retain roof shoulder creases. Neutral charcoal paint replaces the purple bias while retaining authored lower-body dust and seams. Unseen nose interpretation confidence .55.",
+      "hiddenRegionConfidence": 0.55,
+      "source": "const T = {\"wheel\": 0.385, \"axle\": -0.08, \"cabRoof\": 0, \"cabFront\": 0.05, \"glass\": 0.62, \"paintRough\": 0.35, \"rimInner\": 0.155, \"roofRib\": 0.007, \"bench\": 0, \"shield\": 0};\nimport * as THREE from 'three';\n// Procedural geometry utilities; no reference mesh data is embedded.\ntype Batch={p:number[],n:number[],c:number[]};\ntype V={p:number[],n:number[],c:number[]};\nconst dot=(a:number[],b:number[])=>a.reduce((s,x,i)=>s+x*b[i],0);\nconst sub=(a:number[],b:number[])=>a.map((x,i)=>x-b[i]);\n\nfunction batch():Batch{return {p:[],n:[],c:[]};}\n\nfunction add(b:Batch,g:THREE.BufferGeometry,color:string,pos=[0,0,0],rot=[0,0,0]){\n const q=new THREE.Quaternion().setFromEuler(new THREE.Euler(...rot as [number,number,number]));g.applyMatrix4(new THREE.Matrix4().compose(new THREE.Vector3(...pos as [number,number,number]),q,new THREE.Vector3(1,1,1)));\n const flat=g.index?g.toNonIndexed():g;flat.computeVertexNormals();const p=flat.getAttribute('position'),n=flat.getAttribute('normal');const c=new THREE.Color(color);\n for(let i=0;i<p.count;i++){b.p.push(p.getX(i),p.getY(i),p.getZ(i));b.n.push(n.getX(i),n.getY(i),n.getZ(i));b.c.push(c.r,c.g,c.b);}if(flat!==g)flat.dispose();g.dispose();\n}\n\nfunction box(b:Batch,s:number[],p:number[],color:string,r=[0,0,0]){add(b,new THREE.BoxGeometry(...s as [number,number,number]),color,p,r);}\n\nfunction geometry(b:Batch){const g=new THREE.BufferGeometry();g.setAttribute('wheelClass',new THREE.Float32BufferAttribute(new Float32Array(b.p.length/3),1));g.setAttribute('position',new THREE.Float32BufferAttribute(b.p,3));g.setAttribute('wearPosition',new THREE.Float32BufferAttribute(b.p,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(b.n,3));g.setAttribute('color',new THREE.Float32BufferAttribute(b.c,3));g.computeBoundingBox();g.computeBoundingSphere();return g;}\n\nfunction sheet(b:Batch,points:number[][],color:string){const a=new THREE.Vector3(...points[0] as [number,number,number]),c=new THREE.Color(color);for(let j=1;j<points.length-1;j++){\n const v=new THREE.Vector3(...points[j] as [number,number,number]),w=new THREE.Vector3(...points[j+1] as [number,number,number]),n=v.clone().sub(a).cross(w.clone().sub(a)).normalize();for(const t of [a,v,w]){b.p.push(t.x,t.y,t.z);b.n.push(n.x,n.y,n.z);b.c.push(c.r,c.g,c.b);}\n}}\n\nfunction roundedLoop(pts:number[][],radius=.035,steps=4){const out:number[][]=[];for(let i=0;i<pts.length;i++){const p=pts[i],a=pts[(i+pts.length-1)%pts.length],b=pts[(i+1)%pts.length];const la=Math.hypot(a[0]-p[0],a[1]-p[1]),lb=Math.hypot(b[0]-p[0],b[1]-p[1]);const r=Math.min(radius,la*.2,lb*.2),start=p.map((v,k)=>v+(a[k]-v)*r/la),end=p.map((v,k)=>v+(b[k]-v)*r/lb);for(let j=0;j<=steps;j++){const t=j/steps;out.push(p.map((v,k)=>(1-t)*(1-t)*start[k]+2*t*(1-t)*v+t*t*end[k]));}}return out;}\n\nfunction panel(b:Batch,outline:number[][],holes:number[][][],x:number,thickness:number,color:string){\n const shape=new THREE.Shape(outline.map(p=>new THREE.Vector2(p[0],p[1])));for(const h of holes)shape.holes.push(new THREE.Path(h.map(p=>new THREE.Vector2(p[0],p[1]))));\n const g=new THREE.ExtrudeGeometry(shape,{depth:thickness,bevelEnabled:false,steps:1,curveSegments:1});g.rotateY(-Math.PI/2);add(b,g,color,[x,0,0]);\n}\n\nfunction tube(b:Batch,start:number[],end:number[],radius:number,color:string,segments=6){const a=new THREE.Vector3(...start as [number,number,number]),z=new THREE.Vector3(...end as [number,number,number]);const dir=z.clone().sub(a);const g=new THREE.CylinderGeometry(radius,radius,dir.length(),segments,1);g.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0),dir.normalize()));add(b,g,color,a.add(z).multiplyScalar(.5).toArray());}\n\nfunction frame(b:Batch,inner:number[][],color:string,width=.02,thickness=.012){\n const center=new THREE.Vector3();inner.forEach(p=>center.add(new THREE.Vector3(...p as [number,number,number])));center.multiplyScalar(1/inner.length);\n const normal=new THREE.Vector3(...inner[1] as [number,number,number]).sub(new THREE.Vector3(...inner[0] as [number,number,number])).cross(new THREE.Vector3(...inner[2] as [number,number,number]).sub(new THREE.Vector3(...inner[0] as [number,number,number]))).normalize();\n const outer=inner.map(p=>new THREE.Vector3(...p as [number,number,number]).sub(center).multiplyScalar(1+width*3).add(center).toArray());const back=(p:number[])=>new THREE.Vector3(...p as [number,number,number]).addScaledVector(normal,-thickness).toArray();\n for(let i=0;i<inner.length;i++){const j=(i+1)%inner.length;sheet(b,[outer[i],outer[j],inner[j],inner[i]],color);sheet(b,[back(inner[i]),back(inner[j]),back(outer[j]),back(outer[i])],color);sheet(b,[outer[j],outer[i],back(outer[i]),back(outer[j])],color);sheet(b,[inner[i],inner[j],back(inner[j]),back(inner[i])],color);}\n}\n\nfunction ribbedFloor(b:Batch,width:number,length:number,bottom:number,top:number,z:number,color:string,count:number,rise:number){\n const pts:number[][]=[[-width/2,bottom],[width/2,bottom],[width/2,top]];\n for(let i=count-1;i>=0;i--){const x=-width/2+(i+.5)*width/count;pts.push([x+.022,top],[x+.012,top+rise],[x-.012,top+rise],[x-.022,top]);}pts.push([-width/2,top]);\n const sh=new THREE.Shape(pts.map(p=>new THREE.Vector2(p[0],p[1])));add(b,new THREE.ExtrudeGeometry(sh,{depth:length,bevelEnabled:false,steps:1}),color,[0,0,z-length/2]);\n}\n\nfunction slab(b:Batch,pts:number[][],color:string,depth=.008){const a=new THREE.Vector3(...pts[0] as [number,number,number]),n=new THREE.Vector3(...pts[1] as [number,number,number]).sub(a).cross(new THREE.Vector3(...pts[2] as [number,number,number]).sub(a)).normalize();const back=pts.map(p=>new THREE.Vector3(...p as [number,number,number]).addScaledVector(n,-depth).toArray());sheet(b,pts,color);sheet(b,[...back].reverse(),color);for(let i=0;i<pts.length;i++){const j=(i+1)%pts.length;sheet(b,[pts[j],pts[i],back[i],back[j]],color);}}\n\nfunction mappedFace(b:Batch,outline:number[][],holes:number[][][],map:(p:number[])=>number[],color:string,flip=false,cuts:number[]=[]){const sh=new THREE.Shape(outline.map(p=>new THREE.Vector2(...p as [number,number])));for(const h of holes)sh.holes.push(new THREE.Path(h.map(p=>new THREE.Vector2(...p as [number,number]))));const g=new THREE.ShapeGeometry(sh,1),p=g.getAttribute('position'),idx=g.index!,flat=batch();for(let i=0;i<idx.count;i+=3){const pts=[0,1,2].map(j=>{const k=idx.getX(i+j);return [p.getX(k),p.getY(k),0];});sheet(flat,pts,color);}for(const cut of cuts)splitAt(flat,0,cut);for(let i=0;i<flat.p.length;i+=9){const pts=[0,3,6].map(j=>map([flat.p[i+j],flat.p[i+j+1]]));if(flip)pts.reverse();sheet(b,pts,color);}g.dispose();}\n\nfunction weldNormals(b:Batch){\n const at=new Map<string,{n:THREE.Vector3,w:number}[]>();const faceNormals:THREE.Vector3[]=[];\n for(let i=0;i<b.p.length;i+=9){const vs=[0,3,6].map(j=>new THREE.Vector3(...b.p.slice(i+j,i+j+3) as [number,number,number])),n=vs[1].clone().sub(vs[0]).cross(vs[2].clone().sub(vs[0])).normalize();faceNormals.push(n);\n for(let k=0;k<3;k++){const a=vs[(k+1)%3].clone().sub(vs[k]),c=vs[(k+2)%3].clone().sub(vs[k]);if(a.lengthSq()<1e-14||c.lengthSq()<1e-14)continue;const key=vs[k].toArray().map(v=>v.toFixed(6)).join(','),list=at.get(key)||[];list.push({n,w:a.angleTo(c)});at.set(key,list);}}\n for(let i=0;i<b.p.length;i+=3){const key=b.p.slice(i,i+3).map(v=>v.toFixed(6)).join(','),normal=faceNormals[Math.floor(i/9)],sum=new THREE.Vector3();for(const x of at.get(key)||[])if(x.n.dot(normal)>.50)sum.addScaledVector(x.n,x.w);sum.normalize();b.n[i]=sum.x;b.n[i+1]=sum.y;b.n[i+2]=sum.z;}\n}\n\nfunction conformEdges(b:Batch):Batch{\n const points=new Map<string,number[]>();for(let i=0;i<b.p.length;i+=3){const p=b.p.slice(i,i+3);points.set(p.map(v=>v.toFixed(6)).join(','),p);}const all=[...points.values()],out:Batch={p:[],n:[],c:[]};\n const put=(v:V)=>{out.p.push(...v.p);out.n.push(...v.n);out.c.push(...v.c);};\n for(let i=0;i<b.p.length;i+=9){const vs=[0,3,6].map(j=>({p:b.p.slice(i+j,i+j+3),n:b.n.slice(i+j,i+j+3),c:b.c.slice(i+j,i+j+3)}));const ring:V[]=[];\n for(let k=0;k<3;k++){const a=vs[k],z=vs[(k+1)%3],d=sub(z.p,a.p),dd=dot(d,d);ring.push(a);if(dd<1e-12)continue;const hits:{t:number,p:number[]}[]=[];\n for(const p of all){const t=dot(sub(p,a.p),d)/dd;if(t<=1e-5||t>=1-1e-5)continue;const q=a.p.map((x,j)=>x+t*d[j]);if(Math.hypot(...sub(q,p))<1e-6)hits.push({t,p});}\n hits.sort((a,b)=>a.t-b.t);for(const {t,p} of hits)ring.push({p,n:a.n.map((v,j)=>v+(z.n[j]-v)*t),c:a.c.map((v,j)=>v+(z.c[j]-v)*t)});\n }\n if(ring.length===3){ring.forEach(put);continue;}const center:V={p:[0,1,2].map(j=>vs.reduce((s,v)=>s+v.p[j],0)/3),n:vs[0].n,c:[0,1,2].map(j=>vs.reduce((s,v)=>s+v.c[j],0)/3)};for(let k=0;k<ring.length;k++){put(center);put(ring[k]);put(ring[(k+1)%ring.length]);}\n }return out;\n}\n\nfunction studioEnvironment(){const w=128,h=64,data=new Uint8Array(w*h*4);for(let y=0;y<h;y++)for(let x=0;x<w;x++){const u=x/w,v=y/h,soft=Math.exp(-Math.pow((u-.20)/.085,8)-Math.pow((v-.25)/.13,8))*.70+Math.exp(-Math.pow((u-.71)/.055,8)-Math.pow((v-.34)/.18,8))*.40,level=Math.min(1,(v<.52?.38:.13)+soft),i=(y*w+x)*4;data[i]=Math.round(level*249);data[i+1]=Math.round(level*252);data[i+2]=Math.round(level*255);data[i+3]=255;}const t=new THREE.DataTexture(data,w,h,THREE.RGBAFormat);t.mapping=THREE.EquirectangularReflectionMapping;t.colorSpace=THREE.SRGBColorSpace;t.needsUpdate=true;t.name='procedural-neutral-studio';return t;}\nfunction surfaceTexture(){const data=new Uint8Array(256*256*4);for(let y=0;y<256;y++)for(let x=0;x<256;x++){const i=(y*256+x)*4;data[i]=255;data[i+1]=x;data[i+2]=y;data[i+3]=255;}const t=new THREE.DataTexture(data,256,256,THREE.RGBAFormat);t.name='vehicle-metallic-roughness';t.minFilter=t.magFilter=THREE.LinearFilter;t.generateMipmaps=false;t.needsUpdate=true;return t;}\nfunction lampAtlas(kind:'orm'|'albedo'|'normal') {const w=256,h=768,data=new Uint8Array(w*h*4);for(let y=0;y<h;y++)for(let x=0;x<w;x++){let rgb=kind==='orm'?[255,x,y]:kind==='normal'?[128,128,255]:[255,255,255];const i=(y*w+x)*4;if(y>=256){const rear=y<512,u=x/255,v=(y%256)/255,red=rear&&v<.275,edge=Math.min(u,1-u,v,1-v),chamber=rear?(v<.275?v/.275:v<.65?(v-.275)/.375:(v-.65)/.35):(u<.65?u/.65:(u-.65)/.35),dx=rear?u*2-1:chamber*2-1,dy=rear?chamber*2-1:v*2-1,r=Math.hypot(dx,dy),flute=Math.sin((rear?v:u)*Math.PI*48),ring=Math.exp(-Math.pow((r-.70)/.15,2));if(kind==='albedo'){const shade=edge<.035?.42:.69+.15*ring+.035*flute;rgb=(red?[151,57,42]:[197,207,201]).map(c=>c*shade);}if(kind==='orm')rgb=[255,red?80:67,red?0:50];if(kind==='normal'){const n=new THREE.Vector3(.12*dx+(rear?0:.065*flute),.12*dy+(rear?.065*flute:0),1).normalize();rgb=[128+127*n.x,128+127*n.y,128+127*n.z];}}for(let k=0;k<3;k++)data[i+k]=Math.round(rgb[k]);data[i+3]=255;}const t=new THREE.DataTexture(data,w,h,THREE.RGBAFormat);t.name='fortuner-molded-lenses-'+kind;t.colorSpace=kind==='albedo'?THREE.SRGBColorSpace:THREE.NoColorSpace;t.minFilter=t.magFilter=THREE.LinearFilter;t.generateMipmaps=false;t.needsUpdate=true;return t;}\nfunction lampUvs(g:THREE.BufferGeometry,m:THREE.Material){const p=g.attributes.position,c=g.attributes.color,uv:number[]=[],colors=['#b4beb9','#882e23','#b3c5b7'].map(s=>new THREE.Color(s));for(let i=0;i<p.count;i++){const k=colors.findIndex(q=>Math.abs(c.getX(i)-q.r)+Math.abs(c.getY(i)-q.g)+Math.abs(c.getZ(i)-q.b)<.001);if(k>=0){const front=k===2,u=THREE.MathUtils.clamp((Math.abs(p.getX(i))-(front?.475:.695))/(front?.27:.17),.01,.99),v=THREE.MathUtils.clamp((p.getY(i)-(front?.855:.75))/(front?.17:.31),.01,.99);uv.push(u,((front?512:256)+.5+255*v)/768);c.setXYZ(i,1,1,1);}else uv.push((m.userData.nominal.roughness*255+.5)/256,(m.userData.nominal.metalness*255+.5)/768);}g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));return g;}\nfunction interiorAtlas(kind:'orm'|'albedo'|'normal'){const w=256,h=1024,data=new Uint8Array(w*h*4);for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;let rgb=kind==='orm'?[255,x,y]:kind==='normal'?[128,128,255]:[255,255,255];if(y>=256){const region=Math.floor(y/256),u=x/255,v=(y%256)/255,hash=Math.sin(x*127.1+y*311.7)*43758.5453,grain=hash-Math.floor(hash),cloud=.5+.5*Math.sin(u*19+Math.sin(v*11))*Math.sin(v*23),phase=u*Math.PI*2*48+Math.abs(v-.5)*9;let base=[255,255,255],rough=.85,metal=0,nx=0,ny=0;\n if(region===1){const groove=Math.pow(Math.max(0,Math.cos(phase)),18),dust=.12+.15*cloud;base=[55,57,49].map((c,k)=>(c*(1-dust)+[115,107,87][k]*dust)*(1-.22*groove));rough=.88+.08*grain;nx=.16*Math.sin(phase)*Math.pow(Math.max(0,Math.cos(phase)),8);ny=.02*(grain-.5);}\n if(region===2){const r=Math.hypot(u-.5,v-.5),band=Math.exp(-Math.pow((r-.43)/.012,2));base=[174,179,170].map(c=>c*(.94+.04*grain-.12*band));rough=.31+.14*cloud;metal=.78;for(let j=0;j<5;j++){const a=j*Math.PI*2/5,dx=u-.5-.09/.6*Math.cos(a),dy=v-.5-.09/.6*Math.sin(a),r=Math.hypot(dx,dy),angle=Math.atan2(dy,dx),hex=r*Math.cos(((angle+Math.PI*4)%(Math.PI/3))-Math.PI/6);if(hex<.022){const bevel=THREE.MathUtils.clamp((hex-.015)/.007,0,1);base=[183,187,178].map(c=>c*(1-.20*bevel));nx=r?dx/r*.30*bevel:0;ny=r?dy/r*.30*bevel:0;}}}\n if(region===3){const seam=Math.exp(-Math.pow((Math.min(u,1-u)-.05)/.012,2)),channel=Math.pow(Math.max(0,Math.cos(u*Math.PI*8)),16),shade=.86+.09*grain-.1*seam-.06*channel;base=[255,255,255].map(c=>c*shade);rough=.74+.10*grain;nx=.025*Math.sin(u*Math.PI*8);ny=.015*Math.sin(v*73);}\n rgb=base;if(kind==='orm')rgb=[255,255*rough,255*metal];if(kind==='normal'){const n=new THREE.Vector3(nx,ny,1).normalize();rgb=[128+127*n.x,128+127*n.y,128+127*n.z];}}\n for(let k=0;k<3;k++)data[i+k]=Math.round(rgb[k]);data[i+3]=255;}const t=new THREE.DataTexture(data,w,h,THREE.RGBAFormat);t.name='fortuner-rubber-alloy-vinyl-'+kind;t.colorSpace=kind==='albedo'?THREE.SRGBColorSpace:THREE.NoColorSpace;t.minFilter=t.magFilter=THREE.LinearFilter;t.generateMipmaps=false;t.needsUpdate=true;return t;}\nfunction interiorUvs(g:THREE.BufferGeometry,m:THREE.Material,wheel=false){const p=g.attributes.position,c=g.attributes.color,uv:number[]=[],tire:boolean[]=[];if(wheel)for(let i=0;i<p.count;i+=3)tire.push((c.getX(i)+c.getX(i+1)+c.getX(i+2))/3<.06);\n for(let i=0;i<p.count;i++){const x=p.getX(i),y=p.getY(i),z=p.getZ(i);let region=0,u=m.userData.nominal.roughness,v=m.userData.nominal.metalness;if(wheel){region=tire[Math.floor(i/3)]?1:2;u=region===1?Math.acos(Math.cos(Math.atan2(z,y)))/Math.PI:y/.6+.5;v=region===1?x/.30+.5:z/.6+.5;const recess=region===2&&c.getX(i)<.2,shade=recess?.20:1;c.setXYZ(i,shade,shade,shade);}else if(y>.67&&y<1.30&&z<.9){region=3;u=(x-(x>0?.41:-.41))/.61+.5;v=(y-.67)/.63;}\n u=THREE.MathUtils.clamp(u,.006,.994);v=THREE.MathUtils.clamp(v,.006,.994);uv.push(u,(region*256+.5+v*255)/1024);}g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));return g;}\nfunction material(roughness:number,metalness=0,opacity=1){const m=new THREE.MeshStandardMaterial({color:0xffffff,vertexColors:true,roughness:1,metalness:1,side:THREE.DoubleSide,transparent:opacity<1,opacity,depthWrite:opacity===1});m.userData.nominal={roughness,metalness};m.forceSinglePass=true;return m;}\nfunction vehicleFinish(m:THREE.Material,kind:string){m.userData.finishKind=kind;}\nfunction applySurface(g:THREE.BufferGeometry,m:THREE.Material,isWheel=false){if(m.userData.paintAtlas)return paintUvs(g);if(m.userData.lampAtlas)return lampUvs(g,m);if(m.userData.interiorAtlas)return interiorUvs(g,m,isWheel);const p=g.getAttribute('position'),c=g.getAttribute('color'),uv:number[]=[],base=m.userData.nominal;\n for(let i=0;i<p.count;i++){const x=p.getX(i),y=p.getY(i),z=p.getZ(i);let rough=base.roughness,metal=base.metalness;\n if(isWheel){const start=Math.floor(i/3)*3;let tone=0;for(let k=0;k<3;k++)tone+=c.getX(start+k)/3;const tire=tone<.06;rough=tire?.94:.40;metal=tire?0:.65;}\n else if(m.userData.finishKind){const h=Math.max(0,Math.min(1,(1.05-y)/.7)),cloud=.5+.25*Math.sin(x*17+z*11)+.25*Math.sin(y*29-z*9),dirt=(.025+.22*h)*cloud;const col=[c.getX(i),c.getY(i),c.getZ(i)],dust=[.10,.085,.06];c.setXYZ(i,...col.map((v,k)=>v*(1-dirt)+dust[k]*dirt) as [number,number,number]);rough=Math.min(1,rough+.16*h*cloud);}\n uv.push((rough*255+.5)/256,(metal*255+.5)/256);\n }g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));return g;}\nfunction emit(root:THREE.Group,id:string,b:Batch,m:THREE.Material){b.p=b.p.map(Math.fround);weldNormals(b);if(id==='body')for(let i=0;i<b.p.length;i+=9){const z=(b.p[i+2]+b.p[i+5]+b.p[i+8])/3,y=(b.p[i+1]+b.p[i+4]+b.p[i+7])/3,a=new THREE.Vector3(...b.p.slice(i,i+3) as [number,number,number]),v=new THREE.Vector3(...b.p.slice(i+3,i+6) as [number,number,number]),w=new THREE.Vector3(...b.p.slice(i+6,i+9) as [number,number,number]),face=v.sub(a).cross(w.sub(a)).normalize();if(z<1.2||z>2.22||y<1.02||face.y<.8)continue;for(let j=0;j<9;j+=3){const u=THREE.MathUtils.clamp(b.p[i+j]/.875,-1,1),t=THREE.MathUtils.clamp((b.p[i+j+2]-1.2)/1.02,0,1),c=.035+(.028-.035)*t,dx=-c*Math.PI/1.75*Math.sin(u*Math.PI/2),dz=-.07/1.02-.007/1.02*Math.cos(u*Math.PI/2),n=new THREE.Vector3(-dx,1,-dz).normalize();b.n[i+j]=n.x;b.n[i+j+1]=n.y;b.n[i+j+2]=n.z;}}if(id==='body')for(let i=0;i<b.p.length;i+=3){const x=b.p[i],y=b.p[i+1],z=b.p[i+2];if(y>1.67&&z> -1.96&&z<.76&&Math.abs(x)<.72&&b.n[i+1]>.40){const slope=-.07*Math.PI/1.575*Math.sin(x/.7875*Math.PI/2),front=THREE.MathUtils.smoothstep(z,.48,.76)*.55,rear=THREE.MathUtils.smoothstep(-z,1.73,1.96)*.45,n=new THREE.Vector3(-slope,1,front-rear).normalize();b.n.splice(i,3,n.x,n.y,n.z);}}const g=new THREE.Group();g.name=id;const mesh=new THREE.Mesh(applySurface(geometry(b),m),m);mesh.name=id+'-geometry';g.add(mesh);root.add(g);return g;}\nfunction wheelShape(radius=.36,width=.22,alloy=false,segments=24){const b=batch(),profile=alloy?[[0,-.10],[.065,-.105],[.245,-.105],[.27,-.12],[.32,-.10],[.36,-.04],[.36,.04],[.32,.10],[.27,.12],[.245,.105],[.065,.105],[0,.10]]:[[0,-.12],[.13,-.095],[T.rimInner,-.09],[.205,-.09],[.23,-.12],[.285,-.10],[.36,-.035],[.36,.035],[.285,.10],[.23,.12],[.205,.09],[T.rimInner,.09],[.13,.095],[0,.12]];\n const inner=alloy?1:2,outer=inner+1,backInner=profile.length-1-inner,backOuter=backInner-1,period=alloy?segments/10:4,span=alloy?segments/10-1:1,wp=(i:number,j:number)=>{const [r,x]=profile[i],a=j*2*Math.PI/segments+(segments%4?Math.PI/segments:0)+(alloy?(i===inner||i===backInner?.055:i===outer||i===backOuter?-.015:0):0);return [-x*width/.24,r*radius/.36*Math.sin(a),r*radius/.36*Math.cos(a)];};\n for(let i=0;i<profile.length-1;i++)for(let j=0;j<segments;j++){if((i===inner||i===backOuter)&&j%period<span)continue;const pts=[wp(i,j),wp(i,j+1),wp(i+1,j+1),wp(i+1,j)],color=(i< (alloy?3:4)||i>=(alloy?8:9))?'#a0a093':'#35372f';if(i===0)sheet(b,[pts[0],pts[2],pts[3]],color);else if(i===profile.length-2)sheet(b,[pts[0],pts[1],pts[2]],color);else sheet(b,pts,color);}\n for(let j=0;j<segments;j+=period){const f=[],back=[];for(let k=0;k<=span;k++){f.push(wp(inner,j+k));back.push(wp(backInner,j+k));}for(let k=span;k>=0;k--){f.push(wp(outer,j+k));back.push(wp(backOuter,j+k));}for(let k=0;k<f.length;k++){const n=(k+1)%f.length;sheet(b,[f[k],f[n],back[n],back[k]],'#565c50');}}\n b.p=b.p.map(Math.fround);weldNormals(b);return geometry(b);\n}\nfunction wheels(root:THREE.Group,g:THREE.BufferGeometry,m:THREE.Material,positions:{name:string,pos:number[]}[]){g.setAttribute('wheelClass',new THREE.Float32BufferAttribute(new Float32Array(g.getAttribute('position').count).fill(1),1));applySurface(g,m,true);const mesh=new THREE.InstancedMesh(g,m,positions.length);mesh.name='wheels';root.add(mesh);const pivots=positions.map((v,i)=>{const p=new THREE.Group();p.name=v.name;p.position.fromArray(v.pos);root.add(p);p.updateMatrix();mesh.setMatrixAt(i,p.matrix);return p;});mesh.onBeforeRender=()=>{pivots.forEach((p,i)=>{p.updateMatrix();mesh.setMatrixAt(i,p.matrix);});mesh.instanceMatrix.needsUpdate=true;};return pivots;}\ntype Rod={a:number[],b:number[],r:number,color?:string};\nfunction rods(root:THREE.Group,list:Rod[],m:THREE.Material){const g=new THREE.CylinderGeometry(1,1,1,8,1);g.setAttribute('color',new THREE.Float32BufferAttribute(new Float32Array(g.getAttribute('position').count*3).fill(1),3));applySurface(g,m);const mesh=new THREE.InstancedMesh(g,m,list.length);mesh.name='rails';const up=new THREE.Vector3(0,1,0);list.forEach((r,i)=>{const a=new THREE.Vector3(...r.a as [number,number,number]),b=new THREE.Vector3(...r.b as [number,number,number]),d=b.clone().sub(a),q=new THREE.Quaternion().setFromUnitVectors(up,d.clone().normalize());mesh.setMatrixAt(i,new THREE.Matrix4().compose(a.add(b).multiplyScalar(.5),q,new THREE.Vector3(r.r,d.length(),r.r)));mesh.setColorAt(i,new THREE.Color(r.color||'#77766d'));});root.add(mesh);return mesh;}\nfunction shellRaw(paint:Batch,glass:Batch,trim:Batch,outer:number[][],holes:number[][][],faceWindows:Record<number,number[][]>,halfWidth:number,crowns:number[],paintColor:string,glassColor='#404742'){\n const inner=outer.map((p,i)=>{const a=outer[(i+outer.length-1)%outer.length],z=outer[(i+1)%outer.length],d1=[p[0]-a[0],p[1]-a[1]],d2=[z[0]-p[0],z[1]-p[1]],l1=Math.hypot(...d1),l2=Math.hypot(...d2),n1=[d1[1]/l1,-d1[0]/l1],n2=[d2[1]/l2,-d2[0]/l2],den=1+n1[0]*n2[0]+n1[1]*n2[1];return p.map((v,k)=>v+.03*(n1[k]+n2[k])/den);});const local=batch();\n for(const side of [-1,1]){mappedFace(local,outer,holes,p=>[side*halfWidth,p[1],p[0]],paintColor,side>0);mappedFace(local,inner,holes,p=>[side*(halfWidth-.035),p[1],p[0]],'#5a6056',side<0);for(const h of holes){for(let i=0;i<h.length;i++){const a=h[i],z=h[(i+1)%h.length],pts=[[side*halfWidth,a[1],a[0]],[side*(halfWidth-.035),a[1],a[0]],[side*(halfWidth-.035),z[1],z[0]],[side*halfWidth,z[1],z[0]]];if(side>0)pts.reverse();sheet(local,pts,paintColor);}const pts=h.map(p=>[side*(halfWidth-.006),p[1],p[0]]);if(side>0)pts.reverse();slab(glass,pts,glassColor,.008);frame(trim,h.map(p=>[side*(halfWidth+.010),p[1],p[0]]),holes.indexOf(h)===0?'#30362e':'#b0b5b0',.013,.018);}}\n for(let e=0;e<outer.length;e++){const next=(e+1)%outer.length,c0=crowns[e]||0,c1=crowns[next]||0,map=(inside:boolean,p:number[])=>{const pr=inside?inner:outer,a=pr[e],z=pr[next],u=p[0],t=p[1],c=faceWindows[e]&&c0?c0*Math.max(0,1-t/.13)+c1*t:c0*(1-t)+c1*t;return [(halfWidth-(inside?.035:0))*u,a[1]+(z[1]-a[1])*t+c*Math.cos(u*Math.PI/2),a[0]+(z[0]-a[0])*t];};const win=faceWindows[e];\n if(win){const start=c0?.13:0,outline=[[-1,start],[1,start],[1,1],[-1,1]];mappedFace(local,outline,[win],p=>map(false,p),paintColor,true,c1?[-.5,0,.5]:[]);mappedFace(local,outline,[win],p=>map(true,p),'#5a6056',false,c1?[-.5,0,.5]:[]);if(start)for(let j=0;j<8;j++){const u=-1+j/4,z=u+.25,pts=[[u,0],[z,0],[z,start],[u,start]];sheet(local,pts.map(p=>map(false,p)).reverse(),paintColor);sheet(local,pts.map(p=>map(true,p)),'#5a6056');}for(let j=0;j<win.length;j++){const a=win[j],z=win[(j+1)%win.length];sheet(local,[map(false,a),map(true,a),map(true,z),map(false,z)],paintColor);}const pts=win.map(p=>map(false,p)).reverse(),center=[0,1,2].map(k=>pts.reduce((a,p)=>a+p[k],0)/pts.length);slab(glass,pts.map(p=>p.map((v,k)=>center[k]+(v-center[k])*.985)),glassColor,.008);frame(trim,pts,'#30362e',.014,.02);\n }else{const count=c0||c1?(Math.max(c0,c1)<=.035?4:8):1;for(let j=0;j<count;j++){const u=-1+2*j/count,z=u+2/count,pts=[[u,0],[z,0],[z,1],[u,1]];sheet(local,pts.map(p=>map(false,p)).reverse(),paintColor);sheet(local,pts.map(p=>map(true,p)),'#5a6056');}}}\n const solid=conformEdges(local);paint.p.push(...solid.p);paint.n.push(...solid.n);paint.c.push(...solid.c);\n}\nfunction hood(b:Batch,zFront:number,zBack:number,frontY:number,backY:number,halfWidth:number,color:string){const rings=[];for(let j=0;j<=4;j++){const t=j/4,z=zFront+(zBack-zFront)*t,y=frontY+(backY-frontY)*t,ring=[];for(let i=0;i<=8;i++){const u=-1+i/4;ring.push([u*halfWidth,y+.04*Math.cos(u*Math.PI/2),z]);}ring.push([halfWidth,.78,z],[-halfWidth,.78,z]);rings.push(ring);}for(let j=0;j<4;j++)for(let i=0;i<11;i++){const k=(i+1)%11;sheet(b,[rings[j][i],rings[j][k],rings[j+1][k],rings[j+1][i]],color);}sheet(b,[...rings[0]].reverse(),color);sheet(b,rings[4],color);}\nfunction bedTub(b:Batch,halfWidth:number,front:number,rear:number,floor:number,rail:number,color:string){const wo=halfWidth,wi=wo-.04,yb=floor-.04,yi=floor+.02,yt=rail,zr=rear,zf=front,zi=front-.04;\n sheet(b,[[-wo,yb,zr],[wo,yb,zr],[wo,yb,zf],[-wo,yb,zf]],color);sheet(b,[[-wo,yb,zf],[wo,yb,zf],[wo,yt,zf],[-wo,yt,zf]],color);sheet(b,[[-wi,yi,zi],[-wi,yt,zi],[wi,yt,zi],[wi,yi,zi]],color);sheet(b,[[-wi,yi,zr],[-wi,yi,zi],[wi,yi,zi],[wi,yi,zr]],color);\n for(const side of [-1,1]){let outer=[[side*wo,yb,zr],[side*wo,yt,zr],[side*wo,yt,zf],[side*wo,yb,zf]],inner=[[side*wi,yi,zr],[side*wi,yi,zi],[side*wi,yt,zi],[side*wi,yt,zr]];if(side<0){outer.reverse();inner.reverse();}sheet(b,outer,color);sheet(b,inner,color);let rim=[[side*wi,yt,zr],[side*wi,yt,zi],[side*wo,yt,zi],[side*wo,yt,zr]];if(side<0)rim.reverse();sheet(b,rim,color);const xa=Math.min(side*wi,side*wo),xb=Math.max(side*wi,side*wo);sheet(b,[[xa,yi,zr],[xa,yt,zr],[xb,yt,zr],[xb,yi,zr]],color);}\n sheet(b,[[-wo,yt,zi],[-wo,yt,zf],[wo,yt,zf],[wo,yt,zi]],color);sheet(b,[[-wo,yb,zr],[-wo,yi,zr],[wo,yi,zr],[wo,yb,zr]],color);\n}\n\n\nfunction shell(paint:Batch,glass:Batch,trim:Batch,outer:number[][],holes:number[][][],faceWindows:Record<number,number[][]>,halfWidth:number,crowns:number[],paintColor:string,glassColor='#404742'){\n const expanded:number[][]=[],cs:number[]=[],fw:Record<number,number[][]>={};\n for(let i=0;i<outer.length;i++){const p=outer[i],a=outer[(i+outer.length-1)%outer.length],b=outer[(i+1)%outer.length];const round=i>=1&&i<=4&&p[1]>1.35;\n if(round){const la=Math.hypot(a[0]-p[0],a[1]-p[1]),lb=Math.hypot(b[0]-p[0],b[1]-p[1]),r=Math.min(.075,la*.20,lb*.20),u=p.map((v,k)=>v+(a[k]-v)*r/la),v=p.map((v,k)=>v+(b[k]-v)*r/lb);for(let j=0;j<=3;j++){const t=j/3;expanded.push(p.map((x,k)=>(1-t)**2*u[k]+2*t*(1-t)*x+t*t*v[k]));cs.push(crowns[i]||0);}}\n else{expanded.push(p);cs.push(crowns[i]||0);}if(faceWindows[i])fw[expanded.length-1]=faceWindows[i];\n }\n shellRaw(paint,glass,trim,expanded,holes.map(h=>roundedLoop(h,.035,3)),fw,halfWidth,cs,paintColor,glassColor);\n}\n\nfunction splitAt(b:Batch,axis:number,cut:number){const out=batch();for(let i=0;i<b.p.length;i+=9){const tri=[0,3,6].map(j=>({p:b.p.slice(i+j,i+j+3),c:b.c.slice(i+j,i+j+3)}));const lo=Math.min(...tri.map(v=>v.p[axis])),hi=Math.max(...tri.map(v=>v.p[axis]));const polys:any[][]=[];if(lo>=cut-1e-8||hi<=cut+1e-8)polys.push(tri);else for(const sign of [-1,1]){const poly=[];for(let k=0;k<3;k++){const a=tri[k],z=tri[(k+1)%3],ia=sign*(a.p[axis]-cut)>=0,iz=sign*(z.p[axis]-cut)>=0;if(ia)poly.push(a);if(ia!==iz){const t=(cut-a.p[axis])/(z.p[axis]-a.p[axis]);poly.push({p:a.p.map((v,j)=>v+t*(z.p[j]-v)),c:a.c.map((v,j)=>v+t*(z.c[j]-v))});}}polys.push(poly);}for(const poly of polys)for(let k=1;k<poly.length-1;k++)for(const v of [poly[0],poly[k],poly[k+1]]){out.p.push(...v.p);out.c.push(...v.c);out.n.push(0,0,0);}}Object.assign(b,out);}\n// Procedural approximation of the plate's lower-body dust and panel boundaries.\nfunction paintAtlas(orm=false){const hash2=(x:number,y:number)=>{const n=Math.sin(x*127.1+y*311.7)*43758.5453;return n-Math.floor(n);},noise=(x:number,y:number)=>{const ix=Math.floor(x),iy=Math.floor(y);let u=x-ix,v=y-iy;u=u*u*(3-2*u);v=v*v*(3-2*v);return (hash2(ix,iy)*(1-u)+hash2(ix+1,iy)*u)*(1-v)+(hash2(ix,iy+1)*(1-u)+hash2(ix+1,iy+1)*u)*v;};const w=1536,h=512,data=new Uint8Array(w*h*4),base=[54,55,58],dust=[135,125,101];\n for(let y=0;y<h;y++)for(let x=0;x<w;x++){const rear=x>=512&&x<1024,u=(x%512)/511,worldY=y/(h-1)*2,z=u*4.8-2.4,xx=u*2-1,hash=Math.sin(x*127.1+y*311.7)*43758.5453,grain=hash-Math.floor(hash),cloud=.55*noise(z*7,worldY*9)+.30*noise(z*29,worldY*36)+.15*noise(z*93,worldY*114),height=Math.max(0,Math.min(1,(1.03-worldY)/.65)),density=(.15+.85*cloud)*height,amount=Math.min(.92,density*(.66+.18*grain)),i=(y*w+x)*4;\n  let seam=0;if(!rear&&worldY>.48&&worldY<1.64){const d=Math.min(Math.abs(z+.975),Math.abs(z+.205),Math.abs(z-1.14));seam=Math.max(0,Math.min(1,(.010-d)/.008));}if(rear&&worldY>.65&&worldY<1.50){const d=Math.min(Math.abs(Math.abs(xx)-.72),Math.abs(worldY-.66));seam=Math.max(0,Math.min(1,(.009-d)/.007));}\n  for(let k=0;k<3;k++)data[i+k]=Math.round((base[k]*(1-amount)+dust[k]*amount)*(1-.70*seam));\n  if(orm){data[i]=255;data[i+1]=Math.round((.35+.50*amount)*255);data[i+2]=0;}\n  if(x>=1024){const v=y/511,cloud=.5+.5*Math.sin(u*17+Math.sin(v*11))*Math.sin(v*19-u*7),streak=Math.pow(Math.max(0,Math.sin(v*173+Math.sin(u*29))),20)*Math.pow(Math.max(0,Math.sin(u*37)),6),weather=.09+.12*cloud+.05*streak;for(let k=0;k<3;k++)data[i+k]=Math.round(base[k]*(1-weather)+[96,97,101][k]*weather);if(orm){data[i]=255;data[i+1]=Math.round(255*(.42+.22*weather));data[i+2]=0;}}\n  if(y===h-1){data[i]=255;data[i+1]=orm?210:255;data[i+2]=orm?0:255;}data[i+3]=255;\n }\n const t=new THREE.DataTexture(data,w,h,THREE.RGBAFormat);t.name='fortuner-paint-'+(orm?'orm':'albedo');t.colorSpace=orm?THREE.NoColorSpace:THREE.SRGBColorSpace;t.minFilter=t.magFilter=THREE.LinearFilter;t.generateMipmaps=false;t.needsUpdate=true;return t;\n}\nfunction paintUvs(g:THREE.BufferGeometry){const p=g.getAttribute('position'),c=g.getAttribute('color'),uv:number[]=[],base=new THREE.Color('#38363e');\n for(let i=0;i<p.count;i++){const painted=Math.abs(c.getX(i)-base.r)+Math.abs(c.getY(i)-base.g)+Math.abs(c.getZ(i)-base.b)<.001;if(!painted){uv.push(.5,511.5/512);continue;}c.setXYZ(i,1,1,1);const j=i-i%3,a=new THREE.Vector3().fromBufferAttribute(p,j),b=new THREE.Vector3().fromBufferAttribute(p,j+1),d=new THREE.Vector3().fromBufferAttribute(p,j+2),n=b.sub(a).cross(d.sub(a)).normalize();if(Math.abs(n.y)>.65){uv.push((2+THREE.MathUtils.clamp((p.getZ(i)+2.4)/4.8,.002,.998))/3,THREE.MathUtils.clamp((p.getX(i)+1)/2,.002,.99));continue;}const side=Math.abs(n.x)>Math.abs(n.z);uv.push(side?THREE.MathUtils.clamp((p.getZ(i)+2.4)/4.8,.002,.998)/3:(1+THREE.MathUtils.clamp((p.getX(i)+1)/2,.002,.998))/3,Math.min(.99,p.getY(i)/2));}\n g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));return g;\n}\nexport function createObjectModel(spec:any,options:any={}):THREE.Group{\n const rearZ=(y:number)=>-2.25+.09/1.16*(y-.42);const root=new THREE.Group();root.name='toyota-fortuner';const body=batch(),trim=batch(),glass=batch(),inside=batch();const paintColor='#38363e',silver='#929a92',dark='#303b34';\n const outer=[[-2.25,.42],[-2.16,1.58],[-1.93,1.72+T.cabRoof],[.62+T.cabFront,1.72+T.cabRoof],[1.20,1.10],[2.22,1.03],[2.30,.8],[2.30,.42]];\n const angle=Math.asin((.42-.36)/.42);for(const z of [1.4,-1.4]){outer.push([z+.42*Math.cos(angle),.42]);for(let j=1;j<=18;j++){const t=angle+(Math.PI-2*angle)*j/18;outer.push([z+.42*Math.cos(t),.36+.42*Math.sin(t)]);}}\n const holes=[[[-2.02,1.06],[-1.91,1.60],[-1.02,1.60],[-1.02,1.06]],[[-.93,1.06],[-.93,1.60],[-.25,1.60],[-.25,1.06]],[[-.16,1.06],[-.16,1.60],[.70,1.60],[1.06,1.06]]];\n shell(body,glass,trim,outer,holes,{0:roundedLoop([[-.83,.47],[.83,.47],[.83,.95],[-.83,.95]],.065,3),3:[[-.87,.20],[.87,.20],[.87,.88],[-.87,.88]]},.875,[0,0,.07,.07,.035,.028,0,0],paintColor,'#3c423f');\n for(const side of [-1,1]){\n  for(const z of [1.4,-1.4]){const p:number[][]=[];for(let j=0;j<=20;j++){const t=angle+(Math.PI-2*angle)*j/20;p.push([z+.47*Math.cos(t),.36+.47*Math.sin(t)]);}for(let j=20;j>=0;j--){const t=angle+(Math.PI-2*angle)*j/20;p.push([z+.425*Math.cos(t),.36+.425*Math.sin(t)]);}panel(trim,p,[],side>0?.90:-.884,.016,'#5b635d');}\n  box(trim,[.07,.06,1.64],[side*.86,.38,0],silver);box(trim,[.008,.042,3.00],[side*.893,.84,-.47],silver);\n  for(const z of [-.63,.55])box(trim,[.021,.035,.20],[side*.893,.97,z],dark);\n  const mirror=batch();panel(mirror,roundedLoop([[.79,1.21],[1.0,1.21],[1.0,1.38],[.79,1.38]],.035,3),[],side>0?.94:-.865,.075,paintColor);const reflected=new THREE.Color(silver);for(let i=0;i<mirror.p.length;i+=3)if(mirror.n[i]*side>.9)mirror.c.splice(i,3,reflected.r,reflected.g,reflected.b);for(const key of ['p','n','c'] as const)trim[key].push(...mirror[key]);\n  const lamp=roundedLoop([[side*.78-.085,.75],[side*.78+.085,.75],[side*.78+.065,1.06],[side*.78-.065,1.06]],.025,2).map(p=>[p[0],p[1],rearZ(p[1])-.025]).reverse();const rearLamp=batch();slab(rearLamp,lamp,'#b4beb9',.012);splitAt(rearLamp,1,.835);const redColor=new THREE.Color('#882e23');for(let i=0;i<rearLamp.p.length;i+=9){const y=(rearLamp.p[i+1]+rearLamp.p[i+4]+rearLamp.p[i+7])/3;if(y<.835)for(let k=0;k<3;k++){rearLamp.c[i+k*3]=redColor.r;rearLamp.c[i+k*3+1]=redColor.g;rearLamp.c[i+k*3+2]=redColor.b;}}for(const key of ['p','n','c'] as const)trim[key].push(...rearLamp[key]);\n  const frontLamp=roundedLoop([[side*.61-.18,.852],[side*.61+.18,.852],[side*.61+.16,1.035],[side*.61-.16,1.035]],.025,2).map(p=>[p[0],p[1],2.299]);slab(trim,frontLamp,'#b3c5b7',.026);\n }\n for(const [z,y] of [[-2.260,.56],[2.345,.54]]){const sh=new THREE.Shape(roundedLoop([[-.835,-.065],[.835,-.065],[.835,.065],[-.835,.065]],.045,3).map(p=>new THREE.Vector2(p[0],p[1])));add(trim,new THREE.ExtrudeGeometry(sh,{depth:.06,bevelEnabled:true,bevelThickness:.025,bevelSize:.025,bevelSegments:2,steps:1}),paintColor,[0,y,z-.03]);}\n box(trim,[.72,.20,.015],[0,.86,2.325],silver);for(const y of [.80,.88,.96])box(trim,[.66,.037,.01],[0,y,2.350],dark);\n box(trim,[.42,.10,.017],[0,.735,rearZ(.735)-.021],'#879487');box(trim,[.96,.043,.02],[0,.90,rearZ(.90)-.024],silver);\n box(trim,[.38,.016,.015],[.07,1.16,rearZ(1.16)-.023],dark,[0,0,-.12]);\n box(trim,[.024,.145,.14],[.89,.93,-1.21],paintColor);for(const x of [-.73,.73])box(trim,[.09,.055,.015],[x,.525,-2.323],'#882e23');\n for(const x of [-.56,-.20,.20,.56])box(trim,[.025,.012,1.96],[x,1.72+.07*Math.cos(x/.875*Math.PI/2)+.013,-.65],paintColor);\n for(const z of [.52,-.45,-1.44])for(const x of [-.41,.41]){const sh=new THREE.Shape(roundedLoop([[.23,.695],[.23,.825],[-.22,.825],[-.29,1.265],[-.36,1.265],[-.29,.695]],.018,1).map(p=>new THREE.Vector2(...p as [number,number]))),g=new THREE.ExtrudeGeometry(sh,{depth:.58,bevelEnabled:true,bevelSize:.014,bevelThickness:.014,bevelSegments:1,steps:1});g.rotateY(-Math.PI/2);const seat=batch();add(seat,g,dark,[x+.29,0,z]);const floorY=Math.min(...seat.p.filter((_,i)=>i%3===1)),joined=batch(),bottom:number[][]=[];for(let i=0;i<seat.p.length;i+=9){const pts=[0,3,6].map(j=>seat.p.slice(i+j,i+j+3));if(pts.every(p=>Math.abs(p[1]-floorY)<1e-6)){bottom.push(...pts);continue;}for(const key of ['p','n','c'] as const)joined[key].push(...seat[key].slice(i,i+9));}const x0=Math.min(...bottom.map(p=>p[0])),x1=Math.max(...bottom.map(p=>p[0])),z0=Math.min(...bottom.map(p=>p[2])),z1=Math.max(...bottom.map(p=>p[2])),a=x-.21,b=x+.21,f=z+.13,r=z-.17,yb=.435;const hole=[[a,r],[b,r],[b,f],[a,f]];mappedFace(joined,[[x0,z0],[x1,z0],[x1,z1],[x0,z1]],[hole],p=>[p[0],floorY,p[1]],dark);sheet(joined,[[a,yb,r],[b,yb,r],[b,yb,f],[a,yb,f]],dark);sheet(joined,[[a,yb,f],[b,yb,f],[b,floorY,f],[a,floorY,f]],dark);sheet(joined,[[b,yb,r],[a,yb,r],[a,floorY,r],[b,floorY,r]],dark);sheet(joined,[[b,yb,f],[b,yb,r],[b,floorY,r],[b,floorY,f]],dark);sheet(joined,[[a,yb,r],[a,yb,f],[a,floorY,f],[a,floorY,r]],dark);const solid=conformEdges(joined);for(const key of ['p','n','c'] as const)inside[key].push(...solid[key]);}\n box(inside,[1.49,.16,.27],[0,.95,1.02],dark);\n\n // Apply one invertible plan-view nose rounding to both skins and attached fittings.\n for(const b of [body,trim,glass,inside]){splitAt(b,2,1.7);splitAt(b,2,2.2);const front=batch(),rest=batch();for(let i=0;i<b.p.length;i+=9){const part=Math.min(b.p[i+2],b.p[i+5],b.p[i+8])>=1.699999?front:rest;for(const key of ['p','n','c'] as const)part[key].push(...b[key].slice(i,i+9));}for(const cut of [-.5,.5])splitAt(front,0,cut);Object.assign(b,{p:[...rest.p,...front.p],n:[...rest.n,...front.n],c:[...rest.c,...front.c]});Object.assign(b,conformEdges(b));for(let i=0;i<b.p.length;i+=3){const x=b.p[i],z=b.p[i+2];b.p[i+2]-=.14*Math.pow(Math.abs(x)/.875,4)*THREE.MathUtils.clamp((z-1.7)/.6,0,1);}}\n for(const b of [body,trim,glass,inside]){\n  splitAt(b,1,.745);splitAt(b,1,.95);for(const y of [1.59,1.72,1.80])splitAt(b,1,y);for(const x of [-.745,.745])splitAt(b,0,x);\n  for(let i=0;i<b.p.length;i+=3){const x=b.p[i],y=b.p[i+1],z=b.p[i+2],t=Math.max(0,Math.min(1,(y-.95)/.85));const belly=.033*Math.sin(Math.PI*Math.max(0,Math.min(1,(y-.42)/.65)));let xx=x,yy=y;\n const blend=Math.max(0,Math.min(1,(z+1.9)/.25,(.75-z)/.25)),roof=1.72+.07*Math.cos(Math.min(.875,Math.abs(x))/.875*Math.PI/2),dx=Math.max(0,Math.abs(x)-.745),dy=Math.max(0,y-(roof-.13));\n if(dx>0&&dy>0){const length=Math.hypot(dx,dy),scale=Math.min(1,(.13+.20*(length-.13))/length);xx-=Math.sign(x)*dx*(1-scale)*blend;yy-=dy*(1-scale)*blend;}\n b.p[i]=(xx+Math.sign(x)*belly*Math.min(1,Math.abs(x)/.80))*(1-.10*t);b.p[i+1]=yy;}\n }\n const paint=material(T.paintRough),metal=material(.43,.45),glazing=material(.12,0,T.glass),interior=material(.85);vehicleFinish(paint,'paint');vehicleFinish(interior,'interior');const surfaceMap=surfaceTexture();for(const m of [paint,metal,glazing,interior]){m.roughnessMap=surfaceMap;m.metalnessMap=surfaceMap;}metal.userData.lampAtlas=true;metal.map=lampAtlas('albedo');metal.roughnessMap=metal.metalnessMap=lampAtlas('orm');metal.normalMap=lampAtlas('normal');metal.normalScale.set(.65,.65);interior.userData.interiorAtlas=true;interior.map=interiorAtlas('albedo');interior.roughnessMap=interior.metalnessMap=interiorAtlas('orm');interior.normalMap=interiorAtlas('normal');interior.normalScale.set(.65,.65);paint.userData.paintAtlas=true;paint.map=paintAtlas();paint.roughnessMap=paint.metalnessMap=paintAtlas(true);const env=studioEnvironment();for(const m of [paint,metal,glazing,interior]){m.envMap=env;m.envMapIntensity=.85;}\n emit(root,'body',body,paint);emit(root,'trim',trim,metal);emit(root,'glazing',glass,glazing);emit(root,'interior',inside,interior);\n const pivots=wheels(root,wheelShape(T.wheel,.27,true,30),interior,[1.4,-1.4].flatMap((z,i)=>[-1,1].map(s=>({name:`wheel-${i?'rear':'front'}-${s>0?'l':'r'}`,pos:[s*.80,T.wheel,z+(i?-T.axle:T.axle)]}))));\n const rail=batch();const profile=[[-1.77,1.75],[-1.72,1.81],[-1.60,1.84],[.34,1.84],[.46,1.79],[.48,1.75],[.37,1.75],[.31,1.80],[-1.58,1.80],[-1.65,1.75]];panel(rail,profile,[],0,.038,'#272b2a');const rg=applySurface(geometry(rail),metal),rm=new THREE.InstancedMesh(rg,metal,2);rm.name='roof-rails';for(let i=0;i<2;i++)rm.setMatrixAt(i,new THREE.Matrix4().makeTranslation(i?.63:-.6642,0,0));root.add(rm);\n root.userData.sculptRuntime={nodes:root.children.length,pivots:[root.name,...pivots.map(p=>p.name)],sockets:[],colliders:[],destructionGroups:[]};root.userData.buildPass='blockout';root.userData.qualityStatus='unreviewed';return root;\n}\n\nexport interface ProceduralModelOptions { baseUrl?: string; [key: string]: unknown; }\nexport function createModel(options: ProceduralModelOptions = {}): THREE.Group { return createObjectModel(null, options); }\n"
     }
   ],
   "userRequestedVisualTarget": {
-    "score": 85,
-    "rule": "Work one vehicle at a time, starting with Songthaew. Move on when its honest whole-asset visual score reaches 85. Leave vehicles already at 85 or higher alone. Correction stop thresholds remain disabled."
+    "score": 91,
+    "instruction": "Active goal: above 90 for all vehicles; continue beyond correction stops, preserve honest scores and history."
   }
 }

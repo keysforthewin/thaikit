@@ -101,19 +101,29 @@ function splitByGroups(geometry) {
 
 /**
  * The attribute set every piece must share for `mergeGeometries` to accept it:
- * position, normal, uv and a 3-float colour, indexed. Everything else the
- * factory attached (uv1 for a lightmap probe, tangents) is dropped -- Unreal
- * builds its own lightmap UVs and tangents at import.
+ * position, normal, UV channels consumed by textures and a 3-float colour,
+ * indexed. Unused UV probes and tangents are dropped; Unreal can rebuild those,
+ * but a material's authored AO or detail-map coordinates must survive export.
  */
-function normalise(geometry, matrixWorld, { useVertexColor, tint, standOff = 0, textured = false }) {
+function normalise(geometry, matrixWorld, { useVertexColor, tint, standOff = 0, textured = false, uvChannels = new Set([0]), requiredUvChannels = new Set() }) {
   let geo = geometry.clone();
+  const uvNames = [...uvChannels].map(channel => channel === 0 ? 'uv' : `uv${channel}`);
   for (const name of Object.keys(geo.attributes)) {
-    if (!['position', 'normal', 'uv', 'color'].includes(name)) geo.deleteAttribute(name);
+    if (!['position', 'normal', 'color', ...uvNames].includes(name)) geo.deleteAttribute(name);
   }
   geo.applyMatrix4(matrixWorld);
   if (!geo.attributes.normal) geo.computeVertexNormals();
   const n = geo.attributes.position.count;
   if (!geo.attributes.uv) geo.setAttribute('uv', new THREE.BufferAttribute(new Float32Array(n * 2), 2));
+  for (const channel of uvChannels) {
+    if (channel === 0) continue;
+    const name = `uv${channel}`;
+    if (!geo.attributes[name]) {
+      if (requiredUvChannels.has(channel)) throw new Error(`Material texture requires missing ${name} coordinates`);
+      // Pieces without a consumer still need the same attribute layout to merge.
+      geo.setAttribute(name, new THREE.BufferAttribute(new Float32Array(n * 2), 2));
+    }
+  }
   // A decal the factory keeps off its wall with `polygonOffset` (a rain streak, a
   // poster) is coplanar with that wall in the file, and Unreal has no polygon
   // offset: it z-fights. Stand it off along its own normal instead.
@@ -206,7 +216,7 @@ function repairDegenerateUvs(geo) {
   }
 }
 
-/** Anything at or above this opacity ships OPAQUE; see exportMaterial. */
+/** Alpha surfaces at or above this opacity ship OPAQUE; see exportMaterial. */
 const OPAQUE_FROM = 0.8;
 
 /**
@@ -237,18 +247,18 @@ function mapHasAlpha(tex) {
  * Unreal's Interchange has built a NANITE mesh by default since 5.5, and Nanite
  * takes OPAQUE and MASK only -- a BLEND slot logs "Invalid material ... used on
  * Nanite static mesh" and renders as the default material. That is what the
- * 7-Eleven's two glazing panes did on 2026-09-05. The kit already authors its
- * glass as a near-opaque SURFACE (0.92 over an empty shell; buildings have no
- * interiors), so anything at or above OPAQUE_FROM with no alpha in its map ships
- * opaque, an alpha-tested material ships MASK, and the handful of genuinely
- * see-through slots (a cart's display glass at 0.26, a soft-alpha streak decal)
- * stay BLEND and are counted on the result so the export log can name them.
+ * 7-Eleven's two glazing panes did on 2026-09-05. Legacy near-opaque alpha
+ * surfaces ship opaque, alpha-tested materials ship MASK, and see-through
+ * alpha surfaces stay BLEND. Physical transmission is independent of alpha:
+ * it keeps its extension and is also named in translucentSlots so importers
+ * can account for the slot even when its glTF alphaMode is OPAQUE.
  */
 function exportMaterial(mat, propName, index) {
   const m = mat.clone();
   // COLOR_0 is always applied downstream, so the attribute carries every tone
   // and the material must not multiply it a second time in three's own preview.
   m.vertexColors = false;
+  delete m.userData.translucent;
   if (m.transparent) {
     if (m.alphaTest > 0) {
       m.transparent = false;
@@ -259,6 +269,7 @@ function exportMaterial(mat, propName, index) {
       m.userData.translucent = true;
     }
   }
+  if ((m.transmission ?? 0) > 0) m.userData.translucent = true;
   const base = (mat.name || `mat${index}`).replace(/[^A-Za-z0-9]+/g, '_').replace(/^_+|_+$/g, '') || `mat${index}`;
   m.name = `M_${propName.replace(/^SM_/, '')}_${base}`;
   return m;
@@ -364,6 +375,21 @@ export function flattenPrototype(root, propName, { category = null } = {}) {
   expandInstances(work);
   work.updateMatrixWorld(true);
 
+  const channelsForMaterial = (material) => new Set(Object.entries(material)
+    .filter(([slot, value]) => slot !== 'envMap' && value?.isTexture)
+    .map(([, texture]) => texture.channel ?? 0));
+  const uvChannels = new Set([0]);
+  work.traverse((o) => {
+    if (!o.isMesh || o.visible === false) return;
+    for (const mat of Array.isArray(o.material) ? o.material : [o.material]) {
+      if (!mat) continue;
+      for (const channel of channelsForMaterial(mat)) {
+        if (!Number.isInteger(channel) || channel < 0 || channel > 3) throw new Error(`Unsupported texture UV channel ${channel}`);
+        uvChannels.add(channel);
+      }
+    }
+  });
+
   // material -> pieces, in first-seen order so slot numbering is stable.
   const byMaterial = new Map();
   work.traverse((o) => {
@@ -373,8 +399,9 @@ export function flattenPrototype(root, propName, { category = null } = {}) {
       const mat = mats[Math.min(materialIndex, mats.length - 1)];
       if (!mat) continue;
       const standOff = mat.polygonOffset && mat.polygonOffsetFactor < 0 ? 0.003 : 0;
-      const textured = Object.values(mat).some((value) => value?.isTexture);
-      const piece = normalise(geometry, o.matrixWorld, { useVertexColor: Boolean(mat.vertexColors), tint: o.userData.tint ?? null, standOff, textured });
+      const requiredUvChannels = channelsForMaterial(mat);
+      const textured = requiredUvChannels.has(0);
+      const piece = normalise(geometry, o.matrixWorld, { useVertexColor: Boolean(mat.vertexColors), tint: o.userData.tint ?? null, standOff, textured, uvChannels, requiredUvChannels });
       if (!byMaterial.has(mat)) byMaterial.set(mat, []);
       byMaterial.get(mat).push(piece);
     }

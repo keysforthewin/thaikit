@@ -19,14 +19,6 @@ import * as THREE from 'three';
  */
 
 export type ProceduralModelOptions = {
-  /**
-   * Where this prop's shipped files live, with a trailing slash.
-   *
-   * The maps are recorded as bare filenames because the bundle is EVALUATED
-   * rather than imported: it has no import.meta and no currentScript, so it
-   * cannot see its own URL. Every host derives this from the module URL.
-   */
-  baseUrl?: string;
   wireframe?: boolean;
   castShadow?: boolean;
   receiveShadow?: boolean;
@@ -304,9 +296,9 @@ const CONFIG = {
           "tile": 2,
           "pitch": 0.25,
           "course": 0.34,
-          "valley": 0.64,
-          "crest": 1.12,
-          "bump": 0.07,
+          "valley": 0.90,
+          "crest": 1.04,
+          "bump": 0.012,
           "moss": [
             0.8,
             0.86,
@@ -975,19 +967,11 @@ export function createChineseShrineModel(options: ProceduralModelOptions = {}): 
    *  near-straight spike; a ridge end that sweeps up and curls back over needs the heading to pass
    *  90 degrees, which this does. */
   function spiralHorn(len: number, phi0: number, phi1: number, w0: number, w1: number, across: number, n: number): THREE.BufferGeometry {
-    const segs: THREE.BufferGeometry[] = [];
-    let x = 0, y = 0;
-    const L = len / n;
-    for (let j = 0; j < n; j++) {
-      const phi = phi0 + (phi1 - phi0) * (j + 0.5) / n;
-      const w = w0 + (w1 - w0) * (j + 0.5) / n;
-      const g = new THREE.BoxGeometry(w, L + w * 0.35, across);
-      g.rotateZ(phi - Math.PI / 2);
-      g.translate(x + Math.cos(phi) * L / 2, y + Math.sin(phi) * L / 2, 0);
-      segs.push(g);
-      x += Math.cos(phi) * L; y += Math.sin(phi) * L;
-    }
-    return mergeGeos(segs);
+    n=Math.max(18,n*3);let x=0,y=0;const left:THREE.Vector2[]=[],right:THREE.Vector2[]=[];
+    for(let j=0;j<=n;j++){const t=j/n,phi=phi0+(phi1-phi0)*t,w=(w0+(w1-w0)*t)/2;
+      left.push(new THREE.Vector2(x-Math.sin(phi)*w,y+Math.cos(phi)*w));right.push(new THREE.Vector2(x+Math.sin(phi)*w,y-Math.cos(phi)*w));
+      const mid=phi0+(phi1-phi0)*(j+.5)/n;x+=Math.cos(mid)*len/n;y+=Math.sin(mid)*len/n;}
+    const shape=new THREE.Shape([...left,...right.reverse()]);const g=new THREE.ExtrudeGeometry(shape,{depth:across,bevelEnabled:false,steps:1,curveSegments:1});g.translate(0,0,-across/2);return g;
   }
 
   /* ---------------------------------------------------------------- stone plinth, quoins, censer
@@ -1352,6 +1336,16 @@ export function createChineseShrineModel(options: ProceduralModelOptions = {}): 
       for (const xs of [-1, 1]) for (const zz of [-0.18, 0.18]) body.push(boxAt(xs * 0.08, top + 0.10, z + zz, 0.07, 0.20, 0.08));
       trim.push(...body);
     }
+    // Real cap-tile ridges on both long roof slopes. Five vertices across a closed half-round section.
+    const rows=ts.map((_,i)=>i),tiles=30;
+    for(const sideId of [1,3])for(let tile=0;tile<tiles;tile++){
+      const q=(tile+.5)/tiles,points:number[]=[],indices:number[]=[];
+      for(const row of rows){const ring=side(row,sideId),k=q*M,lo=Math.floor(k),t=k-lo,a=ring[lo].p,b=ring[Math.min(M,lo+1)].p,center=a.map((v,i)=>v*(1-t)+b[i]*t);
+        for(let v=0;v<3;v++){const angle=v*Math.PI/2;points.push(center[0],center[1]+.006+.050*Math.sin(angle),center[2]+.055*Math.cos(angle));}}
+      for(let r=0;r<rows.length-1;r++)for(let v=0;v<3;v++){const a=r*3+v,b=r*3+(v+1)%3,c=(r+1)*3+(v+1)%3,d=(r+1)*3+v;indices.push(a,b,c,a,c,d);}
+      const end=(rows.length-1)*3;indices.push(0,2,1,end,end+1,end+2);
+      const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(points,3));g.setIndex(indices);g.computeVertexNormals();projUv(g,W.roof.tile);trim.push(g);
+    }
     const trimGeo = mergeGeos(trim);
     projUv(trimGeo, W.roof.tile);
     parts.push(trimGeo);
@@ -1634,15 +1628,4 @@ export function createObjectModel(spec?: unknown, options: ProceduralModelOption
   return root;
 }
 
-/**
- * The one-argument entry point: vibe3d's contract, and img2threejs's own.
- *
- * `createObjectModel` above keeps thaikit's historical (spec, options) shape so
- * the harness, the level editor and the Node-side gates carry on unchanged.
- * `spec` has never been passed by any caller -- it is inspection data that is
- * already baked into this module -- so this is the honest signature, and it is
- * what a vibe3d consumer installs and calls.
- */
-export function createModel(options: ProceduralModelOptions = {}): THREE.Group {
-  return createObjectModel(undefined, options);
-}
+export function createModel(options: ProceduralModelOptions = {}): THREE.Group { return createObjectModel(undefined, options); }
