@@ -40,20 +40,18 @@
   },
   "sourceImage": "/repo/scratch/mosque/reference.png",
   "referenceCamera": {
-    "solved": false,
-    "fovDegrees": 40.0,
-    "aspect": 1.0,
-    "orientation": {
-      "yaw": 0.0,
-      "pitch": 0.0,
-      "roll": 0.0
-    },
-    "positionHint": [
-      0.0,
-      0.0,
-      3.0
-    ],
-    "note": "For likeness work, solve the reference camera (forge/stage1_intake/solve_camera_pose.py) so the review render aligns with the photo and the reference can be projected. Confirm by overlay review."
+    "solved": true,
+    "method": "manual-landmark least-squares perspective camera fit",
+    "fitEvidence": "scratch/mosque/quality-20260927/camera-fit.json",
+    "yaw": 38.28400974233027,
+    "elevation": 21.2927353865046,
+    "distance": 35,
+    "fov": 35.03883252147248,
+    "target": [
+      0.4239880944789016,
+      4.0625,
+      1.1429220773009194
+    ]
   },
   "suitability": "pass",
   "scores": {
@@ -424,7 +422,7 @@
     ]
   },
   "qualityTargets": {
-    "targetFidelity": 0.7,
+    "targetFidelity": 0.951,
     "mustMatch": [
       "macro silhouette and proportions",
       "primary material albedo/roughness response",
@@ -448,7 +446,7 @@
     "enabled": true,
     "visualAcceptance": {
       "reviewer": "ai-vision",
-      "threshold": 0.7,
+      "threshold": 0.951,
       "comparisonArtifactRequired": true,
       "layerScoresRequired": true,
       "codePixelDiffIsAcceptanceAuthority": false,
@@ -822,8 +820,8 @@
       "primitive": "extrude",
       "topologyClass": "assembled-solid",
       "topologyRationale": "Four wall runs, a proud coping in four runs, and one flat-topped gate block with a Moorish doorway cut through it and a raised border on each face, all one render and therefore ONE component and ONE draw call.",
-      "materialId": "white",
-      "material": "white",
+      "materialId": "court-photo",
+      "material": "court-photo",
       "parent": null,
       "geometryDescriptor": {
         "topologyIntent": "A 1.65 m enclosure on the declared 14 x 16 footprint, broken on +Z by a 2.95 m gate block 2.5 m wide with a 1.25 m Moorish doorway, its outer face on z=8.00.",
@@ -846,7 +844,7 @@
         }
       ],
       "colorMaterialRecipe": {
-        "materialId": "white",
+        "materialId": "court-photo",
         "baseColor": "#b4b4b0",
         "recipe": "Whitewashed render under the streak tile, roughness 0.93, no texture set.",
         "evidenceRef": "region-render",
@@ -911,8 +909,8 @@
       "primitive": "extrude",
       "topologyClass": "assembled-solid",
       "topologyRationale": "A plinth, a U-shaped body (the solid rear block and the loggia's two end walls) as ONE extruded plan, the arched screen wall with the three doorways cut through it, the roof slab with its cornice ledge, the parapet ring, the coping, and the two blind niches' surrounds and inner panels -- one render, one component. The loggia is a real 1.8 m recess roofed by the same slab.",
-      "materialId": "white",
-      "material": "white",
+      "materialId": "wall-photo",
+      "material": "wall-photo",
       "parent": "court-wall",
       "geometryDescriptor": {
         "topologyIntent": "Hall 11.0 x 9.9 m (x +-5.50, z -5.90..+4.00), walls to 4.90, ledge 4.88..5.02 proud 0.10, parapet 5.02..5.32, coping to 5.46; screen wall 0.6 m thick with 1.55 m openings at x -2.15 / 0 / +2.15, shoulder 2.65, apex 3.85.",
@@ -964,19 +962,19 @@
     },
     {
       "id": "field",
-      "name": "Green facade field and loggia wall",
+      "name": "Green facade fields",
       "level": "meso",
       "role": "surface",
       "importance": 0.8,
       "confidence": 0.86,
       "primitive": "extrude",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "The recessed pale green panel on the screen wall, with the three openings cut through it, and the loggia's inner wall behind them -- the plate paints both the same green, so they are one material and one component.",
+      "topologyRationale": "Three pale green fields separated by exposed white dividers; actual open arch apertures and two 30 mm deep blind arch paint recesses.",
       "materialId": "panel",
       "material": "panel",
       "parent": "hall",
       "geometryDescriptor": {
-        "topologyIntent": "A 0.03 m plate on the screen wall from x +-4.95 and y 0.15..4.72, and a 0.03 m facing on the inner wall at z 2.20.",
+        "topologyIntent": "Three pale green fields separated by exposed white dividers; actual open arch apertures and two 30 mm deep blind arch paint recesses.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -1153,7 +1151,7 @@
       "confidence": 0.9,
       "primitive": "sphere",
       "topologyClass": "continuous-sculpt",
-      "topologyRationale": "Both domes ribbed, both in the striped material, merged into ONE component and ONE draw call. The ribs are generated geometry rather than a material: LatheGeometry revolves one profile at one radius per height, and a rib is a variation AROUND the axis. A smooth green hemisphere reads as a water tank.",
+      "topologyRationale": "Both domes ribbed, both in the striped material, merged into ONE component and ONE draw call. The ribs are generated geometry rather than a material: LatheGeometry revolves one profile at one radius per height, and a rib is a variation AROUND the axis. A smooth green hemisphere reads as a water tank. Repair 2026-09-27: ribbedDome closes its bottom with a downward-facing triangle fan from the axis to every exact ribbed rim vertex, using the existing vertex colours and material. All six domes are solid from ground level, including the four corner domes whose 1.00 m base radius overhangs their 0.86 m drum rings. The cap stays 0.04 m below each supporting ring top to avoid coplanar faces.",
       "materialId": "dome",
       "material": "dome",
       "parent": "hall",
@@ -1214,12 +1212,12 @@
       "confidence": 0.86,
       "primitive": "box",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "The square podium with its moulded lip, the round drum with its base ring, and the lip ring the dome springs from, merged. Its own component because it is a distinct mass a level builder may want to select.",
+      "topologyRationale": "Square podium and 20 closed planar masonry sectors with true pointed arch recesses 0.10 m deep, plaster backing, base ring and crown lip.",
       "materialId": "white",
       "material": "white",
       "parent": "hall",
       "geometryDescriptor": {
-        "topologyIntent": "Podium 5.30 m square 5.06..5.55 with a 5.48 m lip to 5.68; drum r 2.25 to 6.98 on a r 2.34 base ring; dome lip r 2.46 from 6.95 to 7.22.",
+        "topologyIntent": "Square podium and 20 closed planar masonry sectors with true pointed arch recesses 0.10 m deep, plaster backing, base ring and crown lip.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -1268,19 +1266,19 @@
     },
     {
       "id": "openings",
-      "name": "Drum windows and lantern openings",
+      "name": "Lantern inner core",
       "level": "micro",
       "role": "detail",
       "importance": 0.55,
       "confidence": 0.8,
-      "primitive": "extrude",
+      "primitive": "cylinder",
       "topologyClass": "assembled-solid",
-      "topologyRationale": "Twelve pointed-arch plates around the drum and eight around the octagonal lantern, all one material and therefore ONE component and ONE draw call.",
+      "topologyRationale": "Closed cylinder inside the lantern. This is the backing volume, not a surface patch; the actual concavity and apertures are cut through the surrounding minaret masonry.",
       "materialId": "dark",
       "material": "dark",
-      "parent": "drum",
+      "parent": "minaret",
       "geometryDescriptor": {
-        "topologyIntent": "Drum windows 0.34 x 0.72 m at 6.02, lantern openings 0.30 x 0.78 m at 9.60, each 0.025 m proud of its surface.",
+        "topologyIntent": "Closed inner core, radius 0.20 m, spanning lantern y=9.36..10.50 m; centred at x=-5.05,z=-2.90.",
         "edgeTreatment": {
           "type": "chamfer",
           "bevelRadius": 0.012,
@@ -1289,14 +1287,28 @@
         "deformationStack": [],
         "uvStrategy": "generated procedural coordinates",
         "normalStrategy": "vertex normals from generated geometry",
-        "zFightingNote": "Each plate stands proud of the drum or lantern face it sits on, with its back 0.005 m inside that face.",
+        "zFightingNote": "Core radius is smaller than the inner lantern wall radius, with no coincident faces.",
         "mergeNote": ""
       },
       "localFeatures": [],
       "attachment": {
-        "to": "drum",
-        "kind": "surface-mounted",
-        "note": "Each plate's back is embedded 5 mm into the drum or lantern face."
+        "to": "minaret",
+        "kind": "contained",
+        "note": "Static core rests on the lantern base and ends under its cornice.",
+        "parentId": "minaret",
+        "localStart": [
+          -5.05,
+          9.36,
+          -2.9
+        ],
+        "localEnd": [
+          -5.05,
+          10.5,
+          -2.9
+        ],
+        "contactType": "embedded",
+        "embedDepth": 0.02,
+        "gapTolerance": 0.001
       },
       "colorMaterialRecipe": {
         "materialId": "dark",
@@ -1306,7 +1318,7 @@
         "confidence": 0.8,
         "dominantAlbedo": "rgba(78, 86, 74, 1.0)",
         "secondaryAlbedo": "rgba(78, 86, 74, 1.0)",
-        "materialClass": "plastic",
+        "materialClass": "stone",
         "materialClassConfidence": 0.8
       },
       "actionProfile": {
@@ -1447,6 +1459,61 @@
         },
         "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
       }
+    },
+    {
+      "id": "loggia-wall",
+      "name": "Green inner loggia wall",
+      "level": "meso",
+      "role": "surface",
+      "importance": 0.8,
+      "confidence": 0.86,
+      "primitive": "extrude",
+      "topologyClass": "assembled-solid",
+      "topologyRationale": "Separate recessed green wall behind the open arcade; no doors or articulation. Geometry produces the recess, independent AO represents limited sky exposure.",
+      "materialId": "panel-interior",
+      "material": "panel-interior",
+      "parent": "hall",
+      "geometryDescriptor": {
+        "topologyIntent": "A 0.03 m plate on the screen wall from x +-4.95 and y 0.15..4.72, and a 0.03 m facing on the inner wall at z 2.20.",
+        "edgeTreatment": {
+          "type": "chamfer",
+          "bevelRadius": 0.012,
+          "segments": 1
+        },
+        "deformationStack": [],
+        "uvStrategy": "generated procedural coordinates",
+        "normalStrategy": "vertex normals from generated geometry",
+        "zFightingNote": "The field's arch holes are 0.04 m inside the surrounds' outer edge, so each white surround overlaps the field's reveal rather than meeting it; the inner-wall facing is 0.02 m short of the end walls and the slab on every side.",
+        "mergeNote": ""
+      },
+      "localFeatures": [],
+      "colorMaterialRecipe": {
+        "materialId": "panel",
+        "baseColor": "#b3bda1",
+        "recipe": "Pale green render under the streak tile at 0.75 strength.",
+        "evidenceRef": "region-panel",
+        "confidence": 0.86,
+        "dominantAlbedo": "rgba(179, 189, 161, 1.0)",
+        "secondaryAlbedo": "rgba(179, 189, 161, 1.0)",
+        "materialClass": "plastic",
+        "materialClassConfidence": 0.86
+      },
+      "actionProfile": {
+        "animationRole": "child",
+        "pivot": null,
+        "sockets": [],
+        "transformChannels": {
+          "translate": false,
+          "rotate": false,
+          "scale": false,
+          "bend": false,
+          "twist": false,
+          "detach": false,
+          "visibility": true,
+          "materialState": true
+        },
+        "notes": "Rigidly parented to the root. NO pivot and NO socket, deliberately: this part does not move and nothing attaches to it."
+      }
     }
   ],
   "materials": [
@@ -1500,6 +1567,12 @@
         "pbrReport": "material-evidence/white.pbr.json",
         "confidence": 0.773,
         "verdict": "pass"
+      },
+      "authoredMaps": {
+        "albedo": {
+          "path": "maps/mosque-panel-albedo.png",
+          "source": "Calibrated diluted reference plaster; repeat sampling for narrow masonry details. Independent relief and dynamic lighting."
+        }
       }
     },
     {
@@ -1507,8 +1580,8 @@
       "name": "Pale green render",
       "type": "standard",
       "shaderModel": "MeshStandardMaterial / PBR approximation",
-      "baseColor": "#b3bda1",
-      "color": "#b3bda1",
+      "baseColor": "#b5c29f",
+      "color": "#b5c29f",
       "roughness": {
         "base": 0.92,
         "variation": 0.05,
@@ -1541,6 +1614,11 @@
         "pbrReport": "material-evidence/panel.pbr.json",
         "confidence": 0.86,
         "verdict": "pass"
+      },
+      "authoredMaps": {
+        "albedo": {
+          "path": "maps/mosque-panel-albedo.png"
+        }
       }
     },
     {
@@ -1548,8 +1626,8 @@
       "name": "Ribbed dome tile",
       "type": "standard",
       "shaderModel": "MeshStandardMaterial / PBR approximation",
-      "baseColor": "#939a86",
-      "color": "#939a86",
+      "baseColor": "#cccabd",
+      "color": "#cccabd",
       "roughness": {
         "base": 0.72,
         "variation": 0.05,
@@ -1581,6 +1659,12 @@
         "pbrReport": "material-evidence/dome.pbr.json",
         "confidence": 0.86,
         "verdict": "pass"
+      },
+      "authoredMaps": {
+        "albedo": {
+          "path": "maps/mosque-dome-weather.png",
+          "source": "deterministic coating variation, authored from the reference appearance; not copied image detail"
+        }
       }
     },
     {
@@ -1588,8 +1672,8 @@
       "name": "Green parapet band",
       "type": "standard",
       "shaderModel": "MeshStandardMaterial / PBR approximation",
-      "baseColor": "#90957b",
-      "color": "#90957b",
+      "baseColor": "#8a9c84",
+      "color": "#8a9c84",
       "roughness": {
         "base": 0.72,
         "variation": 0.05,
@@ -1621,6 +1705,11 @@
         "pbrReport": "material-evidence/green.pbr.json",
         "confidence": 0.86,
         "verdict": "pass"
+      },
+      "authoredMaps": {
+        "albedo": {
+          "path": "maps/mosque-panel-albedo.png"
+        }
       }
     },
     {
@@ -1628,8 +1717,8 @@
       "name": "Roof screed",
       "type": "standard",
       "shaderModel": "MeshStandardMaterial / PBR approximation",
-      "baseColor": "#8f8c80",
-      "color": "#8f8c80",
+      "baseColor": "#7d7b73",
+      "color": "#7d7b73",
       "roughness": {
         "base": 0.95,
         "variation": 0.05,
@@ -1660,6 +1749,12 @@
         "pbrReport": "material-evidence/deck.pbr.json",
         "confidence": 0.854,
         "verdict": "pass"
+      },
+      "authoredMaps": {
+        "albedo": {
+          "path": "maps/mosque-deck-albedo.png",
+          "source": "Seeded roof-concrete approximation from observed unprinted gray finish"
+        }
       }
     },
     {
@@ -1740,6 +1835,286 @@
         "confidence": 0.86,
         "verdict": "pass"
       }
+    },
+    {
+      "id": "wall-photo",
+      "name": "Reference plaster with rain wash and rising damp",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#ffffff",
+      "color": "#ffffff",
+      "roughness": {
+        "base": 0.93,
+        "uniform": {
+          "declared": true,
+          "evidence": [
+            "Matte mineral render in the right-wall crop, no resolved specular gloss variations; reference inference archive retained."
+          ],
+          "value": 0.93
+        }
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#b4b4b0",
+        "secondary": [
+          "#7E7E7C",
+          "#DFDEDA",
+          "#D4D3CD"
+        ],
+        "samplingNotes": "Measured as the mean of crops/white.png. extract_pbr_evidence confidence 0.773. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d9-rain-wash",
+          "region": "walls, streaked from the coping DOWN",
+          "roughness": 0.93,
+          "palette": [
+            "#8C8776",
+            "#C9C6C0"
+          ],
+          "evidence": "The plate's dirt runs the OPPOSITE way from every other prop in the batch: black rain-wash hangs from every coping and cornice, measuring #8C8776 in a streak at (560,520) against #C9C6C0 on clean render beside it -- a ratio of 0.69, drawn at 0.50 alpha-faded. The tile's v is keyed to the TOP of each part, so the mould band and the drips land on the coping of the hall, the court wall and the minaret alike, at their own heights."
+        }
+      ],
+      "finishClass": "plastic",
+      "materialEvidenceArchive": {
+        "crop": "crops/white.png",
+        "pbrReport": "material-evidence/white.pbr.json",
+        "confidence": 0.773,
+        "verdict": "pass"
+      },
+      "authoredMaps": {
+        "albedo": {
+          "path": "maps/mosque-wall-albedo.png",
+          "source": "rectified single reference, de-lit and calibrated clean-plaster albedo"
+        }
+      },
+      "textureProjection": {
+        "method": "rectified elevation UV",
+        "evidence": "scratch/mosque/quality-20260927/wall-projection.json",
+        "delightEvidence": "scratch/mosque/quality-20260927/wall-delight.json",
+        "mode": "explicit-elevation-uv",
+        "texelDensity": "1024 px across each whole elevation; source wall is only ~240 px wide, so upsampling is not extra observed detail."
+      },
+      "textureResolution": 1024,
+      "surfaceFrequencyBands": [
+        {
+          "id": "macro",
+          "description": "rising damp at wall base, pale clean plaster at mid-height",
+          "frequency": 0.2,
+          "amplitude": 0.4
+        },
+        {
+          "id": "meso",
+          "description": "branching rain wash, moss colonies from rectified reference pixels",
+          "frequency": 4,
+          "amplitude": 0.2
+        },
+        {
+          "id": "micro",
+          "description": "independent deterministic plaster grain in linear height texture, 3 mm bump scale",
+          "frequency": 50,
+          "amplitude": 0.003
+        }
+      ],
+      "ambientOcclusion": {
+        "source": "runtime geometry shadowing",
+        "note": "No photograph lighting or AO is intentionally stored in base colour; geometry contact shading comes from the scene light rig."
+      },
+      "referencePbr": {
+        "version": "1.0",
+        "sourceImage": "scratch/mosque/quality-20260927/wall-unwarped.png",
+        "extractor": "extract_pbr_evidence.py",
+        "usable": true,
+        "confidence": 0.86,
+        "targetThreshold": 0.7,
+        "verdict": "pass",
+        "maps": {
+          "albedo": {
+            "path": "scratch/mosque/quality-20260927/wall-pbr-evidence/wall-photo_albedo.png",
+            "source": "reference-pixel-extraction"
+          },
+          "roughness": {
+            "path": "scratch/mosque/quality-20260927/wall-pbr-evidence/wall-photo_roughness.png",
+            "source": "reference-pixel-extraction"
+          },
+          "height": {
+            "path": "scratch/mosque/quality-20260927/wall-pbr-evidence/wall-photo_height.png",
+            "source": "reference-pixel-extraction"
+          },
+          "normal": {
+            "path": "scratch/mosque/quality-20260927/wall-pbr-evidence/wall-photo_normal.png",
+            "source": "reference-pixel-extraction"
+          },
+          "ao": {
+            "path": "scratch/mosque/quality-20260927/wall-pbr-evidence/wall-photo_ao.png",
+            "source": "reference-pixel-extraction"
+          }
+        },
+        "note": "Evidence archive, not all bound. Extractor foreground coverage 0.1036 focuses on dark growth; retain measured matte plaster roughness rather than adopting the foreground-only estimate. Runtime uses rectified/de-lit authored albedo, independent procedural height, scalar roughness and geometry shadowing."
+      }
+    },
+    {
+      "id": "panel-interior",
+      "name": "Pale green recessed loggia wall",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#b5c29f",
+      "color": "#b5c29f",
+      "roughness": {
+        "base": 0.92,
+        "variation": 0.05,
+        "notes": "Scalar observed for this surface in the plate. The independently extracted map is kept on disk as evidence and is NOT bound at runtime -- this material is textureless, so the scalar is the runtime value.",
+        "map": "material-evidence/panel_roughness.png"
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#b3bda1",
+        "secondary": [
+          "#62624B",
+          "#7D7D64",
+          "#474632"
+        ],
+        "samplingNotes": "Measured as the mean of crops/panel.png. extract_pbr_evidence confidence 0.860. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [],
+      "finishClass": "plastic",
+      "textureless": {
+        "declared": true,
+        "evidence": [
+          "Measured on viewEvidence region-panel (PBR confidence 0.860): the lit field above the arches means #B8C1AA, the loggia's shaded inner wall #A2AD95. Authored at #B3BDA1, between them.",
+          "The recessed field on the screen wall and the loggia inner wall share it; the plate paints both the same pale green. Its own material because it must stay one flat value where the dome material is striped and the parapet band is a darker green.",
+          "Textureless as declared; the same streak tile as the render at 0.75 strength, since the plate's mould hangs over the green field from the cornice exactly as over the white."
+        ],
+        "note": "Declared textureless so createSculptMaterial skips makeProceduralTextureSet entirely -- FIVE canvases per material written pixel by pixel, at a cost that is the SQUARE of the resolution. It is also a correctness fix: with a texture set the generator forces color to white and roughness to 1 and reads both from the generated maps, discarding this measured albedo."
+      },
+      "materialEvidenceArchive": {
+        "crop": "crops/panel.png",
+        "pbrReport": "material-evidence/panel.pbr.json",
+        "confidence": 0.86,
+        "verdict": "pass"
+      },
+      "authoredMaps": {
+        "albedo": {
+          "path": "maps/mosque-panel-albedo.png"
+        }
+      }
+    },
+    {
+      "id": "court-photo",
+      "name": "Low courtyard plaster",
+      "type": "standard",
+      "shaderModel": "MeshStandardMaterial / PBR approximation",
+      "baseColor": "#ffffff",
+      "color": "#ffffff",
+      "roughness": {
+        "base": 0.93,
+        "uniform": {
+          "declared": true,
+          "evidence": [
+            "Matte mineral render in the right-wall crop, no resolved specular gloss variations; reference inference archive retained."
+          ],
+          "value": 0.93
+        }
+      },
+      "metalness": 0.0,
+      "albedo": {
+        "dominant": "#b4b4b0",
+        "secondary": [
+          "#7E7E7C",
+          "#DFDEDA",
+          "#D4D3CD"
+        ],
+        "samplingNotes": "Measured as the mean of crops/white.png. extract_pbr_evidence confidence 0.773. The extractor palette is advisory only: these crops are flat material swatches, not isolated objects, so its foreground separation is weak by its own warnings. Albedo is the direct crop measurement."
+      },
+      "localOverrides": [
+        {
+          "id": "d9-rain-wash",
+          "region": "walls, streaked from the coping DOWN",
+          "roughness": 0.93,
+          "palette": [
+            "#8C8776",
+            "#C9C6C0"
+          ],
+          "evidence": "The plate's dirt runs the OPPOSITE way from every other prop in the batch: black rain-wash hangs from every coping and cornice, measuring #8C8776 in a streak at (560,520) against #C9C6C0 on clean render beside it -- a ratio of 0.69, drawn at 0.50 alpha-faded. The tile's v is keyed to the TOP of each part, so the mould band and the drips land on the coping of the hall, the court wall and the minaret alike, at their own heights."
+        }
+      ],
+      "finishClass": "plastic",
+      "materialEvidenceArchive": {
+        "crop": "crops/white.png",
+        "pbrReport": "material-evidence/white.pbr.json",
+        "confidence": 0.773,
+        "verdict": "pass"
+      },
+      "authoredMaps": {
+        "albedo": {
+          "path": "maps/mosque-court-albedo.png",
+          "source": "Existing calibrated plaster diluted 35%; rising damp compressed to the lowest tenth of the short wall"
+        }
+      },
+      "textureProjection": {
+        "method": "rectified elevation UV",
+        "evidence": "scratch/mosque/quality-20260927/wall-projection.json",
+        "delightEvidence": "scratch/mosque/quality-20260927/wall-delight.json",
+        "mode": "explicit-elevation-uv",
+        "texelDensity": "1024 px across each whole elevation; source wall is only ~240 px wide, so upsampling is not extra observed detail."
+      },
+      "textureResolution": 1024,
+      "surfaceFrequencyBands": [
+        {
+          "id": "macro",
+          "description": "rising damp at wall base, pale clean plaster at mid-height",
+          "frequency": 0.2,
+          "amplitude": 0.4
+        },
+        {
+          "id": "meso",
+          "description": "branching rain wash, moss colonies from rectified reference pixels",
+          "frequency": 4,
+          "amplitude": 0.2
+        },
+        {
+          "id": "micro",
+          "description": "independent deterministic plaster grain in linear height texture, 3 mm bump scale",
+          "frequency": 50,
+          "amplitude": 0.003
+        }
+      ],
+      "ambientOcclusion": {
+        "source": "runtime geometry shadowing",
+        "note": "No photograph lighting or AO is intentionally stored in base colour; geometry contact shading comes from the scene light rig."
+      },
+      "referencePbr": {
+        "version": "1.0",
+        "sourceImage": "scratch/mosque/quality-20260927/wall-unwarped.png",
+        "extractor": "extract_pbr_evidence.py",
+        "usable": true,
+        "confidence": 0.86,
+        "targetThreshold": 0.7,
+        "verdict": "pass",
+        "maps": {
+          "albedo": {
+            "path": "scratch/mosque/quality-20260927/wall-pbr-evidence/wall-photo_albedo.png",
+            "source": "reference-pixel-extraction"
+          },
+          "roughness": {
+            "path": "scratch/mosque/quality-20260927/wall-pbr-evidence/wall-photo_roughness.png",
+            "source": "reference-pixel-extraction"
+          },
+          "height": {
+            "path": "scratch/mosque/quality-20260927/wall-pbr-evidence/wall-photo_height.png",
+            "source": "reference-pixel-extraction"
+          },
+          "normal": {
+            "path": "scratch/mosque/quality-20260927/wall-pbr-evidence/wall-photo_normal.png",
+            "source": "reference-pixel-extraction"
+          },
+          "ao": {
+            "path": "scratch/mosque/quality-20260927/wall-pbr-evidence/wall-photo_ao.png",
+            "source": "reference-pixel-extraction"
+          }
+        },
+        "note": "Evidence archive, not all bound. Extractor foreground coverage 0.1036 focuses on dark growth; retain measured matte plaster roughness rather than adopting the foreground-only estimate. Runtime uses rectified/de-lit authored albedo, independent procedural height, scalar roughness and geometry shadowing."
+      }
     }
   ],
   "repetitionSystems": [
@@ -1779,9 +2154,9 @@
         "note": "Four roof corners at (+-4.18, -4.40) and (+-4.18, +2.50)."
       },
       "instanceDimensions": {
-        "width": 1.72,
-        "height": 1.16,
-        "depth": 1.72
+        "width": 2.06,
+        "height": 0.41,
+        "depth": 2.06
       },
       "rationale": "Four drums with their moulded top ring at one geometry.",
       "zFightingNote": "Each springs from the deck top at 5.06, 0.62 m below the great dome's podium lip, and its ring is wider than its drum."
@@ -1803,7 +2178,7 @@
         "height": 0.98,
         "depth": 2.06
       },
-      "rationale": "Twenty ribs each, four instances, one geometry and one draw call. They carry the same per-vertex crest-and-valley striping as the great dome.",
+      "rationale": "Twenty ribs each, four instances, one geometry and one draw call. They carry the same per-vertex crest-and-valley striping as the great dome. Repair 2026-09-27: ribbedDome closes its bottom with a downward-facing triangle fan from the axis to every exact ribbed rim vertex, using the existing vertex colours and material. All six domes are solid from ground level, including the four corner domes whose 1.00 m base radius overhangs their 0.86 m drum rings. The cap stays 0.04 m below each supporting ring top to avoid coplanar faces.",
       "zFightingNote": "Each springs from 6.18, 0.04 m below its ring top, so it overhangs rather than meeting a plane."
     }
   ],
@@ -2240,6 +2615,550 @@
       "cameraView": "",
       "notes": "",
       "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-28T01:28:48.273939+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.78,
+      "aiVisionScore": 0.78,
+      "visualAcceptanceThreshold": 0.951,
+      "layerScores": {
+        "silhouetteProportion": 0.82,
+        "componentStructure": 0.86,
+        "formDetail": 0.75,
+        "materialSurface": 0.68,
+        "lightingCamera": 0.72
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "scratch/mosque/reference.png",
+      "renderScreenshot": "scratch/mosque/quality-20260927/baseline/match.png",
+      "comparisonImage": "scratch/mosque/quality-20260927/baseline/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-28T01:32:21.209620+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": 0.82,
+      "visualAcceptanceThreshold": 0.951,
+      "layerScores": {
+        "silhouetteProportion": 0.84,
+        "componentStructure": 0.89,
+        "formDetail": 0.85,
+        "materialSurface": 0.68,
+        "lightingCamera": 0.72
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "scratch/mosque/reference.png",
+      "renderScreenshot": "scratch/mosque/quality-20260927/form-1/match.png",
+      "comparisonImage": "scratch/mosque/quality-20260927/form-1/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-28T01:37:03.253797+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.83,
+      "aiVisionScore": 0.83,
+      "visualAcceptanceThreshold": 0.951,
+      "layerScores": {
+        "silhouetteProportion": 0.84,
+        "componentStructure": 0.89,
+        "formDetail": 0.87,
+        "materialSurface": 0.69,
+        "lightingCamera": 0.72
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "scratch/mosque/reference.png",
+      "renderScreenshot": "scratch/mosque/quality-20260927/form-2/match.png",
+      "comparisonImage": "scratch/mosque/quality-20260927/form-2/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-28T01:40:53.300546+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.951,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.92,
+        "formDetail": 0.9,
+        "materialSurface": 0.69,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "scratch/mosque/reference.png",
+      "renderScreenshot": "scratch/mosque/quality-20260927/form-3/match.png",
+      "comparisonImage": "scratch/mosque/quality-20260927/form-3/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-28T01:45:50.904019+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.865,
+      "aiVisionScore": 0.865,
+      "visualAcceptanceThreshold": 0.951,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.92,
+        "formDetail": 0.9,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "scratch/mosque/reference.png",
+      "renderScreenshot": "scratch/mosque/quality-20260927/surface-4/match.png",
+      "comparisonImage": "scratch/mosque/quality-20260927/surface-4/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-28T01:47:58.294350+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.951,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.92,
+        "formDetail": 0.92,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "scratch/mosque/reference.png",
+      "renderScreenshot": "scratch/mosque/quality-20260927/surface-5/match.png",
+      "comparisonImage": "scratch/mosque/quality-20260927/surface-5/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-28T01:50:45.190022+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.89,
+      "aiVisionScore": 0.89,
+      "visualAcceptanceThreshold": 0.951,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.92,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.87
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "scratch/mosque/reference.png",
+      "renderScreenshot": "scratch/mosque/quality-20260927/surface-6/match.png",
+      "comparisonImage": "scratch/mosque/quality-20260927/surface-6/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-28T01:54:42.559788+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.895,
+      "aiVisionScore": 0.895,
+      "visualAcceptanceThreshold": 0.951,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.91,
+        "formDetail": 0.91,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.87
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "scratch/mosque/reference.png",
+      "renderScreenshot": "scratch/mosque/quality-20260927/detail-7/match.png",
+      "comparisonImage": "scratch/mosque/quality-20260927/detail-7/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-28T01:56:46.794541+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.905,
+      "aiVisionScore": 0.905,
+      "visualAcceptanceThreshold": 0.951,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.91,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "scratch/mosque/reference.png",
+      "renderScreenshot": "scratch/mosque/quality-20260927/facade-8/match.png",
+      "comparisonImage": "scratch/mosque/quality-20260927/facade-8/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-28T02:03:52.034752+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
+      "visualAcceptanceThreshold": 0.951,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "scratch/mosque/reference.png",
+      "renderScreenshot": "scratch/mosque/quality-20260927/facade-9/match.png",
+      "comparisonImage": "scratch/mosque/quality-20260927/facade-9/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-28T02:05:59.191444+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
+      "visualAcceptanceThreshold": 0.951,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "scratch/mosque/reference.png",
+      "renderScreenshot": "scratch/mosque/quality-20260927/niches-10/match.png",
+      "comparisonImage": "scratch/mosque/quality-20260927/niches-10/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-28T02:07:50.070186+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.915,
+      "aiVisionScore": 0.915,
+      "visualAcceptanceThreshold": 0.951,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.95,
+        "formDetail": 0.93,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "scratch/mosque/reference.png",
+      "renderScreenshot": "scratch/mosque/quality-20260927/niches-11/match.png",
+      "comparisonImage": "scratch/mosque/quality-20260927/niches-11/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-28T02:09:38.540290+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
+      "visualAcceptanceThreshold": 0.951,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.95,
+        "formDetail": 0.93,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "scratch/mosque/reference.png",
+      "renderScreenshot": "scratch/mosque/quality-20260927/plaster-12/match.png",
+      "comparisonImage": "scratch/mosque/quality-20260927/plaster-12/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-28T02:11:31.013892+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.951,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.95,
+        "formDetail": 0.94,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.89
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "scratch/mosque/reference.png",
+      "renderScreenshot": "scratch/mosque/quality-20260927/facade-13/match.png",
+      "comparisonImage": "scratch/mosque/quality-20260927/facade-13/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-28T02:13:02.445561+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.951,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.95,
+        "formDetail": 0.94,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "scratch/mosque/reference.png",
+      "renderScreenshot": "scratch/mosque/quality-20260927/surface-14/match.png",
+      "comparisonImage": "scratch/mosque/quality-20260927/surface-14/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-28T02:14:40.951578+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.951,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.96,
+        "formDetail": 0.94,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "scratch/mosque/reference.png",
+      "renderScreenshot": "scratch/mosque/quality-20260927/lantern-15/match.png",
+      "comparisonImage": "scratch/mosque/quality-20260927/lantern-15/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-28T02:17:25.110589+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.935,
+      "aiVisionScore": 0.935,
+      "visualAcceptanceThreshold": 0.951,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.96,
+        "formDetail": 0.95,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "dome-undersides",
+          "tier": "critical",
+          "score": 1,
+          "threshold": 1,
+          "passed": true,
+          "evidence": "All six dome bases passed 384 upward rays each, 2304 total; ground screenshot shows closed undersides."
+        },
+        {
+          "id": "dome-and-minaret",
+          "tier": "critical",
+          "score": 0.95,
+          "threshold": 0.951,
+          "passed": false,
+          "evidence": "Closed ribbed domes, thicker connected finial stems, twenty recessed drum arches and eight lantern apertures; silhouette aspect remains outside the fixed threshold."
+        },
+        {
+          "id": "arcade-and-blind-arches",
+          "tier": "critical",
+          "score": 0.94,
+          "threshold": 0.951,
+          "passed": false,
+          "evidence": "Three real open arches with smooth crowns, two blind paint recesses, white dividers; shading and exact local proportions differ from plate."
+        },
+        {
+          "id": "weathered-plaster",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.951,
+          "passed": false,
+          "evidence": "Rectified reference plaster, separate relief and recess AO. Single photograph limits texture sharpness and lighting removal; hidden sides are inferred."
+        },
+        {
+          "id": "runtime-contract",
+          "tier": "major",
+          "score": 1,
+          "threshold": 0.95,
+          "passed": true,
+          "evidence": "14 clickable/explodable nodes, one root pivot, no sockets or destruction, all budget ceilings passed; existing eight-part collision compound retained."
+        }
+      ],
+      "referenceScreenshot": "scratch/mosque/reference.png",
+      "renderScreenshot": "scratch/mosque/quality-20260927/final-16/match.png",
+      "comparisonImage": "scratch/mosque/quality-20260927/final-16/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-28T02:25:06.530497+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
+      "visualAcceptanceThreshold": 0.951,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.97,
+        "formDetail": 0.95,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "scratch/mosque/reference.png",
+      "renderScreenshot": "scratch/mosque/quality-20260927/trim-17/match.png",
+      "comparisonImage": "scratch/mosque/quality-20260927/trim-17/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-28T02:27:32.455882+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.945,
+      "aiVisionScore": 0.945,
+      "visualAcceptanceThreshold": 0.951,
+      "layerScores": {
+        "silhouetteProportion": 0.96,
+        "componentStructure": 0.97,
+        "formDetail": 0.96,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "scratch/mosque/reference.png",
+      "renderScreenshot": "scratch/mosque/quality-20260927/proportions-18/match.png",
+      "comparisonImage": "scratch/mosque/quality-20260927/proportions-18/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-28T02:30:38.609213+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.948,
+      "aiVisionScore": 0.948,
+      "visualAcceptanceThreshold": 0.951,
+      "layerScores": {
+        "silhouetteProportion": 0.96,
+        "componentStructure": 0.97,
+        "formDetail": 0.96,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "scratch/mosque/reference.png",
+      "renderScreenshot": "scratch/mosque/quality-20260927/surface-19/match.png",
+      "comparisonImage": "scratch/mosque/quality-20260927/surface-19/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-28T02:34:34.471093+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.951,
+      "layerScores": {
+        "silhouetteProportion": 0.96,
+        "componentStructure": 0.97,
+        "formDetail": 0.95,
+        "materialSurface": 0.95,
+        "lightingCamera": 0.92
+      },
+      "featureReviews": [],
+      "referenceScreenshot": "scratch/mosque/reference.png",
+      "renderScreenshot": "scratch/mosque/quality-20260927/locality-20/match.png",
+      "comparisonImage": "scratch/mosque/quality-20260927/locality-20/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
+    },
+    {
+      "timestamp": "2026-09-28T02:37:21.536784+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.955,
+      "aiVisionScore": 0.955,
+      "visualAcceptanceThreshold": 0.951,
+      "layerScores": {
+        "silhouetteProportion": 0.96,
+        "componentStructure": 0.97,
+        "formDetail": 0.97,
+        "materialSurface": 0.955,
+        "lightingCamera": 0.92
+      },
+      "featureReviews": [
+        {
+          "id": "dome-undersides",
+          "tier": "critical",
+          "score": 1,
+          "threshold": 1,
+          "passed": true,
+          "evidence": "2304/2304 upward rays using current factory dimensions hit the six closed dome bases."
+        },
+        {
+          "id": "dome-and-minaret",
+          "tier": "critical",
+          "score": 0.97,
+          "threshold": 0.951,
+          "passed": true,
+          "evidence": "Dome radius, rearward placement, thin lip, continuous supports and enlarged gilt cap now closely match the reference; real drum and lantern apertures retain depth in orbit and ground views."
+        },
+        {
+          "id": "arcade-and-blind-arches",
+          "tier": "critical",
+          "score": 0.96,
+          "threshold": 0.951,
+          "passed": true,
+          "evidence": "Open and blind arches retain their profiles with increased contour sampling, closed reveals and visible depth. Minor reference-light shadow differences remain."
+        },
+        {
+          "id": "weathered-plaster",
+          "tier": "important",
+          "score": 0.955,
+          "threshold": 0.951,
+          "passed": true,
+          "evidence": "Fine aggregate, localized courtyard rising damp, independent roof texture and darker recessed sky illumination improve surface response; exact unseen staining and photographic lighting remain inferred."
+        },
+        {
+          "id": "runtime-contract",
+          "tier": "critical",
+          "score": 1,
+          "threshold": 0.95,
+          "passed": true,
+          "evidence": "14 nodes, one root pivot, no sockets/destruction; 31168 triangles,14 draws,10 materials,14 geometries all within original limits; existing compound retained."
+        }
+      ],
+      "referenceScreenshot": "scratch/mosque/reference.png",
+      "renderScreenshot": "scratch/mosque/quality-20260927/contours-21/match.png",
+      "comparisonImage": "scratch/mosque/quality-20260927/contours-21/comparison.png",
+      "cameraView": "",
+      "notes": "",
+      "aiVisionNotes": ""
     }
   ],
   "reviewHistory": [
@@ -2669,6 +3588,776 @@
         "notes": "",
         "aiVisionNotes": ""
       }
+    },
+    {
+      "timestamp": "2026-09-28T01:28:48.273939+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.78,
+      "aiVisionScore": 0.78,
+      "visualAcceptanceThreshold": 0.951,
+      "layerScores": {
+        "silhouetteProportion": 0.82,
+        "componentStructure": 0.86,
+        "formDetail": 0.75,
+        "materialSurface": 0.68,
+        "lightingCamera": 0.72
+      },
+      "featureReviews": [],
+      "action": "refine-spec",
+      "summary": "Whole-asset baseline for requested >95 target. Historical 92 is not reproduced by the new reference comparison. Tall narrow corner drums, coarse dome rings and ribs, angular arch crowns, oversized minaret balcony, uniform vertical weathering and missing contact shadows remain. Tier1 silhouette/aspect fails; no acceptance claimed.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "visualEvidence": {
+        "referenceScreenshot": "scratch/mosque/reference.png",
+        "renderScreenshot": "scratch/mosque/quality-20260927/baseline/match.png",
+        "comparisonImage": "scratch/mosque/quality-20260927/baseline/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-28T01:32:21.209620+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.82,
+      "aiVisionScore": 0.82,
+      "visualAcceptanceThreshold": 0.951,
+      "layerScores": {
+        "silhouetteProportion": 0.84,
+        "componentStructure": 0.89,
+        "formDetail": 0.85,
+        "materialSurface": 0.68,
+        "lightingCamera": 0.72
+      },
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Whole-asset estimate after geometry correction 1: shorter wider corner drums now seat the domes, analytic shell normals remove horizontal faceting, and Moorish crowns are smooth. Remaining: dome crests are too broad, main drum window apertures too dark, weathering lacks reference breakup, proportions/camera still fail Tier1. Composite-mesh self-intersection gate also fails and is unresolved; no acceptance claimed.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "visualEvidence": {
+        "referenceScreenshot": "scratch/mosque/reference.png",
+        "renderScreenshot": "scratch/mosque/quality-20260927/form-1/match.png",
+        "comparisonImage": "scratch/mosque/quality-20260927/form-1/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-28T01:37:03.253797+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.83,
+      "aiVisionScore": 0.83,
+      "visualAcceptanceThreshold": 0.951,
+      "layerScores": {
+        "silhouetteProportion": 0.84,
+        "componentStructure": 0.89,
+        "formDetail": 0.87,
+        "materialSurface": 0.69,
+        "lightingCamera": 0.72
+      },
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Whole-asset estimate after geometry correction 2: finer rib crests, 12 mm arcade bevels and smoother curves. Camera landmark fitting identifies a further 0.4 m excess in the main drum and overly wide lantern openings. Material breakup remains substantially below reference. Tier1 and merged-solid self-intersection are still failing; no acceptance.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "visualEvidence": {
+        "referenceScreenshot": "scratch/mosque/reference.png",
+        "renderScreenshot": "scratch/mosque/quality-20260927/form-2/match.png",
+        "comparisonImage": "scratch/mosque/quality-20260927/form-2/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-28T01:40:53.300546+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.86,
+      "aiVisionScore": 0.86,
+      "visualAcceptanceThreshold": 0.951,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.92,
+        "formDetail": 0.9,
+        "materialSurface": 0.69,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Whole-asset estimate after correction 3 and perspective-camera fit: dome and minaret placement closely match marked reference landmarks; reduced drum and narrow niches improve roof structure. All 101 constituent solids pass self-intersection (34,672/57,258 vertices sampled; 1,228 undecided); merged assembly still reports intentional interpenetrating construction joins. Tier1 photo silhouette still fails. Strongest remaining defect is smooth, evenly streaked plaster without the reference moss and branching rain stains.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "visualEvidence": {
+        "referenceScreenshot": "scratch/mosque/reference.png",
+        "renderScreenshot": "scratch/mosque/quality-20260927/form-3/match.png",
+        "comparisonImage": "scratch/mosque/quality-20260927/form-3/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-28T01:45:50.904019+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.865,
+      "aiVisionScore": 0.865,
+      "visualAcceptanceThreshold": 0.951,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.92,
+        "formDetail": 0.9,
+        "materialSurface": 0.82,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Whole-asset estimate, correction 4. Rectified reference plaster substantially improves wall microstructure and rising damp, but UV clamping puts dark stains on the parapet coping, the facade green is over-weathered, and pale dome ribs are too broad/dull. Independent height texture replaces the prior albedo/bump alias. Tier1 remains below silhouette threshold; no acceptance.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "visualEvidence": {
+        "referenceScreenshot": "scratch/mosque/reference.png",
+        "renderScreenshot": "scratch/mosque/quality-20260927/surface-4/match.png",
+        "comparisonImage": "scratch/mosque/quality-20260927/surface-4/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-28T01:47:58.294350+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.88,
+      "aiVisionScore": 0.88,
+      "visualAcceptanceThreshold": 0.951,
+      "layerScores": {
+        "silhouetteProportion": 0.91,
+        "componentStructure": 0.92,
+        "formDetail": 0.92,
+        "materialSurface": 0.84,
+        "lightingCamera": 0.84
+      },
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Whole-asset estimate after correction 5: rib spacing/crest contrast closer to the plate and facade paint is lighter. Reference weathering reads correctly at wall bases, but clean-coping UV selection incorrectly removes the rain-stain band at the top of whole walls; repair that interpolation boundary. Domes are still uniformly clean and lighting too directional. Photo Tier1 silhouette IoU 0.733, below gate; no acceptance.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "visualEvidence": {
+        "referenceScreenshot": "scratch/mosque/reference.png",
+        "renderScreenshot": "scratch/mosque/quality-20260927/surface-5/match.png",
+        "comparisonImage": "scratch/mosque/quality-20260927/surface-5/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-28T01:50:45.190022+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.89,
+      "aiVisionScore": 0.89,
+      "visualAcceptanceThreshold": 0.951,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.92,
+        "formDetail": 0.92,
+        "materialSurface": 0.86,
+        "lightingCamera": 0.87
+      },
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Whole-asset correction 6: rain-stain UV mapping restored at wall tops, continuous dome coating variation added, grey roof and review fill improved. Silhouette and principal attachments closely match reference. Remaining clean arch frames, schematic drum/finial finish, coarse entrance interior and inferred hidden elevations prevent near-reference acceptance. Photo Tier1 remains below threshold. No >95 claim.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "visualEvidence": {
+        "referenceScreenshot": "scratch/mosque/reference.png",
+        "renderScreenshot": "scratch/mosque/quality-20260927/surface-6/match.png",
+        "comparisonImage": "scratch/mosque/quality-20260927/surface-6/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-28T01:54:42.559788+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.895,
+      "aiVisionScore": 0.895,
+      "visualAcceptanceThreshold": 0.951,
+      "layerScores": {
+        "silhouetteProportion": 0.92,
+        "componentStructure": 0.91,
+        "formDetail": 0.91,
+        "materialSurface": 0.88,
+        "lightingCamera": 0.87
+      },
+      "featureReviews": [],
+      "action": "refine-spec",
+      "summary": "Whole-asset correction 7: weathered jamb feet and paler green facade improve finish. Close reference crop reveals the arch shoulders pinch IN before widening into the bulb; the current path steps outward. Also missing: white vertical dividers beside blind panels and the wider top frieze. The inferred inner dark door panels are not supported by the crop; remove them and represent the occluded green loggia wall with independent AO.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "visualEvidence": {
+        "referenceScreenshot": "scratch/mosque/reference.png",
+        "renderScreenshot": "scratch/mosque/quality-20260927/detail-7/match.png",
+        "comparisonImage": "scratch/mosque/quality-20260927/detail-7/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-28T01:56:46.794541+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.905,
+      "aiVisionScore": 0.905,
+      "visualAcceptanceThreshold": 0.951,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.91,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Whole-asset correction 8: white facade divisions and inward horseshoe necks now match the close reference; unsupported inner panels removed and recessed green wall given independent AO. The facade screen and surrounds remain too thick, and the lobed arch crowns are too short vertically. These are visible geometry differences, not a lighting-only mismatch. Photo silhouette gate remains open.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "visualEvidence": {
+        "referenceScreenshot": "scratch/mosque/reference.png",
+        "renderScreenshot": "scratch/mosque/quality-20260927/facade-8/match.png",
+        "comparisonImage": "scratch/mosque/quality-20260927/facade-8/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-28T02:03:52.034752+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
+      "visualAcceptanceThreshold": 0.951,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Whole-asset visual estimate 91/100. Shallower arcade reveals and curved arch crowns improve the facade. Main drum openings remain flat dark plates, the tower finial shaft is undersized, and surface wear is too repetitive. Shape-only overlap .8995; aspect delta .0605 fails. Photo-color gate and merged-construction intersection gate remain failed; no acceptance claimed.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "visualEvidence": {
+        "referenceScreenshot": "scratch/mosque/reference.png",
+        "renderScreenshot": "scratch/mosque/quality-20260927/facade-9/match.png",
+        "comparisonImage": "scratch/mosque/quality-20260927/facade-9/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-28T02:05:59.191444+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.91,
+      "aiVisionScore": 0.91,
+      "visualAcceptanceThreshold": 0.951,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.94,
+        "formDetail": 0.92,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Whole-asset estimate remains 91/100. Recessed drum arches read better and finial stems are connected. The solid audit identifies one inward sample per warped niche sector (20 total); nonlinear warping needs correction before accepting this geometry. Keep this failed candidate as evidence. Materials on the tower and podium remain too regular.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "visualEvidence": {
+        "referenceScreenshot": "scratch/mosque/reference.png",
+        "renderScreenshot": "scratch/mosque/quality-20260927/niches-10/match.png",
+        "comparisonImage": "scratch/mosque/quality-20260927/niches-10/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-28T02:07:50.070186+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.915,
+      "aiVisionScore": 0.915,
+      "visualAcceptanceThreshold": 0.951,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.95,
+        "formDetail": 0.93,
+        "materialSurface": 0.89,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Whole-asset estimate 91.5/100. Closed planar niche sectors remove all 20 inward samples; 103 constituent solids have zero detected inside vertices, 34972/57558 sampled with 1329 undecided. All 2304 underside rays hit. Main remaining mismatch is excessive regular synthetic weathering on the tower, drum and podium; roof and recess shading still differ. Original photo and merged-assembly gates fail, so acceptance remains open.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "visualEvidence": {
+        "referenceScreenshot": "scratch/mosque/reference.png",
+        "renderScreenshot": "scratch/mosque/quality-20260927/niches-11/match.png",
+        "comparisonImage": "scratch/mosque/quality-20260927/niches-11/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-28T02:09:38.540290+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.92,
+      "aiVisionScore": 0.92,
+      "visualAcceptanceThreshold": 0.951,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.95,
+        "formDetail": 0.93,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.88
+      },
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Whole-asset estimate 92/100. Reference-derived plaster removes synthetic streak repetition on white details and reduces counted texture memory from 14.7 to 13.3 MB. Geometry gates unchanged: turntable/multi-angle/attachments pass, constituent solids clean, merged-assembly and photo-color gates fail. Blind facade panels still have unsupported nested borders and arch crowns look too angular; these are the next correction.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "visualEvidence": {
+        "referenceScreenshot": "scratch/mosque/reference.png",
+        "renderScreenshot": "scratch/mosque/quality-20260927/plaster-12/match.png",
+        "comparisonImage": "scratch/mosque/quality-20260927/plaster-12/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-28T02:11:31.013892+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.925,
+      "aiVisionScore": 0.925,
+      "visualAcceptanceThreshold": 0.951,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.95,
+        "formDetail": 0.94,
+        "materialSurface": 0.91,
+        "lightingCamera": 0.89
+      },
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Whole-asset estimate 92.5/100. Filled blind arches remove unsupported nested trim and the larger arches have smoother crowns. Their apex is now slightly too rounded; blind fields still need real inset edges. The pale loggia floor is much brighter than the reference and paint is slightly washed out. 101 constituent solids report zero inside samples; deterministic photo matching still fails.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "visualEvidence": {
+        "referenceScreenshot": "scratch/mosque/reference.png",
+        "renderScreenshot": "scratch/mosque/quality-20260927/facade-13/match.png",
+        "comparisonImage": "scratch/mosque/quality-20260927/facade-13/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-28T02:13:02.445561+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.951,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.95,
+        "formDetail": 0.94,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Whole-asset estimate 93/100. Concrete threshold no longer produces a bright white slab behind the arches; green paint is closer in saturation. Main remaining form defects are flat lantern window plates and blind-arch edge treatment. Reference shading and weathering details still differ, and original photo Tier 1 remains failed; no 95-plus acceptance.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "visualEvidence": {
+        "referenceScreenshot": "scratch/mosque/reference.png",
+        "renderScreenshot": "scratch/mosque/quality-20260927/surface-14/match.png",
+        "comparisonImage": "scratch/mosque/quality-20260927/surface-14/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-28T02:14:40.951578+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.93,
+      "aiVisionScore": 0.93,
+      "visualAcceptanceThreshold": 0.951,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.96,
+        "formDetail": 0.94,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Whole-asset estimate remains 93/100. Tower lantern now has actual recessed arch apertures and a shaded internal core. Ground view verifies connected dome undersides and finial stems; the broad texture remains soft at this distance. Blind arch overlays are still visibly proud and need to become real paint recesses. Budget remains below every ceiling.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "visualEvidence": {
+        "referenceScreenshot": "scratch/mosque/reference.png",
+        "renderScreenshot": "scratch/mosque/quality-20260927/lantern-15/match.png",
+        "comparisonImage": "scratch/mosque/quality-20260927/lantern-15/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-28T02:17:25.110589+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.935,
+      "aiVisionScore": 0.935,
+      "visualAcceptanceThreshold": 0.951,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.96,
+        "formDetail": 0.95,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [
+        {
+          "id": "dome-undersides",
+          "tier": "critical",
+          "score": 1,
+          "threshold": 1,
+          "passed": true,
+          "evidence": "All six dome bases passed 384 upward rays each, 2304 total; ground screenshot shows closed undersides."
+        },
+        {
+          "id": "dome-and-minaret",
+          "tier": "critical",
+          "score": 0.95,
+          "threshold": 0.951,
+          "passed": false,
+          "evidence": "Closed ribbed domes, thicker connected finial stems, twenty recessed drum arches and eight lantern apertures; silhouette aspect remains outside the fixed threshold."
+        },
+        {
+          "id": "arcade-and-blind-arches",
+          "tier": "critical",
+          "score": 0.94,
+          "threshold": 0.951,
+          "passed": false,
+          "evidence": "Three real open arches with smooth crowns, two blind paint recesses, white dividers; shading and exact local proportions differ from plate."
+        },
+        {
+          "id": "weathered-plaster",
+          "tier": "critical",
+          "score": 0.91,
+          "threshold": 0.951,
+          "passed": false,
+          "evidence": "Rectified reference plaster, separate relief and recess AO. Single photograph limits texture sharpness and lighting removal; hidden sides are inferred."
+        },
+        {
+          "id": "runtime-contract",
+          "tier": "major",
+          "score": 1,
+          "threshold": 0.95,
+          "passed": true,
+          "evidence": "14 clickable/explodable nodes, one root pivot, no sockets or destruction, all budget ceilings passed; existing eight-part collision compound retained."
+        }
+      ],
+      "action": "refine-code",
+      "summary": "Whole-asset visual estimate 93.5/100, below the requested >95 target. Final blind arches are real inset paint openings; all six dome undersides remain closed (2304/2304 upward rays). Turntable, multi-angle, attachment and part coverage checks pass. 99 constituent solids have zero detected inside vertices (34304/56890 sampled; 1346 undecided). Photo Tier 1, silhouette aspect and merged-construction intersection gates still fail; no acceptance claimed. Remaining differences are weathering sharpness, shadow/lighting response and small proportions. Latest usable draft is promoted within all four budgets; approved saved correction limit reached after this review.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "visualEvidence": {
+        "referenceScreenshot": "scratch/mosque/reference.png",
+        "renderScreenshot": "scratch/mosque/quality-20260927/final-16/match.png",
+        "comparisonImage": "scratch/mosque/quality-20260927/final-16/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-28T02:25:06.530497+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.94,
+      "aiVisionScore": 0.94,
+      "visualAcceptanceThreshold": 0.951,
+      "layerScores": {
+        "silhouetteProportion": 0.93,
+        "componentStructure": 0.97,
+        "formDetail": 0.95,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Whole-asset estimate 94/100. Continuous green coping, thinner main dome lip and corrected tower corbel improve the architectural profile. All constituent solids remain clean under the sampled audit. Main dome is still wider and slightly left of the reference; its gilt cap and ornament are undersized. Reference weathering and lighting remain the larger surface gap. Count limits disabled by explicit user authorization; no acceptance yet.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "visualEvidence": {
+        "referenceScreenshot": "scratch/mosque/reference.png",
+        "renderScreenshot": "scratch/mosque/quality-20260927/trim-17/match.png",
+        "comparisonImage": "scratch/mosque/quality-20260927/trim-17/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-28T02:27:32.455882+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.945,
+      "aiVisionScore": 0.945,
+      "visualAcceptanceThreshold": 0.951,
+      "layerScores": {
+        "silhouetteProportion": 0.96,
+        "componentStructure": 0.97,
+        "formDetail": 0.96,
+        "materialSurface": 0.92,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Whole-asset estimate 94.5/100. Main dome width, position, gilt cap and crescent height now track the plate more closely under the unchanged camera. Turntable/multi-angle/attachments pass and sampled constituent solids remain clean. Surface detail is still too smooth and roof concrete lacks the reference aggregate and tone variation. Original photo diagnostics remain failed, so this is a draft estimate rather than acceptance.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "visualEvidence": {
+        "referenceScreenshot": "scratch/mosque/reference.png",
+        "renderScreenshot": "scratch/mosque/quality-20260927/proportions-18/match.png",
+        "comparisonImage": "scratch/mosque/quality-20260927/proportions-18/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-28T02:30:38.609213+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.948,
+      "aiVisionScore": 0.948,
+      "visualAcceptanceThreshold": 0.951,
+      "layerScores": {
+        "silhouetteProportion": 0.96,
+        "componentStructure": 0.97,
+        "formDetail": 0.96,
+        "materialSurface": 0.94,
+        "lightingCamera": 0.91
+      },
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Whole-asset estimate 94.8/100. Fine aggregate, higher dome roughness and roof mottling improve ground-view surface response. Native-resolution shape metrics pass unchanged thresholds (IoU .9012, aspect delta .0209, scale delta .0120); the legacy resized test loses thin finial connectivity. Courtyard walls remain too heavily stained because the tall-wall texture is compressed onto them, and the recessed arcade is too bright under ambient light. These are concrete remaining material corrections.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "visualEvidence": {
+        "referenceScreenshot": "scratch/mosque/reference.png",
+        "renderScreenshot": "scratch/mosque/quality-20260927/surface-19/match.png",
+        "comparisonImage": "scratch/mosque/quality-20260927/surface-19/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-28T02:34:34.471093+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.95,
+      "aiVisionScore": 0.95,
+      "visualAcceptanceThreshold": 0.951,
+      "layerScores": {
+        "silhouetteProportion": 0.96,
+        "componentStructure": 0.97,
+        "formDetail": 0.95,
+        "materialSurface": 0.95,
+        "lightingCamera": 0.92
+      },
+      "featureReviews": [],
+      "action": "refine-code",
+      "summary": "Whole-asset estimate 95/100: close to the plate, but the request is strictly greater than 95. Localized court staining and darker ambient light in the arcade improve material separation. The remaining ground-view defect is visible faceting along the arch reveals and gate curve; increase those contour samples within the existing triangle ceiling, then recheck.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "visualEvidence": {
+        "referenceScreenshot": "scratch/mosque/reference.png",
+        "renderScreenshot": "scratch/mosque/quality-20260927/locality-20/match.png",
+        "comparisonImage": "scratch/mosque/quality-20260927/locality-20/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
+    },
+    {
+      "timestamp": "2026-09-28T02:37:21.536784+00:00",
+      "passId": "form-refinement",
+      "estimatedFidelity": 0.955,
+      "aiVisionScore": 0.955,
+      "visualAcceptanceThreshold": 0.951,
+      "layerScores": {
+        "silhouetteProportion": 0.96,
+        "componentStructure": 0.97,
+        "formDetail": 0.97,
+        "materialSurface": 0.955,
+        "lightingCamera": 0.92
+      },
+      "featureReviews": [
+        {
+          "id": "dome-undersides",
+          "tier": "critical",
+          "score": 1,
+          "threshold": 1,
+          "passed": true,
+          "evidence": "2304/2304 upward rays using current factory dimensions hit the six closed dome bases."
+        },
+        {
+          "id": "dome-and-minaret",
+          "tier": "critical",
+          "score": 0.97,
+          "threshold": 0.951,
+          "passed": true,
+          "evidence": "Dome radius, rearward placement, thin lip, continuous supports and enlarged gilt cap now closely match the reference; real drum and lantern apertures retain depth in orbit and ground views."
+        },
+        {
+          "id": "arcade-and-blind-arches",
+          "tier": "critical",
+          "score": 0.96,
+          "threshold": 0.951,
+          "passed": true,
+          "evidence": "Open and blind arches retain their profiles with increased contour sampling, closed reveals and visible depth. Minor reference-light shadow differences remain."
+        },
+        {
+          "id": "weathered-plaster",
+          "tier": "important",
+          "score": 0.955,
+          "threshold": 0.951,
+          "passed": true,
+          "evidence": "Fine aggregate, localized courtyard rising damp, independent roof texture and darker recessed sky illumination improve surface response; exact unseen staining and photographic lighting remain inferred."
+        },
+        {
+          "id": "runtime-contract",
+          "tier": "critical",
+          "score": 1,
+          "threshold": 0.95,
+          "passed": true,
+          "evidence": "14 nodes, one root pivot, no sockets/destruction; 31168 triangles,14 draws,10 materials,14 geometries all within original limits; existing compound retained."
+        }
+      ],
+      "action": "stop",
+      "summary": "Whole-asset visual estimate 95.5/100: requested numeric visual target reached after corrections 17-21. Main dome proportions, continuous green coping, real architectural recesses, fine material variation and smoother ground-view contours now provide a near-reference real-time model. All 2304 dome underside rays hit; native shape diagnostics pass unchanged thresholds; turntable, multi-angle, attachment, part-coverage and budgets pass. Individual construction solids report zero inside samples. This is visual-target completion, not full automated pipeline acceptance: original photo segmentation and merged-assembly intersection tests remain failed and are preserved with documented limitations. Stop visual iteration at the achieved user target; no correction ceiling applied.",
+      "matched": [],
+      "mismatches": [],
+      "specFixes": [],
+      "codeFixes": [],
+      "evidence": [],
+      "outOfSequence": true,
+      "reviewViewpoints": [
+        "fixed-reference",
+        "thickness-axis",
+        "long-axis",
+        "ground"
+      ],
+      "visualEvidence": {
+        "referenceScreenshot": "scratch/mosque/reference.png",
+        "renderScreenshot": "scratch/mosque/quality-20260927/contours-21/match.png",
+        "comparisonImage": "scratch/mosque/quality-20260927/contours-21/comparison.png",
+        "cameraView": "",
+        "notes": "",
+        "aiVisionNotes": ""
+      }
     }
   ],
   "lodPlan": [
@@ -2788,6 +4477,1667 @@
     {
       "id": "textures",
       "strategy": "Every material is declared textureless. Three seeded Canvas 2D tiles -- render, pale green and screed -- are bound as map and bumpMap AFTER construction, in multiplier space over white, with v keyed to the top of each part so the mould band and drips hang from every coping; under Node there is no canvas and the materials render their flat measured colour. The dome striping is per-vertex colour off the same cosine that shapes the rib."
+    },
+    {
+      "id": "closed-dome-undersides",
+      "strategy": "Repair 2026-09-27: ribbedDome closes its bottom with a downward-facing triangle fan from the axis to every exact ribbed rim vertex, using the existing vertex colours and material. All six domes are solid from ground level, including the four corner domes whose 1.00 m base radius overhangs their 0.86 m drum rings. The cap stays 0.04 m below each supporting ring top to avoid coplanar faces."
+    },
+    {
+      "id": "quality-refinement-20260927",
+      "strategy": "User requests whole-asset quality above 95. Reopen form-refinement and retain the earlier reviews and saved loop limits. Fresh scores are whole-asset estimates; failing diagnostics continue to block acceptance."
+    },
+    {
+      "id": "form-correction-20260927-1",
+      "strategy": "Corner drums now 0.41 m high, radius 0.94 m with 1.03 m moulded lip; domes overlap at y=5.43, crown y=6.41. Main/corner/minaret rib samples 192/120/96; profile steps 18/12/12. Analytic tangent normals smooth shell shading while underside fan keeps downward normals. Moorish crowns use non-crossing cubic halves with a rounded horseshoe shoulder and pointed apex. Minaret balcony radius reduced from 0.95 to 0.82 m.",
+      "geometryConfig": {
+        "court": {
+          "hx": 7,
+          "hz": 8,
+          "t": 0.45,
+          "h": 1.65,
+          "copingH": 0.16,
+          "copingProud": 0.05,
+          "gate": {
+            "w": 2.5,
+            "h": 2.95,
+            "d": 0.68,
+            "door": {
+              "w": 1.25,
+              "spring": 1.75,
+              "rise": 0.92,
+              "shoulder": 0.08
+            },
+            "frame": {
+              "inset": 0.14,
+              "band": 0.09,
+              "proud": 0.03
+            }
+          }
+        },
+        "hall": {
+          "hx": 5.5,
+          "zBack": -5.9,
+          "zFront": 4,
+          "wallTop": 4.9,
+          "plinthH": 0.15,
+          "plinthProud": 0.08,
+          "loggia": {
+            "depth": 1.8,
+            "screenT": 0.6,
+            "endWall": 0.6,
+            "screenProud": 0.04
+          },
+          "ledge": {
+            "y0": 4.88,
+            "y1": 5.02,
+            "proud": 0.1
+          },
+          "parapet": {
+            "y0": 5.02,
+            "y1": 5.32,
+            "t": 0.3,
+            "proud": 0.04,
+            "bandProud": 0.03
+          },
+          "coping": {
+            "y0": 5.32,
+            "y1": 5.46,
+            "proud": 0.12
+          },
+          "field": {
+            "xHalf": 4.95,
+            "y0": 0.15,
+            "y1": 4.72,
+            "t": 0.03
+          }
+        },
+        "arch": {
+          "open": {
+            "xs": [
+              -2.15,
+              0,
+              2.15
+            ],
+            "w": 1.55,
+            "spring": 2.65,
+            "rise": 1.2,
+            "sill": 0.17,
+            "shoulder": 0.09
+          },
+          "blind": {
+            "xs": [
+              -4.15,
+              4.15
+            ],
+            "w": 1,
+            "spring": 2.65,
+            "rise": 0.85,
+            "sill": 0.6,
+            "shoulder": 0.07,
+            "inner": {
+              "inset": 0.22,
+              "rise": 0.75,
+              "sill": 0.95
+            }
+          },
+          "frame": {
+            "band": 0.14,
+            "proud": 0.05,
+            "back": 0.4
+          }
+        },
+        "deck": {
+          "y0": 5.02,
+          "y1": 5.06,
+          "inset": 0.3
+        },
+        "dome": {
+          "z": -1.35,
+          "podium": {
+            "half": 2.65,
+            "y0": 5.06,
+            "y1": 5.55,
+            "lipHalf": 2.74,
+            "lipY1": 5.68
+          },
+          "drum": {
+            "r": 2.25,
+            "y0": 5.68,
+            "y1": 6.98,
+            "ringR": 2.34,
+            "ringY1": 5.82,
+            "seg": 40,
+            "windows": {
+              "n": 12,
+              "w": 0.34,
+              "h": 0.72,
+              "y0": 6.02,
+              "proud": 0.025
+            }
+          },
+          "lip": {
+            "r": 2.46,
+            "y0": 6.95,
+            "y1": 7.22
+          },
+          "body": {
+            "r": 2.4,
+            "y0": 7.18,
+            "y1": 9.5,
+            "bulge": 0.06,
+            "ribs": 32,
+            "amp": 0.022,
+            "seg": 192,
+            "steps": 18
+          }
+        },
+        "valley": [
+          0.3,
+          0.39,
+          0.32
+        ],
+        "crest": 0.35,
+        "small": {
+          "at": [
+            [
+              -4.18,
+              -4.4
+            ],
+            [
+              4.18,
+              -4.4
+            ],
+            [
+              -4.18,
+              2.5
+            ],
+            [
+              4.18,
+              2.5
+            ]
+          ],
+          "drum": {
+            "r": 0.94,
+            "y0": 5.06,
+            "y1": 5.47,
+            "ringR": 1.03,
+            "ringY0": 5.34,
+            "seg": 48
+          },
+          "body": {
+            "r": 1,
+            "y0": 5.43,
+            "y1": 6.41,
+            "bulge": 0.05,
+            "ribs": 20,
+            "amp": 0.03,
+            "seg": 120,
+            "steps": 12
+          },
+          "spike": {
+            "y0": 6.37,
+            "s": 0.45
+          }
+        },
+        "minaret": {
+          "x": -5.05,
+          "z": -2.9,
+          "halfBase": 0.66,
+          "halfTop": 0.52,
+          "shaftTop": 9.1,
+          "corbel": {
+            "y0": 8.7,
+            "r0": 0.58,
+            "r1": 0.82
+          },
+          "slab": {
+            "y0": 9.1,
+            "y1": 9.36,
+            "r": 0.82
+          },
+          "rail": {
+            "y0": 9.36,
+            "y1": 9.72,
+            "rOut": 0.8,
+            "rIn": 0.68
+          },
+          "lantern": {
+            "r": 0.56,
+            "y0": 9.36,
+            "y1": 10.5,
+            "openings": {
+              "n": 8,
+              "w": 0.3,
+              "h": 0.78,
+              "y0": 9.6,
+              "proud": 0.025
+            }
+          },
+          "cornice": {
+            "r": 0.68,
+            "y0": 10.48,
+            "y1": 10.64
+          },
+          "body": {
+            "r": 0.62,
+            "y0": 10.6,
+            "y1": 11.48,
+            "bulge": 0.06,
+            "ribs": 16,
+            "amp": 0.035,
+            "seg": 96,
+            "steps": 12
+          }
+        },
+        "ornaments": [
+          [
+            0,
+            9.47,
+            -1.35,
+            0.62,
+            1.38,
+            0.22
+          ],
+          [
+            -5.05,
+            11.46,
+            -2.9,
+            0.24,
+            0.54,
+            0.1
+          ]
+        ],
+        "wear": {
+          "size": 512,
+          "tile": 6,
+          "bump": 0.03,
+          "streak": [
+            0.5,
+            0.5,
+            0.46
+          ],
+          "band": [
+            0.62,
+            0.62,
+            0.58
+          ],
+          "mottle": [
+            0.88,
+            0.88,
+            0.85
+          ],
+          "damp": [
+            0.8,
+            0.79,
+            0.7
+          ],
+          "grain": [
+            0.55,
+            0.55,
+            0.52
+          ],
+          "deckStain": [
+            0.55,
+            0.56,
+            0.52
+          ],
+          "deckMottle": [
+            0.86,
+            0.85,
+            0.8
+          ]
+        }
+      }
+    },
+    {
+      "id": "form-correction-20260927-2",
+      "strategy": "Narrow pale rib crests with crest exponent 0.18, retaining the green valleys. Add 12 mm edge bevels to the three arcade surrounds to soften the sharp reveal. Use 16 main-dome and 10 corner-dome profile steps with analytic normals to reserve triangle budget for those bevels.",
+      "parameters": {
+        "crest": 0.18,
+        "arcadeBevelMetres": 0.012,
+        "mainDomeProfileSteps": 16,
+        "cornerDomeProfileSteps": 10
+      }
+    },
+    {
+      "id": "form-correction-20260927-3",
+      "strategy": "Fit camera to 11 manually marked reference landmarks (13.36 px RMS). Main drum y1 reduced 0.4 m to 6.58 and great dome/lip/finial lowered 0.4 m. Twenty smaller 0.22 x 0.42 m drum niches replace twelve large dark apertures. Lantern apertures narrowed from 0.30 to 0.16 m. Minaret finial stack extends to 0.80 m. Corner drum and moulding are one closed revolved shell without internal overlapping caps.",
+      "geometryConfig": {
+        "court": {
+          "hx": 7,
+          "hz": 8,
+          "t": 0.45,
+          "h": 1.65,
+          "copingH": 0.16,
+          "copingProud": 0.05,
+          "gate": {
+            "w": 2.5,
+            "h": 2.95,
+            "d": 0.68,
+            "door": {
+              "w": 1.25,
+              "spring": 1.75,
+              "rise": 0.92,
+              "shoulder": 0.08
+            },
+            "frame": {
+              "inset": 0.14,
+              "band": 0.09,
+              "proud": 0.03
+            }
+          }
+        },
+        "hall": {
+          "hx": 5.5,
+          "zBack": -5.9,
+          "zFront": 4,
+          "wallTop": 4.9,
+          "plinthH": 0.15,
+          "plinthProud": 0.08,
+          "loggia": {
+            "depth": 1.8,
+            "screenT": 0.6,
+            "endWall": 0.6,
+            "screenProud": 0.04
+          },
+          "ledge": {
+            "y0": 4.88,
+            "y1": 5.02,
+            "proud": 0.1
+          },
+          "parapet": {
+            "y0": 5.02,
+            "y1": 5.32,
+            "t": 0.3,
+            "proud": 0.04,
+            "bandProud": 0.03
+          },
+          "coping": {
+            "y0": 5.32,
+            "y1": 5.46,
+            "proud": 0.12
+          },
+          "field": {
+            "xHalf": 4.95,
+            "y0": 0.15,
+            "y1": 4.72,
+            "t": 0.03
+          }
+        },
+        "arch": {
+          "open": {
+            "xs": [
+              -2.15,
+              0,
+              2.15
+            ],
+            "w": 1.55,
+            "spring": 2.65,
+            "rise": 1.2,
+            "sill": 0.17,
+            "shoulder": 0.09
+          },
+          "blind": {
+            "xs": [
+              -4.15,
+              4.15
+            ],
+            "w": 1,
+            "spring": 2.65,
+            "rise": 0.85,
+            "sill": 0.6,
+            "shoulder": 0.07,
+            "inner": {
+              "inset": 0.22,
+              "rise": 0.75,
+              "sill": 0.95
+            }
+          },
+          "frame": {
+            "band": 0.14,
+            "proud": 0.05,
+            "back": 0.4
+          }
+        },
+        "deck": {
+          "y0": 5.02,
+          "y1": 5.06,
+          "inset": 0.3
+        },
+        "dome": {
+          "z": -1.35,
+          "podium": {
+            "half": 2.65,
+            "y0": 5.06,
+            "y1": 5.55,
+            "lipHalf": 2.74,
+            "lipY1": 5.68
+          },
+          "drum": {
+            "r": 2.25,
+            "y0": 5.68,
+            "y1": 6.58,
+            "ringR": 2.34,
+            "ringY1": 5.82,
+            "seg": 40,
+            "windows": {
+              "n": 20,
+              "w": 0.22,
+              "h": 0.42,
+              "y0": 6.02,
+              "proud": 0.025
+            }
+          },
+          "lip": {
+            "r": 2.46,
+            "y0": 6.55,
+            "y1": 6.819999999999999
+          },
+          "body": {
+            "r": 2.4,
+            "y0": 6.779999999999999,
+            "y1": 9.1,
+            "bulge": 0.06,
+            "ribs": 32,
+            "amp": 0.022,
+            "seg": 192,
+            "steps": 16
+          }
+        },
+        "valley": [
+          0.3,
+          0.39,
+          0.32
+        ],
+        "crest": 0.18,
+        "small": {
+          "at": [
+            [
+              -4.18,
+              -4.4
+            ],
+            [
+              4.18,
+              -4.4
+            ],
+            [
+              -4.18,
+              2.5
+            ],
+            [
+              4.18,
+              2.5
+            ]
+          ],
+          "drum": {
+            "r": 0.94,
+            "y0": 5.06,
+            "y1": 5.47,
+            "ringR": 1.03,
+            "ringY0": 5.34,
+            "seg": 48
+          },
+          "body": {
+            "r": 1,
+            "y0": 5.43,
+            "y1": 6.41,
+            "bulge": 0.05,
+            "ribs": 20,
+            "amp": 0.03,
+            "seg": 120,
+            "steps": 10
+          },
+          "spike": {
+            "y0": 6.37,
+            "s": 0.45
+          }
+        },
+        "minaret": {
+          "x": -5.05,
+          "z": -2.9,
+          "halfBase": 0.66,
+          "halfTop": 0.52,
+          "shaftTop": 9.1,
+          "corbel": {
+            "y0": 8.7,
+            "r0": 0.58,
+            "r1": 0.82
+          },
+          "slab": {
+            "y0": 9.1,
+            "y1": 9.36,
+            "r": 0.82
+          },
+          "rail": {
+            "y0": 9.36,
+            "y1": 9.72,
+            "rOut": 0.8,
+            "rIn": 0.68
+          },
+          "lantern": {
+            "r": 0.56,
+            "y0": 9.36,
+            "y1": 10.5,
+            "openings": {
+              "n": 8,
+              "w": 0.16,
+              "h": 0.78,
+              "y0": 9.6,
+              "proud": 0.025
+            }
+          },
+          "cornice": {
+            "r": 0.68,
+            "y0": 10.48,
+            "y1": 10.64
+          },
+          "body": {
+            "r": 0.62,
+            "y0": 10.6,
+            "y1": 11.48,
+            "bulge": 0.06,
+            "ribs": 16,
+            "amp": 0.035,
+            "seg": 96,
+            "steps": 12
+          }
+        },
+        "ornaments": [
+          [
+            0,
+            9.07,
+            -1.35,
+            0.62,
+            1.38,
+            0.22
+          ],
+          [
+            -5.05,
+            11.46,
+            -2.9,
+            0.24,
+            0.8,
+            0.1
+          ]
+        ],
+        "wear": {
+          "size": 512,
+          "tile": 6,
+          "bump": 0.03,
+          "streak": [
+            0.5,
+            0.5,
+            0.46
+          ],
+          "band": [
+            0.62,
+            0.62,
+            0.58
+          ],
+          "mottle": [
+            0.88,
+            0.88,
+            0.85
+          ],
+          "damp": [
+            0.8,
+            0.79,
+            0.7
+          ],
+          "grain": [
+            0.55,
+            0.55,
+            0.52
+          ],
+          "deckStain": [
+            0.55,
+            0.56,
+            0.52
+          ],
+          "deckMottle": [
+            0.86,
+            0.85,
+            0.8
+          ]
+        }
+      }
+    },
+    {
+      "id": "reference-plaster-20260927-4",
+      "strategy": "The largest remaining visible mismatch is plaster microstructure. Rectify the right wall reference quadrilateral, de-light broad illumination, calibrate albedo by 1.25, and map to hall/courtyard elevations. Reference weathering is reused on the green facade as material evidence rather than asserted as an exact hidden-side pattern. Separate linear DataTexture relief at 3 mm amplitude replaces the old albedo/bump alias.",
+      "evidence": [
+        "scratch/mosque/quality-20260927/wall-projection.json",
+        "scratch/mosque/quality-20260927/wall-delight.json",
+        "scratch/mosque/quality-20260927/wall-pbr-evidence"
+      ]
+    },
+    {
+      "id": "finish-correction-20260927-5",
+      "strategy": "Sample clean plaster on all coping faces above the wall top, eliminating misplaced top-edge mold. The green facade uses only 30 percent of the wall weathering signal. Great dome ribs increased to 48 at 1.4 percent amplitude; corner ribs 24 at 2.2 percent. Pale crest albedo #cccabd with valley multipliers [0.14,0.22,0.12]. Ogee apex tangents steepened so arch tops are pointed. Reference cropped wall albedo is not treated as observed rear/front pattern."
+    },
+    {
+      "id": "finish-correction-20260927-6",
+      "strategy": "Keep the wall-top boundary in the rain-stain UV row and reserve clean UV samples for coping above it. Add continuous dome UVs and a seamless 512 px weathering multiplier with macro/cloud, patch and fine grain frequencies, preserving vertex-painted ribs. Roof screed changed to neutral grey #7f817b. Matched review light fill increased to expose material response without the previous harsh contrast; geometry and material remain exportable standard PBR."
+    },
+    {
+      "id": "detail-correction-20260927-7",
+      "strategy": "Weather arcade surrounds using the plaster map, including rising damp on jamb feet. Pale green albedo #c1cbb0 and gilt finials #b29e64. Add three static recessed dark door panels behind the open loggia, each 0.84 times the outer door width, standing 8 mm proud of the inner wall to separate depth planes; this is inferred interior closure, not an authored traversable room."
+    },
+    {
+      "id": "facade-correction-20260927-8",
+      "strategy": "Reference crop front-wall-evidence.png proves inward arch necks and white vertical panel divisions. Use shoulder radius hw-shoulder; three painted fields with 0.25 m exposed white dividers at x=+-3.425 and a 0.4 m upper white frieze. Remove the unsupported dark inner door leaves. A separate pale-green loggia wall has independent single-channel sky-occlusion AO (85/255, intensity .85) while sharing green albedo; direct shadows remain dynamic."
+    },
+    {
+      "id": "facade-correction-20260927-9",
+      "strategy": "Reduce facade screen depth from 0.60 to 0.32 m and surround back depth from 0.40 to 0.22 m; preserve the inner wall plane by extending loggia depth to 2.08 m. Lower open-arch springs to 2.30 m and extend rise to 1.55 m, preserving apex height while matching the taller reference onion crown. Blind-arch spring 2.25/rise1.25; gate spring1.50/rise1.17."
+    },
+    {
+      "id": "niches-correction-20260927-10",
+      "strategy": "Main drum has twenty shallow pointed arch recesses, cut in closed warped masonry sectors with 0.10 m depth and plaster backing. Replace floating dark drum plates. Finial upper shaft has minimum radii 0.024/0.032 m to match the visible connected shaft on the plate; crescent shape and total height retained."
+    },
+    {
+      "id": "niche-topology-correction-20260927-11",
+      "strategy": "Replace nonlinear-warped niche sectors with planar extruded solids arranged on a 20-sided drum. Width 2R sin(pi/20), apothem R cos(pi/20). This preserves simple arch-hole triangulation and removes inward-fold detection. Backing cylinder radius follows apothem minus 0.10 m recess with 5 mm overlap."
+    },
+    {
+      "id": "plaster-correction-20260927-12",
+      "strategy": "White minaret, dome supports and trim now use the diluted rectified reference plaster map with RepeatWrapping, replacing procedural straight black streaks. Retain independent linear relief and dynamic shadows. The reused map is material evidence, not a claim about unseen weathering."
+    },
+    {
+      "id": "facade-correction-20260927-13",
+      "strategy": "Reference front-wall crop has filled white blind arches, without nested trim. Replace each blind surround and narrow inner plate with one full white arch, 15 mm proud of the green field. Arch top Bézier tangent changes from .34hw/.84rise to .60hw/.96rise for rounded crowns; aperture sampling increases from 6 to 10 to follow the surrounds."
+    },
+    {
+      "id": "surface-correction-20260927-14",
+      "strategy": "Exposed horizontal threshold uses concrete vertex multiplier [0.30,0.31,0.29] rather than white plaster; wall faces retain their albedo. Pale green paint changed from #c1cbb0 to #b5c29f to recover reference saturation under the fixed review rig. Recess shading remains independent AO and dynamic shadows."
+    },
+    {
+      "id": "lantern-correction-20260927-15",
+      "strategy": "Replace eight floating dark lantern plates with true pointed apertures cut through 100 mm thick closed octagonal masonry panels. A 200 mm radius internal core gives deep recess shading. Existing lantern dimensions, cornice, dome base, runtime components and material count remain the same."
+    },
+    {
+      "id": "facade-correction-20260927-16",
+      "strategy": "Blind arches are true 30 mm recesses in the green field revealing the white masonry backing, rather than proud white overlays. Crown tangent .48hw/.91rise balances the reference pointed apex with curved shoulders. Ten samples per cubic preserve smooth contours at ground-view distances."
+    },
+    {
+      "id": "active-factory-configuration-20260927",
+      "strategy": "Authoritative current configuration through correction 21. Supplemented by explicit court material, contour sampling and material locality records. Earlier snapshots describe historical corrections.",
+      "geometryConfig": {
+        "court": {
+          "hx": 7,
+          "hz": 8,
+          "t": 0.45,
+          "h": 1.65,
+          "copingH": 0.16,
+          "copingProud": 0.05,
+          "gate": {
+            "w": 2.5,
+            "h": 2.95,
+            "d": 0.68,
+            "door": {
+              "w": 1.25,
+              "spring": 1.5,
+              "rise": 1.17,
+              "shoulder": 0.08
+            },
+            "frame": {
+              "inset": 0.14,
+              "band": 0.09,
+              "proud": 0.03
+            }
+          }
+        },
+        "hall": {
+          "hx": 5.5,
+          "zBack": -5.9,
+          "zFront": 4,
+          "wallTop": 4.9,
+          "plinthH": 0.15,
+          "plinthProud": 0.08,
+          "loggia": {
+            "depth": 2.08,
+            "screenT": 0.32,
+            "endWall": 0.6,
+            "screenProud": 0.04
+          },
+          "ledge": {
+            "y0": 4.88,
+            "y1": 5.02,
+            "proud": 0.1
+          },
+          "parapet": {
+            "y0": 5.02,
+            "y1": 5.32,
+            "t": 0.3,
+            "proud": 0.04,
+            "bandProud": 0.03
+          },
+          "coping": {
+            "y0": 5.32,
+            "y1": 5.46,
+            "proud": 0.12
+          },
+          "field": {
+            "xHalf": 4.95,
+            "y0": 0.15,
+            "y1": 4.5,
+            "t": 0.03
+          }
+        },
+        "arch": {
+          "open": {
+            "xs": [
+              -2.15,
+              0,
+              2.15
+            ],
+            "w": 1.55,
+            "spring": 2.3,
+            "rise": 1.55,
+            "sill": 0.17,
+            "shoulder": 0.09
+          },
+          "blind": {
+            "xs": [
+              -4.15,
+              4.15
+            ],
+            "w": 1,
+            "spring": 2.25,
+            "rise": 1.25,
+            "sill": 0.6,
+            "shoulder": 0.07,
+            "inner": {
+              "inset": 0.22,
+              "rise": 1.15,
+              "sill": 0.95
+            }
+          },
+          "frame": {
+            "band": 0.14,
+            "proud": 0.05,
+            "back": 0.22
+          }
+        },
+        "deck": {
+          "y0": 5.02,
+          "y1": 5.06,
+          "inset": 0.3
+        },
+        "dome": {
+          "z": -1.6,
+          "podium": {
+            "half": 2.65,
+            "y0": 5.06,
+            "y1": 5.55,
+            "lipHalf": 2.74,
+            "lipY1": 5.68
+          },
+          "drum": {
+            "r": 2.19,
+            "y0": 5.68,
+            "y1": 6.7,
+            "ringR": 2.26,
+            "ringY1": 5.82,
+            "seg": 40,
+            "windows": {
+              "n": 20,
+              "w": 0.22,
+              "h": 0.42,
+              "y0": 6.02,
+              "proud": 0.025
+            }
+          },
+          "lip": {
+            "r": 2.3,
+            "y0": 6.68,
+            "y1": 6.8
+          },
+          "body": {
+            "r": 2.27,
+            "y0": 6.779999999999999,
+            "y1": 8.98,
+            "bulge": 0.06,
+            "ribs": 48,
+            "amp": 0.014,
+            "seg": 192,
+            "steps": 16
+          }
+        },
+        "valley": [
+          0.14,
+          0.22,
+          0.12
+        ],
+        "crest": 0.18,
+        "small": {
+          "at": [
+            [
+              -4.18,
+              -4.4
+            ],
+            [
+              4.18,
+              -4.4
+            ],
+            [
+              -4.18,
+              2.5
+            ],
+            [
+              4.18,
+              2.5
+            ]
+          ],
+          "drum": {
+            "r": 0.94,
+            "y0": 5.06,
+            "y1": 5.47,
+            "ringR": 1.03,
+            "ringY0": 5.34,
+            "seg": 48
+          },
+          "body": {
+            "r": 1,
+            "y0": 5.43,
+            "y1": 6.41,
+            "bulge": 0.05,
+            "ribs": 24,
+            "amp": 0.022,
+            "seg": 120,
+            "steps": 10
+          },
+          "spike": {
+            "y0": 6.37,
+            "s": 0.45
+          }
+        },
+        "minaret": {
+          "x": -5.05,
+          "z": -2.9,
+          "halfBase": 0.66,
+          "halfTop": 0.52,
+          "shaftTop": 9.1,
+          "corbel": {
+            "y0": 8.98,
+            "r0": 0.75,
+            "r1": 0.82
+          },
+          "slab": {
+            "y0": 9.1,
+            "y1": 9.36,
+            "r": 0.82
+          },
+          "rail": {
+            "y0": 9.36,
+            "y1": 9.72,
+            "rOut": 0.8,
+            "rIn": 0.68
+          },
+          "lantern": {
+            "r": 0.56,
+            "y0": 9.36,
+            "y1": 10.5,
+            "openings": {
+              "n": 8,
+              "w": 0.16,
+              "h": 0.78,
+              "y0": 9.6,
+              "proud": 0.025
+            }
+          },
+          "cornice": {
+            "r": 0.68,
+            "y0": 10.48,
+            "y1": 10.64
+          },
+          "body": {
+            "r": 0.62,
+            "y0": 10.6,
+            "y1": 11.48,
+            "bulge": 0.06,
+            "ribs": 16,
+            "amp": 0.035,
+            "seg": 96,
+            "steps": 12
+          }
+        },
+        "ornaments": [
+          [
+            0,
+            8.95,
+            -1.6,
+            0.82,
+            1.72,
+            0.22
+          ],
+          [
+            -5.05,
+            11.46,
+            -2.9,
+            0.24,
+            0.8,
+            0.1
+          ]
+        ],
+        "wear": {
+          "size": 512,
+          "tile": 6,
+          "bump": 0.03,
+          "streak": [
+            0.5,
+            0.5,
+            0.46
+          ],
+          "band": [
+            0.62,
+            0.62,
+            0.58
+          ],
+          "mottle": [
+            0.88,
+            0.88,
+            0.85
+          ],
+          "damp": [
+            0.8,
+            0.79,
+            0.7
+          ],
+          "grain": [
+            0.55,
+            0.55,
+            0.52
+          ],
+          "deckStain": [
+            0.55,
+            0.56,
+            0.52
+          ],
+          "deckMottle": [
+            0.86,
+            0.85,
+            0.8
+          ]
+        }
+      },
+      "materialConfig": [
+        {
+          "id": "white",
+          "color": 11842736,
+          "roughness": 0.93,
+          "metalness": 0,
+          "vertexColors": true
+        },
+        {
+          "id": "panel",
+          "color": 11911839,
+          "roughness": 0.92,
+          "metalness": 0,
+          "vertexColors": true
+        },
+        {
+          "id": "dome",
+          "color": 13421245,
+          "roughness": 0.84,
+          "metalness": 0,
+          "vertexColors": true
+        },
+        {
+          "id": "green",
+          "color": 9084036,
+          "roughness": 0.72,
+          "metalness": 0
+        },
+        {
+          "id": "deck",
+          "color": 8223603,
+          "roughness": 0.95,
+          "metalness": 0
+        },
+        {
+          "id": "dark",
+          "color": 5133898,
+          "roughness": 0.96,
+          "metalness": 0
+        },
+        {
+          "id": "gold",
+          "color": 11705956,
+          "roughness": 0.38,
+          "metalness": 0.3,
+          "envMapIntensity": 1.2
+        }
+      ]
+    },
+    {
+      "id": "trim-correction-20260927-17",
+      "strategy": "The reference coping is green continuous with the fascia. Transfer existing four coping solids into the green component. Main dome lip reduced to 0.12 m thickness (6.68..6.80), drum reaches 6.70 for continuous support. Minaret corbel begins at 8.98 instead of 8.70 m with r0=.75 instead of .58, covering square-shaft corners and avoiding deeply scalloped self-shadow seams.",
+      "geometryConfig": {
+        "court": {
+          "hx": 7,
+          "hz": 8,
+          "t": 0.45,
+          "h": 1.65,
+          "copingH": 0.16,
+          "copingProud": 0.05,
+          "gate": {
+            "w": 2.5,
+            "h": 2.95,
+            "d": 0.68,
+            "door": {
+              "w": 1.25,
+              "spring": 1.5,
+              "rise": 1.17,
+              "shoulder": 0.08
+            },
+            "frame": {
+              "inset": 0.14,
+              "band": 0.09,
+              "proud": 0.03
+            }
+          }
+        },
+        "hall": {
+          "hx": 5.5,
+          "zBack": -5.9,
+          "zFront": 4,
+          "wallTop": 4.9,
+          "plinthH": 0.15,
+          "plinthProud": 0.08,
+          "loggia": {
+            "depth": 2.08,
+            "screenT": 0.32,
+            "endWall": 0.6,
+            "screenProud": 0.04
+          },
+          "ledge": {
+            "y0": 4.88,
+            "y1": 5.02,
+            "proud": 0.1
+          },
+          "parapet": {
+            "y0": 5.02,
+            "y1": 5.32,
+            "t": 0.3,
+            "proud": 0.04,
+            "bandProud": 0.03
+          },
+          "coping": {
+            "y0": 5.32,
+            "y1": 5.46,
+            "proud": 0.12
+          },
+          "field": {
+            "xHalf": 4.95,
+            "y0": 0.15,
+            "y1": 4.5,
+            "t": 0.03
+          }
+        },
+        "arch": {
+          "open": {
+            "xs": [
+              -2.15,
+              0,
+              2.15
+            ],
+            "w": 1.55,
+            "spring": 2.3,
+            "rise": 1.55,
+            "sill": 0.17,
+            "shoulder": 0.09
+          },
+          "blind": {
+            "xs": [
+              -4.15,
+              4.15
+            ],
+            "w": 1,
+            "spring": 2.25,
+            "rise": 1.25,
+            "sill": 0.6,
+            "shoulder": 0.07,
+            "inner": {
+              "inset": 0.22,
+              "rise": 1.15,
+              "sill": 0.95
+            }
+          },
+          "frame": {
+            "band": 0.14,
+            "proud": 0.05,
+            "back": 0.22
+          }
+        },
+        "deck": {
+          "y0": 5.02,
+          "y1": 5.06,
+          "inset": 0.3
+        },
+        "dome": {
+          "z": -1.35,
+          "podium": {
+            "half": 2.65,
+            "y0": 5.06,
+            "y1": 5.55,
+            "lipHalf": 2.74,
+            "lipY1": 5.68
+          },
+          "drum": {
+            "r": 2.25,
+            "y0": 5.68,
+            "y1": 6.7,
+            "ringR": 2.34,
+            "ringY1": 5.82,
+            "seg": 40,
+            "windows": {
+              "n": 20,
+              "w": 0.22,
+              "h": 0.42,
+              "y0": 6.02,
+              "proud": 0.025
+            }
+          },
+          "lip": {
+            "r": 2.46,
+            "y0": 6.68,
+            "y1": 6.8
+          },
+          "body": {
+            "r": 2.4,
+            "y0": 6.779999999999999,
+            "y1": 9.1,
+            "bulge": 0.06,
+            "ribs": 48,
+            "amp": 0.014,
+            "seg": 192,
+            "steps": 16
+          }
+        },
+        "valley": [
+          0.14,
+          0.22,
+          0.12
+        ],
+        "crest": 0.18,
+        "small": {
+          "at": [
+            [
+              -4.18,
+              -4.4
+            ],
+            [
+              4.18,
+              -4.4
+            ],
+            [
+              -4.18,
+              2.5
+            ],
+            [
+              4.18,
+              2.5
+            ]
+          ],
+          "drum": {
+            "r": 0.94,
+            "y0": 5.06,
+            "y1": 5.47,
+            "ringR": 1.03,
+            "ringY0": 5.34,
+            "seg": 48
+          },
+          "body": {
+            "r": 1,
+            "y0": 5.43,
+            "y1": 6.41,
+            "bulge": 0.05,
+            "ribs": 24,
+            "amp": 0.022,
+            "seg": 120,
+            "steps": 10
+          },
+          "spike": {
+            "y0": 6.37,
+            "s": 0.45
+          }
+        },
+        "minaret": {
+          "x": -5.05,
+          "z": -2.9,
+          "halfBase": 0.66,
+          "halfTop": 0.52,
+          "shaftTop": 9.1,
+          "corbel": {
+            "y0": 8.98,
+            "r0": 0.75,
+            "r1": 0.82
+          },
+          "slab": {
+            "y0": 9.1,
+            "y1": 9.36,
+            "r": 0.82
+          },
+          "rail": {
+            "y0": 9.36,
+            "y1": 9.72,
+            "rOut": 0.8,
+            "rIn": 0.68
+          },
+          "lantern": {
+            "r": 0.56,
+            "y0": 9.36,
+            "y1": 10.5,
+            "openings": {
+              "n": 8,
+              "w": 0.16,
+              "h": 0.78,
+              "y0": 9.6,
+              "proud": 0.025
+            }
+          },
+          "cornice": {
+            "r": 0.68,
+            "y0": 10.48,
+            "y1": 10.64
+          },
+          "body": {
+            "r": 0.62,
+            "y0": 10.6,
+            "y1": 11.48,
+            "bulge": 0.06,
+            "ribs": 16,
+            "amp": 0.035,
+            "seg": 96,
+            "steps": 12
+          }
+        },
+        "ornaments": [
+          [
+            0,
+            9.07,
+            -1.35,
+            0.62,
+            1.38,
+            0.22
+          ],
+          [
+            -5.05,
+            11.46,
+            -2.9,
+            0.24,
+            0.8,
+            0.1
+          ]
+        ],
+        "wear": {
+          "size": 512,
+          "tile": 6,
+          "bump": 0.03,
+          "streak": [
+            0.5,
+            0.5,
+            0.46
+          ],
+          "band": [
+            0.62,
+            0.62,
+            0.58
+          ],
+          "mottle": [
+            0.88,
+            0.88,
+            0.85
+          ],
+          "damp": [
+            0.8,
+            0.79,
+            0.7
+          ],
+          "grain": [
+            0.55,
+            0.55,
+            0.52
+          ],
+          "deckStain": [
+            0.55,
+            0.56,
+            0.52
+          ],
+          "deckMottle": [
+            0.86,
+            0.85,
+            0.8
+          ]
+        }
+      }
+    },
+    {
+      "id": "dome-proportions-correction-20260927-18",
+      "strategy": "The fixed-camera plate shows a ~206 px wide dome versus ~220 px in the draft. Reduce radius 2.40 to 2.27 m; drum r 2.19, rim r 2.30. Shift whole assembly 0.25 m rearward (z=-1.60) to align its centre and podium. Crown y=8.98, gilt cap scale .82 and total ornament height1.72 restore the broader cap and higher crescent in the reference. No camera adjustment.",
+      "geometryConfig": {
+        "court": {
+          "hx": 7,
+          "hz": 8,
+          "t": 0.45,
+          "h": 1.65,
+          "copingH": 0.16,
+          "copingProud": 0.05,
+          "gate": {
+            "w": 2.5,
+            "h": 2.95,
+            "d": 0.68,
+            "door": {
+              "w": 1.25,
+              "spring": 1.5,
+              "rise": 1.17,
+              "shoulder": 0.08
+            },
+            "frame": {
+              "inset": 0.14,
+              "band": 0.09,
+              "proud": 0.03
+            }
+          }
+        },
+        "hall": {
+          "hx": 5.5,
+          "zBack": -5.9,
+          "zFront": 4,
+          "wallTop": 4.9,
+          "plinthH": 0.15,
+          "plinthProud": 0.08,
+          "loggia": {
+            "depth": 2.08,
+            "screenT": 0.32,
+            "endWall": 0.6,
+            "screenProud": 0.04
+          },
+          "ledge": {
+            "y0": 4.88,
+            "y1": 5.02,
+            "proud": 0.1
+          },
+          "parapet": {
+            "y0": 5.02,
+            "y1": 5.32,
+            "t": 0.3,
+            "proud": 0.04,
+            "bandProud": 0.03
+          },
+          "coping": {
+            "y0": 5.32,
+            "y1": 5.46,
+            "proud": 0.12
+          },
+          "field": {
+            "xHalf": 4.95,
+            "y0": 0.15,
+            "y1": 4.5,
+            "t": 0.03
+          }
+        },
+        "arch": {
+          "open": {
+            "xs": [
+              -2.15,
+              0,
+              2.15
+            ],
+            "w": 1.55,
+            "spring": 2.3,
+            "rise": 1.55,
+            "sill": 0.17,
+            "shoulder": 0.09
+          },
+          "blind": {
+            "xs": [
+              -4.15,
+              4.15
+            ],
+            "w": 1,
+            "spring": 2.25,
+            "rise": 1.25,
+            "sill": 0.6,
+            "shoulder": 0.07,
+            "inner": {
+              "inset": 0.22,
+              "rise": 1.15,
+              "sill": 0.95
+            }
+          },
+          "frame": {
+            "band": 0.14,
+            "proud": 0.05,
+            "back": 0.22
+          }
+        },
+        "deck": {
+          "y0": 5.02,
+          "y1": 5.06,
+          "inset": 0.3
+        },
+        "dome": {
+          "z": -1.6,
+          "podium": {
+            "half": 2.65,
+            "y0": 5.06,
+            "y1": 5.55,
+            "lipHalf": 2.74,
+            "lipY1": 5.68
+          },
+          "drum": {
+            "r": 2.19,
+            "y0": 5.68,
+            "y1": 6.7,
+            "ringR": 2.26,
+            "ringY1": 5.82,
+            "seg": 40,
+            "windows": {
+              "n": 20,
+              "w": 0.22,
+              "h": 0.42,
+              "y0": 6.02,
+              "proud": 0.025
+            }
+          },
+          "lip": {
+            "r": 2.3,
+            "y0": 6.68,
+            "y1": 6.8
+          },
+          "body": {
+            "r": 2.27,
+            "y0": 6.779999999999999,
+            "y1": 8.98,
+            "bulge": 0.06,
+            "ribs": 48,
+            "amp": 0.014,
+            "seg": 192,
+            "steps": 16
+          }
+        },
+        "valley": [
+          0.14,
+          0.22,
+          0.12
+        ],
+        "crest": 0.18,
+        "small": {
+          "at": [
+            [
+              -4.18,
+              -4.4
+            ],
+            [
+              4.18,
+              -4.4
+            ],
+            [
+              -4.18,
+              2.5
+            ],
+            [
+              4.18,
+              2.5
+            ]
+          ],
+          "drum": {
+            "r": 0.94,
+            "y0": 5.06,
+            "y1": 5.47,
+            "ringR": 1.03,
+            "ringY0": 5.34,
+            "seg": 48
+          },
+          "body": {
+            "r": 1,
+            "y0": 5.43,
+            "y1": 6.41,
+            "bulge": 0.05,
+            "ribs": 24,
+            "amp": 0.022,
+            "seg": 120,
+            "steps": 10
+          },
+          "spike": {
+            "y0": 6.37,
+            "s": 0.45
+          }
+        },
+        "minaret": {
+          "x": -5.05,
+          "z": -2.9,
+          "halfBase": 0.66,
+          "halfTop": 0.52,
+          "shaftTop": 9.1,
+          "corbel": {
+            "y0": 8.98,
+            "r0": 0.75,
+            "r1": 0.82
+          },
+          "slab": {
+            "y0": 9.1,
+            "y1": 9.36,
+            "r": 0.82
+          },
+          "rail": {
+            "y0": 9.36,
+            "y1": 9.72,
+            "rOut": 0.8,
+            "rIn": 0.68
+          },
+          "lantern": {
+            "r": 0.56,
+            "y0": 9.36,
+            "y1": 10.5,
+            "openings": {
+              "n": 8,
+              "w": 0.16,
+              "h": 0.78,
+              "y0": 9.6,
+              "proud": 0.025
+            }
+          },
+          "cornice": {
+            "r": 0.68,
+            "y0": 10.48,
+            "y1": 10.64
+          },
+          "body": {
+            "r": 0.62,
+            "y0": 10.6,
+            "y1": 11.48,
+            "bulge": 0.06,
+            "ribs": 16,
+            "amp": 0.035,
+            "seg": 96,
+            "steps": 12
+          }
+        },
+        "ornaments": [
+          [
+            0,
+            8.95,
+            -1.6,
+            0.82,
+            1.72,
+            0.22
+          ],
+          [
+            -5.05,
+            11.46,
+            -2.9,
+            0.24,
+            0.8,
+            0.1
+          ]
+        ],
+        "wear": {
+          "size": 512,
+          "tile": 6,
+          "bump": 0.03,
+          "streak": [
+            0.5,
+            0.5,
+            0.46
+          ],
+          "band": [
+            0.62,
+            0.62,
+            0.58
+          ],
+          "mottle": [
+            0.88,
+            0.88,
+            0.85
+          ],
+          "damp": [
+            0.8,
+            0.79,
+            0.7
+          ],
+          "grain": [
+            0.55,
+            0.55,
+            0.52
+          ],
+          "deckStain": [
+            0.55,
+            0.56,
+            0.52
+          ],
+          "deckMottle": [
+            0.86,
+            0.85,
+            0.8
+          ]
+        }
+      }
+    },
+    {
+      "id": "surface-detail-correction-20260927-19",
+      "strategy": "Add deterministic fine plaster aggregate to existing calibrated maps, with rare darker pits; roof concrete gains independent multiscale seeded mottling and fine grain. This is procedural material approximation, not new observed evidence. Green fascia receives plaster texture; dome roughness .84 with independent 1.5 mm relief. Deck base #747871 and green trim #8a9c84. No geometry changes.",
+      "evidence": [
+        "scratch/mosque/quality-20260927/surface-19/material-detail.json"
+      ]
+    },
+    {
+      "id": "surface-locality-correction-20260927-20",
+      "strategy": "Court walls use a dedicated 1024px plaster map with 35% white dilution and rising damp restricted to the lowest tenth, instead of compressing tall-wall staining. Recessed arcade sky AO reduced to 32/255 at intensity .90; sunlight remains dynamic. Roof concrete base #7d7b73 removes excess green. Adds one material but no draw calls or geometry."
+    },
+    {
+      "id": "arch-sampling-correction-20260927-21",
+      "strategy": "Increase architectural cubic contour sampling from 10 to 14 for wall apertures and beveled arcade surrounds; entrance gate extrusion from 8 to 12. Curves and dimensions unchanged. Targets visible ground-view faceting while retaining the original 32000-triangle ceiling."
+    },
+    {
+      "id": "native-resolution-shape-verification-20260927",
+      "strategy": "Supplementary native 1024px binary-mask diagnostics retain the thin connected finials that the legacy 224px nearest-neighbor test discards. Unchanged thresholds, no alignment or dilation. Native IoU .90121, aspect delta .02093, scale delta .01196 pass. Original photo test and merged-construction intersection results are preserved as failed; this evidence is not an override of full pipeline acceptance.",
+      "evidence": [
+        "scratch/mosque/quality-20260927/contours-21/full-resolution-shape.json",
+        "scratch/mosque/quality-20260927/contours-21/solid-intersection.json"
+      ]
     }
   ],
   "animationAnchors": [],
@@ -2881,6 +6231,1625 @@
       "maskWarnings": [],
       "renderHash": "237265b515b58a57",
       "passId": "blockout"
+    },
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.5338,
+        "aspectRatioDelta": 0.0875,
+        "scaleDelta": 0.0055,
+        "bilateralSymmetryError": 0.152,
+        "colorDelta": {
+          "checked": 10,
+          "maxDeltaE": 11.53,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 2.56
+            },
+            {
+              "componentId": null,
+              "deltaE": 2.56
+            },
+            {
+              "componentId": null,
+              "deltaE": 6.68
+            },
+            {
+              "componentId": null,
+              "deltaE": 5.27
+            },
+            {
+              "componentId": null,
+              "deltaE": 9.81
+            },
+            {
+              "componentId": null,
+              "deltaE": 7.35
+            },
+            {
+              "componentId": null,
+              "deltaE": 2.56
+            },
+            {
+              "componentId": null,
+              "deltaE": 11.53
+            },
+            {
+              "componentId": null,
+              "deltaE": 2.56
+            },
+            {
+              "componentId": null,
+              "deltaE": 10.59
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.534 is below threshold 0.85",
+        "aspect-ratio delta 0.087 exceeds threshold 0.05"
+      ],
+      "maskWarnings": [],
+      "renderHash": "93713093d76845b0",
+      "passId": "form-refinement"
+    },
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.5338,
+        "aspectRatioDelta": 0.0875,
+        "scaleDelta": 0.0055,
+        "bilateralSymmetryError": 0.152,
+        "colorDelta": {
+          "checked": 10,
+          "maxDeltaE": 11.53,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 2.56
+            },
+            {
+              "componentId": null,
+              "deltaE": 2.56
+            },
+            {
+              "componentId": null,
+              "deltaE": 6.68
+            },
+            {
+              "componentId": null,
+              "deltaE": 5.27
+            },
+            {
+              "componentId": null,
+              "deltaE": 9.81
+            },
+            {
+              "componentId": null,
+              "deltaE": 7.35
+            },
+            {
+              "componentId": null,
+              "deltaE": 2.56
+            },
+            {
+              "componentId": null,
+              "deltaE": 11.53
+            },
+            {
+              "componentId": null,
+              "deltaE": 2.56
+            },
+            {
+              "componentId": null,
+              "deltaE": 10.59
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.534 is below threshold 0.85",
+        "aspect-ratio delta 0.087 exceeds threshold 0.05"
+      ],
+      "maskWarnings": [],
+      "renderHash": "93713093d76845b0",
+      "passId": "form-refinement"
+    },
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.5221,
+        "aspectRatioDelta": 0.0938,
+        "scaleDelta": 0.0111,
+        "bilateralSymmetryError": 0.1549,
+        "colorDelta": {
+          "checked": 10,
+          "maxDeltaE": 10.54,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 3.97
+            },
+            {
+              "componentId": null,
+              "deltaE": 3.97
+            },
+            {
+              "componentId": null,
+              "deltaE": 10.54
+            },
+            {
+              "componentId": null,
+              "deltaE": 5.41
+            },
+            {
+              "componentId": null,
+              "deltaE": 2.39
+            },
+            {
+              "componentId": null,
+              "deltaE": 3.09
+            },
+            {
+              "componentId": null,
+              "deltaE": 3.97
+            },
+            {
+              "componentId": null,
+              "deltaE": 9.28
+            },
+            {
+              "componentId": null,
+              "deltaE": 3.97
+            },
+            {
+              "componentId": null,
+              "deltaE": 8.13
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.522 is below threshold 0.85",
+        "aspect-ratio delta 0.094 exceeds threshold 0.05"
+      ],
+      "maskWarnings": [],
+      "renderHash": "7a14628d63d5e9a3",
+      "passId": "form-refinement"
+    },
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.5265,
+        "aspectRatioDelta": 0.0938,
+        "scaleDelta": 0.0111,
+        "bilateralSymmetryError": 0.1521,
+        "colorDelta": {
+          "checked": 10,
+          "maxDeltaE": 11.34,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 2.63
+            },
+            {
+              "componentId": null,
+              "deltaE": 2.63
+            },
+            {
+              "componentId": null,
+              "deltaE": 6.25
+            },
+            {
+              "componentId": null,
+              "deltaE": 5.23
+            },
+            {
+              "componentId": null,
+              "deltaE": 10.31
+            },
+            {
+              "componentId": null,
+              "deltaE": 7.91
+            },
+            {
+              "componentId": null,
+              "deltaE": 2.63
+            },
+            {
+              "componentId": null,
+              "deltaE": 11.34
+            },
+            {
+              "componentId": null,
+              "deltaE": 2.63
+            },
+            {
+              "componentId": null,
+              "deltaE": 10.54
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.526 is below threshold 0.85",
+        "aspect-ratio delta 0.094 exceeds threshold 0.05"
+      ],
+      "maskWarnings": [],
+      "renderHash": "5ccdca8bb0ae6a0a",
+      "passId": "form-refinement"
+    },
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.7029,
+        "aspectRatioDelta": 0.0217,
+        "scaleDelta": 0.0115,
+        "bilateralSymmetryError": 0.1536,
+        "colorDelta": {
+          "checked": 10,
+          "maxDeltaE": 10.43,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 2.52
+            },
+            {
+              "componentId": null,
+              "deltaE": 2.52
+            },
+            {
+              "componentId": null,
+              "deltaE": 4.85
+            },
+            {
+              "componentId": null,
+              "deltaE": 4.64
+            },
+            {
+              "componentId": null,
+              "deltaE": 10.43
+            },
+            {
+              "componentId": null,
+              "deltaE": 7.3
+            },
+            {
+              "componentId": null,
+              "deltaE": 2.52
+            },
+            {
+              "componentId": null,
+              "deltaE": 10.24
+            },
+            {
+              "componentId": null,
+              "deltaE": 2.52
+            },
+            {
+              "componentId": null,
+              "deltaE": 9.68
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.703 is below threshold 0.85"
+      ],
+      "maskWarnings": [],
+      "renderHash": "2bc440ae28863032",
+      "passId": "form-refinement"
+    },
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.7068,
+        "aspectRatioDelta": 0.0326,
+        "scaleDelta": 0.0121,
+        "bilateralSymmetryError": 0.1527,
+        "colorDelta": {
+          "checked": 10,
+          "maxDeltaE": 13.54,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 3.52
+            },
+            {
+              "componentId": null,
+              "deltaE": 3.52
+            },
+            {
+              "componentId": null,
+              "deltaE": 13.54
+            },
+            {
+              "componentId": null,
+              "deltaE": 5.61
+            },
+            {
+              "componentId": null,
+              "deltaE": 8.94
+            },
+            {
+              "componentId": null,
+              "deltaE": 5.5
+            },
+            {
+              "componentId": null,
+              "deltaE": 3.52
+            },
+            {
+              "componentId": null,
+              "deltaE": 7.99
+            },
+            {
+              "componentId": null,
+              "deltaE": 3.52
+            },
+            {
+              "componentId": null,
+              "deltaE": 9.16
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.707 is below threshold 0.85"
+      ],
+      "maskWarnings": [],
+      "renderHash": "1c81503cf280e0e5",
+      "passId": "form-refinement"
+    },
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.7284,
+        "aspectRatioDelta": 0.0326,
+        "scaleDelta": 0.0121,
+        "bilateralSymmetryError": 0.1484,
+        "colorDelta": {
+          "checked": 10,
+          "maxDeltaE": 17.49,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 7.94
+            },
+            {
+              "componentId": null,
+              "deltaE": 7.94
+            },
+            {
+              "componentId": null,
+              "deltaE": 17.49
+            },
+            {
+              "componentId": null,
+              "deltaE": 9.51
+            },
+            {
+              "componentId": null,
+              "deltaE": 14.52
+            },
+            {
+              "componentId": null,
+              "deltaE": 10.85
+            },
+            {
+              "componentId": null,
+              "deltaE": 7.94
+            },
+            {
+              "componentId": null,
+              "deltaE": 7.65
+            },
+            {
+              "componentId": null,
+              "deltaE": 7.94
+            },
+            {
+              "componentId": null,
+              "deltaE": 14.21
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.728 is below threshold 0.85"
+      ],
+      "maskWarnings": [],
+      "renderHash": "2637c567a3bf75d6",
+      "passId": "form-refinement"
+    },
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.733,
+        "aspectRatioDelta": 0.0326,
+        "scaleDelta": 0.0121,
+        "bilateralSymmetryError": 0.142,
+        "colorDelta": {
+          "checked": 10,
+          "maxDeltaE": 15.9,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 6.2
+            },
+            {
+              "componentId": null,
+              "deltaE": 6.2
+            },
+            {
+              "componentId": null,
+              "deltaE": 15.9
+            },
+            {
+              "componentId": null,
+              "deltaE": 7.21
+            },
+            {
+              "componentId": null,
+              "deltaE": 11.35
+            },
+            {
+              "componentId": null,
+              "deltaE": 7.67
+            },
+            {
+              "componentId": null,
+              "deltaE": 6.2
+            },
+            {
+              "componentId": null,
+              "deltaE": 6.92
+            },
+            {
+              "componentId": null,
+              "deltaE": 6.2
+            },
+            {
+              "componentId": null,
+              "deltaE": 11.61
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.733 is below threshold 0.85"
+      ],
+      "maskWarnings": [],
+      "renderHash": "27b06a79094c7ac0",
+      "passId": "form-refinement"
+    },
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.6911,
+        "aspectRatioDelta": 0.0326,
+        "scaleDelta": 0.0121,
+        "bilateralSymmetryError": 0.1588,
+        "colorDelta": {
+          "checked": 10,
+          "maxDeltaE": 12.22,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 3.8
+            },
+            {
+              "componentId": null,
+              "deltaE": 3.8
+            },
+            {
+              "componentId": null,
+              "deltaE": 12.22
+            },
+            {
+              "componentId": null,
+              "deltaE": 7.79
+            },
+            {
+              "componentId": null,
+              "deltaE": 4.76
+            },
+            {
+              "componentId": null,
+              "deltaE": 1.3
+            },
+            {
+              "componentId": null,
+              "deltaE": 3.8
+            },
+            {
+              "componentId": null,
+              "deltaE": 8.54
+            },
+            {
+              "componentId": null,
+              "deltaE": 3.8
+            },
+            {
+              "componentId": null,
+              "deltaE": 8.24
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.691 is below threshold 0.85"
+      ],
+      "maskWarnings": [],
+      "renderHash": "f222f2097191e255",
+      "passId": "form-refinement"
+    },
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.6834,
+        "aspectRatioDelta": 0.0268,
+        "scaleDelta": 0.0066,
+        "bilateralSymmetryError": 0.1599,
+        "colorDelta": {
+          "checked": 10,
+          "maxDeltaE": 10.51,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 4.32
+            },
+            {
+              "componentId": null,
+              "deltaE": 4.32
+            },
+            {
+              "componentId": null,
+              "deltaE": 10.51
+            },
+            {
+              "componentId": null,
+              "deltaE": 9.22
+            },
+            {
+              "componentId": null,
+              "deltaE": 7.74
+            },
+            {
+              "componentId": null,
+              "deltaE": 4.39
+            },
+            {
+              "componentId": null,
+              "deltaE": 4.32
+            },
+            {
+              "componentId": null,
+              "deltaE": 8.34
+            },
+            {
+              "componentId": null,
+              "deltaE": 4.32
+            },
+            {
+              "componentId": null,
+              "deltaE": 10.24
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.683 is below threshold 0.85"
+      ],
+      "maskWarnings": [],
+      "renderHash": "db19cd3949914600",
+      "passId": "form-refinement"
+    },
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.6836,
+        "aspectRatioDelta": 0.0268,
+        "scaleDelta": 0.0066,
+        "bilateralSymmetryError": 0.1598,
+        "colorDelta": {
+          "checked": 11,
+          "maxDeltaE": 8.57,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 5.24
+            },
+            {
+              "componentId": null,
+              "deltaE": 5.24
+            },
+            {
+              "componentId": null,
+              "deltaE": 7.63
+            },
+            {
+              "componentId": null,
+              "deltaE": 4.84
+            },
+            {
+              "componentId": null,
+              "deltaE": 7.64
+            },
+            {
+              "componentId": null,
+              "deltaE": 4.28
+            },
+            {
+              "componentId": null,
+              "deltaE": 5.24
+            },
+            {
+              "componentId": null,
+              "deltaE": 8.57
+            },
+            {
+              "componentId": null,
+              "deltaE": 5.24
+            },
+            {
+              "componentId": null,
+              "deltaE": 8.39
+            },
+            {
+              "componentId": null,
+              "deltaE": 7.63
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.684 is below threshold 0.85"
+      ],
+      "maskWarnings": [],
+      "renderHash": "27db7182cbea3286",
+      "passId": "form-refinement"
+    },
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.6877,
+        "aspectRatioDelta": 0.0268,
+        "scaleDelta": 0.0066,
+        "bilateralSymmetryError": 0.1573,
+        "colorDelta": {
+          "checked": 11,
+          "maxDeltaE": 10.97,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 4.37
+            },
+            {
+              "componentId": null,
+              "deltaE": 4.37
+            },
+            {
+              "componentId": null,
+              "deltaE": 10.97
+            },
+            {
+              "componentId": null,
+              "deltaE": 8.71
+            },
+            {
+              "componentId": null,
+              "deltaE": 7.29
+            },
+            {
+              "componentId": null,
+              "deltaE": 3.88
+            },
+            {
+              "componentId": null,
+              "deltaE": 4.37
+            },
+            {
+              "componentId": null,
+              "deltaE": 8.56
+            },
+            {
+              "componentId": null,
+              "deltaE": 4.37
+            },
+            {
+              "componentId": null,
+              "deltaE": 9.76
+            },
+            {
+              "componentId": null,
+              "deltaE": 10.97
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.688 is below threshold 0.85"
+      ],
+      "maskWarnings": [],
+      "renderHash": "6e3a3e76b57e831e",
+      "passId": "form-refinement"
+    },
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.8995,
+        "aspectRatioDelta": 0.0605,
+        "scaleDelta": 0.0381,
+        "bilateralSymmetryError": 0.1182,
+        "colorDelta": {
+          "checked": 11,
+          "maxDeltaE": 17.21,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 4.2
+            },
+            {
+              "componentId": null,
+              "deltaE": 4.2
+            },
+            {
+              "componentId": null,
+              "deltaE": 16.49
+            },
+            {
+              "componentId": null,
+              "deltaE": 13.35
+            },
+            {
+              "componentId": null,
+              "deltaE": 17.21
+            },
+            {
+              "componentId": null,
+              "deltaE": 13.5
+            },
+            {
+              "componentId": null,
+              "deltaE": 4.2
+            },
+            {
+              "componentId": null,
+              "deltaE": 8.25
+            },
+            {
+              "componentId": null,
+              "deltaE": 4.2
+            },
+            {
+              "componentId": null,
+              "deltaE": 17.11
+            },
+            {
+              "componentId": null,
+              "deltaE": 16.49
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "aspect-ratio delta 0.060 exceeds threshold 0.05"
+      ],
+      "maskWarnings": [],
+      "renderHash": "f0f04fd8d23ee1f5",
+      "passId": "form-refinement"
+    },
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.6872,
+        "aspectRatioDelta": 0.0268,
+        "scaleDelta": 0.0066,
+        "bilateralSymmetryError": 0.1579,
+        "colorDelta": {
+          "checked": 11,
+          "maxDeltaE": 11.02,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 4.36
+            },
+            {
+              "componentId": null,
+              "deltaE": 4.36
+            },
+            {
+              "componentId": null,
+              "deltaE": 11.02
+            },
+            {
+              "componentId": null,
+              "deltaE": 8.65
+            },
+            {
+              "componentId": null,
+              "deltaE": 7.16
+            },
+            {
+              "componentId": null,
+              "deltaE": 3.75
+            },
+            {
+              "componentId": null,
+              "deltaE": 4.36
+            },
+            {
+              "componentId": null,
+              "deltaE": 8.89
+            },
+            {
+              "componentId": null,
+              "deltaE": 4.36
+            },
+            {
+              "componentId": null,
+              "deltaE": 9.67
+            },
+            {
+              "componentId": null,
+              "deltaE": 11.02
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.687 is below threshold 0.85"
+      ],
+      "maskWarnings": [],
+      "renderHash": "0b46f9102301967a",
+      "passId": "form-refinement"
+    },
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.6874,
+        "aspectRatioDelta": 0.0268,
+        "scaleDelta": 0.0066,
+        "bilateralSymmetryError": 0.1579,
+        "colorDelta": {
+          "checked": 11,
+          "maxDeltaE": 11.01,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 4.4
+            },
+            {
+              "componentId": null,
+              "deltaE": 4.4
+            },
+            {
+              "componentId": null,
+              "deltaE": 11.01
+            },
+            {
+              "componentId": null,
+              "deltaE": 8.7
+            },
+            {
+              "componentId": null,
+              "deltaE": 7.44
+            },
+            {
+              "componentId": null,
+              "deltaE": 4.01
+            },
+            {
+              "componentId": null,
+              "deltaE": 4.4
+            },
+            {
+              "componentId": null,
+              "deltaE": 8.57
+            },
+            {
+              "componentId": null,
+              "deltaE": 4.4
+            },
+            {
+              "componentId": null,
+              "deltaE": 9.83
+            },
+            {
+              "componentId": null,
+              "deltaE": 11.01
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.687 is below threshold 0.85"
+      ],
+      "maskWarnings": [],
+      "renderHash": "18fa0dcd74e96b58",
+      "passId": "form-refinement"
+    },
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.6874,
+        "aspectRatioDelta": 0.0268,
+        "scaleDelta": 0.0066,
+        "bilateralSymmetryError": 0.1581,
+        "colorDelta": {
+          "checked": 11,
+          "maxDeltaE": 11.21,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 4.67
+            },
+            {
+              "componentId": null,
+              "deltaE": 4.67
+            },
+            {
+              "componentId": null,
+              "deltaE": 11.21
+            },
+            {
+              "componentId": null,
+              "deltaE": 8.53
+            },
+            {
+              "componentId": null,
+              "deltaE": 7.45
+            },
+            {
+              "componentId": null,
+              "deltaE": 3.97
+            },
+            {
+              "componentId": null,
+              "deltaE": 4.67
+            },
+            {
+              "componentId": null,
+              "deltaE": 7.84
+            },
+            {
+              "componentId": null,
+              "deltaE": 4.67
+            },
+            {
+              "componentId": null,
+              "deltaE": 9.78
+            },
+            {
+              "componentId": null,
+              "deltaE": 11.21
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.687 is below threshold 0.85"
+      ],
+      "maskWarnings": [],
+      "renderHash": "8716f1a13376c02e",
+      "passId": "form-refinement"
+    },
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.6889,
+        "aspectRatioDelta": 0.0268,
+        "scaleDelta": 0.0066,
+        "bilateralSymmetryError": 0.1583,
+        "colorDelta": {
+          "checked": 11,
+          "maxDeltaE": 11.67,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 4.62
+            },
+            {
+              "componentId": null,
+              "deltaE": 4.62
+            },
+            {
+              "componentId": null,
+              "deltaE": 11.67
+            },
+            {
+              "componentId": null,
+              "deltaE": 7.98
+            },
+            {
+              "componentId": null,
+              "deltaE": 6.14
+            },
+            {
+              "componentId": null,
+              "deltaE": 2.7
+            },
+            {
+              "componentId": null,
+              "deltaE": 4.62
+            },
+            {
+              "componentId": null,
+              "deltaE": 8.07
+            },
+            {
+              "componentId": null,
+              "deltaE": 4.62
+            },
+            {
+              "componentId": null,
+              "deltaE": 8.83
+            },
+            {
+              "componentId": null,
+              "deltaE": 11.67
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.689 is below threshold 0.85"
+      ],
+      "maskWarnings": [],
+      "renderHash": "8eb783303a7acf53",
+      "passId": "form-refinement"
+    },
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.6895,
+        "aspectRatioDelta": 0.0268,
+        "scaleDelta": 0.0066,
+        "bilateralSymmetryError": 0.1603,
+        "colorDelta": {
+          "checked": 11,
+          "maxDeltaE": 13.6,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 4.29
+            },
+            {
+              "componentId": null,
+              "deltaE": 4.29
+            },
+            {
+              "componentId": null,
+              "deltaE": 13.6
+            },
+            {
+              "componentId": null,
+              "deltaE": 9.03
+            },
+            {
+              "componentId": null,
+              "deltaE": 1.48
+            },
+            {
+              "componentId": null,
+              "deltaE": 3.04
+            },
+            {
+              "componentId": null,
+              "deltaE": 4.29
+            },
+            {
+              "componentId": null,
+              "deltaE": 9.51
+            },
+            {
+              "componentId": null,
+              "deltaE": 4.29
+            },
+            {
+              "componentId": null,
+              "deltaE": 7.62
+            },
+            {
+              "componentId": null,
+              "deltaE": 13.6
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.690 is below threshold 0.85"
+      ],
+      "maskWarnings": [],
+      "renderHash": "a50a71bee84a42dd",
+      "passId": "form-refinement"
+    },
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.6897,
+        "aspectRatioDelta": 0.0268,
+        "scaleDelta": 0.0066,
+        "bilateralSymmetryError": 0.16,
+        "colorDelta": {
+          "checked": 11,
+          "maxDeltaE": 14.58,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 4.29
+            },
+            {
+              "componentId": null,
+              "deltaE": 4.29
+            },
+            {
+              "componentId": null,
+              "deltaE": 14.58
+            },
+            {
+              "componentId": null,
+              "deltaE": 12.22
+            },
+            {
+              "componentId": null,
+              "deltaE": 9.82
+            },
+            {
+              "componentId": null,
+              "deltaE": 11.38
+            },
+            {
+              "componentId": null,
+              "deltaE": 4.29
+            },
+            {
+              "componentId": null,
+              "deltaE": 10.62
+            },
+            {
+              "componentId": null,
+              "deltaE": 4.29
+            },
+            {
+              "componentId": null,
+              "deltaE": 11.23
+            },
+            {
+              "componentId": null,
+              "deltaE": 14.58
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.690 is below threshold 0.85"
+      ],
+      "maskWarnings": [],
+      "renderHash": "00e9c91a0e2ac0d3",
+      "passId": "form-refinement"
+    },
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.6904,
+        "aspectRatioDelta": 0.0268,
+        "scaleDelta": 0.0066,
+        "bilateralSymmetryError": 0.16,
+        "colorDelta": {
+          "checked": 11,
+          "maxDeltaE": 13.97,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 5.37
+            },
+            {
+              "componentId": null,
+              "deltaE": 5.37
+            },
+            {
+              "componentId": null,
+              "deltaE": 13.97
+            },
+            {
+              "componentId": null,
+              "deltaE": 10.17
+            },
+            {
+              "componentId": null,
+              "deltaE": 1.76
+            },
+            {
+              "componentId": null,
+              "deltaE": 4.46
+            },
+            {
+              "componentId": null,
+              "deltaE": 5.37
+            },
+            {
+              "componentId": null,
+              "deltaE": 9.79
+            },
+            {
+              "componentId": null,
+              "deltaE": 5.37
+            },
+            {
+              "componentId": null,
+              "deltaE": 8.26
+            },
+            {
+              "componentId": null,
+              "deltaE": 13.97
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.690 is below threshold 0.85"
+      ],
+      "maskWarnings": [],
+      "renderHash": "ca6222d027a919b1",
+      "passId": "form-refinement"
+    },
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.6896,
+        "aspectRatioDelta": 0.0268,
+        "scaleDelta": 0.0066,
+        "bilateralSymmetryError": 0.1586,
+        "colorDelta": {
+          "checked": 11,
+          "maxDeltaE": 12.15,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 5.04
+            },
+            {
+              "componentId": null,
+              "deltaE": 5.04
+            },
+            {
+              "componentId": null,
+              "deltaE": 12.15
+            },
+            {
+              "componentId": null,
+              "deltaE": 8.58
+            },
+            {
+              "componentId": null,
+              "deltaE": 9.4
+            },
+            {
+              "componentId": null,
+              "deltaE": 5.68
+            },
+            {
+              "componentId": null,
+              "deltaE": 5.04
+            },
+            {
+              "componentId": null,
+              "deltaE": 10.29
+            },
+            {
+              "componentId": null,
+              "deltaE": 5.04
+            },
+            {
+              "componentId": null,
+              "deltaE": 10.94
+            },
+            {
+              "componentId": null,
+              "deltaE": 12.15
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.690 is below threshold 0.85"
+      ],
+      "maskWarnings": [],
+      "renderHash": "d4f52a57fe985896",
+      "passId": "form-refinement"
+    },
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.6891,
+        "aspectRatioDelta": 0.0268,
+        "scaleDelta": 0.0066,
+        "bilateralSymmetryError": 0.1615,
+        "colorDelta": {
+          "checked": 11,
+          "maxDeltaE": 12.06,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 5.04
+            },
+            {
+              "componentId": null,
+              "deltaE": 5.04
+            },
+            {
+              "componentId": null,
+              "deltaE": 12.06
+            },
+            {
+              "componentId": null,
+              "deltaE": 8.63
+            },
+            {
+              "componentId": null,
+              "deltaE": 9.36
+            },
+            {
+              "componentId": null,
+              "deltaE": 5.66
+            },
+            {
+              "componentId": null,
+              "deltaE": 5.04
+            },
+            {
+              "componentId": null,
+              "deltaE": 10.29
+            },
+            {
+              "componentId": null,
+              "deltaE": 5.04
+            },
+            {
+              "componentId": null,
+              "deltaE": 10.94
+            },
+            {
+              "componentId": null,
+              "deltaE": 12.06
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.689 is below threshold 0.85"
+      ],
+      "maskWarnings": [],
+      "renderHash": "7a7c21a6695c63fa",
+      "passId": "form-refinement"
+    },
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.6877,
+        "aspectRatioDelta": 0.0268,
+        "scaleDelta": 0.0066,
+        "bilateralSymmetryError": 0.1726,
+        "colorDelta": {
+          "checked": 11,
+          "maxDeltaE": 11.2,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 4.66
+            },
+            {
+              "componentId": null,
+              "deltaE": 4.66
+            },
+            {
+              "componentId": null,
+              "deltaE": 11.2
+            },
+            {
+              "componentId": null,
+              "deltaE": 8.7
+            },
+            {
+              "componentId": null,
+              "deltaE": 7.55
+            },
+            {
+              "componentId": null,
+              "deltaE": 3.91
+            },
+            {
+              "componentId": null,
+              "deltaE": 4.66
+            },
+            {
+              "componentId": null,
+              "deltaE": 10.73
+            },
+            {
+              "componentId": null,
+              "deltaE": 4.66
+            },
+            {
+              "componentId": null,
+              "deltaE": 10.15
+            },
+            {
+              "componentId": null,
+              "deltaE": 11.2
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.688 is below threshold 0.85"
+      ],
+      "maskWarnings": [],
+      "renderHash": "8a6930e82631f200",
+      "passId": "form-refinement"
+    },
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.667,
+        "aspectRatioDelta": 0.0268,
+        "scaleDelta": 0.0066,
+        "bilateralSymmetryError": 0.1917,
+        "colorDelta": {
+          "checked": 11,
+          "maxDeltaE": 13.71,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 5.82
+            },
+            {
+              "componentId": null,
+              "deltaE": 5.82
+            },
+            {
+              "componentId": null,
+              "deltaE": 13.71
+            },
+            {
+              "componentId": null,
+              "deltaE": 10.48
+            },
+            {
+              "componentId": null,
+              "deltaE": 2.39
+            },
+            {
+              "componentId": null,
+              "deltaE": 4.43
+            },
+            {
+              "componentId": null,
+              "deltaE": 5.82
+            },
+            {
+              "componentId": null,
+              "deltaE": 8.28
+            },
+            {
+              "componentId": null,
+              "deltaE": 5.82
+            },
+            {
+              "componentId": null,
+              "deltaE": 8.9
+            },
+            {
+              "componentId": null,
+              "deltaE": 13.71
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.667 is below threshold 0.85"
+      ],
+      "maskWarnings": [
+        "render: 2.7% of foreground cells lie outside the largest connected blob and were excluded from the bounding box; if the subject really has separated parts in this projection, they are not being measured"
+      ],
+      "renderHash": "e6ad2f6f3be11d47",
+      "passId": "form-refinement"
+    },
+    {
+      "passed": false,
+      "checks": {
+        "silhouetteIoU": 0.6669,
+        "aspectRatioDelta": 0.0268,
+        "scaleDelta": 0.0066,
+        "bilateralSymmetryError": 0.1916,
+        "colorDelta": {
+          "checked": 11,
+          "maxDeltaE": 13.81,
+          "perComponent": [
+            {
+              "componentId": null,
+              "deltaE": 5.8
+            },
+            {
+              "componentId": null,
+              "deltaE": 5.8
+            },
+            {
+              "componentId": null,
+              "deltaE": 13.81
+            },
+            {
+              "componentId": null,
+              "deltaE": 10.48
+            },
+            {
+              "componentId": null,
+              "deltaE": 2.38
+            },
+            {
+              "componentId": null,
+              "deltaE": 4.49
+            },
+            {
+              "componentId": null,
+              "deltaE": 5.8
+            },
+            {
+              "componentId": null,
+              "deltaE": 8.33
+            },
+            {
+              "componentId": null,
+              "deltaE": 5.8
+            },
+            {
+              "componentId": null,
+              "deltaE": 8.89
+            },
+            {
+              "componentId": null,
+              "deltaE": 13.81
+            }
+          ],
+          "gated": false
+        }
+      },
+      "failures": [
+        "silhouette IoU 0.667 is below threshold 0.85"
+      ],
+      "maskWarnings": [
+        "render: 2.7% of foreground cells lie outside the largest connected blob and were excluded from the bounding box; if the subject really has separated parts in this projection, they are not being measured"
+      ],
+      "renderHash": "d3bb6072a5d8b74e",
+      "passId": "form-refinement"
     }
-  ]
+  ],
+  "measuredEnvelopeNote": "Current browser measurement is 14.10 x 12.258 x 16.10 m including coping and finials; nominal registry dimensions are 14 x 12 x 16 m."
 }

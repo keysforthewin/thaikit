@@ -18,7 +18,8 @@ import * as THREE from 'three';
  * a profile revolved about +Y -- and the tiered/stepped merge, not the parameterised shopfront.
  */
 
-export type ProceduralModelOptions = {
+export interface ProceduralModelOptions {
+  baseUrl?: string;
   wireframe?: boolean;
   castShadow?: boolean;
   receiveShadow?: boolean;
@@ -50,27 +51,27 @@ const CONFIG = {
       },
       {
         "id": "panel",
-        "color": 11779489,
+        "color": 11911839,
         "roughness": 0.92,
         "metalness": 0,
         "vertexColors": true
       },
       {
         "id": "dome",
-        "color": 9673350,
-        "roughness": 0.72,
+        "color": 13421245,
+        "roughness": 0.84,
         "metalness": 0,
         "vertexColors": true
       },
       {
         "id": "green",
-        "color": 9475451,
+        "color": 9084036,
         "roughness": 0.72,
         "metalness": 0
       },
       {
         "id": "deck",
-        "color": 9407616,
+        "color": 8223603,
         "roughness": 0.95,
         "metalness": 0
       },
@@ -82,7 +83,7 @@ const CONFIG = {
       },
       {
         "id": "gold",
-        "color": 9800822,
+        "color": 11705956,
         "roughness": 0.38,
         "metalness": 0.3,
         "envMapIntensity": 1.2
@@ -102,8 +103,8 @@ const CONFIG = {
           "d": 0.68,
           "door": {
             "w": 1.25,
-            "spring": 1.75,
-            "rise": 0.92,
+            "spring": 1.5,
+            "rise": 1.17,
             "shoulder": 0.08
           },
           "frame": {
@@ -121,8 +122,8 @@ const CONFIG = {
         "plinthH": 0.15,
         "plinthProud": 0.08,
         "loggia": {
-          "depth": 1.8,
-          "screenT": 0.6,
+          "depth": 2.08,
+          "screenT": 0.32,
           "endWall": 0.6,
           "screenProud": 0.04
         },
@@ -146,7 +147,7 @@ const CONFIG = {
         "field": {
           "xHalf": 4.95,
           "y0": 0.15,
-          "y1": 4.72,
+          "y1": 4.5,
           "t": 0.03
         }
       },
@@ -158,8 +159,8 @@ const CONFIG = {
             2.15
           ],
           "w": 1.55,
-          "spring": 2.65,
-          "rise": 1.2,
+          "spring": 2.3,
+          "rise": 1.55,
           "sill": 0.17,
           "shoulder": 0.09
         },
@@ -169,20 +170,20 @@ const CONFIG = {
             4.15
           ],
           "w": 1,
-          "spring": 2.65,
-          "rise": 0.85,
+          "spring": 2.25,
+          "rise": 1.25,
           "sill": 0.6,
           "shoulder": 0.07,
           "inner": {
             "inset": 0.22,
-            "rise": 0.75,
+            "rise": 1.15,
             "sill": 0.95
           }
         },
         "frame": {
           "band": 0.14,
           "proud": 0.05,
-          "back": 0.4
+          "back": 0.22
         }
       },
       "deck": {
@@ -191,7 +192,7 @@ const CONFIG = {
         "inset": 0.3
       },
       "dome": {
-        "z": -1.35,
+        "z": -1.6,
         "podium": {
           "half": 2.65,
           "y0": 5.06,
@@ -200,42 +201,42 @@ const CONFIG = {
           "lipY1": 5.68
         },
         "drum": {
-          "r": 2.25,
+          "r": 2.19,
           "y0": 5.68,
-          "y1": 6.98,
-          "ringR": 2.34,
+          "y1": 6.7,
+          "ringR": 2.26,
           "ringY1": 5.82,
           "seg": 40,
           "windows": {
-            "n": 12,
-            "w": 0.34,
-            "h": 0.72,
+            "n": 20,
+            "w": 0.22,
+            "h": 0.42,
             "y0": 6.02,
             "proud": 0.025
           }
         },
         "lip": {
-          "r": 2.46,
-          "y0": 6.95,
-          "y1": 7.22
+          "r": 2.3,
+          "y0": 6.68,
+          "y1": 6.8
         },
         "body": {
-          "r": 2.4,
-          "y0": 7.18,
-          "y1": 9.5,
+          "r": 2.27,
+          "y0": 6.779999999999999,
+          "y1": 8.98,
           "bulge": 0.06,
-          "ribs": 32,
-          "amp": 0.022,
-          "seg": 96,
-          "steps": 14
+          "ribs": 48,
+          "amp": 0.014,
+          "seg": 192,
+          "steps": 16
         }
       },
       "valley": [
-        0.3,
-        0.39,
-        0.32
+        0.14,
+        0.22,
+        0.12
       ],
-      "crest": 0.35,
+      "crest": 0.18,
       "small": {
         "at": [
           [
@@ -256,25 +257,25 @@ const CONFIG = {
           ]
         ],
         "drum": {
-          "r": 0.78,
+          "r": 0.94,
           "y0": 5.06,
-          "y1": 6.22,
-          "ringR": 0.86,
-          "ringY0": 6.06,
-          "seg": 24
+          "y1": 5.47,
+          "ringR": 1.03,
+          "ringY0": 5.34,
+          "seg": 48
         },
         "body": {
           "r": 1,
-          "y0": 6.18,
-          "y1": 7.16,
+          "y0": 5.43,
+          "y1": 6.41,
           "bulge": 0.05,
-          "ribs": 20,
-          "amp": 0.03,
-          "seg": 64,
+          "ribs": 24,
+          "amp": 0.022,
+          "seg": 120,
           "steps": 10
         },
         "spike": {
-          "y0": 7.12,
+          "y0": 6.37,
           "s": 0.45
         }
       },
@@ -285,20 +286,20 @@ const CONFIG = {
         "halfTop": 0.52,
         "shaftTop": 9.1,
         "corbel": {
-          "y0": 8.7,
-          "r0": 0.58,
-          "r1": 0.95
+          "y0": 8.98,
+          "r0": 0.75,
+          "r1": 0.82
         },
         "slab": {
           "y0": 9.1,
           "y1": 9.36,
-          "r": 0.95
+          "r": 0.82
         },
         "rail": {
           "y0": 9.36,
           "y1": 9.72,
-          "rOut": 0.92,
-          "rIn": 0.78
+          "rOut": 0.8,
+          "rIn": 0.68
         },
         "lantern": {
           "r": 0.56,
@@ -306,7 +307,7 @@ const CONFIG = {
           "y1": 10.5,
           "openings": {
             "n": 8,
-            "w": 0.3,
+            "w": 0.16,
             "h": 0.78,
             "y0": 9.6,
             "proud": 0.025
@@ -324,17 +325,17 @@ const CONFIG = {
           "bulge": 0.06,
           "ribs": 16,
           "amp": 0.035,
-          "seg": 48,
-          "steps": 10
+          "seg": 96,
+          "steps": 12
         }
       },
       "ornaments": [
         [
           0,
-          9.47,
-          -1.35,
-          0.62,
-          1.38,
+          8.95,
+          -1.6,
+          0.82,
+          1.72,
           0.22
         ],
         [
@@ -342,7 +343,7 @@ const CONFIG = {
           11.46,
           -2.9,
           0.24,
-          0.54,
+          0.8,
           0.1
         ]
       ],
@@ -701,6 +702,8 @@ function ribbedDome(profile: number[][], ribs: number, amp: number, seg: number,
                     valley?: number[], crest = 0.55): THREE.BufferGeometry {
   const tri: number[] = [];
   const col: number[] = [];
+  const normals: number[] = [];
+  const domeUv: number[] = [];
   // The ribs are not only a shape. On the mosque's domes the crests are pale and the valleys are
   // green, and that stripe is most of what the dome reads as at distance. It is carried as a
   // per-vertex MULTIPLIER off the same cosine that shapes the rib -- two measurements, the crest
@@ -723,6 +726,19 @@ function ribbedDome(profile: number[][], ribs: number, amp: number, seg: number,
     const r = profile[i][0] * f;
     return [Math.sin(th) * r, profile[i][1], Math.cos(th) * r];
   };
+  const normalAt = (i: number, j: number): number[] => {
+    if (profile[i][0] < 1e-6) return [0, 1, 0];
+    const theta = (j % seg) * Math.PI * 2 / seg;
+    const f = 1 + amp * Math.cos(ribs * theta);
+    const df = -amp * ribs * Math.sin(ribs * theta);
+    const lo = Math.max(0, i - 1), hi = Math.min(profile.length - 1, i + 1);
+    const dr = profile[hi][0] - profile[lo][0], dy = profile[hi][1] - profile[lo][1];
+    const r = profile[i][0];
+    const around = new THREE.Vector3(r * (Math.cos(theta) * f + Math.sin(theta) * df), 0,
+      r * (-Math.sin(theta) * f + Math.cos(theta) * df));
+    const along = new THREE.Vector3(Math.sin(theta) * dr * f, dy, Math.cos(theta) * dr * f);
+    return around.cross(along).normalize().toArray();
+  };
   for (let i = 0; i < profile.length - 1; i++) {
     for (let j = 0; j < seg; j++) {
       const a = at(i, j), b = at(i, j + 1), c = at(i + 1, j + 1), d = at(i + 1, j);
@@ -730,13 +746,27 @@ function ribbedDome(profile: number[][], ribs: number, amp: number, seg: number,
       push(a, c, d);
       const ta = tint(j), tb = tint(j + 1);
       col.push(...ta, ...tb, ...tb, ...ta, ...tb, ...ta);
+      const na = normalAt(i, j), nb = normalAt(i, j + 1), nc = normalAt(i + 1, j + 1), nd = normalAt(i + 1, j);
+      normals.push(...na, ...nb, ...nc, ...na, ...nc, ...nd);
+      const u0 = j / seg, u1 = (j + 1) / seg, v0 = i / (profile.length - 1), v1 = (i + 1) / (profile.length - 1);
+      domeUv.push(u0, v0, u1, v0, u1, v1, u0, v0, u1, v1, u0, v1);
     }
+  }
+  // Close the overhang against the exact ribbed perimeter. The supporting drum
+  // is narrower, so an open shell exposes sky through the eaves from below.
+  // Reverse the fan winding to face down; reuse this mesh/material for the soffit.
+  const baseCenter = [0, profile[0][1], 0];
+  for (let j = 0; j < seg; j++) {
+    push(baseCenter, at(0, j + 1), at(0, j));
+    col.push(...(valley ?? [1, 1, 1]), ...tint(j + 1), ...tint(j));
+    normals.push(0, -1, 0, 0, -1, 0, 0, -1, 0);
+    domeUv.push(.5, .5, (j + 1) / seg, 0, j / seg, 0);
   }
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(tri), 3));
-  g.setAttribute('uv', new THREE.BufferAttribute(new Float32Array((tri.length / 3) * 2), 2));
+  g.setAttribute('uv', new THREE.BufferAttribute(new Float32Array(domeUv), 2));
   if (valley) g.setAttribute('color', new THREE.BufferAttribute(new Float32Array(col), 3));
-  g.computeVertexNormals();
+  g.setAttribute('normal', new THREE.BufferAttribute(new Float32Array(normals), 3));
   return g;
 }
 
@@ -886,6 +916,12 @@ export function createMosqueModel(options: ProceduralModelOptions = {}): THREE.G
   root.name = 'Mosque';
 
   const materials = buildMaterials(options);
+  materials['wall-photo'] = materials.white.clone();
+  materials['wall-photo'].name = 'wall-photo';
+  materials['court-photo'] = materials['wall-photo'].clone();
+  materials['court-photo'].name = 'court-photo';
+  materials['panel-interior'] = materials.panel.clone();
+  materials['panel-interior'].name = 'panel-interior';
   const nodes: Record<string, THREE.Object3D> = {};
   const meshes: Record<string, THREE.Mesh> = {};
   const sockets: Record<string, THREE.Object3D> = {};
@@ -953,6 +989,7 @@ export function createMosqueModel(options: ProceduralModelOptions = {}): THREE.G
   const G = CONFIG.geometry as any;
 
 
+
   const inBrowser = typeof document !== 'undefined' && typeof (document as any).createElement === 'function';
   const W = G.wear;
 
@@ -983,6 +1020,23 @@ export function createMosqueModel(options: ProceduralModelOptions = {}): THREE.G
     geo.setAttribute('uv', new THREE.BufferAttribute(out, 2));
     return geo;
   };
+  // Rectified reference plaster, mapped once across each elevation. The photograph
+  // supplies branching stains and rising damp; lighting is removed before import.
+  const wallPhotoUv = (geo: THREE.BufferGeometry, top: number) => {
+    geo.computeBoundingBox();
+    const b = geo.boundingBox!, p = geo.getAttribute('position'), n = geo.getAttribute('normal');
+    const uv = new Float32Array(p.count * 2);
+    for (let i = 0; i < p.count; i++) {
+      const horizontal = Math.abs(n.getY(i)) > 0.7;
+      const u = Math.abs(n.getX(i)) > Math.abs(n.getZ(i))
+        ? (b.max.z - p.getZ(i)) / (b.max.z - b.min.z)
+        : (p.getX(i) - b.min.x) / (b.max.x - b.min.x);
+      uv[i * 2] = Math.max(.002, Math.min(.998, u));
+      uv[i * 2 + 1] = (horizontal || p.getY(i) > top + .025) ? .38 + .12 * u : Math.max(.002, Math.min(.998, (top - p.getY(i)) / top));
+    }
+    geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+    return geo;
+  };
   const planarUv = (geo: THREE.BufferGeometry, tile: number) => {
     const p = geo.getAttribute('position'), uv = new Float32Array(p.count * 2);
     for (let i = 0; i < p.count; i++) { uv[i * 2] = p.getX(i) / tile; uv[i * 2 + 1] = p.getZ(i) / tile; }
@@ -999,8 +1053,8 @@ export function createMosqueModel(options: ProceduralModelOptions = {}): THREE.G
     const s = new THREE.Shape(); s.moveTo(x0, y0); s.lineTo(x1, y0); s.lineTo(x1, y1); s.lineTo(x0, y1); s.closePath(); return s;
   };
   /** Extrude an XY shape between two depths along +Z. */
-  const extrudeZ = (shape: THREE.Shape, z0: number, z1: number, seg = 10) => {
-    const g = new THREE.ExtrudeGeometry(shape, { depth: z1 - z0, bevelEnabled: false, curveSegments: seg });
+  const extrudeZ = (shape: THREE.Shape, z0: number, z1: number, seg = 10, bevel = 0) => {
+    const g = new THREE.ExtrudeGeometry(shape, { depth: z1 - z0, bevelEnabled: bevel > 0, bevelThickness: bevel, bevelSize: bevel, bevelSegments: 1, curveSegments: seg });
     g.translate(0, 0, z0); g.computeVertexNormals(); return g;
   };
   /** An n-gon prism (octagon at 8) about +Y, faces aligned so one face looks along +X. */
@@ -1015,32 +1069,20 @@ export function createMosqueModel(options: ProceduralModelOptions = {}): THREE.G
   };
 
   /* ---------------------------------------------------------------- the Moorish arch
-   * Vertical jambs, a shoulder stepping OUT at the spring, a round lobe, an ogee point. */
+   * Vertical jambs, a pinched shoulder at the spring, a round lobe, an ogee point. */
   const moorishArchPath = (target: THREE.Path, w: number, spring: number, rise: number, sill: number,
                            shoulder: number) => {
-    const hw = w / 2, sw = hw + shoulder;
-    const a = 0.22 * sw, R = Math.hypot(sw, a), cy = spring + a;
-    const th = Math.asin(Math.min(0.985, Math.max(0.5, (0.72 * rise - a) / R)));
-    const px = R * Math.cos(th), py = cy + R * Math.sin(th);
-    const tx = -Math.sin(th), ty = Math.cos(th);
-    const dx = Math.cos(1.2566), dy = -Math.sin(1.2566);
-    const ax = 0, ay = spring + rise;
-    const det = tx * (-dy) - (-dx) * ty;
-    let s = ((ax - px) * (-dy) - (-dx) * (ay - py)) / det;
-    if (!(s > 0) || !isFinite(s)) s = 0.1 * R;
-    // Keep each half on its own side of the apex. The tangent intersection can
-    // cross x=0 or overshoot the crown on broad arches, producing a self-crossing
-    // contour and overlapping front triangles when ExtrudeGeometry triangulates it.
-    const cxp = Math.max(0, px + s * tx), cyp = Math.min(ay, py + s * ty);
-    const th0 = -Math.asin(a / R);
-    const n = 8;
+    const hw = w / 2, sw = hw - shoulder;
     target.moveTo(hw, sill);
     target.lineTo(hw, spring);
-    if (shoulder > 0) target.lineTo(sw, spring);
-    for (let i = 1; i <= n; i++) { const t = th0 + (th - th0) * (i / n); target.lineTo(R * Math.cos(t), cy + R * Math.sin(t)); }
-    target.quadraticCurveTo(cxp, cyp, ax, ay);
-    target.quadraticCurveTo(-cxp, cyp, -px, py);
-    for (let i = n - 1; i >= 0; i--) { const t = th0 + (th - th0) * (i / n); target.lineTo(-R * Math.cos(t), cy + R * Math.sin(t)); }
+    target.lineTo(sw, spring + rise * .055);
+    target.bezierCurveTo(sw, spring + rise * 0.13, hw * 1.16, spring + rise * 0.22,
+      hw * 1.16, spring + rise * 0.40);
+    target.bezierCurveTo(hw * 1.16, spring + rise * 0.70, hw * 0.48, spring + rise * 0.91,
+      0, spring + rise);
+    target.bezierCurveTo(-hw * 0.48, spring + rise * 0.91, -hw * 1.16, spring + rise * 0.70,
+      -hw * 1.16, spring + rise * 0.40);
+    target.bezierCurveTo(-hw * 1.16, spring + rise * 0.22, -sw, spring + rise * 0.13, -sw, spring + rise * .055);
     target.lineTo(-hw, spring);
     target.lineTo(-hw, sill);
     target.closePath();
@@ -1049,7 +1091,7 @@ export function createMosqueModel(options: ProceduralModelOptions = {}): THREE.G
   const archPathAt = (target: THREE.Path, A: Arch, x: number) => {
     const p = new THREE.Path();
     moorishArchPath(p, A.w, A.spring, A.rise, A.sill, A.shoulder);
-    const pts = p.getPoints(6);
+    const pts = p.getPoints(14);
     target.moveTo(pts[0].x + x, pts[0].y);
     for (let i = 1; i < pts.length; i++) target.lineTo(pts[i].x + x, pts[i].y);
     target.closePath();
@@ -1116,7 +1158,7 @@ export function createMosqueModel(options: ProceduralModelOptions = {}): THREE.G
       const D = GT.door;
       const block = rectShape(-GT.w / 2, 0, GT.w / 2, GT.h);
       const hole = new THREE.Path(); moorishArchPath(hole, D.w, D.spring, D.rise, 0, D.shoulder); block.holes.push(hole);
-      parts.push(extrudeZ(block, C.hz - GT.d, C.hz, 8));
+      parts.push(extrudeZ(block, C.hz - GT.d, C.hz, 12));
       const F = GT.frame;
       for (const s of [-1, 1]) {
         const zf = (C.hz - GT.d / 2) + s * (GT.d / 2 + F.proud / 2);
@@ -1132,7 +1174,9 @@ export function createMosqueModel(options: ProceduralModelOptions = {}): THREE.G
     // the tile carries the streaks (v keyed to the coping) and the ramp carries the foot.
     tintByHeight(geo, 0, 0.9, [0.86, 0.86, 0.80]);
     topUv(geo, C.h);
-    add('court-wall', 'Courtyard wall and gate', geo, 'white');
+    tintAll(geo, [1, 1, 1]);
+    wallPhotoUv(geo, C.h);
+    add('court-wall', 'Courtyard wall and gate', geo, 'court-photo');
     colliders['court-wall'] = {
       shape: 'box', localCenter: [0, 6.0, 0], halfExtents: [7.0, 6.0, 8.0],
       notes: 'Asset declares collider "box". One convex proxy over the whole envelope; a level '
@@ -1180,26 +1224,8 @@ export function createMosqueModel(options: ProceduralModelOptions = {}): THREE.G
     parts.push(boxAt(px - t / 2, py, (pz0 + pz1) / 2, t, ph, pz1 - pz0));
     parts.push(boxAt(0, py, pz0 + t / 2, (px - t) * 2, ph, t));
     parts.push(boxAt(0, py, pz1 - t / 2, (px - t) * 2, ph, t));
-    const cx = H.hx + CP.proud, cz0 = H.zBack - CP.proud, cz1 = H.zFront + CP.proud, ct = t + CP.proud - P.proud;
-    const cyy = (CP.y0 + CP.y1) / 2, ch = CP.y1 - CP.y0;
-    parts.push(boxAt(-(cx - ct / 2), cyy, (cz0 + cz1) / 2, ct, ch, cz1 - cz0));
-    parts.push(boxAt(cx - ct / 2, cyy, (cz0 + cz1) / 2, ct, ch, cz1 - cz0));
-    parts.push(boxAt(0, cyy, cz0 + ct / 2, (cx - ct) * 2, ch, ct));
-    parts.push(boxAt(0, cyy, cz1 - ct / 2, (cx - ct) * 2, ch, ct));
-    // blind niches: a white surround on the green field, and the raised inner arch panel inside it
-    {
-      const B = A.blind as any, I = B.inner;
-      const fieldFront = H.zFront + H.field.t;
-      for (const x of B.xs as number[]) {
-        const outer: Arch = { w: B.w + 2 * FR.band, spring: B.spring - 0.4 * FR.band, rise: B.rise + 1.25 * FR.band, sill: B.sill - FR.band, shoulder: B.shoulder };
-        const fr = extrudeZ(archShape(outer, B as Arch), H.zFront - 0.05, fieldFront + FR.proud, 10);
-        fr.translate(x, 0, 0); parts.push(fr);
-        const pw = B.w - 2 * I.inset;
-        const pn: Arch = { w: pw, spring: B.spring - 0.4 * I.inset, rise: I.rise, sill: I.sill, shoulder: B.shoulder * 0.7 };
-        const pg = extrudeZ(archShape(pn), H.zFront + 0.005, fieldFront + 0.02, 8);
-        pg.translate(x, 0, 0); parts.push(pg);
-      }
-    }
+    // Blind arch paint recesses are cut into the green field below; the
+    // white masonry here is their backing, with no extra overlay plates.
     const geo = mergeGeos(parts);
     // rain wash from the cornice down: the ramp darkens TOWARDS the top, the reverse of the kit
     tintByHeight(geo, 2.6, H.wallTop, [1, 1, 1]);
@@ -1213,7 +1239,14 @@ export function createMosqueModel(options: ProceduralModelOptions = {}): THREE.G
       }
     }
     topUv(geo, H.wallTop);
-    add('hall', 'Prayer hall', geo, 'white');
+    tintAll(geo, [1, 1, 1]);
+    wallPhotoUv(geo, H.wallTop);
+    // Exposed threshold is worn concrete, not white wall plaster.
+    const hp = geo.getAttribute('position'), hn = geo.getAttribute('normal'), hc = geo.getAttribute('color');
+    for (let i = 0; i < hp.count; i++) {
+      if (hn.getY(i) > .9 && hp.getY(i) < H.plinthH + .01) hc.setXYZ(i, .30, .31, .29);
+    }
+    add('hall', 'Prayer hall', geo, 'wall-photo');
   }
 
   /* ---------------------------------------------------------------- the pale green field
@@ -1226,13 +1259,25 @@ export function createMosqueModel(options: ProceduralModelOptions = {}): THREE.G
     // field holes are a hair inside the frame's OUTER edge, so the frame overlaps the field's reveal
     const holeA: Arch = { w: open.w + 2 * FR.band - 0.04, spring: open.spring - 0.4 * FR.band, rise: open.rise + 1.25 * FR.band - 0.02, sill: F.y0 + 0.005, shoulder: open.shoulder };
     const arches = (open.xs as number[]).map((x) => ({ A: holeA, x }));
-    const field = extrudeZ(wallWithArches(-F.xHalf, F.y0, F.xHalf, F.y1, arches), H.zFront, H.zFront + F.t, 10);
+    const B = A.blind as Arch;
+    const blind: Arch = { ...B, w: B.w,
+      spring: B.spring - .4 * FR.band, rise: B.rise + 1.25 * FR.band, sill: F.y0 + .01 };
+    const field = mergeGeos([
+      extrudeZ(wallWithArches(-3.3, F.y0, 3.3, F.y1, arches), H.zFront, H.zFront + F.t, 10),
+      extrudeZ(wallWithArches(-F.xHalf, F.y0, -3.55, F.y1, [{ A: blind, x: -4.15 }]), H.zFront, H.zFront + F.t, 10),
+      extrudeZ(wallWithArches(3.55, F.y0, F.xHalf, F.y1, [{ A: blind, x: 4.15 }]), H.zFront, H.zFront + F.t, 10),
+    ]);
     const ex = H.hx - L.endWall;
     const inner = boxAt(0, (H.plinthH + H.wallTop) / 2, zInner + F.t / 2, ex * 2 - 0.02, H.wallTop - H.plinthH - 0.02, F.t);
-    const geo = mergeGeos([field, inner]);
+    const geo = field;
     tintAll(geo, [1, 1, 1]);
     topUv(geo, F.y1, W.tile, 0.37);
+    wallPhotoUv(geo, F.y1);
     add('field', 'Green facade field and loggia wall', geo, 'panel');
+    wallPhotoUv(inner, H.wallTop);
+    inner.setAttribute('uv1', inner.getAttribute('uv').clone());
+    add('loggia-wall', 'Green inner loggia wall', inner, 'panel-interior');
+
   }
 
   /* ---------------------------------------------------------------- arcade surrounds
@@ -1243,9 +1288,9 @@ export function createMosqueModel(options: ProceduralModelOptions = {}): THREE.G
     const H = G.hall, A = G.arch, FR = A.frame, open = A.open as any;
     const outer: Arch = { w: open.w + 2 * FR.band, spring: open.spring - 0.4 * FR.band, rise: open.rise + 1.25 * FR.band, sill: open.sill - 0.05, shoulder: open.shoulder };
     const innerA: Arch = { w: open.w - 0.02, spring: open.spring - 0.02, rise: open.rise - 0.01, sill: open.sill - 0.03, shoulder: open.shoulder - 0.01 };
-    const frame = extrudeZ(archShape(outer, innerA), H.zFront - FR.back, H.zFront + H.field.t + FR.proud + 0.02, 10);
-    topUv(frame, H.wallTop);
-    addInst('arch-frames', 'Arcade surrounds', frame, 'white',
+    const frame = extrudeZ(archShape(outer, innerA), H.zFront - FR.back, H.zFront + H.field.t + FR.proud + 0.02, 14, 0.012);
+    wallPhotoUv(frame, H.wallTop);
+    addInst('arch-frames', 'Arcade surrounds', frame, 'wall-photo',
       (open.xs as number[]).map((x) => new THREE.Matrix4().setPosition(x, 0, 0)));
   }
 
@@ -1264,12 +1309,22 @@ export function createMosqueModel(options: ProceduralModelOptions = {}): THREE.G
     const H = G.hall, P = H.parapet;
     const px = H.hx + P.proud + P.bandProud, pz0 = H.zBack - P.proud - P.bandProud, pz1 = H.zFront + P.proud + P.bandProud, t = 0.06;
     const by = (P.y0 + P.y1) / 2 + 0.01, bh = P.y1 - P.y0 - 0.04;
-    add('parapet-band', 'Green parapet band', mergeGeos([
+    const parts: THREE.BufferGeometry[] = [
       boxAt(-(px - t / 2), by, (pz0 + pz1) / 2, t, bh, pz1 - pz0),
       boxAt(px - t / 2, by, (pz0 + pz1) / 2, t, bh, pz1 - pz0),
       boxAt(0, by, pz0 + t / 2, (px - t) * 2, bh, t),
       boxAt(0, by, pz1 - t / 2, (px - t) * 2, bh, t),
-    ]), 'green');
+    ];
+    const CP = H.coping;
+    const cx = H.hx + CP.proud, cz0 = H.zBack - CP.proud, cz1 = H.zFront + CP.proud, ct = t + CP.proud - P.proud;
+    const cyy = (CP.y0 + CP.y1) / 2, ch = CP.y1 - CP.y0;
+    parts.push(boxAt(-(cx - ct / 2), cyy, (cz0 + cz1) / 2, ct, ch, cz1 - cz0));
+    parts.push(boxAt(cx - ct / 2, cyy, (cz0 + cz1) / 2, ct, ch, cz1 - cz0));
+    parts.push(boxAt(0, cyy, cz0 + ct / 2, (cx - ct) * 2, ch, ct));
+    parts.push(boxAt(0, cyy, cz1 - ct / 2, (cx - ct) * 2, ch, ct));
+    const geo = mergeGeos(parts);
+    topUv(geo, H.coping.y1);
+    add('parapet-band', 'Green parapet band and coping', geo, 'green');
   }
 
   /* ---------------------------------------------------------------- the great dome and the minaret's
@@ -1286,7 +1341,7 @@ export function createMosqueModel(options: ProceduralModelOptions = {}): THREE.G
 
   /* ---------------------------------------------------------------- dome drum
    * Square podium with a moulded lip, a round drum with a base ring, and the lip ring the dome
-   * springs from. White, one component. The twelve arched windows are in the openings component. */
+   * springs from. White, one component. Twenty arched niches are cut into the drum. */
   {
     const DM = G.dome, PD = DM.podium, DR = DM.drum, LP = DM.lip;
     const parts: THREE.BufferGeometry[] = [
@@ -1294,47 +1349,48 @@ export function createMosqueModel(options: ProceduralModelOptions = {}): THREE.G
       topUv(boxAt(0, (PD.y1 + PD.lipY1) / 2, DM.z, PD.lipHalf * 2, PD.lipY1 - PD.y1, PD.lipHalf * 2), PD.lipY1),
     ];
     const ringG = cylAt(0, (DR.y0 + DR.ringY1) / 2, 0, DR.ringR, DR.ringR, DR.ringY1 - DR.y0, DR.seg);
-    const drumG = cylAt(0, (DR.ringY1 + DR.y1) / 2, 0, DR.r, DR.r, DR.y1 - DR.ringY1, DR.seg);
-    const lipG = lathe([[0, LP.y0], [LP.r - 0.10, LP.y0], [LP.r, LP.y0 + 0.08], [LP.r, LP.y1 - 0.05], [LP.r - 0.06, LP.y1], [0, LP.y1]], DR.seg);
-    for (const g of [ringG, drumG, lipG]) { latheUv(g, LP.y1, DR.r); g.translate(0, 0, DM.z); parts.push(g); }
+    // Closed masonry sectors with real shallow arch recesses. Place each planar
+    // masonry panel around the drum; the inner cylinder backs the niches.
+    const WN = DR.windows, recess = .10;
+    const drumParts: THREE.BufferGeometry[] = [];
+    const pitch = 2 * DR.r * Math.sin(Math.PI / WN.n);
+    for (let k = 0; k < WN.n; k++) {
+      const shape = rectShape(-pitch / 2, DR.ringY1, pitch / 2, DR.y1);
+      const aperture = pointedArchShape(WN.w, WN.y0 + WN.h * .62, WN.h * .38, WN.y0);
+      shape.holes.push(new THREE.Path(aperture.getPoints(4)));
+      const sector = extrudeZ(shape, -recess, 0, 4);
+      const pos = sector.getAttribute('position');
+      const angle = (k + .5) * 2 * Math.PI / WN.n;
+      for (let i = 0; i < pos.count; i++) {
+        const x = pos.getX(i), r = DR.r * Math.cos(Math.PI / WN.n) + pos.getZ(i);
+        pos.setXYZ(i, Math.cos(angle) * x + Math.sin(angle) * r, pos.getY(i), -Math.sin(angle) * x + Math.cos(angle) * r);
+      }
+      pos.needsUpdate = true; sector.computeVertexNormals();
+      drumParts.push(sector);
+    }
+    const backing = cylAt(0, (DR.ringY1 + DR.y1) / 2, 0,
+      DR.r * Math.cos(Math.PI / WN.n) - recess + .005, DR.r * Math.cos(Math.PI / WN.n) - recess + .005, DR.y1 - DR.ringY1, DR.seg);
+    // The plate shows dusty plaster within these blind niches.
+    tintAll(backing, [.58, .59, .54]);
+    drumParts.push(backing);
+    const lipG = lathe([[0, LP.y0], [LP.r - 0.10, LP.y0], [LP.r, LP.y0 + (LP.y1-LP.y0)*.25], [LP.r, LP.y0 + (LP.y1-LP.y0)*.75], [LP.r - 0.06, LP.y1], [0, LP.y1]], DR.seg);
+    for (const g of [ringG, ...drumParts, lipG]) { latheUv(g, LP.y1, DR.r); g.translate(0, 0, DM.z); parts.push(g); }
     add('drum', 'Dome drum', mergeGeos(parts), 'white');
   }
 
-  /* ---------------------------------------------------------------- openings
-   * Twelve pointed windows around the drum and eight around the minaret lantern: small dark plates
-   * standing 0.025 m proud of the surface they sit on, merged into ONE component. */
+  /* Lantern recess backing, set well inside the cut masonry openings. */
   {
-    const DM = G.dome, DR = DM.drum, WN = DR.windows, MN = G.minaret, LT = MN.lantern, LO = LT.openings;
-    const parts: THREE.BufferGeometry[] = [];
-    const plate = (w: number, h: number, y0: number) => {
-      const s = pointedArchShape(w, y0 + h * 0.62, h * 0.38, y0);
-      const g = new THREE.ExtrudeGeometry(s, { depth: 0.03, bevelEnabled: false, curveSegments: 6 });
-      g.computeVertexNormals(); return g;
-    };
-    for (let k = 0; k < WN.n; k++) {
-      const a = (k + 0.5) * Math.PI * 2 / WN.n;
-      const g = plate(WN.w, WN.h, WN.y0);
-      g.rotateY(a); g.translate(Math.sin(a) * (DR.r + WN.proud - 0.03), 0, Math.cos(a) * (DR.r + WN.proud - 0.03) + DM.z);
-      parts.push(g);
-    }
-    const inR = LT.r * Math.cos(Math.PI / LO.n);   // apothem of the octagonal lantern
-    for (let k = 0; k < LO.n; k++) {
-      const a = k * Math.PI * 2 / LO.n;
-      const g = plate(LO.w, LO.h, LO.y0);
-      g.rotateY(a); g.translate(MN.x + Math.sin(a) * (inR + LO.proud - 0.03), 0, MN.z + Math.cos(a) * (inR + LO.proud - 0.03));
-      parts.push(g);
-    }
-    add('openings', 'Drum windows and lantern openings', mergeGeos(parts), 'dark');
+    const MN = G.minaret, LT = MN.lantern;
+    const g = cylAt(MN.x, (LT.y0 + LT.y1) / 2, MN.z, .20, .20, LT.y1 - LT.y0, 16);
+    add('openings', 'Lantern recess interior', g, 'dark');
   }
 
   /* ---------------------------------------------------------------- corner domes
    * Four, as TWO InstancedMesh systems -- a white drum with its ring and a ribbed green dome. */
   {
     const S = G.small, SD = S.drum, SB = S.body;
-    const drum = mergeGeos([
-      cylAt(0, (SD.y0 + SD.ringY0) / 2 - SD.y0, 0, SD.r, SD.r, SD.ringY0 - SD.y0, SD.seg),
-      cylAt(0, (SD.ringY0 + SD.y1) / 2 - SD.y0, 0, SD.ringR, SD.ringR - 0.03, SD.y1 - SD.ringY0, SD.seg),
-    ]);
+    const drum = lathe([[0, 0], [SD.r, 0], [SD.r, SD.ringY0 - SD.y0],
+      [SD.ringR - 0.03, SD.ringY0 - SD.y0], [SD.ringR, SD.y1 - SD.y0], [0, SD.y1 - SD.y0]], SD.seg);
     latheUv(drum, SD.y1 - SD.y0, SD.r, 4.0);
     addInst('small-drums', 'Corner dome drums', drum, 'white',
       (S.at as number[][]).map(([x, z]) => new THREE.Matrix4().setPosition(x, SD.y0, z)));
@@ -1358,7 +1414,18 @@ export function createMosqueModel(options: ProceduralModelOptions = {}): THREE.G
     parts.push(topUv(prism(MN.x, CB.y0, MN.z, CB.r0, SL.y0 + 0.01, 8, CB.r1), MN.shaftTop, W.tile, 0.61));
     parts.push(topUv(prism(MN.x, SL.y0, MN.z, SL.r, SL.y1, 8), MN.shaftTop, W.tile, 0.61));
     parts.push(topUv(ring(MN.x, MN.z, RL.rIn, RL.rOut, RL.y0, RL.y1, 8), MN.shaftTop, W.tile, 0.61));
-    parts.push(topUv(prism(MN.x, LT.y0, MN.z, LT.r, LT.y1, 8), MN.shaftTop, W.tile, 0.61));
+    // Eight closed masonry panels with actual arch apertures. The recessed
+    // inner core shades them from every orbit without surface-mounted plates.
+    const LO = LT.openings, apothem = LT.r * Math.cos(Math.PI / LO.n);
+    const width = 2 * LT.r * Math.sin(Math.PI / LO.n);
+    for (let k = 0; k < LO.n; k++) {
+      const shape = rectShape(-width / 2, LT.y0, width / 2, LT.y1);
+      const opening = pointedArchShape(LO.w, LO.y0 + LO.h * .62, LO.h * .38, LO.y0);
+      shape.holes.push(new THREE.Path(opening.getPoints(4)));
+      const g = extrudeZ(shape, apothem - .10, apothem, 4);
+      g.rotateY(k * Math.PI * 2 / LO.n); g.translate(MN.x, 0, MN.z);
+      parts.push(topUv(g, CN.y1, W.tile, .61));
+    }
     parts.push(topUv(prism(MN.x, CN.y0, MN.z, CN.r, CN.y1, 8), MN.shaftTop, W.tile, 0.61));
     const geo = mergeGeos(parts);
     tintAll(geo, [1, 1, 1]);
@@ -1386,7 +1453,7 @@ export function createMosqueModel(options: ProceduralModelOptions = {}): THREE.G
       const bulb = lathe([[0, 0], [0.10, 0.03], [0.12, 0.10], [0.085, 0.19], [0.04, 0.27], [0.03, 0.31]], 12);
       bulb.scale(s, s, s); bulb.translate(x, y0 + 0.92 * s, z); parts.push(bulb);
       const spikeBase = y0 + 1.20 * s, cBottom = y0 + totalH - 2 * R + 0.03;
-      if (cBottom > spikeBase + 0.02) parts.push(cylAt(x, (spikeBase + cBottom) / 2, z, 0.025 * s, 0.032 * s, cBottom - spikeBase, 8));
+      if (cBottom > spikeBase + 0.02) parts.push(cylAt(x, (spikeBase + cBottom) / 2, z, Math.max(.024, 0.025 * s), Math.max(.032, 0.032 * s), cBottom - spikeBase, 8));
       const t = Math.max(0.035, 0.16 * R);
       const cg = new THREE.ExtrudeGeometry(crescentShape(R, 0.85 * R, 0.28 * R, 14), { depth: t, bevelEnabled: false });
       cg.translate(0, 0, -t / 2);
@@ -1499,11 +1566,67 @@ export function createMosqueModel(options: ProceduralModelOptions = {}): THREE.G
       tex.colorSpace = THREE.SRGBColorSpace;
       tex.flipY = false;   // v runs DOWN the tile from each part's top (topUv), so row 0 is the coping
       tex.anisotropy = options.textureAnisotropy ?? 4;
-      mat.map = tex; mat.bumpMap = tex; mat.bumpScale = W.bump; mat.needsUpdate = true;
+      mat.map = tex; mat.needsUpdate = true;
     };
-    bind(materials.white, makeTile('render', 20260901));
+    if (!options.baseUrl) bind(materials.white, makeTile('render', 20260901));
     bind(materials.panel, makeTile('panel', 9012026));
-    bind(materials.deck, makeTile('deck', 1202609));
+    if (!options.baseUrl) bind(materials.deck, makeTile('deck', 1202609));
+    // Independent high-frequency plaster relief; albedo never doubles as height.
+    const reliefSize = 256, relief = new Uint8Array(reliefSize * reliefSize * 4), rr = rng(27092026);
+    for (let i = 0; i < reliefSize * reliefSize; i++) {
+      const h = Math.round(108 + rr() * 40);
+      relief[i * 4] = relief[i * 4 + 1] = relief[i * 4 + 2] = h; relief[i * 4 + 3] = 255;
+    }
+    const height = new THREE.DataTexture(relief, reliefSize, reliefSize, THREE.RGBAFormat);
+    height.wrapS = height.wrapT = THREE.RepeatWrapping; height.colorSpace = THREE.NoColorSpace;
+    height.minFilter = THREE.LinearMipmapLinearFilter; height.magFilter = THREE.LinearFilter;
+    height.generateMipmaps = true; height.needsUpdate = true;
+    for (const id of ['white', 'wall-photo', 'court-photo', 'panel', 'panel-interior', 'deck', 'green', 'dome']) {
+      materials[id].bumpMap = height; materials[id].bumpScale = .003; materials[id].needsUpdate = true;
+    }
+    if (options.baseUrl) {
+      const wallMap = new THREE.TextureLoader().load(new URL('maps/mosque-wall-albedo.png', options.baseUrl).href);
+      wallMap.colorSpace = THREE.SRGBColorSpace; wallMap.flipY = false;
+      wallMap.wrapS = wallMap.wrapT = THREE.ClampToEdgeWrapping;
+      wallMap.anisotropy = options.textureAnisotropy ?? 4;
+      materials['wall-photo'].color.setHex(0xffffff);
+      materials['wall-photo'].map = wallMap;
+      materials['wall-photo'].needsUpdate = true;
+      const courtMap = new THREE.TextureLoader().load(new URL('maps/mosque-court-albedo.png', options.baseUrl).href);
+      courtMap.colorSpace = THREE.SRGBColorSpace; courtMap.flipY = false;
+      courtMap.anisotropy = options.textureAnisotropy ?? 4;
+      materials['court-photo'].color.setHex(0xffffff);
+      materials['court-photo'].map = courtMap; materials['court-photo'].needsUpdate = true;
+      const panelMap = new THREE.TextureLoader().load(new URL('maps/mosque-panel-albedo.png', options.baseUrl).href);
+      panelMap.colorSpace = THREE.SRGBColorSpace; panelMap.flipY = false;
+      panelMap.anisotropy = options.textureAnisotropy ?? 4;
+      materials.panel.map = panelMap; materials.panel.needsUpdate = true;
+      const detailPlasterMap = panelMap.clone();
+      detailPlasterMap.wrapS = detailPlasterMap.wrapT = THREE.RepeatWrapping;
+      detailPlasterMap.needsUpdate = true;
+      materials.white.map = detailPlasterMap;
+      materials.green.map = detailPlasterMap; materials.green.needsUpdate = true;
+      materials.white.needsUpdate = true;
+      materials['panel-interior'].map = panelMap;
+      // A recessed wall sees only a small fraction of the sky hemisphere. Keep
+      // that occlusion in its own linear channel, separate from green albedo.
+      const recessAO = new THREE.DataTexture(new Uint8Array([32,32,32,255]), 1, 1, THREE.RGBAFormat);
+      recessAO.colorSpace = THREE.NoColorSpace; recessAO.channel = 1; recessAO.needsUpdate = true;
+      materials['panel-interior'].aoMap = recessAO;
+      materials['panel-interior'].aoMapIntensity = .90;
+      materials['panel-interior'].needsUpdate = true;
+      const domeMap = new THREE.TextureLoader().load(new URL('maps/mosque-dome-weather.png', options.baseUrl).href);
+      domeMap.colorSpace = THREE.SRGBColorSpace; domeMap.wrapS = THREE.RepeatWrapping;
+      domeMap.anisotropy = options.textureAnisotropy ?? 4;
+      materials.dome.map = domeMap; materials.dome.needsUpdate = true;
+      materials.dome.bumpScale = .0015;
+      const deckMap = new THREE.TextureLoader().load(new URL('maps/mosque-deck-albedo.png', options.baseUrl).href);
+      deckMap.colorSpace = THREE.SRGBColorSpace;
+      deckMap.wrapS = deckMap.wrapT = THREE.RepeatWrapping;
+      deckMap.anisotropy = options.textureAnisotropy ?? 4;
+      materials.deck.map = deckMap; materials.deck.needsUpdate = true;
+    }
+
   }
 
   root.userData.sculptRuntime = { nodes, meshes, sockets, colliders, destructionGroups } satisfies ProceduralModelRuntime;
