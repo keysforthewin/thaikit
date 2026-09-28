@@ -25,6 +25,14 @@ const RENDER_DIR = path.resolve(here, '../../render');
 
 const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript', '.wasm': 'application/wasm', '.glb': 'model/gltf-binary', '.json': 'application/json', '.png': 'image/png' };
 
+function isD3dPrecisionOnly(output) {
+  if (!/Showing 1-1 of 1/.test(output) || output.includes('[level-runtime]')) return false;
+  const warnings = output.split('\n').filter((line) => /\[warn\]|\[error\]|warning |error /i.test(line));
+  return warnings.length > 1 && warnings.every((line) =>
+    /\[warn\] THREE\.WebGLProgram: Program Info Log:/.test(line) ||
+    /warning X4122: sum of .* cannot be represented accurately in double precision/.test(line));
+}
+
 function serveRepo() {
   return new Promise((resolve) => {
     const server = http.createServer(async (req, res) => {
@@ -125,8 +133,10 @@ async function main() {
     // anyone noticing. A runtime warning is a failed smoke run now.
     const runtime = errors.filter((e) => e.includes('[level-runtime]'));
     if (runtime.length) throw new Error(`the runtime warned: ${[...new Set(runtime)].join(' | ')}`);
-    if (errors.some(e=>/\[(?:error|warn|warning)\]/.test(e))) throw new Error(`browser reported an error or warning: ${errors.join(' | ')}`);
-    return ok({ level: id, ...result, screenshot: toRepoRelative(shot), consoleErrors: errors.slice(0, 10) });
+    const actionable = errors.filter((message) => !isD3dPrecisionOnly(message));
+    if (actionable.length !== errors.length) log('ignored Windows D3D X4122 shader precision notice');
+    if (actionable.some(e=>/\[(?:error|warn|warning)\]/.test(e))) throw new Error(`browser reported an error or warning: ${actionable.join(' | ')}`);
+    return ok({ level: id, ...result, screenshot: toRepoRelative(shot), consoleErrors: actionable.slice(0, 10) });
   } finally {
     if (pageId !== undefined) await mcp.call('close_page', { pageId }).catch(() => {});
     mcp.close();

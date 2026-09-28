@@ -181,10 +181,20 @@ export function writeManifest({ bake, lodStats, lightmapImage, lightmapStats = n
       const key = p.bakeLighting === false ? `unbaked/${p.cell}` : p.cell;
       let c = cellsByKey.get(key);
       if (!c) {
-        c = { key, node: `${p.bakeLighting === false ? 'unbaked' : 'cell'}_${p.ix}_${p.iz}`, bakeLighting: p.bakeLighting !== false, ix: p.ix, iz: p.iz, min: [Infinity, Infinity, Infinity], max: [-Infinity, -Infinity, -Infinity] };
+        const badCell = !Number.isInteger(p.ix) || !Number.isInteger(p.iz);
+        const ix = badCell ? Math.floor(p.position[0] / cellSize) : p.ix;
+        const iz = badCell ? Math.floor(p.position[2] / cellSize) : p.iz;
+        const node = badCell
+          ? root.listNodes().find((n) => n.getExtras()?.tk?.kind === 'cell' && n.getExtras()?.tk?.key === p.cell)
+          : null;
+        if (badCell && !node) throw new Error(`Cannot locate baked cell for ${p.id} (${p.cell})`);
+        if (badCell) onNote?.(`recovered ${p.id} cell from baked node ${node.getName()} at ${ix}_${iz}`);
+        c = { key, node: node?.getName() ?? `${p.bakeLighting === false ? 'unbaked' : 'cell'}_${ix}_${iz}`, bakeLighting: p.bakeLighting !== false, ix, iz, min: [Infinity, Infinity, Infinity], max: [-Infinity, -Infinity, -Infinity] };
         cellsByKey.set(key, c);
       }
-      for (let i = 0; i < 3; i += 1) { c.min[i] = Math.min(c.min[i], p.bounds.min[i]); c.max[i] = Math.max(c.max[i], p.bounds.max[i]); }
+      const sourceBounds = [...p.bounds.min, ...p.bounds.max].every(Number.isFinite) ? p.bounds : getBounds(root.listNodes().find((n) => n.getName() === c.node));
+      if (![...sourceBounds.min, ...sourceBounds.max].every(Number.isFinite)) throw new Error(`Invalid bounds for ${p.id} (${c.node})`);
+      for (let i = 0; i < 3; i += 1) { c.min[i] = Math.min(c.min[i], sourceBounds.min[i]); c.max[i] = Math.max(c.max[i], sourceBounds.max[i]); }
     }
     const statsByCell = new Map(lodStats.map((s) => [s.cell, s]));
     const cells = [...cellsByKey.values()].map((c) => {

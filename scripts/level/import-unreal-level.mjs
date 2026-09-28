@@ -480,6 +480,7 @@ export async function convertUnrealLevel({ id, doc, json, bin, kit, extMeshes = 
   const placements = [];
   const lights = [];
   const spawns = [];
+  const spawnPositions = new Set();
   const dropped = [];
   const usedIds = new Set();
   const uniqueId = (base) => { let s = slug(base); let n = 2; while (usedIds.has(s)) s = `${slug(base)}-${n++}`; usedIds.add(s); return s; };
@@ -544,7 +545,14 @@ export async function convertUnrealLevel({ id, doc, json, bin, kit, extMeshes = 
       const m = name.match(/^(?:spawn|playerstart)[_ -]?(.*)$/i);
       const label = slug(m?.[1] || `spawn-${spawns.length + 1}`);
       const team = /^(red|blue|green|yellow)[-_]/.test(label) ? label.split(/[-_]/)[0] : null;
-      spawns.push({ name: label, position: t.map((v) => +v.toFixed(3)), yawDeg, team });
+      const position = t.map((v) => +v.toFixed(3));
+      // Unreal exports PlayerStart nodes as well as our spawn_* cameras.
+      // Keep the camera's label when both occupy the same start point.
+      const positionKey = position.join(',');
+      if (!spawnPositions.has(positionKey)) {
+        spawns.push({ name: label, position, yawDeg, team });
+        spawnPositions.add(positionKey);
+      }
       scene.removeChild(node);
       continue;
     }
@@ -580,6 +588,7 @@ export async function convertUnrealLevel({ id, doc, json, bin, kit, extMeshes = 
     if (tags.length) ladders += 1;
     const pid = uniqueId(name);
     const b = getBounds(node);
+    if (![...b.min, ...b.max].every(Number.isFinite)) throw new Error(`Invalid bounds for ${name}: check mesh indices against POSITION counts in the Unreal glTF export`);
     const ref = item ? item.ref : `@unreal/${slug(meshName || 'mesh')}`;
     if (item) kitHits.set(item.asset, (kitHits.get(item.asset) ?? 0) + 1); else unknownMeshes += 1;
 
@@ -760,6 +769,34 @@ async function main() {
   await assertUnrealMaterials(json, manifestFile);
   const io = new NodeIO().setLogger(new Logger(Logger.Verbosity.SILENT)).registerExtensions(ALL_EXTENSIONS);
   const doc = await io.readBinary(bytes);
+  // Unreal's glTF exporter occasionally writes a triangle index outside the
+  // primitive's POSITION accessor. Such a triangle also poisons getBounds().
+  let droppedInvalidTriangles = 0;
+  for (const mesh of doc.getRoot().listMeshes()) for (const primitive of mesh.listPrimitives()) {
+    const position = primitive.getAttribute('POSITION');
+    const indices = primitive.getIndices();
+    if (primitive.getMode() !== 4 || !position || !indices) continue;
+    const source = indices.getArray();
+    const retained = [];
+    for (let i = 0; i < source.length; i += 3) {
+      if (source[i] < position.getCount() && source[i + 1] < position.getCount() && source[i + 2] < position.getCount()) retained.push(source[i], source[i + 1], source[i + 2]);
+      else droppedInvalidTriangles += 1;
+    }
+    if (retained.length !== source.length) primitive.setIndices(indices.clone().setArray(new source.constructor(retained)));
+  }
+  if (droppedInvalidTriangles) log(`${droppedInvalidTriangles} Unreal triangle(s) with out-of-range indices dropped`);
+  // Unreal sometimes assigns AO to UV1 while the rest of a material uses UV0.
+  // The bake replaces UV1 with its lightmap, so that AO cannot survive there.
+  let droppedMixedUvAo = 0;
+  for (const material of doc.getRoot().listMaterials()) {
+    const ao = material.getOcclusionTextureInfo();
+    if (!ao || ao.getTexCoord() !== 1) continue;
+    const surfaceInfos = [material.getBaseColorTextureInfo(), material.getNormalTextureInfo(), material.getMetallicRoughnessTextureInfo(), material.getEmissiveTextureInfo()].filter(Boolean);
+    if (!surfaceInfos.length || surfaceInfos.some((info) => info.getTexCoord() !== 0)) continue;
+    material.setOcclusionTexture(null);
+    droppedMixedUvAo += 1;
+  }
+  if (droppedMixedUvAo) log(`${droppedMixedUvAo} UV1 ambient-occlusion map(s) dropped; Cycles lightmap replaces UV1`);
   const kit = await readKitManifest(manifestFile);
   if (kit.missing) log(`WARNING no kit manifest at ${toRepoRelative(manifestFile)}: every mesh is treated as an Unreal-side mesh (bbox colliders, no physics). Run "export to Unreal" in the asset editor first.`);
 
